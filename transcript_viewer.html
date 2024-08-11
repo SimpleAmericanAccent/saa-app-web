@@ -1,41 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transcript Viewer</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .transcript {
-            margin: 20px 0;
-        }
-        .transcript span {
-            cursor: pointer;
-            padding: 2px;
-            border-radius: 3px;
-        }
-        .transcript span:hover {
-            background-color: #e0e0e0;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+      }
+      .masthead-top {
+        position: fixed;
+        padding: 1vw;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 160px;
+        min-height: 100px;
+        background-color: #ddddddee;
+      }
+      .masthead-bottom {
+        position: fixed;
+        top: 160px;
+        left: 0;
+        padding: 1vw;
+        width: 100vw;
+        height: 12vh;
+        min-height: 100px;
+        background-color: #ddddddee;
+      }
+      .toolTip {
+        border: solid gray 1px;
+        margin: 0 auto 1vh 0;
+        padding: 1vh;
+        width: 80vw;
+        height: 10vh;
+        min-height: 90px;
+        border-radius: 5px;
+        background-color: #ffffffdd;
+      }
+      .transcript {
+        margin: 20px 20px;
+        padding-top: max(35vh, 280px);
+      }
+      .transcript span {
+        cursor: pointer;
+        padding: 2px;
+        border-radius: 3px;
+      }
+      .transcript span:hover {
+        background-color: #e0e0e0;
+      }
+      .transcript .annotated {
+        background-color: #ffaa00;
+      }
+      .transcript .active {
+        background-color: #aa00aaaa;
+      }
     </style>
-</head>
-<body>
-
-    <h1>Transcript Viewer</h1>
-    <audio id="audioPlayer" controls>
-        <source id="audioSource" src="" type="audio/mp3">
+  </head>
+  <body>
+    <div class="masthead-top">
+      <h1>Transcript Viewer</h1>
+      <audio id="audioPlayer" controls>
+        <source id="audioSource" src="" type="audio/mp3" />
         Your browser does not support the audio element.
-    </audio>
+      </audio>
+    </div>
+    <div class="masthead-bottom">
+      <div class="toolTip" id="toolTip"></div>
+    </div>
 
     <div class="transcript" id="transcript">
-        <!-- Transcript will be inserted here -->
+      <!-- Transcript will be inserted here -->
     </div>
 
     <!--<script src="app.js" type="module"></script>-->
     <script src="script.js" type="module"></script>
-    
-</body>
+  </body>
 </html>
