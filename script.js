@@ -1,44 +1,58 @@
-import { speech1, speech2 } from './app.js';
+//import json files (transcripts including alignment data)
 
-const audio2_url = './audio/audio2.mp3'
+import speech1 from './JSON/speech1.json' with {type: 'json'};
+import speech2 from './JSON/speech2.json' with {type: 'json'};
+import speech3 from './JSON/speech3.json' with {type: 'json'};
+// import { speech1, speech2, speech3 } from './app.js';
+// separate js file no longer needed
 
-// Ensure your JSON data is correctly formatted and available
-
-
-// Set audio source
+// DOM selection and associated variables
 const audioPlayer = document.getElementById('audioPlayer');
 const audioSource = document.getElementById('audioSource');
-audioSource.src = audio2_url;
+const transcriptDiv = document.getElementById('transcript');
+
+// variable declarations
+
+const speechOptions = [1, 2, 3];
+let speechIndex = 3;
+
+const audioURLSelected = `./audio/audio${speechIndex}.mp3`
+const transcriptSelected = speech3.speech.transcripts;
+
+// function definitions
+
+function showCurrentWord (e) {
+    const { duration, currentTime } = e.srcElement
+    console.log(currentTime);
+};
+
+// main logic
+// Set audio source
+audioSource.src = audioURLSelected;
 audioPlayer.load();
 
+transcriptSelected.forEach(tranData => {
+    const start_offset = tranData.start_offset;
+    const start_offset_conv = start_offset / 16000;
+    const alignment = tranData.alignment;
 
-// Display the transcript
-const transcriptDiv = document.getElementById('transcript');
-const alignment = speech2.speech.transcripts[0].alignment;
-const start_offset = speech2.speech.transcripts[0].start_offset;
-const start_offset_conv = start_offset / 16000;
+    alignment.forEach(wordData => {
+        const wordSpan = document.createElement('span');
+        wordSpan.textContent = wordData.word + ' ';
+        wordSpan.dataset.startTime = wordData.start + start_offset_conv;
 
-alignment.forEach(wordData => {
-    const wordSpan = document.createElement('span');
-    wordSpan.textContent = wordData.word + ' ';
-    wordSpan.dataset.startTime = wordData.start + start_offset_conv;
-
-    wordSpan.addEventListener('click', () => {
-        audioPlayer.currentTime = wordData.start + start_offset_conv;
-        audioPlayer.play();
+        wordSpan.addEventListener('click', () => {
+            audioPlayer.currentTime = wordData.start + start_offset_conv;
+            audioPlayer.play();
+        });
+        transcriptDiv.appendChild(wordSpan);
     });
-
-    transcriptDiv.appendChild(wordSpan);
+    const para = document.createElement('p');
+    transcriptDiv.appendChild(para);
 });
 
+// event listeners
+audioPlayer.addEventListener('timeupdate', showCurrentWord);
 
-const jsonPreview = document.getElementById('jsonPreview');
-// jsonPreview.innerHTML = json;
-
-
-
-console.log(speech1.speech.transcripts[0]);
-console.log(speech2.speech.transcripts[0]);
-console.log(audio2_url);
-console.log(start_offset);
-console.log(start_offset_conv);
+// console.log(wordSpan);
+// console.log(wordData);
