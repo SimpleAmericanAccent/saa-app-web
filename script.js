@@ -1,9 +1,9 @@
 //// import json files (transcripts including alignment data)
 //// this async method is working better for me than the import method
-let speech1;
-await fetch("./JSON/speech1.json")
+let speech3;
+await fetch("./JSON/speech3.json")
   .then((response) => response.json())
-  .then((json) => (speech1 = json));
+  .then((json) => (speech3 = json));
 
 //// DOM selection and associated variables
 const audioPlayer = document.getElementById("audioPlayer");
@@ -37,7 +37,7 @@ const speechOptions = [1, 2, 3];
 let speechIndex = speechOptions[2];
 
 const audioURLSelected = `./audio/audio${speechIndex}.mp3`;
-const transcriptSelected = speech1.speech.transcripts;
+const transcriptSelected = speech3.speech.transcripts;
 
 //// function definitions
 function showCurrentWord() {
