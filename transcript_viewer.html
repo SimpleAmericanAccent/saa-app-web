@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcript Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .transcript {
+            margin: 20px 0;
+        }
+        .transcript span {
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 3px;
+        }
+        .transcript span:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Transcript Viewer</h1>
+    <audio id="audioPlayer" controls>
+        <source id="audioSource" src="" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="transcript" id="transcript">
+        <!-- Transcript will be inserted here -->
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

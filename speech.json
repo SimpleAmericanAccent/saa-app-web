@@ -1,0 +1,394 @@
+{
+    "status": "OK",
+    "speech": {
+        "speech_id": "22HCZYGULYAHKXQ2",
+        "start_time": 1722016566,
+        "end_time": 1722016589,
+        "modified_time": 1722016659,
+        "deleted": false,
+        "duration": 10,
+        "title": null,
+        "summary": "flocks, dark, fields, forest, shepherd boy",
+        "from_shared": false,
+        "shared_with": [],
+        "unshared": false,
+        "shared_by": null,
+        "owner": {
+            "id": 870396,
+            "name": "Simple American Accent",
+            "email": "simpleamericanaccent@gmail.com",
+            "first_name": "Simple",
+            "last_name": "American Accent",
+            "avatar_url": "https://profile.otter.ai/AANI76LVC4PPCETJ/AANI76LVC4PPC7JC.jpg",
+            "workspace": {
+                "id": 40995,
+                "name": "Will Rosenberg"
+            }
+        },
+        "shared_groups": [],
+        "can_edit": true,
+        "can_comment": true,
+        "is_read": true,
+        "process_finished": true,
+        "upload_finished": true,
+        "hasPhotos": 0,
+        "download_url": "https://api.aisense.com/audio/BmpMWwTyLTXUW_Pnc8z5R39-owY",
+        "transcript_updated_at": 1722016658,
+        "images": [],
+        "speakers": [],
+        "word_clouds": [
+            {
+                "word": "flocks",
+                "score": "0.194",
+                "variants": [
+                    "flocks"
+                ]
+            },
+            {
+                "word": "dark",
+                "score": "0.154",
+                "variants": [
+                    "dark"
+                ]
+            },
+            {
+                "word": "fields",
+                "score": "0.125",
+                "variants": [
+                    "fields"
+                ]
+            },
+            {
+                "word": "forest",
+                "score": "0.123",
+                "variants": [
+                    "forest"
+                ]
+            },
+            {
+                "word": "shepherd boy",
+                "score": "0.122",
+                "variants": [
+                    "shepherd boy"
+                ]
+            }
+        ],
+        "live_status": "none",
+        "live_status_message": "",
+        "public_share_url": null,
+        "folder": null,
+        "created_at": 1722016567,
+        "access_seconds": null,
+        "appid": "otter-web",
+        "can_highlight": true,
+        "create_method": "record",
+        "otid": "BmpMWwTyLTXUW_Pnc8z5R39-owY",
+        "can_export": true,
+        "timecode_offset": null,
+        "timezone": null,
+        "access_request": null,
+        "public_view": false,
+        "has_started": true,
+        "auto_record": false,
+        "displayed_start_time": 1722016566,
+        "meeting_otid": null,
+        "allow_transcript_copy": true,
+        "process_failed": false,
+        "calendar_meeting_id": null,
+        "permissions": {
+            "highlight": {
+                "create": true,
+                "delete": true
+            },
+            "comment": {
+                "create": true,
+                "delete": true
+            },
+            "text_note": {
+                "create": true,
+                "delete": true
+            },
+            "chat": {
+                "create": true,
+                "delete": true
+            },
+            "speech_share": {
+                "share": true,
+                "share_button": true
+            },
+            "assign": true,
+            "reorder": true,
+            "share": true,
+            "export": true,
+            "emoji_react": true
+        },
+        "speech_outline": [],
+        "speech_outline_status": "abort",
+        "speech_metadata": {},
+        "process_status": {
+            "abstract_summary": "finished",
+            "action_item": "finished"
+        },
+        "access_status": 1,
+        "speech_settings": {
+            "end_to_end_asr": true,
+            "allow_collaborators_to_share": true,
+            "allow_viewers_to_export": true,
+            "allow_topics": false
+        },
+        "shared_emails": [],
+        "link_share": {
+            "scope": null,
+            "permission": null,
+            "workspace_id": null
+        },
+        "calendar_guests": null,
+        "is_low_confidence": false,
+        "non_member_shared_groups": [],
+        "audio_enabled": true,
+        "auto_snapshot_enabled": true,
+        "pubsub_jwt": null,
+        "conf_join_url": null,
+        "conf_image_url": null,
+        "chat_status": {
+            "show_chat": true,
+            "owner_chat_enabled": true,
+            "viewer_opt_out": false,
+            "can_edit_chat": true
+        },
+        "image_urls": null,
+        "sales_call_qualified": false,
+        "pubsub_jwt_persistent": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo4NzAzOTYsImV4cCI6MTcyNDcwODE1NSwiaXNzIjoiYXBpLXByb2QiLCJhdWQiOiJ3cy1wcm9kIiwic2lkIjpmYWxzZSwicGVybWlzc2lvbiI6InZpZXciLCJzcGVlY2hfaWQiOiIyMkhDWllHVUxZQUhLWFEyIiwiYWNjZXNzX3NlY29uZHMiOm51bGwsImFwcGlkIjoib3R0ZXItd2ViIiwidXNlX3MzX2Zvcl9zb3VuZCI6dHJ1ZSwidXBsb2FkX3MzX2Zyb21fc3RyZWFtaW5nIjp0cnVlLCJ2b2ljZV9jaGF0X2VuYWJsZWQiOmZhbHNlfQ.po0PTYAFzuQXpAKBSXdkibZ32UFC-Bg90WQt__k29YQ",
+        "is_meeting_series": false,
+        "has_meeting_series_access": false,
+        "session_info": [
+            {
+                "live_status": "none",
+                "live_status_message": "",
+                "id": null,
+                "title": "",
+                "offset": 0
+            }
+        ],
+        "has_hidden_transcript": false,
+        "language": null,
+        "transcripts": [
+            {
+                "uuid": "4c82aa8e-8cc1-4cf4-8d55-c9444aebd925",
+                "id": 134261333,
+                "start_offset": 40320,
+                "end_offset": 123360,
+                "transcript": "There was once a poor shepherd boy who used to watch his flocks in the fields next to a dark forest near the foot of a mountain.",
+                "label": null,
+                "speaker_id": null,
+                "created_at": "2024-07-26 10:56:11",
+                "speaker_model_label": null,
+                "speech_id": "22HCZYGULYAHKXQ2",
+                "speaker_edited_at": null,
+                "alignment": [
+                    {
+                        "word": "There",
+                        "start": 0.0,
+                        "end": 0.18,
+                        "startOffset": 0,
+                        "endOffset": 5
+                    },
+                    {
+                        "word": "was",
+                        "start": 0.18,
+                        "end": 0.33,
+                        "startOffset": 6,
+                        "endOffset": 9
+                    },
+                    {
+                        "word": "once",
+                        "start": 0.33,
+                        "end": 0.63,
+                        "startOffset": 10,
+                        "endOffset": 14
+                    },
+                    {
+                        "word": "a",
+                        "start": 0.63,
+                        "end": 0.69,
+                        "startOffset": 15,
+                        "endOffset": 16
+                    },
+                    {
+                        "word": "poor",
+                        "start": 0.69,
+                        "end": 0.96,
+                        "startOffset": 17,
+                        "endOffset": 21
+                    },
+                    {
+                        "word": "shepherd",
+                        "start": 0.96,
+                        "end": 1.35,
+                        "startOffset": 22,
+                        "endOffset": 30
+                    },
+                    {
+                        "word": "boy",
+                        "start": 1.35,
+                        "end": 1.65,
+                        "startOffset": 31,
+                        "endOffset": 34
+                    },
+                    {
+                        "word": "who",
+                        "start": 1.68,
+                        "end": 1.74,
+                        "startOffset": 35,
+                        "endOffset": 38
+                    },
+                    {
+                        "word": "used",
+                        "start": 1.74,
+                        "end": 1.98,
+                        "startOffset": 39,
+                        "endOffset": 43
+                    },
+                    {
+                        "word": "to",
+                        "start": 1.98,
+                        "end": 2.04,
+                        "startOffset": 44,
+                        "endOffset": 46
+                    },
+                    {
+                        "word": "watch",
+                        "start": 2.04,
+                        "end": 2.28,
+                        "startOffset": 47,
+                        "endOffset": 52
+                    },
+                    {
+                        "word": "his",
+                        "start": 2.28,
+                        "end": 2.4,
+                        "startOffset": 53,
+                        "endOffset": 56
+                    },
+                    {
+                        "word": "flocks",
+                        "start": 2.4,
+                        "end": 2.76,
+                        "startOffset": 57,
+                        "endOffset": 63
+                    },
+                    {
+                        "word": "in",
+                        "start": 2.76,
+                        "end": 2.85,
+                        "startOffset": 64,
+                        "endOffset": 66
+                    },
+                    {
+                        "word": "the",
+                        "start": 2.85,
+                        "end": 2.91,
+                        "startOffset": 67,
+                        "endOffset": 70
+                    },
+                    {
+                        "word": "fields",
+                        "start": 2.91,
+                        "end": 3.33,
+                        "startOffset": 71,
+                        "endOffset": 77
+                    },
+                    {
+                        "word": "next",
+                        "start": 3.36,
+                        "end": 3.57,
+                        "startOffset": 78,
+                        "endOffset": 82
+                    },
+                    {
+                        "word": "to",
+                        "start": 3.57,
+                        "end": 3.66,
+                        "startOffset": 83,
+                        "endOffset": 85
+                    },
+                    {
+                        "word": "a",
+                        "start": 3.66,
+                        "end": 3.69,
+                        "startOffset": 86,
+                        "endOffset": 87
+                    },
+                    {
+                        "word": "dark",
+                        "start": 3.69,
+                        "end": 3.96,
+                        "startOffset": 88,
+                        "endOffset": 92
+                    },
+                    {
+                        "word": "forest",
+                        "start": 3.96,
+                        "end": 4.35,
+                        "startOffset": 93,
+                        "endOffset": 99
+                    },
+                    {
+                        "word": "near",
+                        "start": 4.35,
+                        "end": 4.5,
+                        "startOffset": 100,
+                        "endOffset": 104
+                    },
+                    {
+                        "word": "the",
+                        "start": 4.5,
+                        "end": 4.59,
+                        "startOffset": 105,
+                        "endOffset": 108
+                    },
+                    {
+                        "word": "foot",
+                        "start": 4.59,
+                        "end": 4.74,
+                        "startOffset": 109,
+                        "endOffset": 113
+                    },
+                    {
+                        "word": "of",
+                        "start": 4.74,
+                        "end": 4.83,
+                        "startOffset": 114,
+                        "endOffset": 116
+                    },
+                    {
+                        "word": "a",
+                        "start": 4.83,
+                        "end": 4.86,
+                        "startOffset": 117,
+                        "endOffset": 118
+                    },
+                    {
+                        "word": "mountain.",
+                        "start": 4.86,
+                        "end": 5.19,
+                        "startOffset": 119,
+                        "endOffset": 128
+                    }
+                ],
+                "sig": "kYIK8wmjN6YEC027"
+            }
+        ],
+        "realign_finished": true,
+        "rematch_finished": true,
+        "diarization_finished": true,
+        "rematch_cutoff_time": null,
+        "annotations": [],
+        "topic_matches": [],
+        "allow_topics": false,
+        "topics": [],
+        "topic_status": null,
+        "audio_url": "https://speech-prod.s3.us-west-2.amazonaws.com/u870396/22HCZYGULYAHKXQ2.mp3?response-content-disposition=attachment%3B%20filename%3D%22Note.mp3%22&AWSAccessKeyId=ASIA5XW35FGZKJ5QWJJO&Signature=sVnV6AQ6dEoELlekxA87%2FERwx0c%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEB0aCXVzLXdlc3QtMiJHMEUCIDwiKMJI2kfkUA03ycfrGxmj5SH9t3RtdDgEW%2B2u3wm9AiEArkMJqc1TGt4eRWVyPcscN5EeeqH%2BsB4BGou4CJMMbvgqvAUI9v%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAEGgw5NDQyODAyNTA4MDIiDA6Yxxan4bnfENRILiqQBV5%2FE7mqtum%2FJ%2BPNEHyEh5x9PzViZYuS4hWTlvOkXGpYAvNxHAECJm3Ti%2Fz1tQadP8SDyn1%2FnKKrTs7NnS7P3LLRObzMas35Nu0%2BrDNd%2FmVEyN3aT2gM%2FgFx73S3mCQI6LVylko%2FWMucZq8DFXW2P0iAsImO4Uj0YYZp%2BZTGaH21v9D8K7KIYiqe3v%2BnwLHEuyuILdAOSXNwOyUO9KJp0WZKScl4A2gNok3u0X1tcnIG8W6CKDpBmbgzYWPs4gYszSHHcUgJopAUQOTqj0L64YwEMlmr39V6nNWvFHTasr5uTXpLbaHjxQSdwAHRfebTn6dFJC1xH9MNQeVlndQKV6XDID8PZUKIwYNR3wEuxy4UlPMOKdJfjOoqfqGSlsrMAmvTOFW%2BPrHzkk%2BiJfaL3%2FJF3yC4dZ7OByL%2FsOa5dyEdJq38b8om%2B95DifOkc%2BupiHy8atXfiKWfVDQrwbicaEcgiKOPAxMyc7VgKXaa3dfmm4Jd03r5CPGSvD5ny8g2Mij1fiigk7YqYxivSciBG9ylO3%2F9ka8F9UfTpvxgEPPRZZ%2BsfP94jNAkxTHxqb5gFYscnZAOEYHvFzk67KbBo9U1JIEaoYajPbprVlgAYPZAWsSXNizFpUs247eePvr0KwfuJKAvkS1f%2BQZf%2BOV4tZNrJkn9g9Ci70Y37WwlL2KaU10ozJdpyKepfvd8rOSZ461KnLD9vx4hOhKj5cIJ%2Bs7sKxDYH6h04VVxLbdQGGK%2B09a9vF1BzcnHkrjyWDNUc29j7FGPslJtlExIkWOxFO8c9npgHxJ%2Fm52%2F44kFxEALR7cZh5HaUXv%2B6JH6ERGqQmvoTO5Cv24O6u2EJvs80c5rGPC0ux0oZpttl%2Fazw4luMMe0lbUGOrEBTz8cYTyKP2nR6KbXGAsLF8wy7I7Daf4j4LhbgtpOGJbzCSW7sUwzbinvTYniJTNpHKiFTHYVgQuS23Tp5xpbeEvEEsmn%2B%2FDAG4RN62ZsziHCtvk47QUE5u%2FuFaeNxzJQvUdDdZMWbFEqFKlXiL3ubM8Ql3TO4SJl9jcvjPh1cicxLdAJk7vd37kETElWb4tZPEdFqCanQLy4XeWFsjCBkiUO6w%2FdzTa%2F1YITEqtCVDjV&Expires=1722288955",
+        "show_live_summary": true
+    }
+}
