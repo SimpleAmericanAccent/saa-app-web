@@ -34,7 +34,7 @@ let issueObj = {
 let activeWord = 0; // index of the word currently being spoken
 
 const speechOptions = [1, 2, 3];
-let speechIndex = speechOptions[0];
+let speechIndex = speechOptions[2];
 
 const audioURLSelected = `./audio/audio${speechIndex}.mp3`;
 const transcriptSelected = speech1.speech.transcripts;
