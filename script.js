@@ -1,6 +1,7 @@
 //// import json files (transcripts including alignment data)
 //// this async method is working better for me than the import method
 let speech3;
+let annotationsLoaded;
 await fetch("./JSON/speech3.json")
   .then((response) => response.json())
   .then((json) => (speech3 = json));
@@ -11,6 +12,7 @@ const audioSource = document.getElementById("audioSource");
 const transcriptDiv = document.getElementById("transcript");
 const toolTip = document.getElementById("toolTip");
 const saveBtn = document.getElementById("save");
+const loadBtn = document.getElementById("load");
 
 //// variable declarations
 
@@ -101,6 +103,9 @@ transcriptSelected.forEach((tranData) => {
 
 //// event listeners
 
+saveBtn.addEventListener("click", saveToJSON);
+loadBtn.addEventListener("click", loadFromJSON);
+
 // equivalent but runs a bit faster and more reliably than 'timeupdate'
 // the last argument is the time (ms) between calls of showCurrentWord()
 // could definitely be slowed down a bit if it becomes a performance issue
@@ -149,8 +154,6 @@ for (let i = 0; i < inProgress.notes.length; i++) {
   );
 }
 
-saveBtn.addEventListener("click", saveToJSON);
-
 function saveToJSON() {
   console.log(inProgress);
   let saveData = JSON.stringify(inProgress);
@@ -173,4 +176,23 @@ function saveToJSON() {
   element.click();
 
   document.body.removeChild(element);
+}
+
+async function loadFromJSON() {
+  await fetch("./JSON/annotations.json")
+  .then((response) => response.json())
+  .then((json) => (annotationsLoaded = json));
+  console.log(annotationsLoaded);
+  inProgress = annotationsLoaded;
+
+  for (let i = 0; i < inProgress.notes.length; i++) {
+    let s = document.querySelectorAll("span")[i];
+
+    if (inProgress.notes[i].length != 0) {
+      s.classList.add("annotated");
+    }
+    else {
+      s.classList.remove("annotated");
+    }
+  }
 }
