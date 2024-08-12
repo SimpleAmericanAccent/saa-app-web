@@ -10,6 +10,7 @@ const audioPlayer = document.getElementById("audioPlayer");
 const audioSource = document.getElementById("audioSource");
 const transcriptDiv = document.getElementById("transcript");
 const toolTip = document.getElementById("toolTip");
+const saveBtn = document.getElementById("save");
 
 //// variable declarations
 
@@ -146,4 +147,30 @@ for (let i = 0; i < inProgress.notes.length; i++) {
     },
     false
   );
+}
+
+saveBtn.addEventListener("click", saveToJSON);
+
+function saveToJSON() {
+  console.log(inProgress);
+  let saveData = JSON.stringify(inProgress);
+  console.log(saveData);
+
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(saveData));
+  element.setAttribute('download', "annotations.json");
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+// page currently refreshes after download. I tried some code to prevent refresh but it ends up stopping the download, not sure yet. leaving as comment, TBD
+
+/*   element.addEventListener('click', function(e) {
+    e.preventDefault();
+    return false;
+  }); */
+
+  element.click();
+
+  document.body.removeChild(element);
 }
