@@ -24,11 +24,11 @@ let inProgress = {
 let issueObj = {
   // an object used to convert between keypresses and pronunciation issues
   // just an idea. Not sure how many unique labels are needed / if this approach is enough
-  KeyA: "Too Brazilian",
-  KeyB: "Not Brazilian Enough",
-  KeyC: "Поссиблы Руссиан",
-  KeyD: "Lorem Ipsum",
-  KeyE: "Baa'rekde",
+  KeyA: "TH x D/flap",
+  KeyB: "dark L x U/O",
+  KeyC: "sick x seek",
+  KeyD: "stress",
+  KeyE: "R x missing R",
 };
 
 let activeWord = 0; // index of the word currently being spoken
