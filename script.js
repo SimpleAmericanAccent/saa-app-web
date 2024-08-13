@@ -32,6 +32,27 @@ let issueObj = {
   KeyC: "sick x seek",
   KeyD: "stress",
   KeyE: "R x missing R",
+  KeyF: "on, om x (c)om"
+  KeyG: "T x TCH"
+  KeyH: "in, im x (s)im"
+  KeyI: "seek x sick"
+  KeyJ: "extra vowel"
+  KeyK: "GOAT tuning"
+  KeyL: "sim x sin x sing"
+  KeyM: "grammar/vocab/word usage"
+  KeyN: "luck x lock"
+  KeyO: "S x Z"
+  KeyP: "TH x T"
+  KeyQ: "listening x reading (or BR similar word)"
+  KeyR: "missing syllable"
+  KeyS: "em, en x hein"
+  KeyT: "Y x missing Y"
+  KeyU: "bed x bad"
+  KeyV: "lock x ó"
+  KeyW: "look x Luke"
+  KeyX: "luck tuning"
+  KeyY: "T x TS"
+  KeyZ: "V x F"
 };
 
 let activeWord = 0; // index of the word currently being spoken
