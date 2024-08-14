@@ -5,6 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transcript Viewer</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      .row::after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
+      .column {
+        float: left;
+        width: 50%;
+      }
+
+      .column2 {
+        float: left;
+        width: 33.3%;
+      }
+
+      .column3 {
+        float: left;
+        width: 40%;
+      }
+
+      .column4 {
+        float: left;
+        width: 30%;
+      }
+
+      table, tr, td {
+        border: 1px solid black;
+      }
+      
       body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -18,6 +52,11 @@
         height: 160px;
         min-height: 100px;
         background-color: #ddddddee;
+      }
+      .annotation-list {
+        /* float: right; */
+        /* position: relative; */
+        background-color: #ffaa00;
       }
       .masthead-bottom {
         position: fixed;
@@ -60,14 +99,90 @@
     </style>
   </head>
   <body>
-    <div class="masthead-top">
-      <h1>Transcript Viewer</h1>
-      <audio id="audioPlayer" controls>
-        <source id="audioSource" src="" type="audio/mp3" />
-        Your browser does not support the audio element.
-      </audio>
-      <button id="save">Save</button>
-      <button id="load">Load</button>
+    <div class="masthead-top row">
+        <div class="column">
+        <h1>Transcript Viewer</h1>
+        <audio id="audioPlayer" controls>
+          <source id="audioSource" src="" type="audio/mp3" />
+          Your browser does not support the audio element.
+        </audio>
+        <button id="save">Save</button>
+        <button id="load">Load</button>
+      </div>
+      <div class="column">
+        <div class="annotation-list column3">
+          <div class="column2">
+            <li>FLEECE</li>
+            <li>KIT</li>
+            <li>DRESS</li>
+            <li>TRAP</li>
+            <li>TRAM</li>
+          </div>
+          <div class="column2">
+            <li>GOOSE</li>
+            <li>FOOT</li>
+            <li>STRUT</li>
+            <li>LOT</li>
+            <li>commA</li>
+          </div>
+          <div class="column2">
+            <li>FACE</li>
+            <li>PRICE</li>
+            <li>CHOICE</li>
+            <li>GOAT</li>
+            <li>MOUTH</li>
+          </div>
+        </div>
+        <div class="annotation-list column4">
+          <table>
+            <tr>
+              <td>P</td>
+              <td>B</td>
+              <td>T</td>
+              <td>D</td>
+              <td>K</td>
+              <td>G</td>
+            </tr>
+            <tr>
+              <td>M</td>
+              <td>N</td>
+              <td>NG</td>
+            </tr>
+            <tr>
+              <td>F</td>
+              <td>V</td>
+              <td>TH</td>
+              <td>TH</td>
+              <td>S</td>
+              <td>Z</td>
+              <td>SH</td>
+              <td>ZH</td>
+            </tr>
+            <tr>
+              <td>R</td>
+              <td>L</td>
+              <td>Y</td>
+              <td>W</td>
+            </tr>
+          </table>
+        </div>
+        <div class="annotation-list column4">
+          <table>
+            <tr>
+              <td>al</td>
+              <td>-ed</td>
+            </tr>
+            <tr>
+              <td>im/in</td>
+              <td>em/en</td>
+              <td>om/on</td>
+            </tr>
+            <tr>
+              <td>misc</td>
+            </tr>
+          </table>
+        </div>
+      </div>
     </div>
     <div class="masthead-bottom">
       <div class="toolTip" id="toolTip"></div>
