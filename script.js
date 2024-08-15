@@ -231,7 +231,6 @@ function filterAnnotations() {
   }
 }
 
-const tableElements = document.querySelector("td");
-
-tableElements.addEventListener("click", filterAnnotations);
-tableElements.innerHTML = "click me";
+document.querySelectorAll("td").forEach((tableElement) => {
+  tableElement.addEventListener("click", filterAnnotations);
+});
