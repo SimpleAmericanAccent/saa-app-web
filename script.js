@@ -217,3 +217,21 @@ async function loadFromJSON() {
     }
   }
 }
+
+function filterAnnotations() {
+  for (let i = 0; i < inProgress.notes.length; i++) {
+    let s = document.querySelectorAll("span")[i];
+
+    if (inProgress.notes[i].includes("sick x seek")) {
+      s.classList.add("annotated");
+    }
+    else {
+      s.classList.remove("annotated");
+    }
+  }
+}
+
+const tableElements = document.querySelector("td");
+
+tableElements.addEventListener("click", filterAnnotations);
+tableElements.innerHTML = "click me";
