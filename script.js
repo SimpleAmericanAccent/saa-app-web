@@ -2,9 +2,15 @@
 //// this async method is working better for me than the import method
 let speech3;
 let annotationsLoaded;
+let issues;
+
 await fetch("./JSON/speech3.json")
   .then((response) => response.json())
   .then((json) => (speech3 = json));
+
+await fetch("./JSON/issues.json")
+  .then((response) => response.json())
+  .then((json) => (issues = json));
 
 //// DOM selection and associated variables
 const audioPlayer = document.getElementById("audioPlayer");
@@ -169,7 +175,7 @@ for (let i = 0; i < inProgress.notes.length; i++) {
     (f) => {
       let ind = parseInt(s.id.slice(4));
       showAnnotations(ind);
-      console.log(inProgress.words[ind]);
+      // console.log(inProgress.words[ind]);
     },
     false
   );
@@ -218,19 +224,43 @@ async function loadFromJSON() {
   }
 }
 
-function filterAnnotations() {
+function hideAnnotations() {
+  document.querySelectorAll("span").forEach((sp) => {
+  sp.classList.remove("annotated");
+  });
+}
+
+let accentFeature;
+let accentIssues;
+let issuesSelected;
+
+function filterAnnotations(evt) {
+  hideAnnotations();
+  accentFeature = evt.currentTarget.innerHTML;
+  console.log(accentFeature);
+  if (Object.keys(issues.targets).includes(accentFeature)) {
+    issuesSelected = issues.targets[accentFeature];
+    console.log(issuesSelected);
+    console.log(issuesSelected.length);
+  }
+  else {
+    console.log("no");
+  }
   for (let i = 0; i < inProgress.notes.length; i++) {
     let s = document.querySelectorAll("span")[i];
 
-    if (inProgress.notes[i].includes("sick x seek")) {
-      s.classList.add("annotated");
-    }
-    else {
-      s.classList.remove("annotated");
+    for (let j = 0; j < issuesSelected.length; j++) {
+      if (inProgress.notes[i].includes(issuesSelected[j])) {
+        s.classList.add("annotated");
+      }
     }
   }
 }
 
+// let tableElementContent;
+
 document.querySelectorAll("td").forEach((tableElement) => {
+  // tableElementContent = tableElement.innerHTML;
   tableElement.addEventListener("click", filterAnnotations);
 });
+
