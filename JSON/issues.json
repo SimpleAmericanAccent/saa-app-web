@@ -53,6 +53,9 @@
         "J": [
             "J x D"
         ],
+        "K": [
+            "Aspirated P/T/K x Unaspirated P/T/K"
+        ],
         "KIT": [
             "sick x seek",
             "bid x bed",
@@ -90,7 +93,7 @@
         "om/on": [
             "on, om x (c)om"
         ],
-        "P, T, K": [
+        "P": [
             "Aspirated P/T/K x Unaspirated P/T/K"
         ],
         "R": [
@@ -115,7 +118,8 @@
             "T x dental T",
             "T x missing T",
             "flap T opportunity",
-            "flap T x R"
+            "flap T x R",
+            "Aspirated P/T/K x Unaspirated P/T/K"
         ],
         "TRAM": [
             "tan x ten",
