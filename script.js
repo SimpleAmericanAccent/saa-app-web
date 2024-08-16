@@ -332,12 +332,15 @@ for (let i = 0; i < Object.keys(issues.targets).length; i++) {
   listFeature.textContent = Object.keys(issues.targets)[i];
   // listFeature.addEventListener("click", adjustAnnotations);
   list.appendChild(listFeature);
+  const listFeatureUL = document.createElement("ul");
+  list.appendChild(listFeatureUL);
 
-  // for (let j = 0; j < Object.values(issues.targets)[i].length; j++) {
-  //   console.log(Object.values(issues.targets)[i][j]);
-  // }
-
-  
+  for (let j = 0; j < Object.values(issues.targets)[i].length; j++) {
+    console.log(Object.values(issues.targets)[i][j]);
+    const listIssue = document.createElement("li");
+    listIssue.textContent = Object.values(issues.targets)[i][j];
+    listFeatureUL.appendChild(listIssue);
+  }
 }
 
 
