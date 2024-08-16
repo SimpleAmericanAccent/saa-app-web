@@ -69,17 +69,25 @@
             "lock x luck",
             "lock x lack"
         ],
-        "M, N, NG": [
+        "M": [
             "sim x sin x sing",
             "M/N/NG x missing M/N/NG"
         ],
         "MOUTH": [
             "MOUTH tuning"
         ],
+        "N": [
+            "sim x sin x sing",
+            "M/N/NG x missing M/N/NG"
+        ],
         "NORTH/FORCE": [
             "four x far"
         ],
-        "on/om": [
+        "NG": [
+            "sim x sin x sing",
+            "M/N/NG x missing M/N/NG"
+        ],
+        "om/on": [
             "on, om x (c)om"
         ],
         "P, T, K": [
@@ -121,10 +129,10 @@
         "V": [
             "V x F"
         ],
-        "Voiced TH": [
+        "THv": [
             "TH x D/flap"
         ],
-        "Voiceless TH": [
+        "THu": [
             "TH x T",
             "TH x F"
         ],
