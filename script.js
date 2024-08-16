@@ -64,6 +64,7 @@ let issueObj = {
 };
 
 let activeWord = 0; // index of the word currently being spoken
+let selectedWord; // index of the word whose annotations are being edited
 
 const speechOptions = [1, 2, 3];
 let speechIndex = speechOptions[2];
@@ -134,7 +135,6 @@ transcriptSelected.forEach((tranData) => {
 
 saveBtn.addEventListener("click", saveToJSON);
 loadBtn.addEventListener("click", loadFromJSON);
-featureKIT.addEventListener("click", filterAnnotations);
 
 // equivalent but runs a bit faster and more reliably than 'timeupdate'
 // the last argument is the time (ms) between calls of showCurrentWord()
@@ -186,6 +186,8 @@ for (let i = 0; i < inProgress.notes.length; i++) {
     "contextmenu",
     (f) => {
       let ind = parseInt(s.id.slice(4));
+      console.log(ind);
+      selectedWord = ind;
       let x = f.clientX;
       let y = f.clientY;
       list.style.display = "block";
@@ -278,6 +280,66 @@ function filterAnnotations(evt) {
     }
   }
 }
+
+// function adjustAnnotations(evt) {
+//   accentFeature = evt.currentTarget.innerHTML;
+//   console.log(accentFeature);
+//   if (Object.keys(issues.targets).includes(accentFeature)) {
+//     issuesSelected = issues.targets[accentFeature];
+//     console.log(issuesSelected);
+//     console.log(issuesSelected.length);
+//   }
+//   else {
+//     console.log("no");
+//   }
+//   for (let i = 0; i < inProgress.notes.length; i++) {
+//     let s = document.querySelectorAll("span")[i];
+
+//     for (let j = 0; j < issuesSelected.length; j++) {
+//       if (inProgress.notes[i].includes(issuesSelected[j])) {
+//         s.classList.add("annotated");
+//       }
+//     }
+//   }
+// }
+
+// document.addEventListener("keydown", (e) => {
+//   let hov = document.querySelector("span:hover");
+//   if (hov) {
+//     hov.classList.add("annotated");
+//     let code = e.code;
+//     let ind = parseInt(hov.id.slice(4));
+//     let notes = inProgress.notes[ind];
+//     if (Object.keys(issueObj).includes(code)) {
+//       code = issueObj[code];
+//     }
+//     if (notes.includes(code)) {
+//       notes.splice(notes.indexOf(code), 1);
+//       if (notes.length == 0) {
+//         hov.classList.remove("annotated");
+//       }
+//     } else {
+//       notes.push(code);
+//     }
+//     showAnnotations(ind);
+//   }
+// });
+
+
+for (let i = 0; i < Object.keys(issues.targets).length; i++) {
+  console.log(Object.keys(issues.targets)[i]);
+  const listFeature = document.createElement("li");
+  listFeature.textContent = Object.keys(issues.targets)[i];
+  // listFeature.addEventListener("click", adjustAnnotations);
+  list.appendChild(listFeature);
+
+  // for (let j = 0; j < Object.values(issues.targets)[i].length; j++) {
+  //   console.log(Object.values(issues.targets)[i][j]);
+  // }
+
+  
+}
+
 
 // let tableElementContent;
 
