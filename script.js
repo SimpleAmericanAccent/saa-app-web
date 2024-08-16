@@ -20,6 +20,7 @@ const toolTip = document.getElementById("toolTip");
 const saveBtn = document.getElementById("save");
 const loadBtn = document.getElementById("load");
 const list = document.getElementById("list");
+const featureKIT = document.getElementById("KIT");
 
 //// variable declarations
 
@@ -133,6 +134,7 @@ transcriptSelected.forEach((tranData) => {
 
 saveBtn.addEventListener("click", saveToJSON);
 loadBtn.addEventListener("click", loadFromJSON);
+featureKIT.addEventListener("click", filterAnnotations);
 
 // equivalent but runs a bit faster and more reliably than 'timeupdate'
 // the last argument is the time (ms) between calls of showCurrentWord()
