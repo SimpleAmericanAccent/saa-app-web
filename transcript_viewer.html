@@ -110,6 +110,17 @@
       .transcript .active {
         background-color: #aa00aaaa;
       }
+      .list {
+        display: none;
+        /* width: 100px; */
+        position: absolute;
+        background-color: #ffaa00;
+        padding: 0;
+        margin: 0;
+        border: solid;
+        list-style: none;
+      }
+
     </style>
   </head>
   <body>
@@ -235,11 +246,15 @@
     </div>
     <div class="masthead-bottom">
       <div class="toolTip" id="toolTip"></div>
-    </div>
 
+    </div>
     <div class="transcript" id="transcript">
       <!-- Transcript will be inserted here -->
     </div>
+
+    <ul class="list" id="list">
+      <li>testing</li>
+    </ul>
 
     <!--<script src="app.js" type="module"></script>-->
     <script src="script.js" type="module"></script>

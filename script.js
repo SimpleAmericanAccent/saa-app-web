@@ -19,6 +19,7 @@ const transcriptDiv = document.getElementById("transcript");
 const toolTip = document.getElementById("toolTip");
 const saveBtn = document.getElementById("save");
 const loadBtn = document.getElementById("load");
+const list = document.getElementById("list");
 
 //// variable declarations
 
@@ -179,7 +180,26 @@ for (let i = 0; i < inProgress.notes.length; i++) {
     },
     false
   );
+  s.addEventListener(
+    "contextmenu",
+    (f) => {
+      let ind = parseInt(s.id.slice(4));
+      let x = f.clientX;
+      let y = f.clientY;
+      list.style.display = "block";
+      list.style.top = y + "px";
+      list.style.left = x + "px";
+      document.addEventListener("click", onClickOutside);
+      f.preventDefault();
+    },
+    false
+  );
 }
+
+const onClickOutside = (event) => {
+  list.style.display = "none";
+  document.removeEventListener("click", onClickOutside);
+};
 
 function saveToJSON() {
   console.log(inProgress);
