@@ -20,7 +20,6 @@ const toolTip = document.getElementById("toolTip");
 const saveBtn = document.getElementById("save");
 const loadBtn = document.getElementById("load");
 const list = document.getElementById("list");
-const featureKIT = document.getElementById("KIT");
 
 //// variable declarations
 
@@ -257,6 +256,7 @@ function hideAnnotations() {
 let accentFeature;
 let accentIssues;
 let issuesSelected;
+let issueSelected;
 
 function filterAnnotations(evt) {
   hideAnnotations();
@@ -281,56 +281,38 @@ function filterAnnotations(evt) {
   }
 }
 
-// function adjustAnnotations(evt) {
-//   accentFeature = evt.currentTarget.innerHTML;
-//   console.log(accentFeature);
-//   if (Object.keys(issues.targets).includes(accentFeature)) {
-//     issuesSelected = issues.targets[accentFeature];
-//     console.log(issuesSelected);
-//     console.log(issuesSelected.length);
-//   }
-//   else {
-//     console.log("no");
-//   }
-//   for (let i = 0; i < inProgress.notes.length; i++) {
-//     let s = document.querySelectorAll("span")[i];
+function adjustAnnotations(evt) {
+  issueSelected = evt.currentTarget.innerHTML;
+  let s = document.querySelectorAll("span")[selectedWord];
 
-//     for (let j = 0; j < issuesSelected.length; j++) {
-//       if (inProgress.notes[i].includes(issuesSelected[j])) {
-//         s.classList.add("annotated");
-//       }
-//     }
-//   }
-// }
+  let notes = inProgress.notes[selectedWord];
 
-// document.addEventListener("keydown", (e) => {
-//   let hov = document.querySelector("span:hover");
-//   if (hov) {
-//     hov.classList.add("annotated");
-//     let code = e.code;
-//     let ind = parseInt(hov.id.slice(4));
-//     let notes = inProgress.notes[ind];
-//     if (Object.keys(issueObj).includes(code)) {
-//       code = issueObj[code];
-//     }
-//     if (notes.includes(code)) {
-//       notes.splice(notes.indexOf(code), 1);
-//       if (notes.length == 0) {
-//         hov.classList.remove("annotated");
-//       }
-//     } else {
-//       notes.push(code);
-//     }
-//     showAnnotations(ind);
-//   }
-// });
+  s.classList.add("annotated");
+
+  console.log(issueSelected);
+  console.log(selectedWord);
+  console.log(inProgress.words[selectedWord]);
+  console.log(notes);
+
+  if (notes.includes(issueSelected)) {
+    console.log("already included");
+    notes.splice(notes.indexOf(issueSelected), 1);
+    if (notes.length == 0) {
+      s.classList.remove("annotated");
+    }
+  }
+  else {
+    console.log("not already included");
+    notes.push(issueSelected);
+  }
+  showAnnotations(selectedWord);
+}
 
 
 for (let i = 0; i < Object.keys(issues.targets).length; i++) {
   console.log(Object.keys(issues.targets)[i]);
   const listFeature = document.createElement("li");
   listFeature.textContent = Object.keys(issues.targets)[i];
-  // listFeature.addEventListener("click", adjustAnnotations);
   list.appendChild(listFeature);
   const listFeatureUL = document.createElement("ul");
   list.appendChild(listFeatureUL);
@@ -339,6 +321,7 @@ for (let i = 0; i < Object.keys(issues.targets).length; i++) {
     console.log(Object.values(issues.targets)[i][j]);
     const listIssue = document.createElement("li");
     listIssue.textContent = Object.values(issues.targets)[i][j];
+    listIssue.addEventListener("click", adjustAnnotations);
     listFeatureUL.appendChild(listIssue);
   }
 }
