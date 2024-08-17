@@ -21,6 +21,7 @@ const saveBtn = document.getElementById("save");
 const loadBtn = document.getElementById("load");
 const list = document.getElementById("list");
 const playbackSpeed = document.getElementById("playbackSpeed");
+let submenu;
 
 //// variable declarations
 
@@ -32,36 +33,36 @@ let inProgress = {
   notes: [],
 };
 
-let issueObj = {
-  // an object used to convert between keypresses and pronunciation issues
-  // just an idea. Not sure how many unique labels are needed / if this approach is enough
-  KeyA: "TH x D/flap",
-  KeyB: "dark L x U/O",
-  KeyC: "sick x seek",
-  KeyD: "stress",
-  KeyE: "R x missing R",
-  KeyF: "on, om x (c)om",
-  KeyG: "T x TCH",
-  KeyH: "in, im x (s)im",
-  KeyI: "seek x sick",
-  KeyJ: "extra vowel",
-  KeyK: "GOAT tuning",
-  KeyL: "sim x sin x sing",
-  KeyM: "grammar/vocab/word usage",
-  KeyN: "luck x lock",
-  KeyO: "S x Z",
-  KeyP: "TH x T",
-  KeyQ: "listening x reading (or BR similar word)",
-  KeyR: "missing syllable",
-  KeyS: "em, en x hein",
-  KeyT: "Y x missing Y",
-  KeyU: "bed x bad",
-  KeyV: "lock x ó",
-  KeyW: "look x Luke",
-  KeyX: "luck tuning",
-  KeyY: "T x TS",
-  KeyZ: "V x F"
-};
+// let issueObj = {
+//   // an object used to convert between keypresses and pronunciation issues
+//   // just an idea. Not sure how many unique labels are needed / if this approach is enough
+//   KeyA: "TH x D/flap",
+//   KeyB: "dark L x U/O",
+//   KeyC: "sick x seek",
+//   KeyD: "stress",
+//   KeyE: "R x missing R",
+//   KeyF: "on, om x (c)om",
+//   KeyG: "T x TCH",
+//   KeyH: "in, im x (s)im",
+//   KeyI: "seek x sick",
+//   KeyJ: "extra vowel",
+//   KeyK: "GOAT tuning",
+//   KeyL: "sim x sin x sing",
+//   KeyM: "grammar/vocab/word usage",
+//   KeyN: "luck x lock",
+//   KeyO: "S x Z",
+//   KeyP: "TH x T",
+//   KeyQ: "listening x reading (or BR similar word)",
+//   KeyR: "missing syllable",
+//   KeyS: "em, en x hein",
+//   KeyT: "Y x missing Y",
+//   KeyU: "bed x bad",
+//   KeyV: "lock x ó",
+//   KeyW: "look x Luke",
+//   KeyX: "luck tuning",
+//   KeyY: "T x TS",
+//   KeyZ: "V x F"
+// };
 
 let activeWord = 0; // index of the word currently being spoken
 let selectedWord; // index of the word whose annotations are being edited
@@ -236,7 +237,7 @@ for (let i = 0; i < inProgress.notes.length; i++) {
     "contextmenu",
     (f) => {
       let ind = parseInt(s.id.slice(4));
-      console.log(ind);
+      // console.log(ind);
       selectedWord = ind;
       let x = f.clientX;
       let y = f.clientY;
@@ -244,7 +245,33 @@ for (let i = 0; i < inProgress.notes.length; i++) {
       // list.style.top = y + "px";
       list.style.top = "0px";
       list.style.left = x + "px";
+
+
+
+
+      //prevent page overflow
+      let winWidth = window.innerWidth;
+      let winHeight = window.innerHeight;
+      let menuWidth = list.offsetWidth;
+      let menuHeight = list.offsetHeight;
+      let secMargin = 20;
+
+      // console.log(winWidth);
+      // console.log(winHeight);
+      // console.log(menuWidth);
+      // console.log(menuHeight);
+      // console.log(secMargin);
+
+      if (x + menuWidth > winWidth) {
+        list.style.left = winWidth - menuWidth - secMargin + "px";
+      }
+
+      // if (y + menuHeight > winHeight) {
+      //   list.style.top = winHeight - menuHeight - secMargin + "px";
+      // }
+      
       document.addEventListener("click", onClickOutside);
+      // console.log(submenu[0]);
       f.preventDefault();
     },
     false
@@ -268,7 +295,7 @@ function saveToJSON() {
   element.style.display = 'none';
   document.body.appendChild(element);
 
-// page currently refreshes after download. I tried some code to prevent refresh but it ends up stopping the download, not sure yet. leaving as comment, TBD
+// page currently refreshes after save. I tried some code to prevent refresh but it ends up stopping the download, not sure yet. leaving as comment, TBD
 
 /*   element.addEventListener('click', function(e) {
     e.preventDefault();
@@ -309,6 +336,7 @@ let accentFeature;
 let accentIssues;
 let issuesSelected;
 let issueSelected;
+let featureSelected;
 
 function filterAnnotations(evt) {
   hideAnnotations();
@@ -360,23 +388,92 @@ function adjustAnnotations(evt) {
   showAnnotations(selectedWord);
 }
 
+function moveContextSubmenu(evt) {
+  featureSelected = evt.currentTarget;
+  // let n = submenu.length;
+  // console.log(featureSelected.offsetTop);
+  // console.log(featureSelected.offsetLeft);
+  // console.log(featureSelected.right);
+  // console.log(featureSelected.bottom);
+  // console.log(featureSelected.offsetWidth);
+
+  // console.log(featureSelected);
+  // console.log(featureSelected.children[0]);
+
+  featureSelected.children[0].style.top = featureSelected.offsetTop + "px";
+  featureSelected.children[0].style.left = featureSelected.offsetWidth + "px";
+
+  // console.log(submenu.length);
+  // console.log(submenu[1]);
+
+
+  let x = evt.clientX;
+  let y = evt.clientY;
+  // list.style.display = "block";
+  // // list.style.top = y + "px";
+  // list.style.top = "0px";
+  // list.style.left = x + "px";
+
+
+
+
+  //prevent page overflow
+  let winWidth = window.innerWidth;
+  let winHeight = window.innerHeight;
+  let secMargin = 20;
+  let menuRect = featureSelected.getBoundingClientRect();
+  let submenuRect = featureSelected.children[0].getBoundingClientRect();
+
+  if (submenuRect.x + submenuRect.width > winWidth) {
+    featureSelected.children[0].style.left = -submenuRect.width + "px";
+  }
+
+  if (submenuRect.y + submenuRect.height > winHeight) {
+    featureSelected.children[0].style.top = winHeight - submenuRect.height + "px";
+  }
+
+  // console.log(winWidth);
+  // console.log(winHeight);
+  // console.log(secMargin);
+
+  // if (x + menuWidth > winWidth) {
+  //   list.style.left = winWidth - menuWidth - secMargin + "px";
+  // }
+
+  // if (y + menuHeight > winHeight) {
+  //   list.style.top = winHeight - menuHeight - secMargin + "px";
+  // }
+
+
+
+
+
+
+}
+
+
+
 
 for (let i = 0; i < Object.keys(issues.targets).length; i++) {
-  console.log(Object.keys(issues.targets)[i]);
+  // console.log(Object.keys(issues.targets)[i]);
   const listFeature = document.createElement("li");
   listFeature.textContent = Object.keys(issues.targets)[i];
+  listFeature.addEventListener("mouseover", moveContextSubmenu);
   list.appendChild(listFeature);
   const listFeatureUL = document.createElement("ul");
-  list.appendChild(listFeatureUL);
+  listFeatureUL.classList.add("submenu");
+  listFeature.appendChild(listFeatureUL);
 
   for (let j = 0; j < Object.values(issues.targets)[i].length; j++) {
-    console.log(Object.values(issues.targets)[i][j]);
+    // console.log(Object.values(issues.targets)[i][j]);
     const listIssue = document.createElement("li");
     listIssue.textContent = Object.values(issues.targets)[i][j];
     listIssue.addEventListener("click", adjustAnnotations);
     listFeatureUL.appendChild(listIssue);
   }
 }
+
+submenu = document.querySelectorAll(".submenu");
 
 
 // let tableElementContent;
