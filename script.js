@@ -20,6 +20,7 @@ const toolTip = document.getElementById("toolTip");
 const saveBtn = document.getElementById("save");
 const loadBtn = document.getElementById("load");
 const list = document.getElementById("list");
+const playbackSpeed = document.getElementById("playbackSpeed");
 
 //// variable declarations
 
@@ -142,27 +143,77 @@ setInterval(function () {
   showCurrentWord();
 }, 30);
 
+let playbackObj = {
+  // separate out certain keys for audio playback control
+  ArrowLeft: function () {
+    // audioPlayer.pause();
+    // console.log(audioPlayer.paused);
+    // console.log('left');
+    audioPlayer.currentTime = audioPlayer.currentTime - 1;
+  },
+  ArrowRight: function () {
+    // audioPlayer.pause();
+    // console.log(audioPlayer.paused);
+    // console.log('left');
+    audioPlayer.currentTime = audioPlayer.currentTime + 1;
+  },
+  Space: function (evt) {
+    evt.preventDefault();
+    // console.log(audioPlayer.paused);
+    // console.log('space');
+    // console.log(audioPlayer.currentTime);
+
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+    }
+    else {
+      audioPlayer.pause();
+    }
+  },
+  Comma: function () {
+    // audioPlayer.pause();
+    // console.log(audioPlayer.paused);
+    // console.log('left');
+    audioPlayer.playbackRate = audioPlayer.playbackRate - 0.1;
+    playbackSpeed.innerHTML = "Playback speed is " + audioPlayer.playbackRate.toFixed(1);
+  },
+  Period: function () {
+    // audioPlayer.pause();
+    // console.log(audioPlayer.paused);
+    // console.log('left');
+    audioPlayer.playbackRate = audioPlayer.playbackRate + 0.1;
+    playbackSpeed.innerHTML = "Playback speed is " + audioPlayer.playbackRate.toFixed(1);
+  }
+};
+
 // detects hotkey-entered annotations for highlighted span
 // see issueObj for conversions
 document.addEventListener("keydown", (e) => {
   let hov = document.querySelector("span:hover");
-  if (hov) {
-    hov.classList.add("annotated");
-    let code = e.code;
-    let ind = parseInt(hov.id.slice(4));
-    let notes = inProgress.notes[ind];
-    if (Object.keys(issueObj).includes(code)) {
-      code = issueObj[code];
-    }
-    if (notes.includes(code)) {
-      notes.splice(notes.indexOf(code), 1);
-      if (notes.length == 0) {
-        hov.classList.remove("annotated");
+  let code = e.code;
+  if (Object.keys(playbackObj).includes(code)) {
+    // console.log("playback control keydown has been recognized");
+    // console.log(audioPlayer.paused);
+    playbackObj[code](e);
+  }
+  else {
+    if (hov) {
+      hov.classList.add("annotated");
+      let ind = parseInt(hov.id.slice(4));
+      let notes = inProgress.notes[ind];
+      if (Object.keys(issueObj).includes(code)) {
+        code = issueObj[code];
       }
-    } else {
-      notes.push(code);
+      if (notes.includes(code)) {
+        notes.splice(notes.indexOf(code), 1);
+        if (notes.length == 0) {
+          hov.classList.remove("annotated");
+        }
+      } else {
+        notes.push(code);
+      }
+      showAnnotations(ind);
     }
-    showAnnotations(ind);
   }
 });
 
