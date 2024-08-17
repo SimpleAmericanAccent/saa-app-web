@@ -134,6 +134,12 @@
         color: white;
       }
 
+      #playbackSpeed {
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+
     </style>
   </head>
   <body>
@@ -144,6 +150,7 @@
           <source id="audioSource" src="" type="audio/mp3" />
           Your browser does not support the audio element.
         </audio>
+        <div id="playbackSpeed"></div>
         <button id="save">Save</button>
         <button id="load">Load</button>
       </div>
