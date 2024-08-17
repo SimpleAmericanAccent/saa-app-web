@@ -8,7 +8,7 @@ await fetch("./JSON/speech3.json")
   .then((response) => response.json())
   .then((json) => (speech3 = json));
 
-await fetch("./JSON/issues.json")
+await fetch("./JSON/issues2.json")
   .then((response) => response.json())
   .then((json) => (issues = json));
 
@@ -190,7 +190,8 @@ for (let i = 0; i < inProgress.notes.length; i++) {
       let x = f.clientX;
       let y = f.clientY;
       list.style.display = "block";
-      list.style.top = y + "px";
+      // list.style.top = y + "px";
+      list.style.top = "0px";
       list.style.left = x + "px";
       document.addEventListener("click", onClickOutside);
       f.preventDefault();
