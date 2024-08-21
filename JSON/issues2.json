@@ -4,7 +4,9 @@
             "seek x sick",
             "FLEECE tuning",
             "seek x é",
-            "seek x schwa"
+            "seek x schwa",
+            "happY x missing happY",
+            "happY as FLEECE x happY as KIT"
         ],
         "KIT": [
             "sick x seek",
@@ -97,7 +99,8 @@
             "D x missing D",
             "D x flap",
             "D x J",
-            "D x T"
+            "D x T",
+            "flap D x hard D"
         ],
 
         "K": [
@@ -119,7 +122,8 @@
         
         "NG": [
             "sim x sin x sing",
-            "M/N/NG x missing M/N/NG"
+            "M/N/NG x missing M/N/NG",
+            "NG audible release x NG no audible release"
         ],
         
 
@@ -141,6 +145,9 @@
         ],
 
 
+        "CH": [
+            "CH x SH"
+        ],
         "J": [
             "J x D"
         ],
@@ -191,22 +198,29 @@
 
         "misc": [
             "stress",
-            "extra vowel",
-            "grammar/vocab/word usage",
-            "listening x reading (or BR similar word)",
-            "missing syllable",
-            "missing vowel",
-            "happY x missing happY",
-            "wrong vowel",
-            "?",
-            "word x ward",
-            "KS x S",
             "mistranslated",
             "rhythm",
+            "grammar/vocab/word usage",
+            "listening x reading (or BR similar word)",
+
+
+            "missing syllable",
+            "missing vowel",
+            "extra vowel",
+            
+
+            "wrong vowel",
             "vowel x nasal vowel",
+
+    
+            "?",
+
             "bulls x balls",
-            "extra Y (you x, ooh)",
-            "or x ower"
+            "word x ward",
+            "or x ower",
+
+            "KS x S",
+            "extra Y (you x, ooh)"
         ]
     }
 }
