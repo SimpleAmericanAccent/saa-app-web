@@ -1,4 +1,4 @@
-A place to build custom tools for Simple American Accent.
+A place to build custom tools/software for Simple American Accent.
 
 May include tools for internal use by Will or other accent coaches e.g. for documenting accent feedback more effectively and efficiently...
 
