@@ -326,6 +326,8 @@ async function loadFromJSON() {
   }
 }
 
+loadFromJSON();
+
 function hideAnnotations() {
   document.querySelectorAll("span").forEach((sp) => {
   sp.classList.remove("annotated");
