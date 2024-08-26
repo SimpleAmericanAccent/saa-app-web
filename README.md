@@ -1,3 +1,5 @@
+Currently auto-deploys from main to Render at this URL: https://saa-h6zg.onrender.com/
+
 A place to build custom tools/software for Simple American Accent.
 
 May include tools for internal use by Will or other accent coaches e.g. for documenting accent feedback more effectively and efficiently...
