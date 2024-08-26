@@ -1,0 +1,12 @@
+{
+  "name": "saa",
+  "version": "1.0.0",
+  "description": "Simple American Accent accent software",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --watch --env-file=.env index.js"
+  },
+  "author": "Will Rosenberg",
+  "license": "UNLICENSED"
+}
