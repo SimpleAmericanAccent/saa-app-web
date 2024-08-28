@@ -329,10 +329,10 @@ async function loadFromJSON() {
 let people;
 
 async function getPeople() {
-  await fetch("/api")
+  await fetch("/api/People")
   .then((response) => response.json())
   .then((json) => (people = json));
-  
+
   console.log(people);
 
   for (let i =0; i < people.records.length; i++) {
