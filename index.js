@@ -16,12 +16,22 @@ const API_KEY_NAME = process.env.API_KEY_NAME;
 const API_KEY_VALUE = process.env.API_KEY_VALUE;
 
 const server = http.createServer(async (req, res) => {
+    // console.log(path.parse(req.url));
+    // console.log(path.parse(req.url).root);
+    // console.log(path.parse(req.url).dir);
+    // console.log(path.parse(req.url).base);
+    // console.log(path.parse(req.url).ext);
+    // console.log(path.parse(req.url).name);
+    // console.log(req.url.split('/'));
+    // console.log(req.url.split('/')[1]);
+    // console.log(req.url);
+    
     try {
         // Check if GET request
         if (req.method === 'GET') {
             let filePath;
             let fileContentType;
-            if (req.url !== '/api') {    
+            if (req.url.split('/')[1] !== 'api') {    
                 if (req.url === '/') {
                     filePath = path.join(__dirname, 'public', 'index.html');
                     fileContentType = 'text/html';
@@ -59,16 +69,33 @@ const server = http.createServer(async (req, res) => {
                 res.write(data);
                 res.end();
             }
-            else if (req.url === '/api') {
+            else if (req.url.split('/')[1] === 'api') {
 
-                // make request to airtable api (TBD)
-                // TBD - need to figure out how to do this
+                // make request to airtable api
+
+                let pathSegments = req.url.split('/');
+                let pathSegmentsFirst = pathSegments[1];
+                let pathSegmentsExceptFirst = pathSegments.slice(2,pathSegments.length);
+                let pathMinusFirstSegment = path.join.apply(null, pathSegmentsExceptFirst).replace('\\','/');
+
+                // Uncomment if you want to troubleshoot types
+                // console.log(pathSegments.constructor == Array);
+                // console.log(typeof pathSegmentsFirst);
+                // console.log(pathSegmentsExceptFirst.constructor == Array);
+                // console.log(typeof pathMinusFirstSegment);
+
+                // Uncomment for troubleshooting
+                // console.log("pathSegments: " + pathSegments);
+                // console.log("pathSegmentsFirst: " + pathSegmentsFirst);
+                // console.log("pathSegmentsExceptFirst: " + pathSegmentsExceptFirst);
+                // console.log("pathMinusFirstSegment: "+pathMinusFirstSegment);
+
 
                 const postData = '';
 
                 const options = {
                     hostname: 'api.airtable.com',
-                    path: '/v0/app7v05YMhvA8hpEY/tblhIVhLe7Yhke7Xy',
+                    path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
                     method: 'GET',
                     headers: {
                         // 'Content-Type': 'text/plain',
@@ -80,16 +107,16 @@ const server = http.createServer(async (req, res) => {
                 // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
 
                 const req2 = https.request(options, (res2) => {
-                    console.log(`STATUS: ${res2.statusCode}`);
-                    console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
+                    // console.log(`STATUS: ${res2.statusCode}`);
+                    // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
                     res2.setEncoding('utf8');
                     res.setHeader('Content-Type', 'application/json');
                     res2.on('data', (chunk) => {
                         res.write(chunk);
-                        console.log(`BODY: ${chunk}`);
+                        // console.log(`BODY: ${chunk}`);
                     });
                     res2.on('end', () => {
-                        console.log('No more data in response.');
+                        // console.log('No more data in response.');
                         res.end();
                     });
                 });
