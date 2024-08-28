@@ -36,6 +36,8 @@
       }
 
       .columnleftmastheadtop {
+        /* display: block;
+        clear: both; */
         float: left;
         width: 450px;
       }
@@ -174,12 +176,18 @@
         left: 0;
       }
 
+      #peopleSelect {
+        display: block;
+      }
+
     </style>
   </head>
   <body>
-    <div class="masthead-top row">
+    <div class="masthead-top">
         <div class="columnleftmastheadtop">
         <h1>Transcript Viewer</h1>
+        <select id="peopleSelect"></select>
+        <select id="audioSelect"></select>
         <audio id="audioPlayer" controls>
           <source id="audioSource" src="" type="audio/mp3" />
           Your browser does not support the audio element.

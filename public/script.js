@@ -21,6 +21,8 @@ const saveBtn = document.getElementById("save");
 const loadBtn = document.getElementById("load");
 const list = document.getElementById("list");
 const playbackSpeed = document.getElementById("playbackSpeed");
+const peopleSelect = document.getElementById("peopleSelect");
+const audioSelect = document.getElementById("audioSelect");
 let submenu;
 
 //// variable declarations
@@ -311,7 +313,7 @@ async function loadFromJSON() {
   await fetch("./JSON/annotations.json")
   .then((response) => response.json())
   .then((json) => (annotationsLoaded = json));
-  console.log(annotationsLoaded);
+  // console.log(annotationsLoaded);
   inProgress = annotationsLoaded;
 
   for (let i = 0; i < inProgress.notes.length; i++) {
@@ -333,14 +335,100 @@ async function getPeople() {
   .then((response) => response.json())
   .then((json) => (people = json));
 
-  console.log(people);
+  // console.log(people);
 
   for (let i =0; i < people.records.length; i++) {
-    console.log(people.records[i].fields.Name);
+    let personName = people.records[i].fields.Name;
+    // console.log(personName);
+    const peopleSelectItem = document.createElement("option");
+    peopleSelectItem.textContent = personName;
+    peopleSelectItem.value = personName;
+    peopleSelect.appendChild(peopleSelectItem);
   }
 }
 
+peopleSelect.addEventListener("change", filterAudios);
+
+function filterAudios() {
+  // console.log(peopleSelect.value);
+  // console.log(audios);
+  let results = [];
+  audioSelect.options.length=0;
+  for (let i =0; i < audios.records.length; i++) {
+
+    // console.log(audios.records[i].fields['Speaker (from Words (instance))'].indexOf(peopleSelect.value));
+
+    if (audios.records[i].fields['Speaker (from Words (instance))'].indexOf(peopleSelect.value) !== -1) {
+      results.push(audios.records[i].id);
+      let audioName = audios.records[i].fields.Name;
+      // console.log(audioName);
+      const audioSelectItem = document.createElement("option");
+      audioSelectItem.textContent = audioName;
+      audioSelectItem.value = audios.records[i].id;
+      audioSelect.appendChild(audioSelectItem);
+    }
+    else {
+
+    }
+
+
+    // let audioName = audios.records[i].fields.Name;
+    // // console.log(audioName);
+    // const audioSelectItem = document.createElement("option");
+    // audioSelectItem.textContent = audioName;
+    // audioSelectItem.value = audios.records[i].id;
+    // audioSelect.appendChild(audioSelectItem);
+  }
+  console.log(results);
+}
+
 getPeople();
+
+let audios;
+
+async function getAudios() {
+  await fetch("/api/Audio%20Source")
+  .then ((response) => response.json())
+  .then ((json) => (audios = json));
+
+  // console.log(audios);
+  // console.log(audios.records[0].fields['Speaker (from Words (instance))']);
+
+  for (let i =0; i < audios.records.length; i++) {
+    let audioName = audios.records[i].fields.Name;
+    // console.log(audioName);
+    const audioSelectItem = document.createElement("option");
+    audioSelectItem.textContent = audioName;
+    audioSelectItem.value = audios.records[i].id;
+    audioSelect.appendChild(audioSelectItem);
+  }
+}
+
+audioSelect.addEventListener("change", getAudio);
+
+let audio;
+
+async function getAudio() {
+  await fetch(`/api/Audio%20Source/${audioSelect.value}`)
+  .then ((response) => response.json())
+  .then ((json) => (audio = json));
+
+  console.log(audio);
+  console.log(audios.records[0].fields['Speaker (from Words (instance))']);
+
+  // for (let i =0; i < audios.records.length; i++) {
+  //   let audioName = audios.records[i].fields.Name;
+  //   console.log(audioName);
+  //   const audioSelectItem = document.createElement("option");
+  //   audioSelectItem.textContent = audioName;
+  //   audioSelectItem.value = audios.records[i].id;
+  //   audioSelect.appendChild(audioSelectItem);
+  // }
+}
+
+getAudios();
+
+
 
 loadFromJSON();
 
