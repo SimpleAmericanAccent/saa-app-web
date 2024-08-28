@@ -72,9 +72,12 @@ const server = http.createServer(async (req, res) => {
                     method: 'GET',
                     headers: {
                         // 'Content-Type': 'text/plain',
-                        'Authorization': 'Bearer patH0JlhGZDanIHqR.12c2f21ecf19a1ab3d6c69444d4a19201d3732e4fdb2874a0a3965c77f5bfe5e'
+                        'Authorization': `Bearer ${API_KEY_VALUE}`
                     }
                 };
+
+                // uncomment to help diagnose authorization issue if needed:
+                // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
 
                 const req2 = https.request(options, (res2) => {
                     console.log(`STATUS: ${res2.statusCode}`);
