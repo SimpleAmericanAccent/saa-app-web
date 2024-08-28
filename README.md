@@ -1,4 +1,4 @@
-Currently auto-deploys from main to Render at this URL: https://saa-h6zg.onrender.com/
+Currently manually deployed from main to Render at this URL: https://saa-h6zg.onrender.com/
 
 A place to build custom tools/software for Simple American Accent.
 
