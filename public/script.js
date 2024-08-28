@@ -332,6 +332,8 @@ async function getPeople() {
   await fetch("/api")
   .then((response) => response.json())
   .then((json) => (people = json));
+  
+  console.log(people);
 
   for (let i =0; i < people.records.length; i++) {
     console.log(people.records[i].fields.Name);
