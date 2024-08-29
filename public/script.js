@@ -15,7 +15,7 @@ const audioSelect = document.getElementById("audioSelect");
 let submenu = document.querySelectorAll(".submenu");
 // let tableElementContent;
 let people, audios, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected;
-let audioData, speechData, annotationsLoaded, issues, audioURLSelected, transcriptSelected;
+let audioData, speechData, annotationsLoaded, issues, audioURLSelected, transcriptSelected, speechDataURL;
 let activeWord = 0; // index of the word currently being spoken
 let selectedWord; // index of the word whose annotations are being edited
 let inProgress = {
@@ -354,7 +354,13 @@ async function getAudio() {
   .then ((json) => (audio = json));
 
   audioURLSelected = audio.fields['mp3 url'];
-  speechData = JSON.parse(audio.fields['tran/alignment JSON']);
+  speechDataURL = audio.fields['tran/alignment JSON url'];
+  console.log(speechDataURL);
+
+  await fetch(speechDataURL)
+  .then ((response) => response.json())
+  .then ((json) => (speechData = json));
+
   transcriptSelected = speechData.speech.transcripts;
   loadAll(audioURLSelected, transcriptSelected);
 }
