@@ -19,6 +19,7 @@ const transcriptDiv = document.getElementById("transcript");
 const toolTip = document.getElementById("toolTip");
 const saveBtn = document.getElementById("save");
 const loadBtn = document.getElementById("load");
+const openBtn = document.getElementById("openAudio");
 const list = document.getElementById("list");
 const playbackSpeed = document.getElementById("playbackSpeed");
 const peopleSelect = document.getElementById("peopleSelect");
@@ -35,6 +36,7 @@ let inProgress = {
   notes: [],
 };
 
+// switched this out with playbackObj and annotations via clicking context menu
 // let issueObj = {
 //   // an object used to convert between keypresses and pronunciation issues
 //   // just an idea. Not sure how many unique labels are needed / if this approach is enough
@@ -72,8 +74,8 @@ let selectedWord; // index of the word whose annotations are being edited
 const speechOptions = [1, 2, 3];
 let speechIndex = speechOptions[2];
 
-const audioURLSelected = `./audio/audio${speechIndex}.mp3`;
-const transcriptSelected = speech3.speech.transcripts;
+let audioURLSelected = `./audio/audio${speechIndex}.mp3`;
+let transcriptSelected = speech3.speech.transcripts;
 
 //// function definitions
 function showCurrentWord() {
@@ -107,35 +109,62 @@ function showAnnotations(ind) {
 audioSource.src = audioURLSelected;
 audioPlayer.load();
 
-transcriptSelected.forEach((tranData) => {
-  const start_offset = tranData.start_offset;
-  const start_offset_conv = start_offset / 16000;
-  const alignment = tranData.alignment;
-
-  alignment.forEach((wordData) => {
-    const wordSpan = document.createElement("span");
-    wordSpan.setAttribute("id", `word${inProgress.words.length}`);
-    wordSpan.textContent = wordData.word;
-    wordSpan.dataset.startTime = wordData.start + start_offset_conv;
-
-    //populating inProgress object
-    inProgress.timeIntervals.push(wordData.start + start_offset_conv);
-    inProgress.words.push(wordData.word);
-    inProgress.notes.push([]);
-
-    wordSpan.addEventListener("click", () => {
-      audioPlayer.currentTime = wordData.start + start_offset_conv;
-      audioPlayer.play();
+function displayTranscript () {
+  transcriptSelected.forEach((tranData) => {
+    const start_offset = tranData.start_offset;
+    const start_offset_conv = start_offset / 16000;
+    const alignment = tranData.alignment;
+  
+    alignment.forEach((wordData) => {
+      const wordSpan = document.createElement("span");
+      wordSpan.setAttribute("id", `word${inProgress.words.length}`);
+      wordSpan.textContent = wordData.word;
+      wordSpan.dataset.startTime = wordData.start + start_offset_conv;
+  
+      //populating inProgress object
+      inProgress.timeIntervals.push(wordData.start + start_offset_conv);
+      inProgress.words.push(wordData.word);
+      inProgress.notes.push([]);
+  
+      wordSpan.addEventListener("click", () => {
+        audioPlayer.currentTime = wordData.start + start_offset_conv;
+        audioPlayer.play();
+      });
+      transcriptDiv.appendChild(wordSpan);
+      transcriptDiv.append("\x20");
     });
-    transcriptDiv.appendChild(wordSpan);
-    transcriptDiv.append("\x20");
+    const para = document.createElement("p");
+    transcriptDiv.appendChild(para);
   });
-  const para = document.createElement("p");
-  transcriptDiv.appendChild(para);
-});
+
+  // uncomment for troubleshooting
+  // console.log(transcriptSelected);
+  // console.log(inProgress);
+}
+
+function clearTranscript () {
+  console.log("initial values");
+  console.log(transcriptSelected);
+  console.log(inProgress);
+  console.log("attempting to clear transcriptSelected and inProgress");
+  transcriptSelected = {};
+  inProgress = {
+    // an object containing user-generated edits
+    // could be developed into an output
+    timeIntervals: [],
+    words: [],
+    notes: [],
+  };
+  console.log(transcriptSelected);
+  console.log(inProgress);
+  transcriptDiv.innerHTML = '';
+}
+
+displayTranscript();
 
 //// event listeners
 
+openBtn.addEventListener("click", getAudio);
 saveBtn.addEventListener("click", saveToJSON);
 loadBtn.addEventListener("click", loadFromJSON);
 
@@ -404,7 +433,7 @@ async function getAudios() {
   }
 }
 
-audioSelect.addEventListener("change", getAudio);
+// audioSelect.addEventListener("change", getAudio);
 
 let audio;
 
@@ -413,8 +442,24 @@ async function getAudio() {
   .then ((response) => response.json())
   .then ((json) => (audio = json));
 
+  clearTranscript();
+
   console.log(audio);
-  console.log(audios.records[0].fields['Speaker (from Words (instance))']);
+  console.log(audio.fields['mp3 url']);
+  audioSource.src = audio.fields['mp3 url'];
+  audioPlayer.load();
+
+  console.log(JSON.parse(audio.fields['tran/alignment JSON']));
+  console.log(speech3);
+  speech3 = JSON.parse(audio.fields['tran/alignment JSON']);
+  transcriptSelected = speech3.speech.transcripts;
+  console.log(speech3);
+  console.log(transcriptSelected);
+  console.log(inProgress);
+
+  displayTranscript();
+
+  // console.log(audios.records[0].fields['Speaker (from Words (instance))']);
 
   // for (let i =0; i < audios.records.length; i++) {
   //   let audioName = audios.records[i].fields.Name;
