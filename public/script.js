@@ -1,18 +1,6 @@
-//// import json files (transcripts including alignment data)
-//// this async method is working better for me than the import method
-let speech3;
-let annotationsLoaded;
-let issues;
-
-await fetch("./JSON/speech3.json")
-  .then((response) => response.json())
-  .then((json) => (speech3 = json));
-
-await fetch("./JSON/issues2.json")
-  .then((response) => response.json())
-  .then((json) => (issues = json));
-
-//// DOM selection and associated variables
+///////////////////
+////// variable declarations
+///////////////////
 const audioPlayer = document.getElementById("audioPlayer");
 const audioSource = document.getElementById("audioSource");
 const transcriptDiv = document.getElementById("transcript");
@@ -24,10 +12,12 @@ const list = document.getElementById("list");
 const playbackSpeed = document.getElementById("playbackSpeed");
 const peopleSelect = document.getElementById("peopleSelect");
 const audioSelect = document.getElementById("audioSelect");
-let submenu;
-
-//// variable declarations
-
+let submenu = document.querySelectorAll(".submenu");
+// let tableElementContent;
+let people, audios, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected;
+let audioData, speechData, annotationsLoaded, issues, audioURLSelected, transcriptSelected;
+let activeWord = 0; // index of the word currently being spoken
+let selectedWord; // index of the word whose annotations are being edited
 let inProgress = {
   // an object containing user-generated edits
   // could be developed into an output
@@ -36,80 +26,96 @@ let inProgress = {
   notes: [],
 };
 
-// switched this out with playbackObj and annotations via clicking context menu
-// let issueObj = {
-//   // an object used to convert between keypresses and pronunciation issues
-//   // just an idea. Not sure how many unique labels are needed / if this approach is enough
-//   KeyA: "TH x D/flap",
-//   KeyB: "dark L x U/O",
-//   KeyC: "sick x seek",
-//   KeyD: "stress",
-//   KeyE: "R x missing R",
-//   KeyF: "on, om x (c)om",
-//   KeyG: "T x TCH",
-//   KeyH: "in, im x (s)im",
-//   KeyI: "seek x sick",
-//   KeyJ: "extra vowel",
-//   KeyK: "GOAT tuning",
-//   KeyL: "sim x sin x sing",
-//   KeyM: "grammar/vocab/word usage",
-//   KeyN: "luck x lock",
-//   KeyO: "S x Z",
-//   KeyP: "TH x T",
-//   KeyQ: "listening x reading (or BR similar word)",
-//   KeyR: "missing syllable",
-//   KeyS: "em, en x hein",
-//   KeyT: "Y x missing Y",
-//   KeyU: "bed x bad",
-//   KeyV: "lock x ó",
-//   KeyW: "look x Luke",
-//   KeyX: "luck tuning",
-//   KeyY: "T x TS",
-//   KeyZ: "V x F"
-// };
+//////////////////////////
+////// main execution
+//////////////////////////
 
-let activeWord = 0; // index of the word currently being spoken
-let selectedWord; // index of the word whose annotations are being edited
+loadDefault();
 
-const speechOptions = [1, 2, 3];
-let speechIndex = speechOptions[2];
+//////////////////////////
+////// event listeners
+//////////////////////////
 
-let audioURLSelected = `./audio/audio${speechIndex}.mp3`;
-let transcriptSelected = speech3.speech.transcripts;
+openBtn.addEventListener("click", getAudio);
+saveBtn.addEventListener("click", saveToJSON);
+loadBtn.addEventListener("click", loadFromJSON);
+peopleSelect.addEventListener("change", filterAudios);
 
-//// function definitions
-function showCurrentWord() {
-  // highlights the word currently being spoken
-  let currentTime = audioPlayer.currentTime;
-  let wordIndex = 0;
-  for (let i = 0; i < inProgress.timeIntervals.length; i++) {
-    if (currentTime > inProgress.timeIntervals[i]) {
-      wordIndex++;
-    } else {
-      break;
-    }
+// detects key presses for keyboard playback control
+document.addEventListener("keydown", (e) => {
+    let code = e.code;
+  if (Object.keys(playbackObj).includes(code)) {
+    playbackObj[code](e);
   }
-  if (wordIndex != activeWord) {
-    activeWord = wordIndex;
-    document.querySelectorAll("span").forEach((sp) => {
-      sp.classList.remove("active");
-    });
-    document.getElementById(`word${activeWord - 1}`).classList.add("active");
-  }
+});
+
+/////////////////////////////
+////// function definitions
+///////////////////////////////
+
+async function loadDefault() {
+  await fetch("./JSON/speech3.json")
+    .then((response) => response.json())
+    .then((json) => (speechData = json));
+
+  await fetch("./JSON/issues2.json")
+    .then((response) => response.json())
+    .then((json) => (issues = json));
+
+  audioURLSelected = './audio/audio3.mp3';
+  transcriptSelected = speechData.speech.transcripts;
+  console.log(transcriptSelected);
+
+  loadAll(audioURLSelected, transcriptSelected);
+  getAudios();
+  getPeople();
+  loadFromJSON();
+
+  // equivalent but runs a bit faster and more reliably than 'timeupdate'
+  // the last argument is the time (ms) between calls of showCurrentWord()
+  // could definitely be slowed down a bit if it becomes a performance issue
+  setInterval(function () {
+    showCurrentWord();
+  }, 30);
+
+  document.querySelectorAll("td").forEach((tableElement) => {
+    // tableElementContent = tableElement.innerHTML;
+    tableElement.addEventListener("click", filterAnnotations);
+  });
 }
 
-function showAnnotations(ind) {
-  // displays any annotations applied to the word being hovered over
-  document.getElementById("toolTip").innerHTML =
-    inProgress.notes[ind].join(", ");
+function loadAll(audioURLSelected, transcriptSelected, annotationsData) {
+  updateAudio(audioURLSelected);
+  displayTranscript(transcriptSelected);
+  updateWordSpanListeners();
 }
 
-//// main logic
-// Set audio source
-audioSource.src = audioURLSelected;
-audioPlayer.load();
+function updateAudio (audioURLSelected) {
+  audioSource.src = audioURLSelected;
+  audioPlayer.load();
+}
 
-function displayTranscript () {
+function clearTranscript () {
+  console.log("initial values");
+  console.log(transcriptSelected);
+  console.log(inProgress);
+  console.log("attempting to clear speechData and inProgress");
+  speechData = {};
+  inProgress = {
+    // an object containing user-generated edits
+    // could be developed into an output
+    timeIntervals: [],
+    words: [],
+    notes: [],
+  };
+  console.log(speechData);
+  console.log(inProgress);
+  transcriptDiv.innerHTML = '';
+}
+
+function displayTranscript (transcriptSelected) {
+  console.log('transcriptSelected is');
+  console.log(transcriptSelected);
   transcriptSelected.forEach((tranData) => {
     const start_offset = tranData.start_offset;
     const start_offset_conv = start_offset / 16000;
@@ -136,177 +142,111 @@ function displayTranscript () {
     const para = document.createElement("p");
     transcriptDiv.appendChild(para);
   });
-
-  // uncomment for troubleshooting
-  // console.log(transcriptSelected);
-  // console.log(inProgress);
 }
 
-function clearTranscript () {
-  console.log("initial values");
-  console.log(transcriptSelected);
-  console.log(inProgress);
-  console.log("attempting to clear transcriptSelected and inProgress");
-  transcriptSelected = {};
-  inProgress = {
-    // an object containing user-generated edits
-    // could be developed into an output
-    timeIntervals: [],
-    words: [],
-    notes: [],
-  };
-  console.log(transcriptSelected);
-  console.log(inProgress);
-  transcriptDiv.innerHTML = '';
-}
+function updateWordSpanListeners() {
+  // add annotation and context menu event listeners to word spans in transcript div
+  for (let i = 0; i < inProgress.notes.length; i++) {
+    let s = document.querySelectorAll("span")[i];
+    s.addEventListener(
+      "mouseover",
+      (f) => {
+        let ind = parseInt(s.id.slice(4));
+        showAnnotations(ind);
+        console.log("hi");
+        // console.log(inProgress.words[ind]);
+      },
+      false
+    );
+    s.addEventListener(
+      "contextmenu",
+      (f) => {
+        let ind = parseInt(s.id.slice(4));
+        // console.log(ind);
+        selectedWord = ind;
+        let x = f.clientX;
+        let y = f.clientY;
+        list.style.display = "block";
+        // list.style.top = y + "px";
+        list.style.top = "0px";
+        list.style.left = x + "px";
 
-displayTranscript();
 
-//// event listeners
 
-openBtn.addEventListener("click", getAudio);
-saveBtn.addEventListener("click", saveToJSON);
-loadBtn.addEventListener("click", loadFromJSON);
 
-// equivalent but runs a bit faster and more reliably than 'timeupdate'
-// the last argument is the time (ms) between calls of showCurrentWord()
-// could definitely be slowed down a bit if it becomes a performance issue
-setInterval(function () {
-  showCurrentWord();
-}, 30);
+        //prevent page overflow
+        let winWidth = window.innerWidth;
+        let winHeight = window.innerHeight;
+        let menuWidth = list.offsetWidth;
+        let menuHeight = list.offsetHeight;
+        let secMargin = 20;
 
-let playbackObj = {
-  // separate out certain keys for audio playback control
-  ArrowLeft: function () {
-    // audioPlayer.pause();
-    // console.log(audioPlayer.paused);
-    // console.log('left');
-    audioPlayer.currentTime = audioPlayer.currentTime - 1;
-  },
-  ArrowRight: function () {
-    // audioPlayer.pause();
-    // console.log(audioPlayer.paused);
-    // console.log('left');
-    audioPlayer.currentTime = audioPlayer.currentTime + 1;
-  },
-  Space: function (evt) {
-    evt.preventDefault();
-    // console.log(audioPlayer.paused);
-    // console.log('space');
-    // console.log(audioPlayer.currentTime);
+        // console.log(winWidth);
+        // console.log(winHeight);
+        // console.log(menuWidth);
+        // console.log(menuHeight);
+        // console.log(secMargin);
 
-    if (audioPlayer.paused) {
-      audioPlayer.play();
-    }
-    else {
-      audioPlayer.pause();
-    }
-  },
-  Comma: function () {
-    // audioPlayer.pause();
-    // console.log(audioPlayer.paused);
-    // console.log('left');
-    audioPlayer.playbackRate = audioPlayer.playbackRate - 0.1;
-    playbackSpeed.innerHTML = "Playback speed is " + audioPlayer.playbackRate.toFixed(1);
-  },
-  Period: function () {
-    // audioPlayer.pause();
-    // console.log(audioPlayer.paused);
-    // console.log('left');
-    audioPlayer.playbackRate = audioPlayer.playbackRate + 0.1;
-    playbackSpeed.innerHTML = "Playback speed is " + audioPlayer.playbackRate.toFixed(1);
-  }
-};
-
-// detects hotkey-entered annotations for highlighted span
-// see issueObj for conversions
-document.addEventListener("keydown", (e) => {
-  let hov = document.querySelector("span:hover");
-  let code = e.code;
-  if (Object.keys(playbackObj).includes(code)) {
-    // console.log("playback control keydown has been recognized");
-    // console.log(audioPlayer.paused);
-    playbackObj[code](e);
-  }
-  else {
-    if (hov) {
-      hov.classList.add("annotated");
-      let ind = parseInt(hov.id.slice(4));
-      let notes = inProgress.notes[ind];
-      if (Object.keys(issueObj).includes(code)) {
-        code = issueObj[code];
-      }
-      if (notes.includes(code)) {
-        notes.splice(notes.indexOf(code), 1);
-        if (notes.length == 0) {
-          hov.classList.remove("annotated");
+        if (x + menuWidth > winWidth) {
+          list.style.left = winWidth - menuWidth - secMargin + "px";
         }
-      } else {
-        notes.push(code);
-      }
-      showAnnotations(ind);
+
+        // if (y + menuHeight > winHeight) {
+        //   list.style.top = winHeight - menuHeight - secMargin + "px";
+        // }
+        
+        document.addEventListener("click", onClickOutside);
+        // console.log(submenu[0]);
+        f.preventDefault();
+      },
+      false
+    );
+  }
+
+  for (let i = 0; i < Object.keys(issues.targets).length; i++) {
+    // console.log(Object.keys(issues.targets)[i]);
+    const listFeature = document.createElement("li");
+    listFeature.textContent = Object.keys(issues.targets)[i];
+    listFeature.addEventListener("mouseover", moveContextSubmenu);
+    list.appendChild(listFeature);
+    const listFeatureUL = document.createElement("ul");
+    listFeatureUL.classList.add("submenu");
+    listFeature.appendChild(listFeatureUL);
+
+    for (let j = 0; j < Object.values(issues.targets)[i].length; j++) {
+      // console.log(Object.values(issues.targets)[i][j]);
+      const listIssue = document.createElement("li");
+      listIssue.textContent = Object.values(issues.targets)[i][j];
+      listIssue.addEventListener("click", adjustAnnotations);
+      listFeatureUL.appendChild(listIssue);
     }
   }
-});
+}
 
-// displays annotations in upper right box
-// not a huge fan of the fixed box as the format for this
-// maybe it could be more like a tooltip?
-// better approach will depend on whether it needs to be mobile friendly
-for (let i = 0; i < inProgress.notes.length; i++) {
-  let s = document.querySelectorAll("span")[i];
-  s.addEventListener(
-    "mouseover",
-    (f) => {
-      let ind = parseInt(s.id.slice(4));
-      showAnnotations(ind);
-      // console.log(inProgress.words[ind]);
-    },
-    false
-  );
-  s.addEventListener(
-    "contextmenu",
-    (f) => {
-      let ind = parseInt(s.id.slice(4));
-      // console.log(ind);
-      selectedWord = ind;
-      let x = f.clientX;
-      let y = f.clientY;
-      list.style.display = "block";
-      // list.style.top = y + "px";
-      list.style.top = "0px";
-      list.style.left = x + "px";
+function showCurrentWord() {
+  // highlights the word currently being spoken
+  let currentTime = audioPlayer.currentTime;
+  let wordIndex = 0;
+  for (let i = 0; i < inProgress.timeIntervals.length; i++) {
+    if (currentTime > inProgress.timeIntervals[i]) {
+      wordIndex++;
+    } else {
+      break;
+    }
+  }
+  if (wordIndex != activeWord) {
+    activeWord = wordIndex;
+    document.querySelectorAll("span").forEach((sp) => {
+      sp.classList.remove("active");
+    });
+    document.getElementById(`word${activeWord - 1}`).classList.add("active");
+  }
+}
 
-
-
-
-      //prevent page overflow
-      let winWidth = window.innerWidth;
-      let winHeight = window.innerHeight;
-      let menuWidth = list.offsetWidth;
-      let menuHeight = list.offsetHeight;
-      let secMargin = 20;
-
-      // console.log(winWidth);
-      // console.log(winHeight);
-      // console.log(menuWidth);
-      // console.log(menuHeight);
-      // console.log(secMargin);
-
-      if (x + menuWidth > winWidth) {
-        list.style.left = winWidth - menuWidth - secMargin + "px";
-      }
-
-      // if (y + menuHeight > winHeight) {
-      //   list.style.top = winHeight - menuHeight - secMargin + "px";
-      // }
-      
-      document.addEventListener("click", onClickOutside);
-      // console.log(submenu[0]);
-      f.preventDefault();
-    },
-    false
-  );
+function showAnnotations(ind) {
+  // displays any annotations applied to the word being hovered over
+  document.getElementById("toolTip").innerHTML =
+    inProgress.notes[ind].join(", ");
 }
 
 const onClickOutside = (event) => {
@@ -342,7 +282,6 @@ async function loadFromJSON() {
   await fetch("./JSON/annotations.json")
   .then((response) => response.json())
   .then((json) => (annotationsLoaded = json));
-  // console.log(annotationsLoaded);
   inProgress = annotationsLoaded;
 
   for (let i = 0; i < inProgress.notes.length; i++) {
@@ -356,8 +295,6 @@ async function loadFromJSON() {
     }
   }
 }
-
-let people;
 
 async function getPeople() {
   await fetch("/api/People")
@@ -376,44 +313,20 @@ async function getPeople() {
   }
 }
 
-peopleSelect.addEventListener("change", filterAudios);
-
 function filterAudios() {
-  // console.log(peopleSelect.value);
-  // console.log(audios);
   let results = [];
   audioSelect.options.length=0;
   for (let i =0; i < audios.records.length; i++) {
-
-    // console.log(audios.records[i].fields['Speaker (from Words (instance))'].indexOf(peopleSelect.value));
-
     if (audios.records[i].fields['Speaker (from Words (instance))'].indexOf(peopleSelect.value) !== -1) {
       results.push(audios.records[i].id);
       let audioName = audios.records[i].fields.Name;
-      // console.log(audioName);
       const audioSelectItem = document.createElement("option");
       audioSelectItem.textContent = audioName;
       audioSelectItem.value = audios.records[i].id;
       audioSelect.appendChild(audioSelectItem);
     }
-    else {
-
-    }
-
-
-    // let audioName = audios.records[i].fields.Name;
-    // // console.log(audioName);
-    // const audioSelectItem = document.createElement("option");
-    // audioSelectItem.textContent = audioName;
-    // audioSelectItem.value = audios.records[i].id;
-    // audioSelect.appendChild(audioSelectItem);
   }
-  console.log(results);
 }
-
-getPeople();
-
-let audios;
 
 async function getAudios() {
   await fetch("/api/Audio%20Source")
@@ -433,61 +346,24 @@ async function getAudios() {
   }
 }
 
-// audioSelect.addEventListener("change", getAudio);
-
-let audio;
-
 async function getAudio() {
+  clearTranscript();
+  
   await fetch(`/api/Audio%20Source/${audioSelect.value}`)
   .then ((response) => response.json())
   .then ((json) => (audio = json));
 
-  clearTranscript();
-
-  console.log(audio);
-  console.log(audio.fields['mp3 url']);
-  audioSource.src = audio.fields['mp3 url'];
-  audioPlayer.load();
-
-  console.log(JSON.parse(audio.fields['tran/alignment JSON']));
-  console.log(speech3);
-  speech3 = JSON.parse(audio.fields['tran/alignment JSON']);
-  transcriptSelected = speech3.speech.transcripts;
-  console.log(speech3);
-  console.log(transcriptSelected);
-  console.log(inProgress);
-
-  displayTranscript();
-
-  // console.log(audios.records[0].fields['Speaker (from Words (instance))']);
-
-  // for (let i =0; i < audios.records.length; i++) {
-  //   let audioName = audios.records[i].fields.Name;
-  //   console.log(audioName);
-  //   const audioSelectItem = document.createElement("option");
-  //   audioSelectItem.textContent = audioName;
-  //   audioSelectItem.value = audios.records[i].id;
-  //   audioSelect.appendChild(audioSelectItem);
-  // }
+  audioURLSelected = audio.fields['mp3 url'];
+  speechData = JSON.parse(audio.fields['tran/alignment JSON']);
+  transcriptSelected = speechData.speech.transcripts;
+  loadAll(audioURLSelected, transcriptSelected);
 }
-
-getAudios();
-
-
-
-loadFromJSON();
 
 function hideAnnotations() {
   document.querySelectorAll("span").forEach((sp) => {
   sp.classList.remove("annotated");
   });
 }
-
-let accentFeature;
-let accentIssues;
-let issuesSelected;
-let issueSelected;
-let featureSelected;
 
 function filterAnnotations(evt) {
   hideAnnotations();
@@ -602,35 +478,29 @@ function moveContextSubmenu(evt) {
 
 }
 
-
-
-
-for (let i = 0; i < Object.keys(issues.targets).length; i++) {
-  // console.log(Object.keys(issues.targets)[i]);
-  const listFeature = document.createElement("li");
-  listFeature.textContent = Object.keys(issues.targets)[i];
-  listFeature.addEventListener("mouseover", moveContextSubmenu);
-  list.appendChild(listFeature);
-  const listFeatureUL = document.createElement("ul");
-  listFeatureUL.classList.add("submenu");
-  listFeature.appendChild(listFeatureUL);
-
-  for (let j = 0; j < Object.values(issues.targets)[i].length; j++) {
-    // console.log(Object.values(issues.targets)[i][j]);
-    const listIssue = document.createElement("li");
-    listIssue.textContent = Object.values(issues.targets)[i][j];
-    listIssue.addEventListener("click", adjustAnnotations);
-    listFeatureUL.appendChild(listIssue);
+let playbackObj = {
+  // separate out certain keys for audio playback control
+  ArrowLeft: () => {
+    audioPlayer.currentTime = audioPlayer.currentTime - 1;
+  },
+  ArrowRight: () => {
+    audioPlayer.currentTime = audioPlayer.currentTime + 1;
+  },
+  Space: (evt) => {
+    evt.preventDefault();
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+    }
+    else {
+      audioPlayer.pause();
+    }
+  },
+  Comma: () => {
+    audioPlayer.playbackRate = audioPlayer.playbackRate - 0.1;
+    playbackSpeed.innerHTML = "Playback speed is " + audioPlayer.playbackRate.toFixed(1);
+  },
+  Period: () => {
+    audioPlayer.playbackRate = audioPlayer.playbackRate + 0.1;
+    playbackSpeed.innerHTML = "Playback speed is " + audioPlayer.playbackRate.toFixed(1);
   }
-}
-
-submenu = document.querySelectorAll(".submenu");
-
-
-// let tableElementContent;
-
-document.querySelectorAll("td").forEach((tableElement) => {
-  // tableElementContent = tableElement.innerHTML;
-  tableElement.addEventListener("click", filterAnnotations);
-});
-
+};
