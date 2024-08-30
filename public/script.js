@@ -7,7 +7,8 @@ const transcriptDiv = document.getElementById("transcript");
 const toolTip = document.getElementById("toolTip");
 const saveBtn = document.getElementById("save");
 const loadBtn = document.getElementById("load");
-const openBtn = document.getElementById("openAudio");
+const openFromAirtableBtn = document.getElementById("openFromAirtable");
+const saveToAirtableBtn = document.getElementById("saveToAirtable");
 const list = document.getElementById("list");
 const playbackSpeed = document.getElementById("playbackSpeed");
 const peopleSelect = document.getElementById("peopleSelect");
@@ -38,7 +39,8 @@ loadDefault();
 ////// event listeners
 //////////////////////////
 
-openBtn.addEventListener("click", getAudio);
+openFromAirtableBtn.addEventListener("click", getAudio);
+saveToAirtableBtn.addEventListener("click", saveToAirtable);
 saveBtn.addEventListener("click", saveToJSON);
 loadBtn.addEventListener("click", loadFromJSON);
 peopleSelect.addEventListener("change", filterAudios);
@@ -434,6 +436,23 @@ async function getAudio() {
   console.table(inProgress);
 
   portAnnotationsFromAirtable();
+}
+
+async function saveToAirtable() {
+  await fetch("/api/tblmi1PP4EWaVFxhm", {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: "POST",
+    body: JSON.stringify({
+      "fields": {
+          "Name": "test"
+      }
+  })
+  })
+  .then((response) => (console.log(response)))
+  .catch((response) => (console.log(response)));
 }
 
 function hideAnnotations() {
