@@ -15,7 +15,9 @@ const audioSelect = document.getElementById("audioSelect");
 let submenu = document.querySelectorAll(".submenu");
 // let tableElementContent;
 let people, audios, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected;
-let audioData, speechData, annotationsLoaded, issues, audioURLSelected, transcriptSelected, speechDataURL;
+let audioData, speechData, annotationsLoaded, issues, audioURLSelected, transcriptSelected, speechDataURL, audioName, audioNameURLEncoded, airtableWords;
+let airtableIssues
+let airtableIssuesObject = {};
 let activeWord = 0; // index of the word currently being spoken
 let selectedWord; // index of the word whose annotations are being edited
 let inProgress = {
@@ -64,12 +66,13 @@ async function loadDefault() {
 
   audioURLSelected = './audio/audio3.mp3';
   transcriptSelected = speechData.speech.transcripts;
-  console.log(transcriptSelected);
+  // console.log(transcriptSelected);
 
   loadAll(audioURLSelected, transcriptSelected);
   getAudios();
   getPeople();
   loadFromJSON();
+  getAirtableIssues();
 
   // equivalent but runs a bit faster and more reliably than 'timeupdate'
   // the last argument is the time (ms) between calls of showCurrentWord()
@@ -96,10 +99,10 @@ function updateAudio (audioURLSelected) {
 }
 
 function clearTranscript () {
-  console.log("initial values");
-  console.log(transcriptSelected);
-  console.log(inProgress);
-  console.log("attempting to clear speechData and inProgress");
+  // console.log("initial values");
+  // console.log(transcriptSelected);
+  // console.log(inProgress);
+  // console.log("attempting to clear speechData and inProgress");
   speechData = {};
   inProgress = {
     // an object containing user-generated edits
@@ -108,14 +111,14 @@ function clearTranscript () {
     words: [],
     notes: [],
   };
-  console.log(speechData);
-  console.log(inProgress);
+  // console.log(speechData);
+  // console.log(inProgress);
   transcriptDiv.innerHTML = '';
 }
 
 function displayTranscript (transcriptSelected) {
-  console.log('transcriptSelected is');
-  console.log(transcriptSelected);
+  // console.log('transcriptSelected is');
+  // console.log(transcriptSelected);
   transcriptSelected.forEach((tranData) => {
     const start_offset = tranData.start_offset;
     const start_offset_conv = start_offset / 16000;
@@ -153,7 +156,6 @@ function updateWordSpanListeners() {
       (f) => {
         let ind = parseInt(s.id.slice(4));
         showAnnotations(ind);
-        console.log("hi");
         // console.log(inProgress.words[ind]);
       },
       false
@@ -296,6 +298,49 @@ async function loadFromJSON() {
   }
 }
 
+function portAnnotationsFromAirtable() {
+  
+  console.log(inProgress.notes);
+  for (let i=0; i < inProgress.notes.length; i++) {
+    inProgress.notes[i] = [];
+  }
+  // console.log(inProgress.notes);
+  
+  for (let i=0; i < airtableWords.records.length; i++) {
+    let tempWordIndex = airtableWords.records[i].fields['word index'];
+    let tempIssueObject = Object.values(airtableWords.records[i].fields['BR issues']);
+    console.log(tempWordIndex);
+    console.log(tempIssueObject);
+
+    for (let j=0; j < Object.values(airtableWords.records[i].fields['BR issues']).length; j++) {
+      if (Object.keys(airtableIssuesObject).includes(tempIssueObject[j])) {
+        inProgress.notes[tempWordIndex].push(airtableIssuesObject[tempIssueObject[j]]);
+      }
+      else {
+
+      }
+    }
+
+
+    // inProgress.notes[airtableWords.records[i].fields['word index']] = Object.values(airtableWords.records[i].fields['BR issues']);
+    // console.log(airtableWords.records[i].fields['word index']);
+    // console.log(Object.values(airtableWords.records[i].fields['BR issues']));
+  }
+
+  for (let i = 0; i < inProgress.notes.length; i++) {
+    let s = document.querySelectorAll("span")[i];
+
+    if (inProgress.notes[i].length != 0) {
+      s.classList.add("annotated");
+    }
+    else {
+      s.classList.remove("annotated");
+    }
+  }
+
+  console.log(inProgress.notes);
+}
+
 async function getPeople() {
   await fetch("/api/People")
   .then((response) => response.json())
@@ -328,6 +373,16 @@ function filterAudios() {
   }
 }
 
+async function getAirtableIssues() {
+  await fetch("/api/BR%20issues")
+  .then ((response) => response.json())
+  .then ((json) => (airtableIssues = json));
+
+  for (let i=0; i < airtableIssues.records.length; i++) {
+    airtableIssuesObject[airtableIssues.records[i].id] = airtableIssues.records[i].fields['Name'];
+  }
+}
+
 async function getAudios() {
   await fetch("/api/Audio%20Source")
   .then ((response) => response.json())
@@ -353,9 +408,15 @@ async function getAudio() {
   .then ((response) => response.json())
   .then ((json) => (audio = json));
 
+  console.log(audio);
+
+  audioName = audio.fields['Name'];
+  audioNameURLEncoded = encodeURIComponent(audioName);
+  console.log({audioName, audioNameURLEncoded});
+
   audioURLSelected = audio.fields['mp3 url'];
   speechDataURL = audio.fields['tran/alignment JSON url'];
-  console.log(speechDataURL);
+  // console.log(speechDataURL);
 
   await fetch(speechDataURL)
   .then ((response) => response.json())
@@ -363,6 +424,16 @@ async function getAudio() {
 
   transcriptSelected = speechData.speech.transcripts;
   loadAll(audioURLSelected, transcriptSelected);
+
+  await fetch(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`)
+  .then ((response) => response.json())
+  .then ((json) => (airtableWords = json));
+
+  console.log(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`);
+  console.log(airtableWords);
+  console.table(inProgress);
+
+  portAnnotationsFromAirtable();
 }
 
 function hideAnnotations() {
