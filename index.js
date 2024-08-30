@@ -27,11 +27,76 @@ const server = http.createServer(async (req, res) => {
     // console.log(req.url);
     
     try {
-        // Check if GET request
-        if (req.method === 'GET') {
-            let filePath;
-            let fileContentType;
-            if (req.url.split('/')[1] !== 'api') {    
+        // Check if trying to access api proxy (airtable api)
+        if(req.url.split('/')[1] === 'api') {
+            // make request to airtable api
+
+            let pathSegments = req.url.split('/');
+            let pathSegmentsFirst = pathSegments[1];
+            let pathSegmentsExceptFirst = pathSegments.slice(2,pathSegments.length);
+            let pathMinusFirstSegment = path.join.apply(null, pathSegmentsExceptFirst).replace('\\','/');
+
+            // Uncomment if you want to troubleshoot types
+            // console.log(pathSegments.constructor == Array);
+            // console.log(typeof pathSegmentsFirst);
+            // console.log(pathSegmentsExceptFirst.constructor == Array);
+            // console.log(typeof pathMinusFirstSegment);
+
+            // Uncomment for troubleshooting
+            // console.log("pathSegments: " + pathSegments);
+            // console.log("pathSegmentsFirst: " + pathSegmentsFirst);
+            // console.log("pathSegmentsExceptFirst: " + pathSegmentsExceptFirst);
+            // console.log("pathMinusFirstSegment: "+pathMinusFirstSegment);
+
+
+            const postData = '';
+
+            const options = {
+                hostname: 'api.airtable.com',
+                path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
+                method: 'GET',
+                headers: {
+                    // 'Content-Type': 'text/plain',
+                    'Authorization': `Bearer ${API_KEY_VALUE}`
+                }
+            };
+
+            // uncomment to help diagnose authorization issue if needed:
+            // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
+
+            const req2 = https.request(options, (res2) => {
+                // console.log(`STATUS: ${res2.statusCode}`);
+                // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
+                res2.setEncoding('utf8');
+                res.setHeader('Content-Type', 'application/json');
+                res2.on('data', (chunk) => {
+                    res.write(chunk);
+                    // console.log(`BODY: ${chunk}`);
+                });
+                res2.on('end', () => {
+                    // console.log('No more data in response.');
+                    res.end();
+                });
+            });
+
+            req2.write(postData);
+            req2.end();
+
+
+
+
+            // show/send/display the airtable api response to user
+            // may later make this do something else or in the background instead, not sure
+            // res.setHeader('Content-Type', 'application/json');
+            // res.write(JSON.stringify('hi'));
+            // res.end();
+
+        }
+        else if (req.url.split('/')[1] !== 'api') {
+            // Check if GET request
+            if (req.method === 'GET') {
+                let filePath;
+                let fileContentType;
                 if (req.url === '/') {
                     filePath = path.join(__dirname, 'public', 'index.html');
                     fileContentType = 'text/html';
@@ -69,75 +134,8 @@ const server = http.createServer(async (req, res) => {
                 res.write(data);
                 res.end();
             }
-            else if (req.url.split('/')[1] === 'api') {
-
-                // make request to airtable api
-
-                let pathSegments = req.url.split('/');
-                let pathSegmentsFirst = pathSegments[1];
-                let pathSegmentsExceptFirst = pathSegments.slice(2,pathSegments.length);
-                let pathMinusFirstSegment = path.join.apply(null, pathSegmentsExceptFirst).replace('\\','/');
-
-                // Uncomment if you want to troubleshoot types
-                // console.log(pathSegments.constructor == Array);
-                // console.log(typeof pathSegmentsFirst);
-                // console.log(pathSegmentsExceptFirst.constructor == Array);
-                // console.log(typeof pathMinusFirstSegment);
-
-                // Uncomment for troubleshooting
-                // console.log("pathSegments: " + pathSegments);
-                // console.log("pathSegmentsFirst: " + pathSegmentsFirst);
-                // console.log("pathSegmentsExceptFirst: " + pathSegmentsExceptFirst);
-                // console.log("pathMinusFirstSegment: "+pathMinusFirstSegment);
-
-
-                const postData = '';
-
-                const options = {
-                    hostname: 'api.airtable.com',
-                    path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
-                    method: 'GET',
-                    headers: {
-                        // 'Content-Type': 'text/plain',
-                        'Authorization': `Bearer ${API_KEY_VALUE}`
-                    }
-                };
-
-                // uncomment to help diagnose authorization issue if needed:
-                // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
-
-                const req2 = https.request(options, (res2) => {
-                    // console.log(`STATUS: ${res2.statusCode}`);
-                    // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
-                    res2.setEncoding('utf8');
-                    res.setHeader('Content-Type', 'application/json');
-                    res2.on('data', (chunk) => {
-                        res.write(chunk);
-                        // console.log(`BODY: ${chunk}`);
-                    });
-                    res2.on('end', () => {
-                        // console.log('No more data in response.');
-                        res.end();
-                    });
-                });
-
-                req2.write(postData);
-                req2.end();
-
-
-
-
-                // show/send/display the airtable api response to user
-                // may later make this do something else or in the background instead, not sure
-                // res.setHeader('Content-Type', 'application/json');
-                // res.write(JSON.stringify('hi'));
-                // res.end();
-            }
-            else {
-                throw new Error('Error');
-            }
         } else {
-            throw new Error('Method not allowed');
+            throw new Error('Error');
         }
     } catch (error) {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
