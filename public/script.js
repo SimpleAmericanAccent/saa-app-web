@@ -439,17 +439,28 @@ async function getAudio() {
 }
 
 async function saveToAirtable() {
+  let airtableBody = {
+    "records": [
+      {
+        "fields": {
+          "Name": "test1"
+        }
+      }, {
+        "fields": {
+          "Name": "test2"
+        }
+      }
+    ]
+  };
+
+  
   await fetch("/api/tblmi1PP4EWaVFxhm", {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
     method: "POST",
-    body: JSON.stringify({
-      "fields": {
-          "Name": "test"
-      }
-  })
+    body: JSON.stringify(airtableBody)
   })
   .then((response) => (console.log(response)))
   .catch((response) => (console.log(response)));
