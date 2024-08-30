@@ -9,6 +9,7 @@ const saveBtn = document.getElementById("save");
 const loadBtn = document.getElementById("load");
 const openFromAirtableBtn = document.getElementById("openFromAirtable");
 const saveToAirtableBtn = document.getElementById("saveToAirtable");
+const tempBtn = document.getElementById("tempBtn");
 const list = document.getElementById("list");
 const playbackSpeed = document.getElementById("playbackSpeed");
 const peopleSelect = document.getElementById("peopleSelect");
@@ -41,6 +42,7 @@ loadDefault();
 
 openFromAirtableBtn.addEventListener("click", getAudio);
 saveToAirtableBtn.addEventListener("click", saveToAirtable);
+tempBtn.addEventListener("click", tempAirtableTest);
 saveBtn.addEventListener("click", saveToJSON);
 loadBtn.addEventListener("click", loadFromJSON);
 peopleSelect.addEventListener("change", filterAudios);
@@ -460,6 +462,37 @@ async function saveToAirtable() {
       'Content-Type': 'application/json'
     },
     method: "POST",
+    body: JSON.stringify(airtableBody)
+  })
+  .then((response) => (console.log(response)))
+  .catch((response) => (console.log(response)));
+}
+
+async function tempAirtableTest () {
+  let airtableBody = {
+    "records": [
+      {
+        "id": "recClDzqpml0dViyC",
+        "fields": {
+          "Name": "test3"
+        }
+      },
+      {
+        "id": "recjZY7cVQU3QMzQI",
+        "fields": {
+          "Name": "test8"
+        }
+      }
+    ]
+  };
+
+  
+  await fetch("/api/tblmi1PP4EWaVFxhm", {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: "PATCH",
     body: JSON.stringify(airtableBody)
   })
   .then((response) => (console.log(response)))
