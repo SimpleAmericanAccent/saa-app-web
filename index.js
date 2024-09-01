@@ -110,14 +110,18 @@ const server = http.createServer(async (req, res) => {
                     const req2 = https.request(options, (res2) => {
                         // console.log(`STATUS: ${res2.statusCode}`);
                         // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
+                        let body2 = '';
                         res2.setEncoding('utf8');
                         res.setHeader('Content-Type', 'application/json');
                         res2.on('data', (chunk2) => {
-                            res.write(chunk2);
+                            // res.write(chunk2);
+                            body2 += chunk2.toString();
                             // console.log(`BODY: ${chunk}`);
                         });
                         res2.on('end', () => {
                             // console.log('No more data in response.');
+                            res.write(body2);
+                            console.log(body2);
                             res.end();
                         });
                     });
@@ -162,6 +166,53 @@ const server = http.createServer(async (req, res) => {
                         });
                         res2.on('end', () => {
                             // console.log('No more data in response.');
+                            res.end();
+                        });
+                    });
+                    req2.write(body);
+                    req2.end();
+                    // show/send/display the airtable api response to user
+                    // may later make this do something else or in the background instead, not sure
+                    // res.setHeader('Content-Type', 'application/json');
+                    // res.write(JSON.stringify('hi'));
+                    // res.end();
+                })
+            }
+            else if (req.method === 'DELETE') {
+                let body = '';
+                req.on('data', (chunk) => {
+                    body += chunk.toString();
+                })
+                req.on('end', () => {
+                    console.log(body);
+
+                    const options = {
+                        hostname: 'api.airtable.com',
+                        path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${API_KEY_VALUE}`
+                        }
+                    };
+    
+                    // uncomment to help diagnose authorization issue if needed:
+                    // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
+    
+                    const req2 = https.request(options, (res2) => {
+                        // console.log(`STATUS: ${res2.statusCode}`);
+                        // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
+                        let body2 = '';
+                        res2.setEncoding('utf8');
+                        res.setHeader('Content-Type', 'application/json');
+                        res2.on('data', (chunk2) => {
+                            // res.write(chunk2);
+                            body2 += chunk2.toString();
+                            // console.log(`BODY: ${chunk}`);
+                        });
+                        res2.on('end', () => {
+                            // console.log('No more data in response.');
+                            res.write(body2);
+                            console.log(body2);
                             res.end();
                         });
                     });

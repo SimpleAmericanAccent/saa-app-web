@@ -18,7 +18,7 @@ let submenu = document.querySelectorAll(".submenu");
 // let tableElementContent;
 let people, audios, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected;
 let audioData, speechData, annotationsLoaded, issues, audioURLSelected, transcriptSelected, speechDataURL, audioName, audioNameURLEncoded, airtableWords;
-let airtableIssues
+let airtableIssues;
 let airtableIssuesObject = {};
 let activeWord = 0; // index of the word currently being spoken
 let selectedWord; // index of the word whose annotations are being edited
@@ -28,6 +28,7 @@ let inProgress = {
   timeIntervals: [],
   words: [],
   notes: [],
+  ATRecs: []
 };
 
 //////////////////////////
@@ -114,6 +115,7 @@ function clearTranscript () {
     timeIntervals: [],
     words: [],
     notes: [],
+    ATRecs: []
   };
   // console.log(speechData);
   // console.log(inProgress);
@@ -138,6 +140,7 @@ function displayTranscript (transcriptSelected) {
       inProgress.timeIntervals.push(wordData.start + start_offset_conv);
       inProgress.words.push(wordData.word);
       inProgress.notes.push([]);
+      inProgress.ATRecs.push(undefined);
   
       wordSpan.addEventListener("click", () => {
         audioPlayer.currentTime = wordData.start + start_offset_conv;
@@ -288,7 +291,27 @@ async function loadFromJSON() {
   await fetch("./JSON/annotations.json")
   .then((response) => response.json())
   .then((json) => (annotationsLoaded = json));
-  inProgress = annotationsLoaded;
+  inProgress = {
+    // an object containing user-generated edits
+    // could be developed into an output
+    timeIntervals: [],
+    words: [],
+    notes: [],
+    ATRecs: []
+  };
+  
+  console.log(annotationsLoaded);
+  // annotationsLoaded;
+
+  // consider updating to handle local JSON both with and without the ATRecs data
+  for (let i=0; i < annotationsLoaded.notes.length; i++) {
+    inProgress.timeIntervals[i] = annotationsLoaded.timeIntervals[i];
+    inProgress.words[i] = annotationsLoaded.words[i];
+    inProgress.notes[i] = annotationsLoaded.notes[i];
+    inProgress.ATRecs[i] = undefined;
+  }
+
+  console.log(inProgress);
 
   for (let i = 0; i < inProgress.notes.length; i++) {
     let s = document.querySelectorAll("span")[i];
@@ -304,6 +327,7 @@ async function loadFromJSON() {
 
 function portAnnotationsFromAirtable() {
   
+  // clear inProgress.notes so it can be updated with Airtable notes
   console.log(inProgress.notes);
   for (let i=0; i < inProgress.notes.length; i++) {
     inProgress.notes[i] = [];
@@ -313,8 +337,12 @@ function portAnnotationsFromAirtable() {
   for (let i=0; i < airtableWords.records.length; i++) {
     let tempWordIndex = airtableWords.records[i].fields['word index'];
     let tempIssueObject = Object.values(airtableWords.records[i].fields['BR issues']);
+    let tempATRec = airtableWords.records[i].id;
     console.log(tempWordIndex);
     console.log(tempIssueObject);
+    console.log(tempATRec);
+
+    inProgress.ATRecs[tempWordIndex]=tempATRec;
 
     for (let j=0; j < Object.values(airtableWords.records[i].fields['BR issues']).length; j++) {
       if (Object.keys(airtableIssuesObject).includes(tempIssueObject[j])) {
@@ -342,7 +370,7 @@ function portAnnotationsFromAirtable() {
     }
   }
 
-  console.log(inProgress.notes);
+  console.log(inProgress);
 }
 
 async function getPeople() {
@@ -440,49 +468,75 @@ async function getAudio() {
   portAnnotationsFromAirtable();
 }
 
-async function saveToAirtable() {
-  let airtableBody = {
-    "records": [
-      {
-        "fields": {
-          "Name": "test1"
+async function saveToAirtable(ATMethod, ATRec, ATFields) {
+  if (ATMethod !== "DELETE") {
+    let ATResponse;
+    let ATBody = {
+      "records": [
+        {
+          "id": ATRec,
+          "fields": ATFields
         }
-      }, {
-        "fields": {
-          "Name": "test2"
-        }
-      }
-    ]
-  };
+      ]
+    };
 
+    
+    await fetch("/api/tblmi1PP4EWaVFxhm", {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: `${ATMethod}`,
+      body: JSON.stringify(ATBody)
+    })
+    .then((response) => response.json())
+    .then((json) => (ATResponse = json))
+    .catch((response) => console.log(response));
+
+    // console.log(ATResponse);
+    // console.log(ATResponse.records[0].id);
+    return ATResponse;
+
+  }
+  else if (ATMethod === "DELETE") {
+    let ATResponse;
+    let ATURL = `?records[]=${ATRec}`;
+
+    
+    await fetch(`/api/tblmi1PP4EWaVFxhm${ATURL}`, {
+      headers: {
+      },
+      method: `${ATMethod}`
+    })
+    .then((response) => response.json())
+    .then((json) => (ATResponse = json))
+    .catch((response) => console.log(response));
+
+    // console.log(ATResponse);
+    // console.log(ATResponse.records[0].id);
+    return ATResponse;
+  }
   
-  await fetch("/api/tblmi1PP4EWaVFxhm", {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    method: "POST",
-    body: JSON.stringify(airtableBody)
-  })
-  .then((response) => (console.log(response)))
-  .catch((response) => (console.log(response)));
+  
 }
 
 async function tempAirtableTest () {
   let airtableBody = {
     "records": [
       {
-        "id": "recClDzqpml0dViyC",
+        "id": "recg8kk6hwtxiIZWg",
         "fields": {
-          "Name": "test3"
-        }
-      },
-      {
-        "id": "recjZY7cVQU3QMzQI",
-        "fields": {
-          "Name": "test8"
+          "Name": "testsdfsdfsdf",
+          "word index": 123,
+          "BR issues": ["recFP4gVaCnxNkrsP", "recAx3HTRTmuUsoix"]
         }
       }
+      // {
+      //   "id": "rec2gTpbwijM9DstH",
+      //   "fields": {
+      //     "Name": "testbye",
+      //   }
+      // }
     ]
   };
 
@@ -528,31 +582,139 @@ function filterAnnotations(evt) {
   }
 }
 
+
+
 function adjustAnnotations(evt) {
   issueSelected = evt.currentTarget.innerHTML;
   let s = document.querySelectorAll("span")[selectedWord];
 
+  console.log(airtableIssues);
+
   let notes = inProgress.notes[selectedWord];
+  // console.log(inProgress);
+  let tempATRec = inProgress.ATRecs[selectedWord];
 
   s.classList.add("annotated");
 
-  console.log(issueSelected);
-  console.log(selectedWord);
-  console.log(inProgress.words[selectedWord]);
-  console.log(notes);
+  // console.log(issueSelected);
+  // console.log(selectedWord);
+  // console.log(inProgress.words[selectedWord]);
+  // console.log(notes);
+  console.log(tempATRec);
 
-  if (notes.includes(issueSelected)) {
-    console.log("already included");
-    notes.splice(notes.indexOf(issueSelected), 1);
-    if (notes.length == 0) {
-      s.classList.remove("annotated");
+
+// may need to make this logic smarter than just checking relative to undefined
+// I think airtableWords is probably getting out of sync with inProgress and airtable's actual state
+  if (tempATRec !== undefined) {
+    // console.log(`tempATRec is ${tempATRec}`);
+
+    // if we're here, we already have an Airtable Record ID. need to update the record using PATCH and/or delete the record using DELETE
+
+    if (notes.includes(issueSelected)) {
+      // console.log("already included");
+      notes.splice(notes.indexOf(issueSelected), 1);
+      if (notes.length == 0) {
+        s.classList.remove("annotated");
+        //need to add DELETE here, once DELETE is implemented in back-end
+        saveToAirtable("DELETE", tempATRec, buildATFields());
+
+        // need to remove airtable record ID (set as undefined?) from local airtableWords object and/or inProgress object
+        console.log(airtableWords);
+        // remove here then console log to verify result
+
+
+        for (let i=0; i<airtableWords.records.length; i++) {
+          if (airtableWords.records[i] == tempATRec) {
+            airtableWords.records.splice(i,i);
+            i = i - 1;
+          }
+
+        }
+
+
+
+        console.log(airtableWords);
+      }
+      else if (notes.length != 0) {
+        saveToAirtable("PATCH", tempATRec, buildATFields());
+      }
     }
+    else {
+      // console.log("not already included");
+      notes.push(issueSelected);
+
+      saveToAirtable("PATCH", tempATRec, buildATFields());
+
+    }
+
+
   }
-  else {
-    console.log("not already included");
-    notes.push(issueSelected);
+  else if (tempATRec === undefined) {
+    // console.log('tempATRec is undefined');
+
+    // if we're here, we don't yet have an Airtable Record ID. so need to create the record using POST
+
+    if (notes.includes(issueSelected)) {
+      // console.log("already included");
+      notes.splice(notes.indexOf(issueSelected), 1);
+      if (notes.length == 0) {
+        s.classList.remove("annotated");
+      }
+      else if (notes.length != 0) {
+
+      }
+    }
+    else {
+      // console.log("not already included");
+      notes.push(issueSelected);
+    }
+
+    async function asyncCaller () {
+      let ATResponse = await saveToAirtable("POST", tempATRec, buildATFields());
+      console.log(ATResponse);
+      console.log(ATResponse.records[0].id);
+      console.log(airtableWords);
+      airtableWords.records.push(ATResponse.records[0]);
+      inProgress.ATRecs[selectedWord]=ATResponse.records[0];
+      console.log(airtableWords);
+      return ATResponse.records[0];
+    }
+
+    asyncCaller();
   }
+
+  
   showAnnotations(selectedWord);
+
+  function convertIssuesToATIssueRecIDs (notes, airtableIssues) {
+    let convertedOutput = [];
+    
+    for (let i=0; i < notes.length; i++) {
+      for (let j=0; j < airtableIssues.records.length; j++) {
+        if (airtableIssues.records[j].fields.Name == notes[i]) {
+          convertedOutput.push(airtableIssues.records[j].id);
+        }
+      }
+    }
+    console.log(convertedOutput);
+    return convertedOutput;
+  }
+  
+  function buildATFields () {
+    // going to need to swap some of these with dynamically looked-up airtable records IDs, sending string won't work
+    // hard-coding record IDs for now, just for testing. need to make dynamic.
+    return {
+      "Name": inProgress.words[selectedWord], 
+      "BR issues": convertIssuesToATIssueRecIDs(notes, airtableIssues), 
+      "in timestamp (seconds)": inProgress.timeIntervals[selectedWord], 
+      "word index": selectedWord,
+      // "Audio Source": audioSelect.value,
+      // "Speaker": peopleSelect.value,
+      "Audio Source": ["recXIcvDExGs9Dfzb"],
+      "Speaker": ["reccfMo1RwJlUhD9T"],
+      "Note": "test - delete"
+    };
+  }
 }
 
 function moveContextSubmenu(evt) {
