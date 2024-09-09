@@ -20,7 +20,7 @@ const auth0_client_id = process.env.AUTH0_CLIENT_ID;
 const auth0_issuer_base_url = process.env.AUTH0_ISSUER_BASE_ID;
 
 const config = {
-authRequired: true,
+  authRequired: true,
   auth0Logout: true,
   secret: `${auth0_secret}`,
   baseURL: `${auth0_base_url}`,
