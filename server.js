@@ -4,6 +4,8 @@ import fs from 'fs/promises';
 import url from 'url';
 import path from 'path';
 import express from 'express';
+import pkg from 'express-openid-connect';
+const { auth, requiresAuth } = pkg;
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,11 +15,27 @@ const port = process.env.PORT || 5000;
 // const API_KEY_NAME = process.env.API_KEY_NAME;
 const API_KEY_VALUE = process.env.API_KEY_VALUE;
 
+const config = {
+authRequired: true,
+  auth0Logout: true,
+  secret: '14f60e60206f50c6dd839575385ccd2a5df195826066710e3a476376f4f7bb82',
+  baseURL: 'http://localhost:5000',
+  clientID: '54xL3arGe5CYPjEkLHcsS9cbXv2GGoar',
+  issuerBaseURL: 'https://dev-urfpuyrre7kzjol4.us.auth0.com'
+}
+
 const app = express();
+
+app.use(auth(config));
+
+app.use(function (req, res, next) {
+    res.locals.user = req.oidc.user;
+    next();
+  });  
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.all('/api*', (req, res) => {
+app.all('/api/*', (req, res) => {
     // res.send('api');
 
     // make request to airtable api
@@ -216,6 +234,10 @@ app.all('/api*', (req, res) => {
             // res.end();
         })
     }
+});
+
+app.get('/profile', requiresAuth(), (req, res) => {
+    res.send(JSON.stringify(req.oidc.user));
 });
 
 http.createServer(app)
