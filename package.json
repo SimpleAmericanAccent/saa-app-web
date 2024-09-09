@@ -2,11 +2,14 @@
   "name": "saa",
   "version": "1.0.0",
   "description": "Simple American Accent accent software",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node --watch --env-file=.env index.js"
+    "start": "node --watch --env-file=.env server.js"
   },
   "author": "Will Rosenberg",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express-openid-connect": "^2.17.1"
+  }
 }
