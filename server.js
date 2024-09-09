@@ -14,14 +14,18 @@ const port = process.env.PORT || 5000;
 // const API_BASE_URL = process.env.API_BASE_URL;
 // const API_KEY_NAME = process.env.API_KEY_NAME;
 const API_KEY_VALUE = process.env.API_KEY_VALUE;
+const auth0_secret = process.env.AUTH0_SECRET;
+const auth0_base_url = process.env.AUTH0_BASE_URL;
+const auth0_client_id = process.env.AUTH0_CLIENT_ID;
+const auth0_issuer_base_url = process.env.AUTH0_ISSUER_BASE_ID;
 
 const config = {
 authRequired: true,
   auth0Logout: true,
-  secret: '14f60e60206f50c6dd839575385ccd2a5df195826066710e3a476376f4f7bb82',
-  baseURL: 'http://localhost:5000',
-  clientID: '54xL3arGe5CYPjEkLHcsS9cbXv2GGoar',
-  issuerBaseURL: 'https://dev-urfpuyrre7kzjol4.us.auth0.com'
+  secret: `${auth0_secret}`,
+  baseURL: `${auth0_base_url}`,
+  clientID: `${auth0_client_id}`,
+  issuerBaseURL: `${auth0_issuer_base_url}`
 }
 
 const app = express();
