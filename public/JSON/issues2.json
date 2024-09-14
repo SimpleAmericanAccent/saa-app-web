@@ -1,225 +1,228 @@
 {
     "targets": {
-        "FLEECE": [
-            "seek x sick",
-            "FLEECE tuning",
-            "seek x é",
-            "seek x schwa",
-            "happY x missing happY",
-            "happY as FLEECE x happY as KIT"
-        ],
-        "KIT": [
-            "sick x seek",
-            "bid x bed",
-            "sim x sam"
-        ],
-        "DRESS": [
-            "bed x bad",
-            "bed x bid",
-            "DRESS x é",
-            "DRESS x FACE"
-        ],
-        "TRAP": [
-            "bad x \"tá\"",
-            "TRAP tuning",
-            "bad x bed"
-        ],
-        "TRAM": [
-            "tan x ten",
-            "an, am x hein"
-        ],
+        "FLEECE": {
+            "seek x sick": {},
+            "FLEECE tuning": {},
+            "seek x é": {},
+            "seek x schwa": {},
+            "happY x missing happY": {},
+            "happY as FLEECE x happY as KIT": {}
+        },
+        "KIT": {
+            "sick x seek": {
+                "description": "test description",
+                "sdf": "sdf"
+            },
+            "bid x bed": {},
+            "sim x sam": {}
+        },
+        "DRESS": {
+            "bed x bad": {},
+            "bed x bid": {},
+            "DRESS x é": {},
+            "DRESS x FACE": {}
+        },
+        "TRAP": {
+            "bad x \"tá\"": {},
+            "TRAP tuning": {},
+            "bad x bed": {}
+        },
+        "TRAM": {
+            "tan x ten": {},
+            "an, am x hein": {}
+        },
 
 
-        "commA": [
-            "schwa vs other vowel"
-        ],
-
-
-
-        "GOOSE": [
-            "GOOSE tuning"
-        ],
-        "FOOT": [
-            "look x Luke",
-            "look x back/open look"
-        ],
-        "STRUT": [
-            "luck x lock",
-            "luck tuning",
-            "luck x ó",
-            "luck x look"
-        ],
-        "LOT": [
-            "lock x ó",
-            "o as LOT x o as GOAT",
-            "lock x luck",
-            "lock x lack"
-        ],
-
-
-        "FACE": [
-            "FACE tuning",
-            "FACE x PRICE",
-            "FACE x é"
-        ],
-        "GOAT": [
-            "GOAT tuning",
-            "GOAT x MOUTH"
-        ],
-        "MOUTH": [
-            "MOUTH tuning"
-        ],
+        "commA": {
+            "schwa vs other vowel": {}
+        },
 
 
 
-        "NORTH/FORCE": [
-            "four x far"
-        ],
+        "GOOSE": {
+            "GOOSE tuning": {}
+        },
+        "FOOT": {
+            "look x Luke": {},
+            "look x back/open look": {}
+        },
+        "STRUT": {
+            "luck x lock": {},
+            "luck tuning": {},
+            "luck x ó": {},
+            "luck x look": {}
+        },
+        "LOT": {
+            "lock x ó": {},
+            "o as LOT x o as GOAT": {},
+            "lock x luck": {},
+            "lock x lack": {}
+        },
+
+
+        "FACE": {
+            "FACE tuning": {},
+            "FACE x PRICE": {},
+            "FACE x é": {}
+        },
+        "GOAT": {
+            "GOAT tuning": {},
+            "GOAT x MOUTH": {}
+        },
+        "MOUTH": {
+            "MOUTH tuning": {}
+        },
 
 
 
-
-        "P": [
-            "Aspirated P/T/K x Unaspirated P/T/K"
-        ],
-
-
-        "T": [
-            "T x TCH",
-            "T x TS",
-            "glottal T opportunity",
-            "T x dental T",
-            "T x missing T",
-            "flap T opportunity",
-            "flap T x R",
-            "Aspirated P/T/K x Unaspirated P/T/K"
-        ],
-        "D": [
-            "D x dental D",
-            "D x missing D",
-            "D x flap",
-            "D x J",
-            "D x T",
-            "flap D x hard D"
-        ],
-
-        "K": [
-            "Aspirated P/T/K x Unaspirated P/T/K"
-        ],
+        "NORTH/FORCE": {
+            "four x far": {}
+        },
 
 
 
 
-        "M": [
-            "sim x sin x sing",
-            "M/N/NG x missing M/N/NG"
-        ],
+        "P": {
+            "Aspirated P/T/K x Unaspirated P/T/K": {}
+        },
+
+
+        "T": {
+            "T x TCH": {},
+            "T x TS": {},
+            "glottal T opportunity": {},
+            "T x dental T": {},
+            "T x missing T": {},
+            "flap T opportunity": {},
+            "flap T x R": {},
+            "Aspirated P/T/K x Unaspirated P/T/K": {}
+        },
+        "D": {
+            "D x dental D": {},
+            "D x missing D": {},
+            "D x flap": {},
+            "D x J": {},
+            "D x T": {},
+            "flap D x hard D": {}
+        },
+
+        "K": {
+            "Aspirated P/T/K x Unaspirated P/T/K": {}
+        },
+
+
+
+
+        "M": {
+            "sim x sin x sing": {},
+            "M/N/NG x missing M/N/NG": {}
+        },
         
-        "N": [
-            "sim x sin x sing",
-            "M/N/NG x missing M/N/NG"
-        ],
+        "N": {
+            "sim x sin x sing": {},
+            "M/N/NG x missing M/N/NG": {}
+        },
         
-        "NG": [
-            "sim x sin x sing",
-            "M/N/NG x missing M/N/NG"
-        ],
-        
-
-        "V": [
-            "V x F"
-        ],
-        "THu": [
-            "TH x T",
-            "TH x F"
-        ],
-        "THv": [
-            "TH x D/flap"
-        ],
-        "S": [
-            "S x Z"
-        ],
-        "Z": [
-            "Z x S"
-        ],
-
-
-        "CH": [
-            "CH x SH"
-        ],
-        "J": [
-            "J x D"
-        ],
-
-
+        "NG": {
+            "sim x sin x sing": {},
+            "M/N/NG x missing M/N/NG": {}
+        },
         
 
-        "R": [
-            "R x missing R",
-            "R x R like \"para\"",
-            "R x W",
-            "R x R like \"rato\""
-        ],
-        "L": [
-            "dark L x U/O",
-            "dark L x missing",
-            "intervocalic dark L (tongue tip) vs W"
-        ],
-        "Y": [
-            "Y x missing Y"
-        ],
-        "W": [
-            "W x missing W",
-            "W x R"
-        ],
+        "V": {
+            "V x F": {}
+        },
+        "THu": {
+            "TH x T": {},
+            "TH x F": {}
+        },
+        "THv": {
+            "TH x D/flap": {}
+        },
+        "S": {
+            "S x Z": {}
+        },
+        "Z": {
+            "Z x S": {}
+        },
+
+
+        "CH": {
+            "CH x SH": {}
+        },
+        "J": {
+            "J x D": {}
+        },
+
+
+        
+
+        "R": {
+            "R x missing R": {},
+            "R x R like \"para\"": {},
+            "R x W": {},
+            "R x R like \"rato\"": {}
+        },
+        "L": {
+            "dark L x U/O": {},
+            "dark L x missing": {},
+            "intervocalic dark L (tongue tip) vs W": {}
+        },
+        "Y": {
+            "Y x missing Y": {}
+        },
+        "W": {
+            "W x missing W": {},
+            "W x R": {}
+        },
         
 
 
 
 
-        "al": [
-            "-al x MOUTH"
-        ],
-        "-ed": [
-            "-ed"
-        ],
+        "al": {
+            "-al x MOUTH": {}
+        },
+        "-ed": {
+            "-ed": {}
+        },
 
-        "im/in": [
-            "in, im x (s)im"
-        ],
-        "em/en": [
-            "em, en x hein"
-        ],
-        "om/on": [
-            "on, om x (c)om"
-        ],
-
-
-        "misc": [
-            "stress",
-            "mistranslated",
-            "rhythm",
-            "grammar/vocab/word usage",
-            "listening x reading (or BR similar word)",
+        "im/in": {
+            "in, im x (s)im": {}
+        },
+        "em/en": {
+            "em, en x hein": {}
+        },
+        "om/on": {
+            "on, om x (c)om": {}
+        },
 
 
-            "missing syllable",
-            "missing vowel",
-            "extra vowel",
+        "misc": {
+            "stress": {},
+            "mistranslated": {},
+            "rhythm": {},
+            "grammar/vocab/word usage": {},
+            "listening x reading (or BR similar word)": {},
+
+
+            "missing syllable": {},
+            "missing vowel": {},
+            "extra vowel": {},
             
 
-            "wrong vowel",
-            "vowel x nasal vowel",
+            "wrong vowel": {},
+            "vowel x nasal vowel": {},
 
     
-            "?",
+            "?": {},
 
-            "bulls x balls",
-            "word x ward",
-            "or x ower",
+            "bulls x balls": {},
+            "word x ward": {},
+            "or x ower": {},
 
-            "KS x S",
-            "extra Y (you x ooh)"
-        ]
+            "KS x S": {},
+            "extra Y (you x ooh)": {}
+        }
     }
 }
