@@ -222,10 +222,11 @@ function updateWordSpanListeners() {
     listFeatureUL.classList.add("submenu");
     listFeature.appendChild(listFeatureUL);
 
-    for (let j = 0; j < Object.values(issues.targets)[i].length; j++) {
-      // console.log(Object.values(issues.targets)[i][j]);
+    for (let j = 0; j < Object.keys(issues.targets)[i].length; j++) {
+      // console.log(Object.keys(issues.targets)[i].length);
       const listIssue = document.createElement("li");
-      listIssue.textContent = Object.values(issues.targets)[i][j];
+      listIssue.textContent = Object.keys(Object.values(issues.targets)[i])[j];
+      // console.log(Object.keys(Object.values(issues.targets)[i])[j]);
       listIssue.addEventListener("click", adjustAnnotations);
       listFeatureUL.appendChild(listIssue);
     }
