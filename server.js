@@ -18,6 +18,8 @@ const auth0_secret = process.env.AUTH0_SECRET;
 const auth0_base_url = process.env.AUTH0_BASE_URL;
 const auth0_client_id = process.env.AUTH0_CLIENT_ID;
 const auth0_issuer_base_url = process.env.AUTH0_ISSUER_BASE_ID;
+const environment_flag = process.env.ENVIRONMENT_FLAG;
+const environment_internet_flag = process.env.ENVIRONMENT_INTERNET_FLAG;
 
 const config = {
   authRequired: true,
@@ -30,137 +32,58 @@ const config = {
 
 const app = express();
 
-app.use(auth(config));
+if (environment_internet_flag == "online") {
+    app.use(auth(config));
 
-app.use(function (req, res, next) {
-    res.locals.user = req.oidc.user;
-    next();
-  });  
+    app.use(function (req, res, next) {
+        res.locals.user = req.oidc.user;
+        next();
+    });  
+}
+else if (environment_flag == "offline") {
+    // app.use(auth(config));
+
+    app.use(function (req, res, next) {
+        // res.locals.user = req.oidc.user;
+        next();
+    });  
+}
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.all('/api/*', (req, res) => {
-    // res.send('api');
+if (environment_internet_flag == "online") {
+    app.all('/api/*', (req, res) => {
+        // res.send('api');
 
-    // make request to airtable api
+        // make request to airtable api
 
-    let pathSegments = req.url.split('/');
-    let pathSegmentsFirst = pathSegments[1];
-    let pathSegmentsExceptFirst = pathSegments.slice(2,pathSegments.length);
-    let pathMinusFirstSegment = path.join.apply(null, pathSegmentsExceptFirst).replace('\\','/');
+        let pathSegments = req.url.split('/');
+        let pathSegmentsFirst = pathSegments[1];
+        let pathSegmentsExceptFirst = pathSegments.slice(2,pathSegments.length);
+        let pathMinusFirstSegment = path.join.apply(null, pathSegmentsExceptFirst).replace('\\','/');
 
-    // Uncomment if you want to troubleshoot types
-    // console.log(pathSegments.constructor == Array);
-    // console.log(typeof pathSegmentsFirst);
-    // console.log(pathSegmentsExceptFirst.constructor == Array);
-    // console.log(typeof pathMinusFirstSegment);
+        // Uncomment if you want to troubleshoot types
+        // console.log(pathSegments.constructor == Array);
+        // console.log(typeof pathSegmentsFirst);
+        // console.log(pathSegmentsExceptFirst.constructor == Array);
+        // console.log(typeof pathMinusFirstSegment);
 
-    // Uncomment for troubleshooting
-    // console.log("pathSegments: " + pathSegments);
-    // console.log("pathSegmentsFirst: " + pathSegmentsFirst);
-    // console.log("pathSegmentsExceptFirst: " + pathSegmentsExceptFirst);
-    // console.log("pathMinusFirstSegment: "+pathMinusFirstSegment);
+        // Uncomment for troubleshooting
+        // console.log("pathSegments: " + pathSegments);
+        // console.log("pathSegmentsFirst: " + pathSegmentsFirst);
+        // console.log("pathSegmentsExceptFirst: " + pathSegmentsExceptFirst);
+        // console.log("pathMinusFirstSegment: "+pathMinusFirstSegment);
 
 
-    if (req.method === 'GET') {
-        const postData = '';
-        const options = {
-            hostname: 'api.airtable.com',
-            path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
-            method: 'GET',
-            headers: {
-                // 'Content-Type': 'text/plain',
-                'Authorization': `Bearer ${API_KEY_VALUE}`
-            }
-        };
-
-        // uncomment to help diagnose authorization issue if needed:
-        // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
-
-        const req2 = https.request(options, (res2) => {
-            // console.log(`STATUS: ${res2.statusCode}`);
-            // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
-            res2.setEncoding('utf8');
-            res.setHeader('Content-Type', 'application/json');
-            res2.on('data', (chunk) => {
-                res.write(chunk);
-                // console.log(`BODY: ${chunk}`);
-            });
-            res2.on('end', () => {
-                // console.log('No more data in response.');
-                res.end();
-            });
-        });
-        req2.write(postData);
-        req2.end();
-        // show/send/display the airtable api response to user
-        // may later make this do something else or in the background instead, not sure
-        // res.setHeader('Content-Type', 'application/json');
-        // res.write(JSON.stringify('hi'));
-        // res.end();
-    }
-    else if (req.method === 'POST') {
-        let body = '';
-        req.on('data', (chunk) => {
-            body += chunk.toString();
-        })
-        req.on('end', () => {
-            console.log(body);
-
+        if (req.method === 'GET') {
+            const postData = '';
             const options = {
                 hostname: 'api.airtable.com',
                 path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
-                method: 'POST',
+                method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY_VALUE}`
-                }
-            };
-
-            // uncomment to help diagnose authorization issue if needed:
-            // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
-
-            const req2 = https.request(options, (res2) => {
-                // console.log(`STATUS: ${res2.statusCode}`);
-                // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
-                let body2 = '';
-                res2.setEncoding('utf8');
-                res.setHeader('Content-Type', 'application/json');
-                res2.on('data', (chunk2) => {
-                    // res.write(chunk2);
-                    body2 += chunk2.toString();
-                    // console.log(`BODY: ${chunk}`);
-                });
-                res2.on('end', () => {
-                    // console.log('No more data in response.');
-                    res.write(body2);
-                    console.log(body2);
-                    res.end();
-                });
-            });
-            req2.write(body);
-            req2.end();
-            // show/send/display the airtable api response to user
-            // may later make this do something else or in the background instead, not sure
-            // res.setHeader('Content-Type', 'application/json');
-            // res.write(JSON.stringify('hi'));
-            // res.end();
-        })
-    }
-    else if (req.method === 'PATCH') {
-        let body = '';
-        req.on('data', (chunk) => {
-            body += chunk.toString();
-        })
-        req.on('end', () => {
-            console.log(body);
-
-            const options = {
-                hostname: 'api.airtable.com',
-                path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
+                    // 'Content-Type': 'text/plain',
                     'Authorization': `Bearer ${API_KEY_VALUE}`
                 }
             };
@@ -173,8 +96,8 @@ app.all('/api/*', (req, res) => {
                 // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
                 res2.setEncoding('utf8');
                 res.setHeader('Content-Type', 'application/json');
-                res2.on('data', (chunk2) => {
-                    res.write(chunk2);
+                res2.on('data', (chunk) => {
+                    res.write(chunk);
                     // console.log(`BODY: ${chunk}`);
                 });
                 res2.on('end', () => {
@@ -182,67 +105,168 @@ app.all('/api/*', (req, res) => {
                     res.end();
                 });
             });
-            req2.write(body);
+            req2.write(postData);
             req2.end();
             // show/send/display the airtable api response to user
             // may later make this do something else or in the background instead, not sure
             // res.setHeader('Content-Type', 'application/json');
             // res.write(JSON.stringify('hi'));
             // res.end();
-        })
-    }
-    else if (req.method === 'DELETE') {
-        let body = '';
-        req.on('data', (chunk) => {
-            body += chunk.toString();
-        })
-        req.on('end', () => {
-            console.log(body);
+        }
+        else if (req.method === 'POST') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk.toString();
+            })
+            req.on('end', () => {
+                console.log(body);
 
-            const options = {
-                hostname: 'api.airtable.com',
-                path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${API_KEY_VALUE}`
-                }
-            };
+                const options = {
+                    hostname: 'api.airtable.com',
+                    path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY_VALUE}`
+                    }
+                };
 
-            // uncomment to help diagnose authorization issue if needed:
-            // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
+                // uncomment to help diagnose authorization issue if needed:
+                // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
 
-            const req2 = https.request(options, (res2) => {
-                // console.log(`STATUS: ${res2.statusCode}`);
-                // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
-                let body2 = '';
-                res2.setEncoding('utf8');
-                res.setHeader('Content-Type', 'application/json');
-                res2.on('data', (chunk2) => {
-                    // res.write(chunk2);
-                    body2 += chunk2.toString();
-                    // console.log(`BODY: ${chunk}`);
+                const req2 = https.request(options, (res2) => {
+                    // console.log(`STATUS: ${res2.statusCode}`);
+                    // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
+                    let body2 = '';
+                    res2.setEncoding('utf8');
+                    res.setHeader('Content-Type', 'application/json');
+                    res2.on('data', (chunk2) => {
+                        // res.write(chunk2);
+                        body2 += chunk2.toString();
+                        // console.log(`BODY: ${chunk}`);
+                    });
+                    res2.on('end', () => {
+                        // console.log('No more data in response.');
+                        res.write(body2);
+                        console.log(body2);
+                        res.end();
+                    });
                 });
-                res2.on('end', () => {
-                    // console.log('No more data in response.');
-                    res.write(body2);
-                    console.log(body2);
-                    res.end();
-                });
-            });
-            req2.write(body);
-            req2.end();
-            // show/send/display the airtable api response to user
-            // may later make this do something else or in the background instead, not sure
-            // res.setHeader('Content-Type', 'application/json');
-            // res.write(JSON.stringify('hi'));
-            // res.end();
-        })
-    }
-});
+                req2.write(body);
+                req2.end();
+                // show/send/display the airtable api response to user
+                // may later make this do something else or in the background instead, not sure
+                // res.setHeader('Content-Type', 'application/json');
+                // res.write(JSON.stringify('hi'));
+                // res.end();
+            })
+        }
+        else if (req.method === 'PATCH') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk.toString();
+            })
+            req.on('end', () => {
+                console.log(body);
 
-app.get('/profile', requiresAuth(), (req, res) => {
-    res.send(JSON.stringify(req.oidc.user));
-});
+                const options = {
+                    hostname: 'api.airtable.com',
+                    path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY_VALUE}`
+                    }
+                };
+
+                // uncomment to help diagnose authorization issue if needed:
+                // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
+
+                const req2 = https.request(options, (res2) => {
+                    // console.log(`STATUS: ${res2.statusCode}`);
+                    // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
+                    res2.setEncoding('utf8');
+                    res.setHeader('Content-Type', 'application/json');
+                    res2.on('data', (chunk2) => {
+                        res.write(chunk2);
+                        // console.log(`BODY: ${chunk}`);
+                    });
+                    res2.on('end', () => {
+                        // console.log('No more data in response.');
+                        res.end();
+                    });
+                });
+                req2.write(body);
+                req2.end();
+                // show/send/display the airtable api response to user
+                // may later make this do something else or in the background instead, not sure
+                // res.setHeader('Content-Type', 'application/json');
+                // res.write(JSON.stringify('hi'));
+                // res.end();
+            })
+        }
+        else if (req.method === 'DELETE') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk.toString();
+            })
+            req.on('end', () => {
+                console.log(body);
+
+                const options = {
+                    hostname: 'api.airtable.com',
+                    path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY_VALUE}`
+                    }
+                };
+
+                // uncomment to help diagnose authorization issue if needed:
+                // console.log({'Authorization': `Bearer ${API_KEY_VALUE}`});
+
+                const req2 = https.request(options, (res2) => {
+                    // console.log(`STATUS: ${res2.statusCode}`);
+                    // console.log(`HEADERS: ${JSON.stringify(res2.headers)}`);
+                    let body2 = '';
+                    res2.setEncoding('utf8');
+                    res.setHeader('Content-Type', 'application/json');
+                    res2.on('data', (chunk2) => {
+                        // res.write(chunk2);
+                        body2 += chunk2.toString();
+                        // console.log(`BODY: ${chunk}`);
+                    });
+                    res2.on('end', () => {
+                        // console.log('No more data in response.');
+                        res.write(body2);
+                        console.log(body2);
+                        res.end();
+                    });
+                });
+                req2.write(body);
+                req2.end();
+                // show/send/display the airtable api response to user
+                // may later make this do something else or in the background instead, not sure
+                // res.setHeader('Content-Type', 'application/json');
+                // res.write(JSON.stringify('hi'));
+                // res.end();
+            })
+        }
+    });
+
+    app.get('/profile', requiresAuth(), (req, res) => {
+        res.send(JSON.stringify(req.oidc.user));
+    });
+}
+else if (environment_internet_flag == "offline") {
+    app.all('/api/*', (req, res) => {
+        res.send('{"records": ""}');
+    });
+
+    app.get('/profile', requiresAuth(), (req, res) => {
+        // res.send(JSON.stringify(req.oidc.user));
+    });
+}
 
 http.createServer(app)
     .listen(port, () => {
