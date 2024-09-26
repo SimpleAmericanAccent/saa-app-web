@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+        #topNav {
+            position: fixed;
+            width: 100vw;
+            background-color: lightblue;
+            padding: 5px;
+        }
+        #leftNav {
+            /* float: left; */
+            /* position: fixed; */
+            /* display: inline; */
+            float: left;
+            width: auto;
+            height: 100vh;
+            margin-top: 30px;
+        }
+        #viewer {
+          position: fixed;  
+          margin-top: 30px;
+          margin-left: 300px;
+          z-index: -1;
+            /* float: left; */
+            /* margin-left: 200px; */
+        }
+        .list {
+        /* display: none; */
+        width: 120px;
+        /* position: fixed; */
+        background-color: white;
+        padding: 0;
+        margin: 0;
+        border: solid;
+        list-style: none;
+      }
+      .list li {
+        padding: 0;
+        text-decoration: none;
+        cursor: pointer;
+        display: block;
+      }
+
+      .list li:hover {
+        background-color: black;
+        color: white;
+      }
+
+      .submenu {
+        /* background-color: white; */
+        list-style: none;
+        display: none;
+        padding: 0;
+        margin: 0;
+        color: black;
+        /* border: solid; */
+        /* width: 250px; */
+        /* top: 200px; */
+      }
+
+      li:hover .submenu {
+        display: block;
+        position: absolute;
+        padding: 0;
+        margin: 0;
+        width: 200px;
+        left: 110px;
+        border: solid;
+        /* z-index: 99999; */
+      }
+
+      .submenu li {
+        position: relative;
+        background-color: white;
+        /* top: -20px; */
+        /* border: solid; */
+      }
+
+    </style>
+</head>
+<body>
+    <div id="topNav">
+        <a href="/logout">Log Out</a>
+        <a href="/">Home</a>
+    </div>
+    <div id="leftNav">
+        <ul class="list" id="list"></ul>
+    </div>
+    <div id="viewer">
+        <h1>Target</h1>
+        <div id="target"></div>
+        <h1>Issue</h1>
+        <div id="issue"></div>
+        <h1>Description</h1>
+        <div id="description">Please select an issue on the left.</div>
+        <h1>Audio</h1>
+        <div id="audio">...</div>
+        <h1>Words</h1>
+        <div id="words">...</div>
+    </div>
+    <script src="learn.js" type="module"></script>
+</body>
+</html>

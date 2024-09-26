@@ -807,3 +807,5 @@ let playbackObj = {
     playbackSpeed.innerHTML = "Playback speed is " + audioPlayer.playbackRate.toFixed(1);
   }
 };
+
+export { moveContextSubmenu }

@@ -263,8 +263,9 @@ else if (environment_internet_flag == "offline") {
         res.send('{"records": ""}');
     });
 
-    app.get('/profile', requiresAuth(), (req, res) => {
+    app.get('/profile', (req, res) => {
         // res.send(JSON.stringify(req.oidc.user));
+        res.send('{"records": ""}');
     });
 }
 

@@ -1,179 +1,484 @@
 {
     "targets": {
         "FLEECE": {
-            "seek x sick": {},
-            "FLEECE tuning": {},
-            "seek x é": {},
-            "seek x schwa": {},
-            "happY x missing happY": {},
-            "happY as FLEECE x happY as KIT": {}
+            "seek x sick": {
+                "description": "",
+                "audio": "",
+                "words": "emails, decent, extremely, decent, these, Mr. Beast, regions, these, review, everything, everything's, we, we, we, Heat, recording"
+            },
+            "FLEECE tuning": {
+                "description": "",
+                "audio": "",
+                "words": "need, being, people"
+            },
+            "seek x é": {
+                "description": "",
+                "audio": "",
+                "words": "engineering"
+            },
+            "seek x schwa": {
+                "description": "",
+                "audio": "",
+                "words": "the"
+            },
+            "happY x missing happY": {
+                "description": "",
+                "audio": "",
+                "words": "difficulty, Adobe, pretty, Miami, Miami"
+            },
+            "happY as FLEECE x happY as KIT": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "KIT": {
             "sick x seek": {
-                "description": "test description",
-                "sdf": "sdf"
+                "description": "The target is a vowel sound similar to the Brazilian 'ê' but most Brazilians do a sound more similar to the Brazilian 'i'",
+                "audio": "...",
+                "words": "bitch, shit, if, it, is, this, him, did, little, big, different"
             },
-            "bid x bed": {},
-            "sim x sam": {}
+            "bid x bed": {
+                "description": "",
+                "audio": "",
+                "words": "changes, arises, databases"
+            },
+            "sim x sam": {
+                "description": "",
+                "audio": "",
+                "words": "simple"
+            }
         },
         "DRESS": {
-            "bed x bad": {},
-            "bed x bid": {},
-            "DRESS x é": {},
-            "DRESS x FACE": {}
+            "bed x bad": {
+                "description": "",
+                "audio": "",
+                "words": "test, bet, bet, bet, set, bets, bets"
+            },
+            "bed x bid": {
+                "description": "",
+                "audio": "",
+                "words": "accent, hello, process"
+            },
+            "DRESS x é": {
+                "description": "",
+                "audio": "",
+                "words": "helps"
+            },
+            "DRESS x FACE": {
+                "description": "",
+                "audio": "",
+                "words": "says"
+            }
         },
         "TRAP": {
-            "bad x \"tá\"": {},
-            "TRAP tuning": {},
-            "bad x bed": {}
+            "bad x \"tá\"": {
+                "description": "",
+                "audio": "",
+                "words": "mastered, after, after, after"
+            },
+            "TRAP tuning": {
+                "description": "",
+                "audio": "",
+                "words": "have, have, format, contrast"
+            },
+            "bad x bed": {
+                "description": "",
+                "audio": "",
+                "words": "class"
+            }
         },
         "TRAM": {
-            "tan x ten": {},
-            "an, am x hein": {}
+            "tan x ten": {
+                "description": "",
+                "audio": "",
+                "words": "ran, anime, ESRGAN, Miami, Miami"
+            },
+            "an, am x hein": {
+                "description": "",
+                "audio": "",
+                "words": "understand, and, Canada"
+            }
         },
 
 
         "commA": {
-            "schwa vs other vowel": {}
+            "schwa vs other vowel": {
+                "description": "",
+                "audio": "",
+                "words": "the, the, position, the, theScore (?), the"
+            }
         },
 
 
 
         "GOOSE": {
-            "GOOSE tuning": {}
+            "GOOSE tuning": {
+                "description": "",
+                "audio": "",
+                "words": "to, do, doing, doing, to, room"
+            }
         },
         "FOOT": {
-            "look x Luke": {},
-            "look x back/open look": {}
+            "look x Luke": {
+                "description": "",
+                "audio": "",
+                "words": "books, took, understood, books, would, looking, would"
+            },
+            "look x back/open look": {
+                "description": "",
+                "audio": "",
+                "words": "wood"
+            }
         },
         "STRUT": {
-            "luck x lock": {},
-            "luck tuning": {},
-            "luck x ó": {},
-            "luck x look": {}
+            "luck x lock": {
+                "description": "",
+                "audio": "",
+                "words": "other, of, what, other, up, company, others, of, nothing, up, what, outcome"
+            },
+            "luck tuning": {
+                "description": "",
+                "audio": "",
+                "words": "stuff, reduction, thumbnail, sponge, of, customers, money"
+            },
+            "luck x ó": {
+                "description": "",
+                "audio": "",
+                "words": "of, of, from, of, of"
+            },
+            "luck x look": {
+                "description": "",
+                "audio": "",
+                "words": "Russia"
+            }
         },
         "LOT": {
-            "lock x ó": {},
-            "o as LOT x o as GOAT": {},
-            "lock x luck": {},
-            "lock x lack": {}
+            "lock x ó": {
+                "description": "",
+                "audio": "",
+                "words": "opposite, audience, operations, contact, process, monitor, automated"
+            },
+            "o as LOT x o as GOAT": {
+                "description": "",
+                "audio": "",
+                "words": "proposition, Los Angeles, Los Angeles"
+            },
+            "lock x luck": {
+                "description": "",
+                "audio": "",
+                "words": "restaurant, odds"
+            },
+            "lock x lack": {
+                "description": "",
+                "audio": "",
+                "words": "quality"
+            }
         },
 
 
         "FACE": {
-            "FACE tuning": {},
-            "FACE x PRICE": {},
-            "FACE x é": {}
+            "FACE tuning": {
+                "description": "",
+                "audio": "",
+                "words": "brain, day"
+            },
+            "FACE x PRICE": {
+                "description": "",
+                "audio": "",
+                "words": "Lakers, language"
+            },
+            "FACE x é": {
+                "description": "",
+                "audio": "",
+                "words": "game"
+            }
         },
         "GOAT": {
-            "GOAT tuning": {},
-            "GOAT x MOUTH": {}
+            "GOAT tuning": {
+                "description": "",
+                "audio": "",
+                "words": "going, ago, knowing, videos, Adobe, goes, know, know, no, know, know, coding, go, code"
+            },
+            "GOAT x MOUTH": {
+                "description": "",
+                "audio": "",
+                "words": "product"
+            }
         },
         "MOUTH": {
-            "MOUTH tuning": {}
+            "MOUTH tuning": {
+                "description": "",
+                "audio": "",
+                "words": "outcome, made"
+            }
         },
 
 
 
         "NORTH/FORCE": {
-            "four x far": {}
+            "four x far": {
+                "description": "",
+                "audio": "",
+                "words": "four, words, words, yeah"
+            }
         },
 
 
 
 
         "P": {
-            "Aspirated P/T/K x Unaspirated P/T/K": {}
+            "Aspirated P/T/K x Unaspirated P/T/K": {
+                "description": "",
+                "audio": "",
+                "words": "people, part"
+            }
         },
 
 
         "T": {
-            "T x TCH": {},
-            "T x TS": {},
-            "glottal T opportunity": {},
-            "T x dental T": {},
-            "T x missing T": {},
-            "flap T opportunity": {},
-            "flap T x R": {},
-            "Aspirated P/T/K x Unaspirated P/T/K": {}
+            "T x TCH": {
+                "description": "",
+                "audio": "",
+                "words": "to, to, to, to, to, to, to, to, to, to, to, to, to, to, to, support, to, to, difficult, typically, to, go to, segment, to, to, made"
+            },
+            "T x TS": {
+                "description": "",
+                "audio": "",
+                "words": "note, doesn't, difficulty, to, IT, two, to"
+            },
+            "glottal T opportunity": {
+                "description": "",
+                "audio": "",
+                "words": "outcome, outcomes"
+            },
+            "T x dental T": {
+                "description": "",
+                "audio": "",
+                "words": "talk, sometimes"
+            },
+            "T x missing T": {
+                "description": "",
+                "audio": "",
+                "words": "property, instance"
+            },
+            "flap T opportunity": {
+                "description": "",
+                "audio": "",
+                "words": "that"
+            },
+            "flap T x R": {
+                "description": "",
+                "audio": "",
+                "words": "Kubernetes"
+            },
+            "Aspirated P/T/K x Unaspirated P/T/K": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "D": {
-            "D x dental D": {},
-            "D x missing D": {},
-            "D x flap": {},
-            "D x J": {},
-            "D x T": {},
-            "flap D x hard D": {}
+            "D x dental D": {
+                "description": "",
+                "audio": "",
+                "words": "leaders, doing, doing, doing, stuff"
+            },
+            "D x missing D": {
+                "description": "",
+                "audio": "",
+                "words": "salaried, odds"
+            },
+            "D x flap": {
+                "description": "",
+                "audio": "",
+                "words": "coding"
+            },
+            "D x J": {
+                "description": "",
+                "audio": "",
+                "words": "different, dishes"
+            },
+            "D x T": {
+                "description": "",
+                "audio": "",
+                "words": "cloud"
+            },
+            "flap D x hard D": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
 
         "K": {
-            "Aspirated P/T/K x Unaspirated P/T/K": {}
+            "Aspirated P/T/K x Unaspirated P/T/K": {
+                "description": "",
+                "audio": "",
+                "words": "coding, code"
+            }
         },
 
 
 
 
         "M": {
-            "sim x sin x sing": {},
-            "M/N/NG x missing M/N/NG": {}
+            "sim x sin x sing": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "M/N/NG x missing M/N/NG": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         
         "N": {
-            "sim x sin x sing": {},
-            "M/N/NG x missing M/N/NG": {}
+            "sim x sin x sing": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "M/N/NG x missing M/N/NG": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         
         "NG": {
-            "sim x sin x sing": {},
-            "M/N/NG x missing M/N/NG": {}
+            "sim x sin x sing": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "M/N/NG x missing M/N/NG": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         
 
         "V": {
-            "V x F": {}
+            "V x F": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "THu": {
-            "TH x T": {},
-            "TH x F": {}
+            "TH x T": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "TH x F": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "THv": {
-            "TH x D/flap": {}
+            "TH x D/flap": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "S": {
-            "S x Z": {}
+            "S x Z": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "Z": {
-            "Z x S": {}
+            "Z x S": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
 
 
         "CH": {
-            "CH x SH": {}
+            "CH x SH": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "J": {
-            "J x D": {}
+            "J x D": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
 
 
         
 
         "R": {
-            "R x missing R": {},
-            "R x R like \"para\"": {},
-            "R x W": {},
-            "R x R like \"rato\"": {}
+            "R x missing R": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "R x R like \"para\"": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "R x W": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "R x R like \"rato\"": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "L": {
-            "dark L x U/O": {},
-            "dark L x missing": {},
-            "intervocalic dark L (tongue tip) vs W": {}
+            "dark L x U/O": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "dark L x missing": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "intervocalic dark L (tongue tip) vs W": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "Y": {
-            "Y x missing Y": {}
+            "Y x missing Y": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "W": {
-            "W x missing W": {},
-            "W x R": {}
+            "W x missing W": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "W x R": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         
 
@@ -181,48 +486,132 @@
 
 
         "al": {
-            "-al x MOUTH": {}
+            "-al x MOUTH": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "-ed": {
-            "-ed": {}
+            "-ed": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
 
         "im/in": {
-            "in, im x (s)im": {}
+            "in, im x (s)im": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "em/en": {
-            "em, en x hein": {}
+            "em, en x hein": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
         "om/on": {
-            "on, om x (c)om": {}
+            "on, om x (c)om": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         },
 
 
         "misc": {
-            "stress": {},
-            "mistranslated": {},
-            "rhythm": {},
-            "grammar/vocab/word usage": {},
-            "listening x reading (or BR similar word)": {},
+            "stress": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "mistranslated": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "rhythm": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "grammar/vocab/word usage": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "listening x reading (or BR similar word)": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
 
 
-            "missing syllable": {},
-            "missing vowel": {},
-            "extra vowel": {},
+            "missing syllable": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "missing vowel": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "extra vowel": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
             
 
-            "wrong vowel": {},
-            "vowel x nasal vowel": {},
+            "wrong vowel": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "vowel x nasal vowel": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
 
     
-            "?": {},
+            "?": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
 
-            "bulls x balls": {},
-            "word x ward": {},
-            "or x ower": {},
+            "bulls x balls": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "word x ward": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "or x ower": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
 
-            "KS x S": {},
-            "extra Y (you x ooh)": {}
+            "KS x S": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "extra Y (you x ooh)": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            }
         }
     }
 }
