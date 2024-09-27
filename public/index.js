@@ -72,6 +72,7 @@ async function loadDefault() {
   audioURLSelected = './audio/audio3.mp3';
   transcriptSelected = speechData.speech.transcripts;
   // console.log(transcriptSelected);
+  console.log("issues:",issues);
 
   loadAll(audioURLSelected, transcriptSelected);
   getAudios();
@@ -222,11 +223,12 @@ function updateWordSpanListeners() {
     listFeatureUL.classList.add("submenu");
     listFeature.appendChild(listFeatureUL);
 
-    for (let j = 0; j < Object.keys(issues.targets)[i].length; j++) {
-      // console.log(Object.keys(issues.targets)[i].length);
+    for (let j = 0; j < Object.values(Object.values(issues.targets)[i]).length; j++) {
+      // console.log("target length:",Object.values(Object.values(issues.targets)[i]).length);
+      // console.log("target keys:",Object.values(issues.targets)[i]);
       const listIssue = document.createElement("li");
       listIssue.textContent = Object.keys(Object.values(issues.targets)[i])[j];
-      // console.log(Object.keys(Object.values(issues.targets)[i])[j]);
+      // console.log("issue:",Object.keys(Object.values(issues.targets)[i])[j]);
       listIssue.addEventListener("click", adjustAnnotations);
       listFeatureUL.appendChild(listIssue);
     }
@@ -301,7 +303,7 @@ async function loadFromJSON() {
     ATRecs: []
   };
   
-  console.log(annotationsLoaded);
+  // console.log("annotationsLoaded:",annotationsLoaded);
   // annotationsLoaded;
 
   // consider updating to handle local JSON both with and without the ATRecs data
@@ -312,7 +314,7 @@ async function loadFromJSON() {
     inProgress.ATRecs[i] = undefined;
   }
 
-  console.log(inProgress);
+  // console.log("inProgress:",inProgress);
 
   for (let i = 0; i < inProgress.notes.length; i++) {
     let s = document.querySelectorAll("span")[i];
@@ -329,7 +331,7 @@ async function loadFromJSON() {
 function portAnnotationsFromAirtable() {
   
   // clear inProgress.notes so it can be updated with Airtable notes
-  console.log(inProgress.notes);
+  // console.log(inProgress.notes);
   for (let i=0; i < inProgress.notes.length; i++) {
     inProgress.notes[i] = [];
   }
@@ -339,9 +341,9 @@ function portAnnotationsFromAirtable() {
     let tempWordIndex = airtableWords.records[i].fields['word index'];
     let tempIssueObject = Object.values(airtableWords.records[i].fields['BR issues']);
     let tempATRec = airtableWords.records[i].id;
-    console.log(tempWordIndex);
-    console.log(tempIssueObject);
-    console.log(tempATRec);
+    // console.log(tempWordIndex);
+    // console.log(tempIssueObject);
+    // console.log(tempATRec);
 
     inProgress.ATRecs[tempWordIndex]=tempATRec;
 
@@ -371,7 +373,7 @@ function portAnnotationsFromAirtable() {
     }
   }
 
-  console.log(inProgress);
+  // console.log("inProgress:",inProgress);
 }
 
 async function getPeople() {
@@ -379,14 +381,15 @@ async function getPeople() {
   .then((response) => response.json())
   .then((json) => (people = json));
 
-  // console.log(people);
+  // console.log("people:",people);
 
   for (let i =0; i < people.records.length; i++) {
     let personName = people.records[i].fields.Name;
+    let personRecID = people.records[i].id;
     // console.log(personName);
     const peopleSelectItem = document.createElement("option");
     peopleSelectItem.textContent = personName;
-    peopleSelectItem.value = personName;
+    peopleSelectItem.value = personRecID;
     peopleSelect.appendChild(peopleSelectItem);
   }
 }
@@ -394,8 +397,11 @@ async function getPeople() {
 function filterAudios() {
   let results = [];
   audioSelect.options.length=0;
+  // console.log(audios);
+  // console.log(peopleSelect.value);
   for (let i =0; i < audios.records.length; i++) {
-    if (audios.records[i].fields['Speaker (from Words (instance))'].indexOf(peopleSelect.value) !== -1) {
+    // console.log(audios.records[i].fields['Speaker']);
+    if (audios.records[i].fields['Speaker'].indexOf(peopleSelect.value) !== -1) {
       results.push(audios.records[i].id);
       let audioName = audios.records[i].fields.Name;
       const audioSelectItem = document.createElement("option");
@@ -441,11 +447,11 @@ async function getAudio() {
   .then ((response) => response.json())
   .then ((json) => (audio = json));
 
-  console.log(audio);
+  // console.log(audio);
 
   audioName = audio.fields['Name'];
   audioNameURLEncoded = encodeURIComponent(audioName);
-  console.log({audioName, audioNameURLEncoded});
+  // console.log({audioName, audioNameURLEncoded});
 
   audioURLSelected = audio.fields['mp3 url'];
   speechDataURL = audio.fields['tran/alignment JSON url'];
@@ -462,9 +468,9 @@ async function getAudio() {
   .then ((response) => response.json())
   .then ((json) => (airtableWords = json));
 
-  console.log(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`);
-  console.log(airtableWords);
-  console.table(inProgress);
+  // console.log(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`);
+  // console.log("airtableWords:",airtableWords);
+  // console.table(inProgress);
 
   portAnnotationsFromAirtable();
 }
@@ -607,7 +613,9 @@ function adjustAnnotations(evt) {
 // may need to make this logic smarter than just checking relative to undefined
 // I think airtableWords is probably getting out of sync with inProgress and airtable's actual state
   if (tempATRec !== undefined) {
-    // console.log(`tempATRec is ${tempATRec}`);
+    console.log(`tempATRec is ${tempATRec}`);
+    console.log(tempATRec);
+    console.log(inProgress.ATRecs);
 
     // if we're here, we already have an Airtable Record ID. need to update the record using PATCH and/or delete the record using DELETE
 
@@ -676,7 +684,7 @@ function adjustAnnotations(evt) {
       console.log(ATResponse.records[0].id);
       console.log(airtableWords);
       airtableWords.records.push(ATResponse.records[0]);
-      inProgress.ATRecs[selectedWord]=ATResponse.records[0];
+      inProgress.ATRecs[selectedWord]=ATResponse.records[0].id;
       console.log(airtableWords);
       return ATResponse.records[0];
     }
@@ -711,8 +719,8 @@ function adjustAnnotations(evt) {
       "word index": selectedWord,
       // "Audio Source": audioSelect.value,
       // "Speaker": peopleSelect.value,
-      "Audio Source": ["recXIcvDExGs9Dfzb"],
-      "Speaker": ["reccfMo1RwJlUhD9T"],
+      "Audio Source": ["rec2LgQIo7hkjEshl"],
+      // "Speaker": ["recfbdmT9nr91pCkE"],
       "Note": "test - delete"
     };
   }
