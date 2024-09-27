@@ -3,6 +3,8 @@
 ///////////////////
 const audioPlayer = document.getElementById("audioPlayer");
 const audioSource = document.getElementById("audioSource");
+const audioOffsetTuner = document.getElementById("audioOffsetTuner");
+// const audioOffsetTunerDisplay = document.getElementById("audioOffsetTunerDisplay");
 const transcriptDiv = document.getElementById("transcript");
 const toolTip = document.getElementById("toolTip");
 const saveBtn = document.getElementById("save");
@@ -87,6 +89,8 @@ async function loadDefault() {
     showCurrentWord();
   }, 30);
 
+  // audioOffsetTuner.addEventListener("change", () => {audioOffsetTuner.textContent = audioOffsetTuner.value*1});
+
   document.querySelectorAll("td").forEach((tableElement) => {
     // tableElementContent = tableElement.innerHTML;
     tableElement.addEventListener("click", filterAnnotations);
@@ -130,6 +134,7 @@ function displayTranscript (transcriptSelected) {
     const start_offset = tranData.start_offset;
     const start_offset_conv = start_offset / 16000;
     const alignment = tranData.alignment;
+    // audioOffsetTuner.value = 0;
   
     alignment.forEach((wordData) => {
       const wordSpan = document.createElement("span");
@@ -144,7 +149,10 @@ function displayTranscript (transcriptSelected) {
       inProgress.ATRecs.push(undefined);
   
       wordSpan.addEventListener("click", () => {
-        audioPlayer.currentTime = wordData.start + start_offset_conv;
+        // console.log("audioOffsetTuner.value:",audioOffsetTuner.value*1);
+        // console.log(Math.trunc((wordData.start + start_offset_conv)*100)/100 + audioOffsetTuner.value*1);
+        // audioPlayer.currentTime = wordData.start + start_offset_conv;
+        audioPlayer.currentTime = wordData.start + start_offset_conv + audioOffsetTuner.value*1;
         audioPlayer.play();
       });
       transcriptDiv.appendChild(wordSpan);
@@ -342,8 +350,9 @@ function portAnnotationsFromAirtable() {
     let tempIssueObject = Object.values(airtableWords.records[i].fields['BR issues']);
     let tempATRec = airtableWords.records[i].id;
     // console.log(tempWordIndex);
-    // console.log(tempIssueObject);
+    console.log("tempIssueObject:",tempIssueObject);
     // console.log(tempATRec);
+    console.log("airtableIssuesObject:", airtableIssuesObject);
 
     inProgress.ATRecs[tempWordIndex]=tempATRec;
 
