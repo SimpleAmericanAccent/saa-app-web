@@ -31,7 +31,7 @@ async function loadIssues () {
         listFeatureUL.classList.add("submenu");
         listFeature.appendChild(listFeatureUL);
 
-        for (let j = 0; j < Object.keys(issues.targets)[i].length; j++) {
+        for (let j = 0; j < Object.values(Object.values(issues.targets)[i]).length; j++) {
             // console.log(Object.keys(issues.targets)[i].length);
             const listIssue = document.createElement("li");
             listIssue.textContent = Object.keys(Object.values(issues.targets)[i])[j];
