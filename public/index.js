@@ -74,7 +74,7 @@ async function loadDefault() {
   audioURLSelected = './audio/audio3.mp3';
   transcriptSelected = speechData.speech.transcripts;
   // console.log(transcriptSelected);
-  console.log("issues:",issues);
+  // console.log("issues:",issues);
 
   loadAll(audioURLSelected, transcriptSelected);
   getAudios();
@@ -350,9 +350,9 @@ function portAnnotationsFromAirtable() {
     let tempIssueObject = Object.values(airtableWords.records[i].fields['BR issues']);
     let tempATRec = airtableWords.records[i].id;
     // console.log(tempWordIndex);
-    console.log("tempIssueObject:",tempIssueObject);
+    // console.log("tempIssueObject:",tempIssueObject);
     // console.log(tempATRec);
-    console.log("airtableIssuesObject:", airtableIssuesObject);
+    // console.log("airtableIssuesObject:", airtableIssuesObject);
 
     inProgress.ATRecs[tempWordIndex]=tempATRec;
 
