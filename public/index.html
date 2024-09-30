@@ -72,7 +72,8 @@
         width: 100vw;
         height: 230px;
         min-height: 100px;
-        background-color: #ddddddee;
+        background-color: #dddddd;
+        z-index: 10;
       }
       .annotation-list {
         /* float: right; */
@@ -87,8 +88,8 @@
         width: 100vw;
         height: 12vh;
         min-height: 100px;
-        background-color: #ddddddee;
-        z-index: -1;
+        background-color: #dddddd;
+        /* z-index: -1; */
       }
       .toolTip {
         border: solid gray 1px;
@@ -98,11 +99,13 @@
         height: 5vh;
         min-height: 45px;
         border-radius: 5px;
-        background-color: #ffffffdd;
+        background-color: #ffffff;
+
       }
       .transcript {
         margin: 20px 20px;
         padding-top: max(35vh, 330px);
+        z-index: -1;
       }
       .transcript span {
         cursor: pointer;
