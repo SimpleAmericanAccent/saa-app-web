@@ -18,7 +18,7 @@ const peopleSelect = document.getElementById("peopleSelect");
 const audioSelect = document.getElementById("audioSelect");
 let submenu = document.querySelectorAll(".submenu");
 // let tableElementContent;
-let people, audios, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected;
+let authz, audios, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected, user, people;
 let audioData, speechData, annotationsLoaded, issues, audioURLSelected, transcriptSelected, speechDataURL, audioName, audioNameURLEncoded, airtableWords;
 let airtableIssues;
 let airtableIssuesObject = {};
@@ -77,10 +77,12 @@ async function loadDefault() {
   // console.log("issues:",issues);
 
   loadAll(audioURLSelected, transcriptSelected);
-  getAudios();
-  getPeople();
+  // getPeople();
+  // getAudios();
+  getCurrentUserResources();
   loadFromJSON();
   getAirtableIssues();
+  // getUser();
 
   // equivalent but runs a bit faster and more reliably than 'timeupdate'
   // the last argument is the time (ms) between calls of showCurrentWord()
@@ -125,6 +127,7 @@ function clearTranscript () {
   // console.log(speechData);
   // console.log(inProgress);
   transcriptDiv.innerHTML = '';
+  list.innerHTML = '';
 }
 
 function displayTranscript (transcriptSelected) {
@@ -385,12 +388,39 @@ function portAnnotationsFromAirtable() {
   // console.log("inProgress:",inProgress);
 }
 
-async function getPeople() {
-  await fetch("/api/People")
-  .then((response) => response.json())
-  .then((json) => (people = json));
+// old function, let's try  a new approach, moving more of this to back-end
+// async function getPeople() {
+//   await fetch("/api/People")
+//   .then((response) => response.json())
+//   .then((json) => (people = json));
 
-  // console.log("people:",people);
+//   console.log("people:",people);
+
+//   for (let i =0; i < people.records.length; i++) {
+//     let personName = people.records[i].fields.Name;
+//     let personRecID = people.records[i].id;
+//     // console.log(personName);
+//     const peopleSelectItem = document.createElement("option");
+//     peopleSelectItem.textContent = personName;
+//     peopleSelectItem.value = personRecID;
+//     peopleSelect.appendChild(peopleSelectItem);
+//   }
+// }
+
+async function getCurrentUserResources() {
+  await fetch("/authz")
+  .then((response) => response.json())
+  .then((json) => (authz = json));
+
+  console.log("authz:",authz);
+
+  people = authz.people;
+  audios = authz.audios;
+
+  console.log("people:", people);
+  console.log("audios:", audios);
+
+
 
   for (let i =0; i < people.records.length; i++) {
     let personName = people.records[i].fields.Name;
@@ -401,6 +431,40 @@ async function getPeople() {
     peopleSelectItem.value = personRecID;
     peopleSelect.appendChild(peopleSelectItem);
   }
+
+  // await fetch("/api/Audio%20Source")
+  // .then ((response) => response.json())
+  // .then ((json) => (audios = json));
+
+  // console.log(audios);
+  // console.log(audios.records[0].fields['Speaker (from Words (instance))']);
+
+  for (let i =0; i < audios.records.length; i++) {
+    let audioName = audios.records[i].fields.Name;
+    // console.log(audioName);
+    const audioSelectItem = document.createElement("option");
+    audioSelectItem.textContent = audioName;
+    audioSelectItem.value = audios.records[i].id;
+    audioSelect.appendChild(audioSelectItem);
+  }
+}
+
+async function getUser() {
+  await fetch("/user")
+  .then((response) => response.json())
+  .then((json) => (user = json));
+
+  console.log("user:", user);
+
+  // for (let i =0; i < people.records.length; i++) {
+  //   let personName = people.records[i].fields.Name;
+  //   let personRecID = people.records[i].id;
+  //   // console.log(personName);
+  //   const peopleSelectItem = document.createElement("option");
+  //   peopleSelectItem.textContent = personName;
+  //   peopleSelectItem.value = personRecID;
+  //   peopleSelect.appendChild(peopleSelectItem);
+  // }
 }
 
 function filterAudios() {
@@ -431,23 +495,24 @@ async function getAirtableIssues() {
   }
 }
 
-async function getAudios() {
-  await fetch("/api/Audio%20Source")
-  .then ((response) => response.json())
-  .then ((json) => (audios = json));
+// old function, let's try  a new approach, moving more of this to back-end
+// async function getAudios() {
+//   await fetch("/api/Audio%20Source")
+//   .then ((response) => response.json())
+//   .then ((json) => (audios = json));
 
-  // console.log(audios);
-  // console.log(audios.records[0].fields['Speaker (from Words (instance))']);
+//   console.log(audios);
+//   // console.log(audios.records[0].fields['Speaker (from Words (instance))']);
 
-  for (let i =0; i < audios.records.length; i++) {
-    let audioName = audios.records[i].fields.Name;
-    // console.log(audioName);
-    const audioSelectItem = document.createElement("option");
-    audioSelectItem.textContent = audioName;
-    audioSelectItem.value = audios.records[i].id;
-    audioSelect.appendChild(audioSelectItem);
-  }
-}
+//   for (let i =0; i < audios.records.length; i++) {
+//     let audioName = audios.records[i].fields.Name;
+//     // console.log(audioName);
+//     const audioSelectItem = document.createElement("option");
+//     audioSelectItem.textContent = audioName;
+//     audioSelectItem.value = audios.records[i].id;
+//     audioSelect.appendChild(audioSelectItem);
+//   }
+// }
 
 async function getAudio() {
   clearTranscript();
@@ -597,8 +662,6 @@ function filterAnnotations(evt) {
     }
   }
 }
-
-
 
 function adjustAnnotations(evt) {
   issueSelected = evt.currentTarget.innerHTML;
