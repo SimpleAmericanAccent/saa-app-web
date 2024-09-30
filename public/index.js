@@ -791,7 +791,8 @@ function adjustAnnotations(evt) {
       "word index": selectedWord,
       // "Audio Source": audioSelect.value,
       // "Speaker": peopleSelect.value,
-      "Audio Source": ["rec2LgQIo7hkjEshl"],
+      // "Audio Source": ["rec2LgQIo7hkjEshl"],
+      "Audio Source": ["recmgz07zMTo2a1mJ"],
       // "Speaker": ["recfbdmT9nr91pCkE"],
       "Note": "test - delete"
     };
