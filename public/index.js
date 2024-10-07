@@ -63,26 +63,50 @@ document.addEventListener("keydown", (e) => {
 ///////////////////////////////
 
 async function loadDefault() {
-  await fetch("./JSON/speech3.json")
-    .then((response) => response.json())
-    .then((json) => (speechData = json));
+  await fetch(`/api/Audio%20Source/recPQM1gCeZitrCWZ`)
+  .then ((response) => response.json())
+  .then ((json) => (audio = json));
 
   await fetch("./JSON/issues2.json")
-    .then((response) => response.json())
-    .then((json) => (issues = json));
+  .then((response) => response.json())
+  .then((json) => (issues = json));
 
-  audioURLSelected = './audio/audio3.mp3';
+  // console.log(audio);
+
+  audioName = audio.fields['Name'];
+  audioNameURLEncoded = encodeURIComponent(audioName);
+  // console.log({audioName, audioNameURLEncoded});
+
+  audioURLSelected = audio.fields['mp3 url'];
+  speechDataURL = audio.fields['tran/alignment JSON url'];
+  // console.log(speechDataURL);
+
+  await fetch(speechDataURL)
+  .then ((response) => response.json())
+  .then ((json) => (speechData = json));
+
   transcriptSelected = speechData.speech.transcripts;
-  // console.log(transcriptSelected);
-  // console.log("issues:",issues);
+
+  await fetch(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`)
+  .then ((response) => response.json())
+  .then ((json) => (airtableWords = json));
+
+  // console.log(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`);
+  // console.log("airtableWords:",airtableWords);
+  // console.log("inProgress:",inProgress);
+
+ 
+
+  ////
 
   loadAll(audioURLSelected, transcriptSelected);
-  // getPeople();
-  // getAudios();
+
   getCurrentUserResources();
-  loadFromJSON();
-  getAirtableIssues();
+  // loadFromJSON();
   // getUser();
+  // console.log("airtableWords:",airtableWords);
+  // console.log("inProgress:",inProgress);
+  
 
   // equivalent but runs a bit faster and more reliably than 'timeupdate'
   // the last argument is the time (ms) between calls of showCurrentWord()
@@ -101,6 +125,7 @@ async function loadDefault() {
 
 function loadAll(audioURLSelected, transcriptSelected, annotationsData) {
   updateAudio(audioURLSelected);
+  clearTranscript();
   displayTranscript(transcriptSelected);
   updateWordSpanListeners();
 }
@@ -340,11 +365,13 @@ async function loadFromJSON() {
 }
 
 function portAnnotationsFromAirtable() {
+  // console.log("portAnnotationsFromAirtable began execution here");
   
   // clear inProgress.notes so it can be updated with Airtable notes
   // console.log(inProgress.notes);
   for (let i=0; i < inProgress.notes.length; i++) {
     inProgress.notes[i] = [];
+    // console.log("inProgress.notes was cleared here, via portAnnotationsFromAirtable");
   }
   // console.log(inProgress.notes);
   
@@ -360,8 +387,16 @@ function portAnnotationsFromAirtable() {
     inProgress.ATRecs[tempWordIndex]=tempATRec;
 
     for (let j=0; j < Object.values(airtableWords.records[i].fields['BR issues']).length; j++) {
+      // console.log("=====================");
+      // console.log("tempWordIndex:",tempWordIndex);
+      // console.log("tempIssueObject:",tempIssueObject);
+      // console.log("tempATRec:",tempATRec);
+      // console.log("airtableIssuesObject:",airtableIssuesObject);
+      // console.log("Object.keys(airtableIssuesObject):",Object.keys(airtableIssuesObject));
+      // console.log("tempIssueObject[j]:",tempIssueObject[j]);
       if (Object.keys(airtableIssuesObject).includes(tempIssueObject[j])) {
         inProgress.notes[tempWordIndex].push(airtableIssuesObject[tempIssueObject[j]]);
+        // console.log("attempted to write to inProgress.notes");
       }
       else {
 
@@ -386,6 +421,7 @@ function portAnnotationsFromAirtable() {
   }
 
   // console.log("inProgress:",inProgress);
+  // console.log("portAnnotationsFromAirtable ended execution here");
 }
 
 // old function, let's try  a new approach, moving more of this to back-end
@@ -449,6 +485,7 @@ async function getCurrentUserResources() {
     audioSelectItem.value = audios.records[i].id;
     audioSelect.appendChild(audioSelectItem);
   }
+  getAirtableIssues();
 }
 
 async function getUser() {
@@ -488,6 +525,7 @@ function filterAudios() {
 }
 
 async function getAirtableIssues() {
+  // console.log("getAirtableIssues began execution here");
   await fetch("/api/BR%20issues")
   .then ((response) => response.json())
   .then ((json) => (airtableIssues = json));
@@ -495,6 +533,8 @@ async function getAirtableIssues() {
   for (let i=0; i < airtableIssues.records.length; i++) {
     airtableIssuesObject[airtableIssues.records[i].id] = airtableIssues.records[i].fields['Name'];
   }
+  // console.log("getAirtableIssues ended execution here");
+  portAnnotationsFromAirtable();
 }
 
 // old function, let's try  a new approach, moving more of this to back-end
@@ -891,6 +931,17 @@ let playbackObj = {
   Period: () => {
     audioPlayer.playbackRate = audioPlayer.playbackRate + 0.1;
     playbackSpeed.innerHTML = "Playback speed is " + audioPlayer.playbackRate.toFixed(1);
+  },
+  ArrowUp: () => {
+    console.log("==============");
+    // console.log("issues:",issues);
+    // console.log("airtableIssues:",airtableIssues);
+    // console.log("airtableIssuesObject:",airtableIssuesObject);
+    console.log("inProgress:",inProgress);
+    console.log("airtableWords:",airtableWords);
+    console.log("speechData:",speechData);
+    console.log("transcriptSelected:",transcriptSelected);
+    console.log("==============");
   }
 };
 
