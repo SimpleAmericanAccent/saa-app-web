@@ -18,7 +18,7 @@ const peopleSelect = document.getElementById("peopleSelect");
 const audioSelect = document.getElementById("audioSelect");
 let submenu = document.querySelectorAll(".submenu");
 // let tableElementContent;
-let authz, audios, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected, user, people;
+let authz, audios, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected, user, people, userRole;
 let audioData, speechData, annotationsLoaded, issues, audioURLSelected, transcriptSelected, speechDataURL, audioName, audioNameURLEncoded, airtableWords;
 let airtableIssues;
 let airtableIssuesObject = {};
@@ -416,9 +416,11 @@ async function getCurrentUserResources() {
 
   people = authz.people;
   audios = authz.audios;
+  userRole = authz.userRole;
 
   console.log("people:", people);
   console.log("audios:", audios);
+  console.log("user role:", userRole);
 
 
 
@@ -664,138 +666,141 @@ function filterAnnotations(evt) {
 }
 
 function adjustAnnotations(evt) {
-  issueSelected = evt.currentTarget.innerHTML;
-  let s = document.querySelectorAll("span")[selectedWord];
-
-  console.log(airtableIssues);
-
-  let notes = inProgress.notes[selectedWord];
-  // console.log(inProgress);
-  let tempATRec = inProgress.ATRecs[selectedWord];
-
-  s.classList.add("annotated");
-
-  // console.log(issueSelected);
-  // console.log(selectedWord);
-  // console.log(inProgress.words[selectedWord]);
-  // console.log(notes);
-  console.log(tempATRec);
-
-
-// may need to make this logic smarter than just checking relative to undefined
-// I think airtableWords is probably getting out of sync with inProgress and airtable's actual state
-  if (tempATRec !== undefined) {
-    console.log(`tempATRec is ${tempATRec}`);
+  // console.log("userRole:",userRole);
+  if (userRole === "write") {
+    issueSelected = evt.currentTarget.innerHTML;
+    let s = document.querySelectorAll("span")[selectedWord];
+  
+    console.log(airtableIssues);
+  
+    let notes = inProgress.notes[selectedWord];
+    // console.log(inProgress);
+    let tempATRec = inProgress.ATRecs[selectedWord];
+  
+    s.classList.add("annotated");
+  
+    // console.log(issueSelected);
+    // console.log(selectedWord);
+    // console.log(inProgress.words[selectedWord]);
+    // console.log(notes);
     console.log(tempATRec);
-    console.log(inProgress.ATRecs);
-
-    // if we're here, we already have an Airtable Record ID. need to update the record using PATCH and/or delete the record using DELETE
-
-    if (notes.includes(issueSelected)) {
-      // console.log("already included");
-      notes.splice(notes.indexOf(issueSelected), 1);
-      if (notes.length == 0) {
-        s.classList.remove("annotated");
-        //need to add DELETE here, once DELETE is implemented in back-end
-        saveToAirtable("DELETE", tempATRec, buildATFields());
-
-        // need to remove airtable record ID (set as undefined?) from local airtableWords object and/or inProgress object
-        console.log(airtableWords);
-        // remove here then console log to verify result
-
-
-        for (let i=0; i<airtableWords.records.length; i++) {
-          if (airtableWords.records[i] == tempATRec) {
-            airtableWords.records.splice(i,i);
-            i = i - 1;
+  
+  
+  // may need to make this logic smarter than just checking relative to undefined
+  // I think airtableWords is probably getting out of sync with inProgress and airtable's actual state
+    if (tempATRec !== undefined) {
+      console.log(`tempATRec is ${tempATRec}`);
+      console.log(tempATRec);
+      console.log(inProgress.ATRecs);
+  
+      // if we're here, we already have an Airtable Record ID. need to update the record using PATCH and/or delete the record using DELETE
+  
+      if (notes.includes(issueSelected)) {
+        // console.log("already included");
+        notes.splice(notes.indexOf(issueSelected), 1);
+        if (notes.length == 0) {
+          s.classList.remove("annotated");
+          //need to add DELETE here, once DELETE is implemented in back-end
+          saveToAirtable("DELETE", tempATRec, buildATFields());
+  
+          // need to remove airtable record ID (set as undefined?) from local airtableWords object and/or inProgress object
+          console.log(airtableWords);
+          // remove here then console log to verify result
+  
+  
+          for (let i=0; i<airtableWords.records.length; i++) {
+            if (airtableWords.records[i] == tempATRec) {
+              airtableWords.records.splice(i,i);
+              i = i - 1;
+            }
+  
           }
-
+  
+  
+  
+          console.log(airtableWords);
         }
-
-
-
-        console.log(airtableWords);
+        else if (notes.length != 0) {
+          saveToAirtable("PATCH", tempATRec, buildATFields());
+        }
       }
-      else if (notes.length != 0) {
+      else {
+        // console.log("not already included");
+        notes.push(issueSelected);
+  
         saveToAirtable("PATCH", tempATRec, buildATFields());
-      }
-    }
-    else {
-      // console.log("not already included");
-      notes.push(issueSelected);
-
-      saveToAirtable("PATCH", tempATRec, buildATFields());
-
-    }
-
-
-  }
-  else if (tempATRec === undefined) {
-    // console.log('tempATRec is undefined');
-
-    // if we're here, we don't yet have an Airtable Record ID. so need to create the record using POST
-
-    if (notes.includes(issueSelected)) {
-      // console.log("already included");
-      notes.splice(notes.indexOf(issueSelected), 1);
-      if (notes.length == 0) {
-        s.classList.remove("annotated");
-      }
-      else if (notes.length != 0) {
-
-      }
-    }
-    else {
-      // console.log("not already included");
-      notes.push(issueSelected);
-    }
-
-    async function asyncCaller () {
-      let ATResponse = await saveToAirtable("POST", tempATRec, buildATFields());
-      console.log(ATResponse);
-      console.log(ATResponse.records[0].id);
-      console.log(airtableWords);
-      airtableWords.records.push(ATResponse.records[0]);
-      inProgress.ATRecs[selectedWord]=ATResponse.records[0].id;
-      console.log(airtableWords);
-      return ATResponse.records[0];
-    }
-
-    asyncCaller();
-  }
-
   
-  showAnnotations(selectedWord);
-
-  function convertIssuesToATIssueRecIDs (notes, airtableIssues) {
-    let convertedOutput = [];
-    
-    for (let i=0; i < notes.length; i++) {
-      for (let j=0; j < airtableIssues.records.length; j++) {
-        if (airtableIssues.records[j].fields.Name == notes[i]) {
-          convertedOutput.push(airtableIssues.records[j].id);
+      }
+  
+  
+    }
+    else if (tempATRec === undefined) {
+      // console.log('tempATRec is undefined');
+  
+      // if we're here, we don't yet have an Airtable Record ID. so need to create the record using POST
+  
+      if (notes.includes(issueSelected)) {
+        // console.log("already included");
+        notes.splice(notes.indexOf(issueSelected), 1);
+        if (notes.length == 0) {
+          s.classList.remove("annotated");
+        }
+        else if (notes.length != 0) {
+  
         }
       }
-    }
-    console.log(convertedOutput);
-    return convertedOutput;
-  }
+      else {
+        // console.log("not already included");
+        notes.push(issueSelected);
+      }
   
-  function buildATFields () {
-    // going to need to swap some of these with dynamically looked-up airtable records IDs, sending string won't work
-    // hard-coding record IDs for now, just for testing. need to make dynamic.
-    return {
-      "Name": inProgress.words[selectedWord], 
-      "BR issues": convertIssuesToATIssueRecIDs(notes, airtableIssues), 
-      "in timestamp (seconds)": inProgress.timeIntervals[selectedWord], 
-      "word index": selectedWord,
-      // "Audio Source": audioSelect.value,
-      // "Speaker": peopleSelect.value,
-      // "Audio Source": ["rec2LgQIo7hkjEshl"],
-      "Audio Source": [audioSelect.value],
-      // "Speaker": ["recfbdmT9nr91pCkE"],
-      "Note": "test - delete"
-    };
+      async function asyncCaller () {
+        let ATResponse = await saveToAirtable("POST", tempATRec, buildATFields());
+        console.log(ATResponse);
+        console.log(ATResponse.records[0].id);
+        console.log(airtableWords);
+        airtableWords.records.push(ATResponse.records[0]);
+        inProgress.ATRecs[selectedWord]=ATResponse.records[0].id;
+        console.log(airtableWords);
+        return ATResponse.records[0];
+      }
+  
+      asyncCaller();
+    }
+  
+    
+    showAnnotations(selectedWord);
+  
+    function convertIssuesToATIssueRecIDs (notes, airtableIssues) {
+      let convertedOutput = [];
+      
+      for (let i=0; i < notes.length; i++) {
+        for (let j=0; j < airtableIssues.records.length; j++) {
+          if (airtableIssues.records[j].fields.Name == notes[i]) {
+            convertedOutput.push(airtableIssues.records[j].id);
+          }
+        }
+      }
+      console.log(convertedOutput);
+      return convertedOutput;
+    }
+    
+    function buildATFields () {
+      // going to need to swap some of these with dynamically looked-up airtable records IDs, sending string won't work
+      // hard-coding record IDs for now, just for testing. need to make dynamic.
+      return {
+        "Name": inProgress.words[selectedWord], 
+        "BR issues": convertIssuesToATIssueRecIDs(notes, airtableIssues), 
+        "in timestamp (seconds)": inProgress.timeIntervals[selectedWord], 
+        "word index": selectedWord,
+        // "Audio Source": audioSelect.value,
+        // "Speaker": peopleSelect.value,
+        // "Audio Source": ["rec2LgQIo7hkjEshl"],
+        "Audio Source": [audioSelect.value],
+        // "Speaker": ["recfbdmT9nr91pCkE"],
+        "Note": "test - delete"
+      };
+    }
   }
 }
 

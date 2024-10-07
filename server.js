@@ -279,11 +279,12 @@ if (environment_internet_flag == "online") {
         let peopleObject = {};
         let currentUserId = req.oidc.user.sub;
         let currentUserAirtable;
-        let currentUserAudioReadAccess;
+        let currentUserAudioAccess;
         let audioObjectString = '';
         let audioObject = {};
-        let currentUserAudioReadAccessObject = {'records': []};
-        let currentUserAudioReadAccessObjectSpeakerNames = {'records': []};
+        let currentUserAudioAccessObject = {'records': []};
+        let currentUserAudioAccessObjectSpeakerNames = {'records': []};
+        let currentUserRole;
         const postData1 = '';
         let options1 = {
             hostname: 'api.airtable.com',
@@ -307,11 +308,13 @@ if (environment_internet_flag == "online") {
                     if (typeof user_id !== "undefined") {
                         if (user_id == currentUserId) {
                             currentUserAirtable = peopleObject.records[i];
-                            currentUserAudioReadAccess = peopleObject.records[i].fields['Read access to audios'];
+                            currentUserAudioAccess = peopleObject.records[i].fields['Access to audios'];
+                            currentUserRole = peopleObject.records[i].fields['Role'];
                             console.log(currentUserAirtable);
                             console.log("Airtable match found for current user's Autho0 user_id: ",user_id);
                             console.log("Current user email is: ", req.oidc.user.email);
-                            console.log("Per Airtable, current user has read access to: ",currentUserAudioReadAccess);
+                            console.log("Per Airtable, current user has read access to: ",currentUserAudioAccess);
+                            console.log("Per Airtable, current user has role: ",currentUserRole);
                         }
                     }
                 }
@@ -343,7 +346,7 @@ if (environment_internet_flag == "online") {
                         // console.log(audioObject);
                         // console.log(audioObject.records[0].id);
 
-                        for (let i=0,k=0; i < currentUserAudioReadAccess.length; i++) {
+                        for (let i=0,k=0; i < currentUserAudioAccess.length; i++) {
                             // console.log(i);
                             
                         
@@ -352,8 +355,8 @@ if (environment_internet_flag == "online") {
 
                                 
 
-                                if (currentUserAudioReadAccess[i] === audioObject.records[j].id) {
-                                    currentUserAudioReadAccessObject.records[k] = audioObject.records[j];
+                                if (currentUserAudioAccess[i] === audioObject.records[j].id) {
+                                    currentUserAudioAccessObject.records[k] = audioObject.records[j];
                                     k++;
                                 }
 
@@ -375,28 +378,28 @@ if (environment_internet_flag == "online") {
 
                         }
                     
-                        console.log(currentUserAudioReadAccessObject);
-                        console.log(currentUserAudioReadAccessObject.records[0].fields.Speaker);
+                        console.log(currentUserAudioAccessObject);
+                        console.log(currentUserAudioAccessObject.records[0].fields.Speaker);
                         console.log(peopleObject);
 
                         for (let i=0,k=0; i < Object.keys(peopleObject.records).length; i++) {
-                            for (let j=0; j < Object.keys(currentUserAudioReadAccessObject.records).length; j++) {
-                                if (peopleObject.records[i].id === currentUserAudioReadAccessObject.records[j].fields.Speaker[0]) {
-                                    currentUserAudioReadAccessObjectSpeakerNames.records[k] = peopleObject.records[i];
+                            for (let j=0; j < Object.keys(currentUserAudioAccessObject.records).length; j++) {
+                                if (peopleObject.records[i].id === currentUserAudioAccessObject.records[j].fields.Speaker[0]) {
+                                    currentUserAudioAccessObjectSpeakerNames.records[k] = peopleObject.records[i];
                                     // console.log(peopleObject.records[i].fields.Name);
                                     k++
                                 }
                             }
                         }
 
-                        console.log(currentUserAudioReadAccessObjectSpeakerNames);
+                        console.log(currentUserAudioAccessObjectSpeakerNames);
 
                         ///////////////////////
                         ///// 3
                         //////////////////////
 
                         res.setHeader('Content-Type', 'application/json');
-                        res.write(JSON.stringify({'people': currentUserAudioReadAccessObjectSpeakerNames, 'audios': currentUserAudioReadAccessObject}));
+                        res.write(JSON.stringify({'people': currentUserAudioAccessObjectSpeakerNames, 'audios': currentUserAudioAccessObject, 'userRole': currentUserRole}));
                         res.end();
 
                     });
