@@ -11,9 +11,12 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const port = process.env.PORT || 5000;
-// const API_BASE_URL = process.env.API_BASE_URL;
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 // const API_KEY_NAME = process.env.API_KEY_NAME;
-const API_KEY_VALUE = process.env.API_KEY_VALUE;
+const AIRTABLE_KEY_READ_WRITE_VALUE = process.env.AIRTABLE_KEY_READ_WRITE_VALUE;
+const AIRTABLE_KEY_READ_ONLY_VALUE = process.env.AIRTABLE_KEY_READ_ONLY_VALUE;
+let AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_ONLY_VALUE;
+const DEFAULT_AUDIO_REC_ID = process.env.DEFAULT_AUDIO_REC_ID;
 const auth0_secret = process.env.AUTH0_SECRET;
 const auth0_base_url = process.env.AUTH0_BASE_URL;
 const auth0_client_id = process.env.AUTH0_CLIENT_ID;
@@ -87,11 +90,11 @@ if (environment_internet_flag == "online") {
         const postData1 = '';
         let options1 = {
             hostname: 'api.airtable.com',
-            path: `/v0/app7v05YMhvA8hpEY/People`,
+            path: `/v0/${AIRTABLE_BASE_ID}/People`,
             method: 'GET',
             headers: {
                 // 'Content-Type': 'text/plain',
-                'Authorization': `Bearer ${API_KEY_VALUE}`
+                'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
             }
         };
 
@@ -102,10 +105,15 @@ if (environment_internet_flag == "online") {
             });
             res1.on('end', () => {
                 peopleObject = JSON.parse(peopleObjectString);
+                // console.log("weeeeeeeeeeeeeeeeeeeee");
                 for (let i=0; i < Object.keys(peopleObject.records).length; i++) {
-                    let user_id = peopleObject.records[i].fields['auth0 user _id']
+                    let user_id = peopleObject.records[i].fields['auth0 user_id'];
+                    // console.log("peopleObject.records[i].fields['auth0 user _id']:",peopleObject.records[i].fields['auth0 user _id']);
+                    // console.log("peopleObject.records[i].fields:",peopleObject.records[i].fields);
                     if (typeof user_id !== "undefined") {
                         if (user_id == currentUserId) {
+                            console.log("weeeeeeeeeeeeeeeeeeeee");
+                            console.log("peopleObject.records[i]:",peopleObject.records[i]);
                             currentUserAirtable = peopleObject.records[i];
                             currentUserAudioAccess = peopleObject.records[i].fields['Access to audios'];
                             currentUserRole = peopleObject.records[i].fields['Role'];
@@ -130,11 +138,11 @@ if (environment_internet_flag == "online") {
                 const postData2 = '';
                 let options2 = {
                     hostname: 'api.airtable.com',
-                    path: `/v0/app7v05YMhvA8hpEY/Audio%20Source`,
+                    path: `/v0/${AIRTABLE_BASE_ID}/Audio%20Source`,
                     method: 'GET',
                     headers: {
                         // 'Content-Type': 'text/plain',
-                        'Authorization': `Bearer ${API_KEY_VALUE}`
+                        'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
                     }
                 };
 
@@ -147,6 +155,9 @@ if (environment_internet_flag == "online") {
                         audioObject = JSON.parse(audioObjectString);
                         // console.log(audioObject);
                         // console.log(audioObject.records[0].id);
+                        peopleObject
+                        // console.log("peopleObject:",peopleObject);
+                        // console.log("currentUserAudioAccess:",currentUserAudioAccess);
 
                         for (let i=0,k=0; i < currentUserAudioAccess.length; i++) {
                             // console.log(i);
@@ -224,18 +235,18 @@ if (environment_internet_flag == "online") {
         let defaultAudioDataString = '';
         let defaultAudioData = {};
         let defaultAudioDataSanitized = {};
-        let defaultAudioRecId = 'recPQM1gCeZitrCWZ';
+        let defaultAudioRecId = `${DEFAULT_AUDIO_REC_ID}`;
         let defaultTranscriptDataString = '';
         let defaultTranscriptData = {};
         let audioName;
         let audioNameURLEncoded;
         const options1 = {
             hostname: 'api.airtable.com',
-            path: `/v0/app7v05YMhvA8hpEY/Audio%20Source/${defaultAudioRecId}`,
+            path: `/v0/${AIRTABLE_BASE_ID}/Audio%20Source/${defaultAudioRecId}`,
             method: 'GET',
             headers: {
                 // 'Content-Type': 'text/plain',
-                'Authorization': `Bearer ${API_KEY_VALUE}`
+                'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
             }
         };
 
@@ -273,11 +284,11 @@ if (environment_internet_flag == "online") {
                 const postData2 = '';
                 let options2 = {
                     hostname: 'api.airtable.com',
-                    path: `/v0/app7v05YMhvA8hpEY/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`,
+                    path: `/v0/${AIRTABLE_BASE_ID}/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`,
                     method: 'GET',
                     headers: {
                         // 'Content-Type': 'text/plain',
-                        'Authorization': `Bearer ${API_KEY_VALUE}`
+                        'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
                     }
                 };
 
@@ -318,10 +329,10 @@ if (environment_internet_flag == "online") {
         let airtableIssuesSanitized = {};
         const options1 = {
             hostname: 'api.airtable.com',
-            path: `/v0/app7v05YMhvA8hpEY/BR%20issues`,
+            path: `/v0/${AIRTABLE_BASE_ID}/BR%20issues`,
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${API_KEY_VALUE}`
+                'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
             }
         };
 
@@ -363,10 +374,10 @@ if (environment_internet_flag == "online") {
             let audioNameURLEncoded;
             const options1 = {
                 hostname: 'api.airtable.com',
-                path: `/v0/app7v05YMhvA8hpEY/Audio%20Source/${req.params.AudioRecId}`,
+                path: `/v0/${AIRTABLE_BASE_ID}/Audio%20Source/${req.params.AudioRecId}`,
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${API_KEY_VALUE}`
+                    'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
                 }
             };
 
@@ -393,11 +404,11 @@ if (environment_internet_flag == "online") {
                     const postData2 = '';
                     let options2 = {
                         hostname: 'api.airtable.com',
-                        path: `/v0/app7v05YMhvA8hpEY/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`,
+                        path: `/v0/${AIRTABLE_BASE_ID}/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`,
                         method: 'GET',
                         headers: {
                             // 'Content-Type': 'text/plain',
-                            'Authorization': `Bearer ${API_KEY_VALUE}`
+                            'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
                         }
                     };
 
@@ -442,6 +453,7 @@ if (environment_internet_flag == "online") {
     
     app.all('/api/*', (req, res) => {
         if (app.locals.currentUserRole === 'write') {
+            AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;
             // res.send('api');
 
             // make request to airtable api
@@ -457,7 +469,7 @@ if (environment_internet_flag == "online") {
             // console.log(pathSegmentsExceptFirst.constructor == Array);
             // console.log(typeof pathMinusFirstSegment);
 
-            // Uncomment for troubleshooting
+            // // Uncomment for troubleshooting
             // console.log("pathSegments: " + pathSegments);
             // console.log("pathSegmentsFirst: " + pathSegmentsFirst);
             // console.log("pathSegmentsExceptFirst: " + pathSegmentsExceptFirst);
@@ -468,11 +480,11 @@ if (environment_internet_flag == "online") {
                 const postData = '';
                 const options = {
                     hostname: 'api.airtable.com',
-                    path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
+                    path: `/v0/${AIRTABLE_BASE_ID}/${pathMinusFirstSegment}`,
                     method: 'GET',
                     headers: {
                         // 'Content-Type': 'text/plain',
-                        'Authorization': `Bearer ${API_KEY_VALUE}`
+                        'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
                     }
                 };
 
@@ -512,11 +524,11 @@ if (environment_internet_flag == "online") {
 
                     const options = {
                         hostname: 'api.airtable.com',
-                        path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
+                        path: `/v0/${AIRTABLE_BASE_ID}/${pathMinusFirstSegment}`,
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${API_KEY_VALUE}`
+                            'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
                         }
                     };
 
@@ -560,11 +572,11 @@ if (environment_internet_flag == "online") {
 
                     const options = {
                         hostname: 'api.airtable.com',
-                        path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
+                        path: `/v0/${AIRTABLE_BASE_ID}/${pathMinusFirstSegment}`,
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${API_KEY_VALUE}`
+                            'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
                         }
                     };
 
@@ -604,10 +616,10 @@ if (environment_internet_flag == "online") {
 
                     const options = {
                         hostname: 'api.airtable.com',
-                        path: `/v0/app7v05YMhvA8hpEY/${pathMinusFirstSegment}`,
+                        path: `/v0/${AIRTABLE_BASE_ID}/${pathMinusFirstSegment}`,
                         method: 'DELETE',
                         headers: {
-                            'Authorization': `Bearer ${API_KEY_VALUE}`
+                            'Authorization': `Bearer ${AIRTABLE_KEY_SELECTED}`
                         }
                     };
 

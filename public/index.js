@@ -523,7 +523,7 @@ async function saveToAirtable(ATMethod, ATRec, ATFields) {
     };
 
     
-    await fetch("/api/tblmi1PP4EWaVFxhm", {
+    await fetch("/api/Words%20%28instance%29", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -545,7 +545,7 @@ async function saveToAirtable(ATMethod, ATRec, ATFields) {
     let ATURL = `?records[]=${ATRec}`;
 
     
-    await fetch(`/api/tblmi1PP4EWaVFxhm${ATURL}`, {
+    await fetch(`/api/Words%20%28instance%29${ATURL}`, {
       headers: {
       },
       method: `${ATMethod}`
