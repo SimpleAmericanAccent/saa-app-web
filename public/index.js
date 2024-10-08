@@ -18,7 +18,7 @@ const peopleSelect = document.getElementById("peopleSelect");
 const audioSelect = document.getElementById("audioSelect");
 let submenu = document.querySelectorAll(".submenu");
 // let tableElementContent;
-let authz, audios, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected, user, people, userRole;
+let authz, audios, defaultData, defaultAudio, defaultAirtableWords, selectedData, audio, accentFeature, accentIssues, issuesSelected, issueSelected, featureSelected, user, people, userRole;
 let audioData, speechData, annotationsLoaded, issues, audioURLSelected, transcriptSelected, speechDataURL, audioName, audioNameURLEncoded, airtableWords;
 let airtableIssues;
 let airtableIssuesObject = {};
@@ -63,23 +63,20 @@ document.addEventListener("keydown", (e) => {
 ///////////////////////////////
 
 async function loadDefault() {
-  await fetch(`/api/Audio%20Source/recPQM1gCeZitrCWZ`)
+  await fetch(`/data/loadDefault`)
   .then ((response) => response.json())
-  .then ((json) => (audio = json));
+  .then ((json) => (defaultData = json));
 
   await fetch("./JSON/issues2.json")
   .then((response) => response.json())
   .then((json) => (issues = json));
 
-  // console.log(audio);
+  // console.log("defaultData:",defaultData);
 
-  audioName = audio.fields['Name'];
-  audioNameURLEncoded = encodeURIComponent(audioName);
-  // console.log({audioName, audioNameURLEncoded});
-
-  audioURLSelected = audio.fields['mp3 url'];
-  speechDataURL = audio.fields['tran/alignment JSON url'];
-  // console.log(speechDataURL);
+  audio = defaultData.defaultAudio;
+  airtableWords = defaultData.defaultAirtableWords;
+  audioURLSelected = audio.mp3url;
+  speechDataURL = audio.tranurl;
 
   await fetch(speechDataURL)
   .then ((response) => response.json())
@@ -87,40 +84,16 @@ async function loadDefault() {
 
   transcriptSelected = speechData.speech.transcripts;
 
-  await fetch(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`)
-  .then ((response) => response.json())
-  .then ((json) => (airtableWords = json));
-
-  // console.log(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`);
-  // console.log("airtableWords:",airtableWords);
-  // console.log("inProgress:",inProgress);
-
- 
-
-  ////
-
   loadAll(audioURLSelected, transcriptSelected);
-
   getCurrentUserResources();
-  // loadFromJSON();
-  // getUser();
-  // console.log("airtableWords:",airtableWords);
-  // console.log("inProgress:",inProgress);
-  
-
-  // equivalent but runs a bit faster and more reliably than 'timeupdate'
-  // the last argument is the time (ms) between calls of showCurrentWord()
-  // could definitely be slowed down a bit if it becomes a performance issue
   setInterval(function () {
     showCurrentWord();
   }, 30);
 
-  // audioOffsetTuner.addEventListener("change", () => {audioOffsetTuner.textContent = audioOffsetTuner.value*1});
-
-  document.querySelectorAll("td").forEach((tableElement) => {
-    // tableElementContent = tableElement.innerHTML;
-    tableElement.addEventListener("click", filterAnnotations);
-  });
+  // document.querySelectorAll("td").forEach((tableElement) => {
+  //   // tableElementContent = tableElement.innerHTML;
+  //   tableElement.addEventListener("click", filterAnnotations);
+  // });
 }
 
 function loadAll(audioURLSelected, transcriptSelected, annotationsData) {
@@ -373,7 +346,6 @@ function portAnnotationsFromAirtable() {
     inProgress.notes[i] = [];
     // console.log("inProgress.notes was cleared here, via portAnnotationsFromAirtable");
   }
-  // console.log(inProgress.notes);
   
   for (let i=0; i < airtableWords.records.length; i++) {
     let tempWordIndex = airtableWords.records[i].fields['word index'];
@@ -424,45 +396,26 @@ function portAnnotationsFromAirtable() {
   // console.log("portAnnotationsFromAirtable ended execution here");
 }
 
-// old function, let's try  a new approach, moving more of this to back-end
-// async function getPeople() {
-//   await fetch("/api/People")
-//   .then((response) => response.json())
-//   .then((json) => (people = json));
-
-//   console.log("people:",people);
-
-//   for (let i =0; i < people.records.length; i++) {
-//     let personName = people.records[i].fields.Name;
-//     let personRecID = people.records[i].id;
-//     // console.log(personName);
-//     const peopleSelectItem = document.createElement("option");
-//     peopleSelectItem.textContent = personName;
-//     peopleSelectItem.value = personRecID;
-//     peopleSelect.appendChild(peopleSelectItem);
-//   }
-// }
-
 async function getCurrentUserResources() {
   await fetch("/authz")
   .then((response) => response.json())
   .then((json) => (authz = json));
 
-  console.log("authz:",authz);
+  // console.log("authz:",authz);
 
   people = authz.people;
   audios = authz.audios;
   userRole = authz.userRole;
 
-  console.log("people:", people);
-  console.log("audios:", audios);
-  console.log("user role:", userRole);
+  // console.log("people:", people);
+  // console.log("audios:", audios);
+  // console.log("user role:", userRole);
 
 
 
-  for (let i =0; i < people.records.length; i++) {
-    let personName = people.records[i].fields.Name;
-    let personRecID = people.records[i].id;
+  for (let i =0; i < people.length; i++) {
+    let personName = people[i].Name;
+    let personRecID = people[i].id;
     // console.log(personName);
     const peopleSelectItem = document.createElement("option");
     peopleSelectItem.textContent = personName;
@@ -477,12 +430,12 @@ async function getCurrentUserResources() {
   // console.log(audios);
   // console.log(audios.records[0].fields['Speaker (from Words (instance))']);
 
-  for (let i =0; i < audios.records.length; i++) {
-    let audioName = audios.records[i].fields.Name;
+  for (let i =0; i < audios.length; i++) {
+    let audioName = audios[i].Name;
     // console.log(audioName);
     const audioSelectItem = document.createElement("option");
     audioSelectItem.textContent = audioName;
-    audioSelectItem.value = audios.records[i].id;
+    audioSelectItem.value = audios[i].id;
     audioSelect.appendChild(audioSelectItem);
   }
   getAirtableIssues();
@@ -511,67 +464,42 @@ function filterAudios() {
   audioSelect.options.length=0;
   // console.log(audios);
   // console.log(peopleSelect.value);
-  for (let i =0; i < audios.records.length; i++) {
+  for (let i =0; i < audios.length; i++) {
     // console.log(audios.records[i].fields['Speaker']);
-    if (audios.records[i].fields['Speaker'].indexOf(peopleSelect.value) !== -1) {
-      results.push(audios.records[i].id);
-      let audioName = audios.records[i].fields.Name;
+    if (audios[i].SpeakerName.indexOf(peopleSelect.value) !== -1) {
+      results.push(audios[i].id);
+      let audioName = audios[i].Name;
       const audioSelectItem = document.createElement("option");
       audioSelectItem.textContent = audioName;
-      audioSelectItem.value = audios.records[i].id;
+      audioSelectItem.value = audios[i].id;
       audioSelect.appendChild(audioSelectItem);
     }
   }
 }
 
 async function getAirtableIssues() {
-  // console.log("getAirtableIssues began execution here");
-  await fetch("/api/BR%20issues")
+  await fetch("/data/loadIssues")
   .then ((response) => response.json())
   .then ((json) => (airtableIssues = json));
 
-  for (let i=0; i < airtableIssues.records.length; i++) {
-    airtableIssuesObject[airtableIssues.records[i].id] = airtableIssues.records[i].fields['Name'];
-  }
-  // console.log("getAirtableIssues ended execution here");
+  airtableIssuesObject = airtableIssues;
   portAnnotationsFromAirtable();
 }
 
-// old function, let's try  a new approach, moving more of this to back-end
-// async function getAudios() {
-//   await fetch("/api/Audio%20Source")
-//   .then ((response) => response.json())
-//   .then ((json) => (audios = json));
-
-//   console.log(audios);
-//   // console.log(audios.records[0].fields['Speaker (from Words (instance))']);
-
-//   for (let i =0; i < audios.records.length; i++) {
-//     let audioName = audios.records[i].fields.Name;
-//     // console.log(audioName);
-//     const audioSelectItem = document.createElement("option");
-//     audioSelectItem.textContent = audioName;
-//     audioSelectItem.value = audios.records[i].id;
-//     audioSelect.appendChild(audioSelectItem);
-//   }
-// }
-
 async function getAudio() {
   clearTranscript();
-  
-  await fetch(`/api/Audio%20Source/${audioSelect.value}`)
+
+  await fetch(`/data/loadAudio/${audioSelect.value}`)
   .then ((response) => response.json())
-  .then ((json) => (audio = json));
+  .then ((json) => (selectedData = json));
 
-  // console.log(audio);
-
-  audioName = audio.fields['Name'];
+  // console.log(selectedData);
+  audio = selectedData.selectedAudio;
+  airtableWords = selectedData.selectedAirtableWords;
+  audioName = audio.Name;
   audioNameURLEncoded = encodeURIComponent(audioName);
-  // console.log({audioName, audioNameURLEncoded});
-
-  audioURLSelected = audio.fields['mp3 url'];
-  speechDataURL = audio.fields['tran/alignment JSON url'];
-  // console.log(speechDataURL);
+  audioURLSelected = audio.mp3url;
+  speechDataURL = audio.tranurl;
 
   await fetch(speechDataURL)
   .then ((response) => response.json())
@@ -579,15 +507,6 @@ async function getAudio() {
 
   transcriptSelected = speechData.speech.transcripts;
   loadAll(audioURLSelected, transcriptSelected);
-
-  await fetch(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`)
-  .then ((response) => response.json())
-  .then ((json) => (airtableWords = json));
-
-  // console.log(`/api/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`);
-  // console.log("airtableWords:",airtableWords);
-  // console.table(inProgress);
-
   portAnnotationsFromAirtable();
 }
 
@@ -711,7 +630,7 @@ function adjustAnnotations(evt) {
     issueSelected = evt.currentTarget.innerHTML;
     let s = document.querySelectorAll("span")[selectedWord];
   
-    console.log(airtableIssues);
+    // console.log(airtableIssues);
   
     let notes = inProgress.notes[selectedWord];
     // console.log(inProgress);
@@ -723,15 +642,15 @@ function adjustAnnotations(evt) {
     // console.log(selectedWord);
     // console.log(inProgress.words[selectedWord]);
     // console.log(notes);
-    console.log(tempATRec);
+    // console.log(tempATRec);
   
   
   // may need to make this logic smarter than just checking relative to undefined
   // I think airtableWords is probably getting out of sync with inProgress and airtable's actual state
     if (tempATRec !== undefined) {
-      console.log(`tempATRec is ${tempATRec}`);
-      console.log(tempATRec);
-      console.log(inProgress.ATRecs);
+      // console.log(`tempATRec is ${tempATRec}`);
+      // console.log(tempATRec);
+      // console.log(inProgress.ATRecs);
   
       // if we're here, we already have an Airtable Record ID. need to update the record using PATCH and/or delete the record using DELETE
   
@@ -744,7 +663,7 @@ function adjustAnnotations(evt) {
           saveToAirtable("DELETE", tempATRec, buildATFields());
   
           // need to remove airtable record ID (set as undefined?) from local airtableWords object and/or inProgress object
-          console.log(airtableWords);
+          // console.log(airtableWords);
           // remove here then console log to verify result
   
   
@@ -758,7 +677,7 @@ function adjustAnnotations(evt) {
   
   
   
-          console.log(airtableWords);
+          // console.log(airtableWords);
         }
         else if (notes.length != 0) {
           saveToAirtable("PATCH", tempATRec, buildATFields());
@@ -795,13 +714,15 @@ function adjustAnnotations(evt) {
       }
   
       async function asyncCaller () {
+        // console.log("starting execution of asyncCaller");
         let ATResponse = await saveToAirtable("POST", tempATRec, buildATFields());
-        console.log(ATResponse);
-        console.log(ATResponse.records[0].id);
-        console.log(airtableWords);
+        // console.log("ATResponse:",ATResponse);
+        // console.log("ATResponse.records[0].id:",ATResponse.records[0].id);
+        // console.log("airtableWords",airtableWords);
         airtableWords.records.push(ATResponse.records[0]);
         inProgress.ATRecs[selectedWord]=ATResponse.records[0].id;
-        console.log(airtableWords);
+        // console.log("airtableWords",airtableWords);
+        // console.log("ending execution of asyncCaller");
         return ATResponse.records[0];
       }
   
@@ -813,15 +734,13 @@ function adjustAnnotations(evt) {
   
     function convertIssuesToATIssueRecIDs (notes, airtableIssues) {
       let convertedOutput = [];
-      
       for (let i=0; i < notes.length; i++) {
-        for (let j=0; j < airtableIssues.records.length; j++) {
-          if (airtableIssues.records[j].fields.Name == notes[i]) {
-            convertedOutput.push(airtableIssues.records[j].id);
+        for (let j=0; j < Object.keys(airtableIssues).length; j++) {
+          if (Object.values(airtableIssues)[j] == notes[i]) {
+            convertedOutput.push(Object.keys(airtableIssues)[j]);
           }
         }
       }
-      console.log(convertedOutput);
       return convertedOutput;
     }
     
@@ -830,7 +749,7 @@ function adjustAnnotations(evt) {
       // hard-coding record IDs for now, just for testing. need to make dynamic.
       return {
         "Name": inProgress.words[selectedWord], 
-        "BR issues": convertIssuesToATIssueRecIDs(notes, airtableIssues), 
+        "BR issues": convertIssuesToATIssueRecIDs(notes, airtableIssuesObject), 
         "in timestamp (seconds)": inProgress.timeIntervals[selectedWord], 
         "word index": selectedWord,
         // "Audio Source": audioSelect.value,
