@@ -546,17 +546,22 @@
                 "audio": "",
                 "words": ""
             },
-            "mistranslated": {
-                "description": "",
-                "audio": "",
-                "words": ""
-            },
             "rhythm": {
                 "description": "",
                 "audio": "",
                 "words": ""
             },
+            "melody/intonation": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
             "grammar/vocab/word usage": {
+                "description": "",
+                "audio": "",
+                "words": ""
+            },
+            "mistranslated": {
                 "description": "",
                 "audio": "",
                 "words": ""
