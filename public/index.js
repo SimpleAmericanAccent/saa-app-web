@@ -43,17 +43,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const banner = document.getElementById('installBanner');
   const closeButton = document.getElementById('closeBanner');
 
-  // Check if the app is in Safari and not already installed
+  // Check if the app is on iOS, not in standalone mode, and the banner hasn't been dismissed
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+  const isBannerDismissed = localStorage.getItem('bannerDismissed');
 
-  if (isIOS && !isInStandaloneMode) {
+  if (isIOS && !isInStandaloneMode && !isBannerDismissed) {
     banner.style.display = 'block';
   }
 
-  // Dismiss the banner
+  // Dismiss the banner and remember the choice
   closeButton.addEventListener('click', () => {
     banner.style.display = 'none';
+    localStorage.setItem('bannerDismissed', 'true');
   });
 });
 
