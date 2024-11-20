@@ -37,6 +37,28 @@ let inProgress = {
 ////// main execution
 //////////////////////////
 
+// install banner for iOS
+
+document.addEventListener('DOMContentLoaded', () => {
+  const banner = document.getElementById('installBanner');
+  const closeButton = document.getElementById('closeBanner');
+
+  // Check if the app is in Safari and not already installed
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+
+  if (isIOS && !isInStandaloneMode) {
+    banner.style.display = 'block';
+  }
+
+  // Dismiss the banner
+  closeButton.addEventListener('click', () => {
+    banner.style.display = 'none';
+  });
+});
+
+/// main
+
 loadDefault();
 
 //////////////////////////

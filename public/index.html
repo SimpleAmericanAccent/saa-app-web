@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.ico?v=1.1"> 
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="./icons/192.png">
     <title>Transcript Viewer</title>
     <style>
       * {
@@ -200,9 +203,34 @@
         display: none;
       }
 
+      /* banner stuff for ios pwa install prompt*/
+      #installBanner {
+        animation: slideUp 0.3s ease-in-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      #installBanner button:hover {
+        background: #0056b3;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
+    <div id="installBanner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #f9f9f9; border-top: 1px solid #ccc; text-align: center; padding: 10px; font-family: Arial, sans-serif; z-index: 1000;">
+      <p style="margin: 0; font-size: 14px;">
+        To install this app, tap <img src="./icons/share-icon.png" alt="Share" style="height: 16px; vertical-align: middle;"> 
+        and then <strong>Add to Home Screen</strong>.
+      </p>
+      <button id="closeBanner" style="background: #007bff; color: white; border: none; border-radius: 5px; padding: 5px 10px; margin-top: 5px; font-size: 14px;">Got it!</button>
+    </div>    
     <div class="masthead-top">
         <div class="columnleftmastheadtop">
           <a href="/logout">Log Out</a>
