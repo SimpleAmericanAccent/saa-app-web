@@ -1,0 +1,296 @@
+{
+    "heed": {
+        "full": { "start": 0.12124688227214393, "end": 0.7641070648515859 },
+        "vowel": { "start": 0.2, "end": 0.8 },
+        "beginning": { "start": 0.2, "end": 0.4 },
+        "middle": { "start": 0.4, "end": 0.6 },
+        "end": { "start": 0.6, "end": 0.8 }
+    },
+    "hid": {
+        "full": { "start": 1.1566799494457394, "end": 1.8895905856160757 },
+        "vowel": { "start": 1.2, "end": 1.8 },
+        "beginning": { "start": 1.2, "end": 1.4 },
+        "middle": { "start": 1.4, "end": 1.6 },
+        "end": { "start": 1.6, "end": 1.8 }
+    },
+    "head": {
+        "full": { "start": 2.195048248882008, "end": 2.9668418109114807 },
+        "vowel": { "start": 2.2, "end": 2.8 },
+        "beginning": { "start": 2.2, "end": 2.4 },
+        "middle": { "start": 2.4, "end": 2.6 },
+        "end": { "start": 2.6, "end": 2.8 }
+    },
+    "had": {
+        "full": { "start": 3.2513503472461847, "end": 4.01 },
+        "vowel": { "start": 3.2, "end": 3.8 },
+        "beginning": { "start": 3.2, "end": 3.4 },
+        "middle": { "start": 3.4, "end": 3.6 },
+        "end": { "start": 3.6, "end": 3.8 }
+    },
+    "ham": {
+        "full": { "start": 4.324528233641734 , "end": 5.059678777889392  },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "hooed": {
+        "full": { "start": 5.412190155845877 , "end": 6.137347838391379  },
+        "vowel": { "start": 5.2, "end": 5.8 },
+        "beginning": { "start": 5.2, "end": 5.4 },
+        "middle": { "start": 5.4, "end": 5.6 },
+        "end": { "start": 5.6, "end": 5.8 }
+    },
+    "hood": {
+        "full": { "start": 6.4587119130858195, "end": 7.099800449848708 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "HUD": {
+        "full": { "start": 7.5571032593676435, "end": 8.206389859260492 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "hawed": {
+        "full": { "start": 8.626130691514456, "end": 9.301651093423176 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "hayed": {
+        "full": { "start": 9.63926218124469, "end": 10.48038345837861 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "hide": {
+        "full": { "start": 10.749279929041304, "end": 11.628604987511988  },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "hoyed": {
+        "full": { "start": 11.878823915216977, "end": 12.574019668637604 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "hoed": {
+        "full": { "start": 12.934585333223007, "end": 13.715040943195218 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "how'd": {
+        "full": { "start": 13.93467588159198, "end": 14.798751735489788},
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bead": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bid": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bed": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bad": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "ban": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "booed": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "b_d": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bud": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bod": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bade": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bide": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "Boyd": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bode": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bowed": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "beat": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bit": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bet": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bat": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "ban": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "boot": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "b_t": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "but": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bot": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bait": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bite": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "Boyt": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "boat": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    },
+    "bout": {
+        "full": { "start": 4.0, "end": 5.0 },
+        "vowel": { "start": 4.2, "end": 4.8 },
+        "beginning": { "start": 4.2, "end": 4.4 },
+        "middle": { "start": 4.4, "end": 4.6 },
+        "end": { "start": 4.6, "end": 4.8 }
+    }
+}
