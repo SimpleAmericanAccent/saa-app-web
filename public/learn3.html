@@ -27,13 +27,16 @@
 
         th, td {
             border: 1px solid #ddd;
-            padding: 10px 15px;
+            padding: 5px 10px;
             text-align: center;
         }
 
         th {
             background-color: #4CAF50;
             color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
 
         tr:nth-child(even) {
@@ -65,7 +68,25 @@
             text-decoration: none;
         }
         .hidden {
+            /* display: none; */
+        }
+        .hidden2 {
             display: none;
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 3px 5px;
+            }
+
+            .table-container {
+                margin: 10px auto;
+            }
+
+            label, select {
+                display: block;
+                margin: 10px auto;
+            }
         }
     </style>
 
@@ -73,8 +94,8 @@
 </head>
 <body>
     <div class="table-container">
-        <label for="audio-select" class="hidden">Select audio portion:</label>
-        <select id="audio-select" class="hidden">
+        <label for="audio-select" class="hidden2">Select audio portion:</label>
+        <select id="audio-select" class="hidden2">
             <option value="full">Full word</option>
             <option value="vowel">Vowel only</option>
             <option value="beginning">Beginning of vowel</option>
