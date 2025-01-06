@@ -99,6 +99,10 @@
             padding: 0px 15px;
         }
 
+        .spacer {
+            padding: 10px;
+        }
+
         .sticky-footer {
             position: fixed;
             bottom: 0;
@@ -110,13 +114,14 @@
             z-index: 4;
         }
 
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Adjust the gap as needed */
+        }
+
         @media (max-width: 600px) {
             .table-container {
-                margin: 10px auto;
-            }
-
-            label, select {
-                display: block;
                 margin: 10px auto;
             }
         }
@@ -284,22 +289,25 @@
         </table>
     </div>
     <div class="sticky-footer">
-        <label for="audio-select" class="hidden2">Select audio portion:</label>
-        <select id="audio-select" class="hidden2">
-            <option value="full">Full word</option>
-            <option value="vowel">Vowel only</option>
-            <option value="beginning">Beginning of vowel</option>
-            <option value="middle">Middle of vowel</option>
-            <option value="end">End of vowel</option>
-        </select>
-        <label for="audio-speed">Select audio speed:</label>
-        <select id="audio-speed">
-            <option value="1">1x</option>
-            <option value="0.75">0.75x</option>
-            <option value="0.5">0.5x</option>
-            <option value="0.25">0.25x</option>
-        </select>
+        <div class="controls">
+            <label for="audio-select" class="hidden2">Select audio portion:</label>
+            <select id="audio-select" class="hidden2">
+                <option value="full">Full word</option>
+                <option value="vowel">Vowel only</option>
+                <option value="beginning">Beginning of vowel</option>
+                <option value="middle">Middle of vowel</option>
+                <option value="end">End of vowel</option>
+            </select>
+            <label for="audio-speed">Select audio speed:</label>
+            <select id="audio-speed">
+                <option value="1">1x</option>
+                <option value="0.75">0.75x</option>
+                <option value="0.5">0.5x</option>
+                <option value="0.25">0.25x</option>
+            </select>
+        </div> 
     </div>
+    <div class="spacer"></div>
     <script>
         const audioCache = {};
         const audioUrl = 'https://native-scga-audio.s3.us-east-2.amazonaws.com/2025+01+04+will+rosenberg+vowels+96+hz+h_d+b_d+b_t+frames.mp3';
