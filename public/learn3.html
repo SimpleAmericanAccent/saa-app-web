@@ -8,12 +8,15 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
 
         .table-container {
             width: 100%;
-            margin: 0;
-            overflow-x: auto;
+            margin: auto;
+            overflow-x: hidden;
             text-align: center;
         }
 
@@ -21,7 +24,7 @@
             border-collapse: collapse;
             /* width: 100%; */
             max-width: 800px;
-            margin: 0;
+            margin: auto;
             /* box-shadow: 0 10px 0px rgba(0, 0, 0, 0.1); */
         }
 
@@ -55,7 +58,7 @@
         .lex-set-header {
             position: sticky;
             left: 0;
-            background-color: #f9f9f9;
+            background-color: white;
             z-index: 3;
         }
 
@@ -81,26 +84,8 @@
             display: none;
         }
 
-        th.rotate {
-            height: 70px;
-            white-space: nowrap;
-        }
-
-        th.rotate > div {
-            transform: 
-                translate(1px, 7px)
-                rotate(315deg);
-            width: 30px;
-        }
-        th.rotate > div > span {
-            /* transform: translate(0px, 0px) */
-            /* border-top: 1px solid #ccc; */
-            border-top: 1px solid #ccc;
-            padding: 0px 15px;
-        }
-
         .spacer {
-            padding: 10px;
+            padding: 10px 0 0 0;
         }
 
         .sticky-footer {
@@ -108,7 +93,7 @@
             bottom: 0;
             width: 100%;
             background-color: white;
-            padding: 3px;
+            /* padding: 3px; */
             box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
             z-index: 4;
@@ -120,11 +105,34 @@
             gap: 10px; /* Adjust the gap as needed */
         }
 
-        @media (max-width: 600px) {
-            .table-container {
-                margin: 10px auto;
-            }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
         }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            /* width: 120px; */
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 5;
+            bottom: -100%; /* Position the tooltip above the text */
+            left: 0%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 0.8;
+        }
+
     </style>
 
 
@@ -138,10 +146,10 @@
                     <th class=""><div><span>h_d</span></div></th>
                     <th class="hidden"><div><span>b_d</span></div></th>
                     <th class="hidden"><div><span>b_t</span></div></th>
-                    <th class="rotate"><div><span>Gambiarra</span></div></th>
-                    <th class="rotate"><div><span>Respelled</span></div></th>
-                    <th class="rotate"><div><span>Phonemic</span></div></th>
-                    <th class="rotate"><div><span>Phonetic</span></div></th>
+                    <th><div class="tooltip">ℹ️<span class="tooltiptext">Gambiarra</span></div></th>
+                    <th><div class="tooltip">ℹ️<span class="tooltiptext">Respelled</span></div></th>
+                    <th><div class="tooltip">ℹ️<span class="tooltiptext">Phonemic</span></div></th>
+                    <th><div class="tooltip">ℹ️<span class="tooltiptext">Phonetic</span></div></th>
                 </tr>
             </thead>
             <tbody>
