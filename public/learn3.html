@@ -12,43 +12,51 @@
 
         .table-container {
             width: 100%;
-            margin: 20px auto;
+            margin: 0;
             overflow-x: auto;
             text-align: center;
         }
 
         table {
             border-collapse: collapse;
-            width: 100%;
+            /* width: 100%; */
             max-width: 800px;
-            margin: 0 auto;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0;
+            /* box-shadow: 0 10px 0px rgba(0, 0, 0, 0.1); */
         }
 
-        th, td {
+        td {
             border: 1px solid #ddd;
-            padding: 5px 10px;
+            /* padding: 5px 10px; */
             text-align: center;
+            /* min-width: 10px; Prevents overlapping */
         }
 
         th {
-            background-color: #4CAF50;
-            color: white;
-            position: sticky;
+            /* background-color: #4CAF50; */
+            /* color: white; */
             top: 0;
             z-index: 1;
+            vertical-align: bottom;
         }
 
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
         .lex-set {
             font-weight: bold;
+            position: sticky;
+            left: 0;
+            background-color: #f9f9f9; /* Optional: to match the table background */
+            z-index: 2; /* Ensure it is above other cells */
+        }
+
+        .lex-set-header {
+            position: sticky;
+            left: 0;
+            background-color: #f9f9f9;
+            z-index: 3;
         }
 
         .ipa-symbol {
@@ -66,19 +74,43 @@
             font-size: 14px;
             color: gray;
             text-decoration: none;
+            display: none;
         }
-        .hidden {
-            /* display: none; */
-        }
+
         .hidden2 {
             display: none;
         }
 
-        @media (max-width: 600px) {
-            th, td {
-                padding: 3px 5px;
-            }
+        th.rotate {
+            height: 70px;
+            white-space: nowrap;
+        }
 
+        th.rotate > div {
+            transform: 
+                translate(1px, 7px)
+                rotate(315deg);
+            width: 30px;
+        }
+        th.rotate > div > span {
+            /* transform: translate(0px, 0px) */
+            /* border-top: 1px solid #ccc; */
+            border-top: 1px solid #ccc;
+            padding: 0px 15px;
+        }
+
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            padding: 3px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            z-index: 4;
+        }
+
+        @media (max-width: 600px) {
             .table-container {
                 margin: 10px auto;
             }
@@ -94,6 +126,164 @@
 </head>
 <body>
     <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="lex-set-header"><div><span>Lex Set</span></div></th>
+                    <th class=""><div><span>h_d</span></div></th>
+                    <th class="hidden"><div><span>b_d</span></div></th>
+                    <th class="hidden"><div><span>b_t</span></div></th>
+                    <th class="rotate"><div><span>Gambiarra</span></div></th>
+                    <th class="rotate"><div><span>Respelled</span></div></th>
+                    <th class="rotate"><div><span>Phonemic</span></div></th>
+                    <th class="rotate"><div><span>Phonetic</span></div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="lex-set">FLEECE</td>
+                    <td class="playable" data-word="heed"><span class="audio-icon">🔊</span>heed</td>
+                    <td class="playable hidden" data-word="bead"><span class="audio-icon">🔊</span>bead</td>
+                    <td class="playable hidden" data-word="beat"><span class="audio-icon">🔊</span>beat</td>
+                    <td>i</td>
+                    <td>ee</td>
+                    <td class="ipa-symbol">/i/</td>
+                    <td class="ipa-symbol">[i]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">KIT</td>
+                    <td class="playable" data-word="hid"><span class="audio-icon">🔊</span>hid</td>
+                    <td class="playable hidden" data-word="bid"><span class="audio-icon">🔊</span>bid</td>
+                    <td class="playable hidden" data-word="bit"><span class="audio-icon">🔊</span>bit</td>
+                    <td>ê</td>
+                    <td>i</td>
+                    <td class="ipa-symbol">/ɪ/</td>
+                    <td class="ipa-symbol">[ɪ]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">DRESS</td>
+                    <td class="playable" data-word="head"><span class="audio-icon">🔊</span>head</td>
+                    <td class="playable hidden" data-word="bed"><span class="audio-icon">🔊</span>bed</td>
+                    <td class="playable hidden" data-word="bet"><span class="audio-icon">🔊</span>bet</td>
+                    <td>é</td>
+                    <td>e</td>
+                    <td class="ipa-symbol">/ɛ/</td>
+                    <td class="ipa-symbol">[ɛ]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">TRAP</td>
+                    <td class="playable" data-word="had"><span class="audio-icon">🔊</span>had</td>
+                    <td class="playable hidden" data-word="bad"><span class="audio-icon">🔊</span>bad</td>
+                    <td class="playable hidden" data-word="bat"><span class="audio-icon">🔊</span>bat</td>
+                    <td></td>
+                    <td>a</td>
+                    <td class="ipa-symbol">/æ/</td>
+                    <td class="ipa-symbol">[æ]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">TRAM</td>
+                    <td class="playable" data-word="ham"><span class="audio-icon">🔊</span>ham</td>
+                    <td class="playable hidden" data-word="ban"><span class="audio-icon">🔊</span>ban</td>
+                    <td class="playable hidden" data-word="ban"><span class="audio-icon">🔊</span>ban</td>
+                    <td>êa</td>
+                    <td>a</td>
+                    <td class="ipa-symbol">/æ/</td>
+                    <td class="ipa-symbol">[eə]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">GOOSE</td>
+                    <td class="playable" data-word="hooed"><span class="audio-icon">🔊</span>hooed</td>
+                    <td class="playable hidden" data-word="booed"><span class="audio-icon">🔊</span>booed</td>
+                    <td class="playable hidden" data-word="boot"><span class="audio-icon">🔊</span>boot</td>
+                    <td>u</td>
+                    <td>oo</td>
+                    <td class="ipa-symbol">/u/</td>
+                    <td class="ipa-symbol">[u]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">FOOT</td>
+                    <td class="playable" data-word="hood"><span class="audio-icon">🔊</span>hood</td>
+                    <td class="playable hidden" data-word="b_d"><span class="audio-icon">🔊</span>b_d</td>
+                    <td class="playable hidden" data-word="b_t"><span class="audio-icon">🔊</span>b_t</td>
+                    <td></td>
+                    <td>u</td>
+                    <td class="ipa-symbol">/ʊ/</td>
+                    <td class="ipa-symbol">[ʊ]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">STRUT</td>
+                    <td class="playable" data-word="HUD"><span class="audio-icon">🔊</span>HUD</td>
+                    <td class="playable hidden" data-word="bud"><span class="audio-icon">🔊</span>bud</td>
+                    <td class="playable hidden" data-word="but"><span class="audio-icon">🔊</span>but</td>
+                    <td></td>
+                    <td>uh</td>
+                    <td class="ipa-symbol">/ʌ/</td>
+                    <td class="ipa-symbol">[ʌ̟]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">LOT</td>
+                    <td class="playable" data-word="hawed"><span class="audio-icon">🔊</span>hawed</td>
+                    <td class="playable hidden" data-word="bod"><span class="audio-icon">🔊</span>bod</td>
+                    <td class="playable hidden" data-word="bot"><span class="audio-icon">🔊</span>bot</td>
+                    <td>aa</td>
+                    <td>aa</td>
+                    <td class="ipa-symbol">/ɑ/</td>
+                    <td class="ipa-symbol">[ɑ]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">FACE</td>
+                    <td class="playable" data-word="hayed"><span class="audio-icon">🔊</span>hayed</td>
+                    <td class="playable hidden" data-word="bade"><span class="audio-icon">🔊</span>bade</td>
+                    <td class="playable hidden" data-word="bait"><span class="audio-icon">🔊</span>bait</td>
+                    <td>ei</td>
+                    <td>ay</td>
+                    <td class="ipa-symbol">/eɪ/</td>
+                    <td class="ipa-symbol">[e̞ɪ̯]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">PRICE</td>
+                    <td class="playable" data-word="hide"><span class="audio-icon">🔊</span>hide</td>
+                    <td class="playable hidden" data-word="bide"><span class="audio-icon">🔊</span>bide</td>
+                    <td class="playable hidden" data-word="bite"><span class="audio-icon">🔊</span>bite</td>
+                    <td>ai</td>
+                    <td>ai</td>
+                    <td class="ipa-symbol">/aɪ/</td>
+                    <td class="ipa-symbol">[ɑ̟ɪ̯]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">CHOICE</td>
+                    <td class="playable" data-word="hoyed"><span class="audio-icon">🔊</span>hoyed</td>
+                    <td class="playable hidden" data-word="Boyd"><span class="audio-icon">🔊</span>Boyd</td>
+                    <td class="playable hidden" data-word="Boyt"><span class="audio-icon">🔊</span>Boyt</td>
+                    <td>ôi</td>
+                    <td>oy</td>
+                    <td class="ipa-symbol">/ɔɪ/</td>
+                    <td class="ipa-symbol">[o̞ɪ̯]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">GOAT</td>
+                    <td class="playable" data-word="hoed"><span class="audio-icon">🔊</span>hoed</td>
+                    <td class="playable hidden" data-word="bode"><span class="audio-icon">🔊</span>bode</td>
+                    <td class="playable hidden" data-word="boat"><span class="audio-icon">🔊</span>boat</td>
+                    <td></td>
+                    <td>ow</td>
+                    <td class="ipa-symbol">/oʊ/</td>
+                    <td class="ipa-symbol">[ʌʊ̯]</td>
+                </tr>
+                <tr>
+                    <td class="lex-set">MOUTH</td>
+                    <td class="playable" data-word="how'd"><span class="audio-icon">🔊</span>how'd</td>
+                    <td class="playable hidden" data-word="bowed"><span class="audio-icon">🔊</span>bowed</td>
+                    <td class="playable hidden" data-word="bout"><span class="audio-icon">🔊</span>bout</td>
+                    <td>au</td>
+                    <td>au</td>
+                    <td class="ipa-symbol">/aʊ/</td>
+                    <td class="ipa-symbol">[aʊ̯]</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="sticky-footer">
         <label for="audio-select" class="hidden2">Select audio portion:</label>
         <select id="audio-select" class="hidden2">
             <option value="full">Full word</option>
@@ -109,162 +299,6 @@
             <option value="0.5">0.5x</option>
             <option value="0.25">0.25x</option>
         </select>
-        <table>
-            <thead>
-                <tr>
-                    <th>Lex Set</th>
-                    <th>h_d</th>
-                    <th class="hidden">b_d</th>
-                    <th class="hidden">b_t</th>
-                    <th>Respelled</th>
-                    <th>Phonemic</th>
-                    <th>Phonetic</th>
-                    <th>Gambiarra</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="lex-set">FLEECE</td>
-                    <td class="playable" data-word="heed"><span class="audio-icon">🔊</span>heed</td>
-                    <td class="playable hidden" data-word="bead"><span class="audio-icon">🔊</span>bead</td>
-                    <td class="playable hidden" data-word="beat"><span class="audio-icon">🔊</span>beat</td>
-                    <td>ee</td>
-                    <td class="ipa-symbol">/i/</td>
-                    <td class="ipa-symbol">[i]</td>
-                    <td>i</td>
-                </tr>
-                <tr>
-                    <td class="lex-set">KIT</td>
-                    <td class="playable" data-word="hid"><span class="audio-icon">🔊</span>hid</td>
-                    <td class="playable hidden" data-word="bid"><span class="audio-icon">🔊</span>bid</td>
-                    <td class="playable hidden" data-word="bit"><span class="audio-icon">🔊</span>bit</td>
-                    <td>i</td>
-                    <td class="ipa-symbol">/ɪ/</td>
-                    <td class="ipa-symbol">[ɪ]</td>
-                    <td>ê</td>
-                </tr>
-                <tr>
-                    <td class="lex-set">DRESS</td>
-                    <td class="playable" data-word="head"><span class="audio-icon">🔊</span>head</td>
-                    <td class="playable hidden" data-word="bed"><span class="audio-icon">🔊</span>bed</td>
-                    <td class="playable hidden" data-word="bet"><span class="audio-icon">🔊</span>bet</td>
-                    <td>e</td>
-                    <td class="ipa-symbol">/ɛ/</td>
-                    <td class="ipa-symbol">[ɛ]</td>
-                    <td>é</td>
-                </tr>
-                <tr>
-                    <td class="lex-set">TRAP</td>
-                    <td class="playable" data-word="had"><span class="audio-icon">🔊</span>had</td>
-                    <td class="playable hidden" data-word="bad"><span class="audio-icon">🔊</span>bad</td>
-                    <td class="playable hidden" data-word="bat"><span class="audio-icon">🔊</span>bat</td>
-                    <td>a</td>
-                    <td class="ipa-symbol">/æ/</td>
-                    <td class="ipa-symbol">[æ]</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td class="lex-set">TRAM</td>
-                    <td class="playable" data-word="ham"><span class="audio-icon">🔊</span>ham</td>
-                    <td class="playable hidden" data-word="ban"><span class="audio-icon">🔊</span>ban</td>
-                    <td class="playable hidden" data-word="ban"><span class="audio-icon">🔊</span>ban</td>
-                    <td>a</td>
-                    <td class="ipa-symbol">/æ/</td>
-                    <td class="ipa-symbol">[eə]</td>
-                    <td>êa</td>
-                </tr>
-                <tr>
-                    <td class="lex-set">GOOSE</td>
-                    <td class="playable" data-word="hooed"><span class="audio-icon">🔊</span>hooed</td>
-                    <td class="playable hidden" data-word="booed"><span class="audio-icon">🔊</span>booed</td>
-                    <td class="playable hidden" data-word="boot"><span class="audio-icon">🔊</span>boot</td>
-                    <td>oo</td>
-                    <td class="ipa-symbol">/u/</td>
-                    <td class="ipa-symbol">[u]</td>
-                    <td>u</td>
-                </tr>
-                <tr>
-                    <td class="lex-set">FOOT</td>
-                    <td class="playable" data-word="hood"><span class="audio-icon">🔊</span>hood</td>
-                    <td class="playable hidden" data-word="b_d"><span class="audio-icon">🔊</span>b_d</td>
-                    <td class="playable hidden" data-word="b_t"><span class="audio-icon">🔊</span>b_t</td>
-                    <td>u</td>
-                    <td class="ipa-symbol">/ʊ/</td>
-                    <td class="ipa-symbol">[ʊ]</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td class="lex-set">STRUT</td>
-                    <td class="playable" data-word="HUD"><span class="audio-icon">🔊</span>HUD</td>
-                    <td class="playable hidden" data-word="bud"><span class="audio-icon">🔊</span>bud</td>
-                    <td class="playable hidden" data-word="but"><span class="audio-icon">🔊</span>but</td>
-                    <td>uh</td>
-                    <td class="ipa-symbol">/ʌ/</td>
-                    <td class="ipa-symbol">[ʌ̟]</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td class="lex-set">LOT</td>
-                    <td class="playable" data-word="hawed"><span class="audio-icon">🔊</span>hawed</td>
-                    <td class="playable hidden" data-word="bod"><span class="audio-icon">🔊</span>bod</td>
-                    <td class="playable hidden" data-word="bot"><span class="audio-icon">🔊</span>bot</td>
-                    <td>aa</td>
-                    <td class="ipa-symbol">/ɑ/</td>
-                    <td class="ipa-symbol">[ɑ]</td>
-                    <td>aa</td>
-                </tr>
-                <tr>
-                    <td class="lex-set">FACE</td>
-                    <td class="playable" data-word="hayed"><span class="audio-icon">🔊</span>hayed</td>
-                    <td class="playable hidden" data-word="bade"><span class="audio-icon">🔊</span>bade</td>
-                    <td class="playable hidden" data-word="bait"><span class="audio-icon">🔊</span>bait</td>
-                    <td>ay</td>
-                    <td class="ipa-symbol">/eɪ/</td>
-                    <td class="ipa-symbol">[e̞ɪ̯]</td>
-                    <td>ei</td>
-                </tr>
-                <tr>
-                    <td class="lex-set">PRICE</td>
-                    <td class="playable" data-word="hide"><span class="audio-icon">🔊</span>hide</td>
-                    <td class="playable hidden" data-word="bide"><span class="audio-icon">🔊</span>bide</td>
-                    <td class="playable hidden" data-word="bite"><span class="audio-icon">🔊</span>bite</td>
-                    <td>ai</td>
-                    <td class="ipa-symbol">/aɪ/</td>
-                    <td class="ipa-symbol">[ɑ̟ɪ̯]</td>
-                    <td>ai</td>
-                </tr>
-                <tr>
-                    <td class="lex-set">CHOICE</td>
-                    <td class="playable" data-word="hoyed"><span class="audio-icon">🔊</span>hoyed</td>
-                    <td class="playable hidden" data-word="Boyd"><span class="audio-icon">🔊</span>Boyd</td>
-                    <td class="playable hidden" data-word="Boyt"><span class="audio-icon">🔊</span>Boyt</td>
-                    <td>oy</td>
-                    <td class="ipa-symbol">/ɔɪ/</td>
-                    <td class="ipa-symbol">[o̞ɪ̯]</td>
-                    <td>ôi</td>
-                </tr>
-                <tr>
-                    <td class="lex-set">GOAT</td>
-                    <td class="playable" data-word="hoed"><span class="audio-icon">🔊</span>hoed</td>
-                    <td class="playable hidden" data-word="bode"><span class="audio-icon">🔊</span>bode</td>
-                    <td class="playable hidden" data-word="boat"><span class="audio-icon">🔊</span>boat</td>
-                    <td>ow</td>
-                    <td class="ipa-symbol">/oʊ/</td>
-                    <td class="ipa-symbol">[ʌʊ̯]</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td class="lex-set">MOUTH</td>
-                    <td class="playable" data-word="how'd"><span class="audio-icon">🔊</span>how'd</td>
-                    <td class="playable hidden" data-word="bowed"><span class="audio-icon">🔊</span>bowed</td>
-                    <td class="playable hidden" data-word="bout"><span class="audio-icon">🔊</span>bout</td>
-                    <td>au</td>
-                    <td class="ipa-symbol">/aʊ/</td>
-                    <td class="ipa-symbol">[aʊ̯]</td>
-                    <td>au</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
     <script>
         const audioCache = {};
