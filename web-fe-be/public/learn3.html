@@ -109,11 +109,23 @@
             gap: 10px; /* Adjust the gap as needed */
         }
 
+        @media (min-width: 1024px) {
+            .gambiarra, .respelled, .phonemic, .phonetic {
+                display: table-cell;
+            }
+            .column-select {
+                display: none;
+            }
+        }
+
     </style>
 
 
 </head>
 <body>
+    <a href="/index.html">Home</a> / 
+    <a href="/learn2.html">Words Lists & Spelling</a> / 
+    <a href="/synth.html">Vowel Synth</a>
     <div class="table-container">
         <table>
             <thead>
@@ -289,8 +301,8 @@
                 <option value="0.5">0.5x</option>
                 <option value="0.25">0.25x</option>
             </select>
-            <label for="column-select">Select column:</label>
-            <select id="column-select">
+            <label for="column-select" class="column-select">Select column:</label>
+            <select id="column-select" class="column-select">
                 <option value="gambiarra">Gambiarra</option>
                 <option value="respelled">Respelled</option>
                 <option value="phonemic">Phonemic</option>
