@@ -54,6 +54,7 @@ else if (environment_flag == "offline") {
     });  
 }
 
+app.use(express.static('../frontend/dist', {index: 'home.html'}));
 
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
