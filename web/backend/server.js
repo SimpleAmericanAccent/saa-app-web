@@ -55,6 +55,8 @@ else if (environment_flag == "offline") {
 }
 
 
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
 app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 if (environment_internet_flag == "online") {
@@ -669,7 +671,7 @@ if (environment_internet_flag == "online") {
     });
 
     app.get('/callback', requiresAuth(), (req, res) => {
-        res.sendFile('../frontend/public/index.html');
+        res.sendFile('../frontend/public/home.html');
     });
 
     app.get('/profile', requiresAuth(), (req, res) => {
