@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./Home4.css";
+import styles from "./Home4.module.css";
 
 function Home4() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -107,40 +107,52 @@ function Home4() {
   };
 
   return (
-    <div>
-      <h1>Vowel Sound Synthesizer</h1>
-      <div className="container">
-        <div className="column">
-          <div id="vowelDiagram" ref={vowelDiagramRef}>
-            <div id="triangleOverlay"></div>
-            <div className="axis-label x-axis-label">F2 (Hz)</div>
-            <div className="axis-label y-axis-label">F1 (Hz)</div>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Vowel Sound Synthesizer</h1>
+      <div className={styles.container}>
+        <div className={styles.column}>
+          <div
+            id="vowelDiagram"
+            ref={vowelDiagramRef}
+            className={styles.vowelDiagram}
+          >
+            <div id="triangleOverlay" className={styles.triangleOverlay}></div>
+            <div className={`${styles.axisLabel} ${styles.xAxisLabel}`}>
+              F2 (Hz)
+            </div>
+            <div className={`${styles.axisLabel} ${styles.yAxisLabel}`}>
+              F1 (Hz)
+            </div>
             <div
-              className="x-axis-values"
+              className={`${styles.axisValues} ${styles.xAxisValues}`}
               id="xAxisMin"
               style={{ left: "0" }}
             ></div>
             <div
-              className="x-axis-values"
+              className={`${styles.axisValues} ${styles.xAxisValues}`}
               id="xAxisMax"
               style={{ left: "100%" }}
             ></div>
             <div
-              className="y-axis-values"
+              className={`${styles.axisValues} ${styles.yAxisValues}`}
               id="yAxisMin"
               style={{ top: "0" }}
             ></div>
             <div
-              className="y-axis-values"
+              className={`${styles.axisValues} ${styles.yAxisValues}`}
               id="yAxisMax"
               style={{ top: "100%" }}
             ></div>
-            <div id="F1F2Marker" ref={F1F2MarkerRef}></div>
+            <div
+              id="F1F2Marker"
+              ref={F1F2MarkerRef}
+              className={styles.F1F2Marker}
+            ></div>
           </div>
         </div>
-        <div className="column">
-          <div className="controls">
-            <div className="slider-container">
+        <div className={styles.column}>
+          <div className={styles.controls}>
+            <div className={styles.sliderContainer}>
               <label htmlFor="volume">
                 Volume: <span id="volumeValue">{volume}</span>
               </label>
@@ -155,7 +167,7 @@ function Home4() {
                 onChange={(e) => setVolume(e.target.value)}
               />
             </div>
-            <div className="slider-container">
+            <div className={styles.sliderContainer}>
               <label htmlFor="pitch">
                 Pitch (Hz): <span id="pitchValue">{pitch}</span>
               </label>
@@ -170,12 +182,12 @@ function Home4() {
                 onChange={(e) => setPitch(e.target.value)}
               />
             </div>
-            <div className="frequency-display">
+            <div className={styles.frequencyDisplay}>
               F1: <span id="F1Value">{F1}</span> Hz, F2:{" "}
               <span id="F2Value">{F2}</span> Hz, F3:{" "}
               <span id="F3Value">{F3}</span> Hz
             </div>
-            <div className="input-group">
+            <div className={styles.inputGroup}>
               <label htmlFor="F1">F1 (Hz)</label>
               <input
                 type="range"
@@ -195,7 +207,7 @@ function Home4() {
                 onChange={(e) => setF1(e.target.value)}
               />
             </div>
-            <div className="input-group">
+            <div className={styles.inputGroup}>
               <label htmlFor="F2">F2 (Hz)</label>
               <input
                 type="range"
@@ -215,7 +227,7 @@ function Home4() {
                 onChange={(e) => setF2(e.target.value)}
               />
             </div>
-            <div className="input-group">
+            <div className={styles.inputGroup}>
               <label htmlFor="F3">F3 (Hz)</label>
               <input
                 type="range"
@@ -238,6 +250,7 @@ function Home4() {
             <button
               id="startStopButton"
               onClick={isPlaying ? stopSound : startSound}
+              className={styles.button}
             >
               {isPlaying ? "Stop" : "Start"}
             </button>

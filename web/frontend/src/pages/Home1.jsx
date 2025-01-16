@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./Home1.css";
+import styles from "./Home1.module.css";
 
 function Home1() {
   const [authz, setAuthz] = useState(null);
@@ -100,29 +100,37 @@ function Home1() {
   }
 
   return (
-    <div>
+    <div className={styles.container}>
       <audio id="audioPlayer" ref={audioPlayerRef}>
         <source id="audioSource" ref={audioSourceRef} />
       </audio>
       <input type="range" id="audioOffsetTuner" ref={audioOffsetTunerRef} />
       <div id="transcript" ref={transcriptDivRef}></div>
       <div id="toolTip" ref={toolTipRef}></div>
-      <button id="save" ref={saveBtnRef}>
+      <button id="save" ref={saveBtnRef} className={styles.button}>
         Save
       </button>
-      <button id="load" ref={loadBtnRef}>
+      <button id="load" ref={loadBtnRef} className={styles.button}>
         Load
       </button>
-      <button id="openFromAirtable" ref={openFromAirtableBtnRef}>
+      <button
+        id="openFromAirtable"
+        ref={openFromAirtableBtnRef}
+        className={styles.button}
+      >
         Open from Airtable
       </button>
-      <button id="saveToAirtable" ref={saveToAirtableBtnRef}>
+      <button
+        id="saveToAirtable"
+        ref={saveToAirtableBtnRef}
+        className={styles.button}
+      >
         Save to Airtable
       </button>
-      <button id="tempBtn" ref={tempBtnRef}>
+      <button id="tempBtn" ref={tempBtnRef} className={styles.button}>
         Temp
       </button>
-      <div id="list" ref={listRef}></div>
+      <div id="list" ref={listRef} className={styles.list}></div>
       <input type="range" id="playbackSpeed" ref={playbackSpeedRef} />
       <select id="peopleSelect" ref={peopleSelectRef}></select>
       <select id="audioSelect" ref={audioSelectRef}></select>
