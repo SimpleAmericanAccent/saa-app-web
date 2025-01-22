@@ -41,7 +41,6 @@ const phoneticSymbols = [
   { symbol: "ɪ", F1: 400, F2: 1900 },
   { symbol: "ɛ", F1: 550, F2: 1700 },
   { symbol: "ʌ", F1: 600, F2: 1200 },
-  { symbol: "ɔ", F1: 500, F2: 900 },
   { symbol: "ʊ", F1: 450, F2: 1100 },
   { symbol: "ɑ", F1: 700, F2: 1100 },
 ];
