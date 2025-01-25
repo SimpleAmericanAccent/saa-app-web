@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import styles from "./Home1.module.css";
+// import styles from "./Home1.module.css";
 
 function Home1() {
   const [authz, setAuthz] = useState(null);

@@ -479,6 +479,35 @@ if (environment_internet_flag == "online") {
     }
   });
 
+  app.get("/data/loadSuccessPath", (req, res) => {
+    const postData = "";
+    let successPathString = "";
+    let successPath = {};
+    const options1 = {
+      hostname: "saa-success-path.s3.us-east-2.amazonaws.com",
+      path: `/path.json`,
+      method: "GET",
+      // headers: {
+      //   Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+      // },
+    };
+
+    const req1 = https.request(options1, (res1) => {
+      res1.setEncoding("utf8");
+      res1.on("data", (chunk) => {
+        successPathString += chunk;
+      });
+      res1.on("end", () => {
+        successPath = JSON.parse(successPathString);
+        res.setHeader("Content-Type", "application/json");
+        res.write(JSON.stringify(successPath));
+        res.end();
+      });
+    });
+    req1.write(postData);
+    req1.end();
+  });
+
   app.all("/api/*", (req, res) => {
     if (app.locals.currentUserRole === "write") {
       AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;

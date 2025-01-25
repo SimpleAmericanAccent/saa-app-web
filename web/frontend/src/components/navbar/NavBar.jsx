@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import "./navBar.css";
 
 function NavBar() {
   return (
@@ -12,6 +13,10 @@ function NavBar() {
       <Link to="/Home3">Home3</Link>
       {" | "}
       <Link to="/Home4">Home4</Link>
+      {" | "}
+      <Link to="/path">Path</Link>
+      {" | "}
+      <Link to="/quiz">Quiz</Link>
       {" | "}
       {"Legacy: "}
       <a href="/home.html">Home</a>
