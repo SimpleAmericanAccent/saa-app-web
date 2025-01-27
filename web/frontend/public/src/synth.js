@@ -33,15 +33,15 @@ F1F2Marker.style.pointerEvents = "none";
 vowelDiagram.appendChild(F1F2Marker);
 
 const phoneticSymbols = [
-  { symbol: "i", F1: 300, F2: 2500 },
-  { symbol: "e", F1: 400, F2: 2300 },
+  { symbol: "i", F1: 350, F2: 2030 },
   { symbol: "o", F1: 500, F2: 800 },
-  { symbol: "u", F1: 350, F2: 600 },
-  { symbol: "æ", F1: 650, F2: 1700 },
-  { symbol: "ɪ", F1: 400, F2: 1900 },
-  { symbol: "ɛ", F1: 550, F2: 1700 },
+  { symbol: "u", F1: 350, F2: 800 },
+  { symbol: "æ", F1: 660, F2: 1750 },
+  { symbol: "ə", F1: 525, F2: 1350 },
+  { symbol: "ɪ", F1: 410, F2: 1800 },
+  { symbol: "ɛ", F1: 600, F2: 1800 },
   { symbol: "ʌ", F1: 600, F2: 1200 },
-  { symbol: "ʊ", F1: 450, F2: 1100 },
+  { symbol: "ʊ", F1: 430, F2: 1080 },
   { symbol: "ɑ", F1: 700, F2: 1100 },
 ];
 
@@ -50,15 +50,24 @@ const xAxisMax = document.getElementById("xAxisMax");
 const yAxisMin = document.getElementById("yAxisMin");
 const yAxisMax = document.getElementById("yAxisMax");
 
-const F1_MIN = 300 - 0.05 * (700 - 300);
-const F1_MAX = 700 + 0.05 * (700 - 300);
-const F2_MIN = 500 - 0.05 * (2500 - 600);
-const F2_MAX = 2500 + 0.05 * (2500 - 600);
+// calculate the min and max f1 and f2 from the phoneticSymbols array
+const F1Values = phoneticSymbols.map((symbol) => symbol.F1);
+const F2Values = phoneticSymbols.map((symbol) => symbol.F2);
 
-xAxisMin.textContent = F2_MAX;
-xAxisMax.textContent = F2_MIN;
-yAxisMin.textContent = F1_MIN;
-yAxisMax.textContent = F1_MAX;
+const F1_MIN = Math.min(...F1Values);
+const F1_MAX = Math.max(...F1Values);
+const F2_MIN = Math.min(...F2Values);
+const F2_MAX = Math.max(...F2Values);
+
+const F1_MIN_for_display = F1_MIN - 0.05 * (F1_MAX - F1_MIN);
+const F1_MAX_for_display = F1_MAX + 0.05 * (F1_MAX - F1_MIN);
+const F2_MIN_for_display = F2_MIN - 0.05 * (F2_MAX - F2_MIN);
+const F2_MAX_for_display = F2_MAX + 0.05 * (F2_MAX - F2_MIN);
+
+xAxisMin.textContent = F2_MAX_for_display;
+xAxisMax.textContent = F2_MIN_for_display;
+yAxisMin.textContent = F1_MIN_for_display;
+yAxisMax.textContent = F1_MAX_for_display;
 
 phoneticSymbols.forEach(({ symbol, F1, F2 }) => {
   const symbolElement = document.createElement("div");
@@ -70,8 +79,12 @@ phoneticSymbols.forEach(({ symbol, F1, F2 }) => {
   symbolElement.style.pointerEvents = "none"; // Prevent interaction
   symbolElement.style.transform = "translate(-50%, -50%)"; // Center the symbol
   const rect = vowelDiagram.getBoundingClientRect();
-  const x = ((F2_MAX - F2) / (F2_MAX - F2_MIN)) * rect.width;
-  const y = ((F1 - F1_MIN) / (F1_MAX - F1_MIN)) * rect.height;
+  const x =
+    ((F2_MAX_for_display - F2) / (F2_MAX_for_display - F2_MIN_for_display)) *
+    rect.width;
+  const y =
+    ((F1 - F1_MIN_for_display) / (F1_MAX_for_display - F1_MIN_for_display)) *
+    rect.height;
   symbolElement.style.left = `${x}px`;
   symbolElement.style.top = `${y}px`;
   vowelDiagram.appendChild(symbolElement);
@@ -84,8 +97,12 @@ vowelDiagram.addEventListener("mousemove", function (event) {
     const rect = vowelDiagram.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    const F1 = F1_MIN + (y / rect.height) * (F1_MAX - F1_MIN); // Adjusted mapping y to F1 range
-    const F2 = F2_MAX - (x / rect.width) * (F2_MAX - F2_MIN); // Adjusted mapping x to F2 range
+    const F1 =
+      F1_MIN_for_display +
+      (y / rect.height) * (F1_MAX_for_display - F1_MIN_for_display); // Adjusted mapping y to F1 range
+    const F2 =
+      F2_MAX_for_display -
+      (x / rect.width) * (F2_MAX_for_display - F2_MIN_for_display); // Adjusted mapping x to F2 range
     F1ValueSpan.textContent = Math.round(F1);
     F2ValueSpan.textContent = Math.round(F2);
     F1Slider.value = F1;
@@ -123,8 +140,12 @@ pitchSlider.addEventListener("input", function () {
 
 function updateF1F2Marker(F1, F2) {
   const rect = vowelDiagram.getBoundingClientRect();
-  const x = ((F2_MAX - F2) / (F2_MAX - F2_MIN)) * rect.width;
-  const y = ((F1 - F1_MIN) / (F1_MAX - F1_MIN)) * rect.height;
+  const x =
+    ((F2_MAX_for_display - F2) / (F2_MAX_for_display - F2_MIN_for_display)) *
+    rect.width;
+  const y =
+    ((F1 - F1_MIN_for_display) / (F1_MAX_for_display - F1_MIN_for_display)) *
+    rect.height;
   F1F2Marker.style.left = `${x - 5}px`;
   F1F2Marker.style.top = `${y - 5}px`;
 }
