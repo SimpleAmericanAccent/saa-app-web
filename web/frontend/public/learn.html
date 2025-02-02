@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Learn</title>
     <style>
-        * {
-            box-sizing: border-box;
-            padding: 0;
-            margin: 0;
-        }
-        #topNav {
-            position: fixed;
-            width: 100vw;
-            background-color: lightblue;
-            padding: 5px;
-        }
-        #leftNav {
-            /* float: left; */
-            /* position: fixed; */
-            /* display: inline; */
-            float: left;
-            width: auto;
-            height: 100vh;
-            margin-top: 30px;
-        }
-        #viewer {
-          position: fixed;  
-          margin-top: 30px;
-          margin-left: 300px;
-          z-index: -1;
-            /* float: left; */
-            /* margin-left: 200px; */
-        }
-        .list {
+      * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+      }
+      #topNav {
+        position: fixed;
+        width: 100vw;
+        background-color: lightblue;
+        padding: 5px;
+      }
+      #leftNav {
+        /* float: left; */
+        /* position: fixed; */
+        /* display: inline; */
+        float: left;
+        width: auto;
+        height: 100vh;
+        margin-top: 30px;
+      }
+      #viewer {
+        position: fixed;
+        margin-top: 30px;
+        margin-left: 300px;
+        z-index: -1;
+        /* float: left; */
+        /* margin-left: 200px; */
+      }
+      .list {
         /* display: none; */
         width: 120px;
         /* position: fixed; */
@@ -84,29 +84,28 @@
         /* top: -20px; */
         /* border: solid; */
       }
-
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="topNav">
-        <a href="/logout">Log Out</a>
-        <a href="/">Home</a>
+      <a href="/logout">Log Out</a>
+      <a href="/">Home</a>
     </div>
     <div id="leftNav">
-        <ul class="list" id="list"></ul>
+      <ul class="list" id="list"></ul>
     </div>
     <div id="viewer">
-        <h1>Target</h1>
-        <div id="target"></div>
-        <h1>Issue</h1>
-        <div id="issue"></div>
-        <h1>Description</h1>
-        <div id="description">Please select an issue on the left.</div>
-        <h1>Audio</h1>
-        <div id="audio">...</div>
-        <h1>Words</h1>
-        <div id="words">...</div>
+      <h1>Target</h1>
+      <div id="target"></div>
+      <h1>Issue</h1>
+      <div id="issue"></div>
+      <h1>Description</h1>
+      <div id="description">Please select an issue on the left.</div>
+      <h1>Audio</h1>
+      <div id="audio">...</div>
+      <h1>Words</h1>
+      <div id="words">...</div>
     </div>
-    <script src="./src/learn.js" type="module"></script>
-</body>
+    <script src="./learn.js" type="module"></script>
+  </body>
 </html>
