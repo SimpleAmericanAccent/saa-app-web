@@ -2,9 +2,6 @@ import { moveContextSubmenu } from "/utilities.js";
 
 let issues;
 
-const topNav = document.getElementById("topNav");
-const leftNav = document.getElementById("leftNav");
-const viewer = document.getElementById("viewer");
 const list = document.getElementById("list");
 const target = document.getElementById("target");
 const issue = document.getElementById("issue");

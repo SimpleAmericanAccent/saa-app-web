@@ -1,3 +1,5 @@
+import { moveContextSubmenu } from "./utilities.js";
+
 ///////////////////
 ////// variable declarations
 ///////////////////
@@ -15,31 +17,22 @@ const list = document.getElementById("list");
 const playbackSpeed = document.getElementById("playbackSpeed");
 const peopleSelect = document.getElementById("peopleSelect");
 const audioSelect = document.getElementById("audioSelect");
-let submenu = document.querySelectorAll(".submenu");
 let authz,
   audios,
   defaultData,
-  defaultAudio,
-  defaultAirtableWords,
   selectedData,
   audio,
   accentFeature,
-  accentIssues,
   issuesSelected,
   issueSelected,
-  featureSelected,
-  user,
   people,
   userRole;
-let audioData,
-  speechData,
+let speechData,
   annotationsLoaded,
   issues,
   audioURLSelected,
   transcriptSelected,
   speechDataURL,
-  audioName,
-  audioNameURLEncoded,
   airtableWords;
 let airtableIssues;
 let airtableIssuesObject = {};
@@ -133,13 +126,13 @@ async function loadDefault() {
     showCurrentWord();
   }, 30);
 
-  // document.querySelectorAll("td").forEach((tableElement) => {
-  //   // tableElementContent = tableElement.innerHTML;
-  //   tableElement.addEventListener("click", filterAnnotations);
-  // });
+  document.querySelectorAll("td").forEach((tableElement) => {
+    // tableElementContent = tableElement.innerHTML;
+    tableElement.addEventListener("click", filterAnnotations);
+  });
 }
 
-function loadAll(audioURLSelected, transcriptSelected, annotationsData) {
+function loadAll(audioURLSelected, transcriptSelected) {
   updateAudio(audioURLSelected);
   clearTranscript();
   displayTranscript(transcriptSelected);
@@ -200,7 +193,7 @@ function updateWordSpanListeners() {
     let s = document.querySelectorAll("span")[i];
     s.addEventListener(
       "mouseover",
-      (f) => {
+      () => {
         let ind = parseInt(s.id.slice(4));
         showAnnotations(ind);
       },
@@ -212,16 +205,13 @@ function updateWordSpanListeners() {
         let ind = parseInt(s.id.slice(4));
         selectedWord = ind;
         let x = f.clientX;
-        let y = f.clientY;
         list.style.display = "block";
         list.style.top = "0px";
         list.style.left = x + "px";
 
         //prevent page overflow
         let winWidth = window.innerWidth;
-        let winHeight = window.innerHeight;
         let menuWidth = list.offsetWidth;
-        let menuHeight = list.offsetHeight;
         let secMargin = 20;
 
         if (x + menuWidth > winWidth) {
@@ -279,11 +269,10 @@ function showCurrentWord() {
 
 function showAnnotations(ind) {
   // displays any annotations applied to the word being hovered over
-  document.getElementById("toolTip").innerHTML =
-    inProgress.notes[ind].join(", ");
+  toolTip.innerHTML = inProgress.notes[ind].join(", ");
 }
 
-const onClickOutside = (event) => {
+const onClickOutside = () => {
   list.style.display = "none";
   document.removeEventListener("click", onClickOutside);
 };
@@ -411,14 +400,6 @@ async function getCurrentUserResources() {
   getAirtableIssues();
 }
 
-async function getUser() {
-  await fetch("/user")
-    .then((response) => response.json())
-    .then((json) => (user = json));
-
-  console.log("user:", user);
-}
-
 function filterAudios() {
   let results = [];
   audioSelect.options.length = 0;
@@ -452,8 +433,6 @@ async function getAudio() {
 
   audio = selectedData.selectedAudio;
   airtableWords = selectedData.selectedAirtableWords;
-  audioName = audio.Name;
-  audioNameURLEncoded = encodeURIComponent(audioName);
   audioURLSelected = audio.mp3url;
   speechDataURL = audio.tranurl;
 
@@ -655,32 +634,6 @@ function adjustAnnotations(evt) {
         Note: "test - delete",
       };
     }
-  }
-}
-
-function moveContextSubmenu(evt) {
-  featureSelected = evt.currentTarget;
-
-  featureSelected.children[0].style.top = featureSelected.offsetTop + "px";
-  featureSelected.children[0].style.left = featureSelected.offsetWidth + "px";
-
-  let x = evt.clientX;
-  let y = evt.clientY;
-
-  //prevent page overflow
-  let winWidth = window.innerWidth;
-  let winHeight = window.innerHeight;
-  let secMargin = 20;
-  let menuRect = featureSelected.getBoundingClientRect();
-  let submenuRect = featureSelected.children[0].getBoundingClientRect();
-
-  if (submenuRect.x + submenuRect.width > winWidth) {
-    featureSelected.children[0].style.left = -submenuRect.width + "px";
-  }
-
-  if (submenuRect.y + submenuRect.height > winHeight) {
-    featureSelected.children[0].style.top =
-      winHeight - submenuRect.height + "px";
   }
 }
 
