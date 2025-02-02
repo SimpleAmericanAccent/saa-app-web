@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/favicon.ico?v=1.1"> 
-    <link rel="manifest" href="./manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="./icons/192.png">
+    <link rel="icon" href="/favicon.ico?v=1.1" />
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="apple-touch-icon" href="./icons/192.png" />
     <title>Transcript Viewer</title>
     <style>
       * {
@@ -57,14 +57,16 @@
         display: inline-block;
       }
 
-      table, tr, td {
+      table,
+      tr,
+      td {
         border: 1px solid black;
       }
 
       td {
         cursor: pointer;
       }
-      
+
       body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -105,7 +107,6 @@
         min-height: 45px;
         border-radius: 5px;
         background-color: #ffffff;
-
       }
       .transcript {
         margin: 20px 20px;
@@ -179,23 +180,26 @@
         /* border: solid; */
       }
 
-
-
       #playbackSpeed {
         position: fixed;
         top: 0;
         left: 0;
       }
 
-      #peopleSelect, #openFromAirtable, #audioPlayer, #saveToAirtable {
+      #peopleSelect,
+      #openFromAirtable,
+      #audioPlayer,
+      #saveToAirtable {
         display: block;
       }
 
-      #saveToAirtable, #tempBtn {
+      #saveToAirtable,
+      #tempBtn {
         display: none;
       }
 
-      #save, #load {
+      #save,
+      #load {
         display: none;
       }
 
@@ -224,20 +228,53 @@
     </style>
   </head>
   <body>
-    <div id="installBanner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #f9f9f9; border-top: 1px solid #ccc; text-align: center; padding: 10px; font-family: Arial, sans-serif; z-index: 1000;">
-      <p style="margin: 0; font-size: 14px;">
-        To install this app, tap <img src="./icons/share-icon.png" alt="Share" style="height: 16px; vertical-align: middle;"> 
+    <div
+      id="installBanner"
+      style="
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #f9f9f9;
+        border-top: 1px solid #ccc;
+        text-align: center;
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        z-index: 1000;
+      "
+    >
+      <p style="margin: 0; font-size: 14px">
+        To install this app, tap
+        <img
+          src="./icons/share-icon.png"
+          alt="Share"
+          style="height: 16px; vertical-align: middle"
+        />
         and then <strong>Add to Home Screen</strong>.
       </p>
-      <button id="closeBanner" style="background: #007bff; color: white; border: none; border-radius: 5px; padding: 5px 10px; margin-top: 5px; font-size: 14px;">Got it!</button>
-    </div>    
+      <button
+        id="closeBanner"
+        style="
+          background: #007bff;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          padding: 5px 10px;
+          margin-top: 5px;
+          font-size: 14px;
+        "
+      >
+        Got it!
+      </button>
+    </div>
     <div class="masthead-top">
-        <div class="columnleftmastheadtop">
-          <a href="/logout">Log Out</a> / 
-          <a href="/learn.html" class="hideme">Learn</a>
-          <a href="/learn2.html">Words Lists & Spelling</a> / 
-          <a href="/learn3.html">Vowel Sounds</a> / 
-          <a href="/synth.html">Vowel Synth</a>
+      <div class="columnleftmastheadtop">
+        <a href="/logout">Log Out</a> /
+        <a href="/learn.html" class="hideme">Learn</a>
+        <a href="/learn2.html">Words Lists & Spelling</a> /
+        <a href="/learn3.html">Vowel Sounds</a> /
+        <a href="/synth.html">Vowel Synth</a>
         <h1>Transcript Viewer</h1>
         <select id="peopleSelect"></select>
         <select id="audioSelect"></select>
@@ -248,7 +285,17 @@
           <source id="audioSource" src="" type="audio/mp3" />
           Your browser does not support the audio element.
         </audio>
-        <div><input type="range" min="-1" max="1" value="0" step="0.01" id="audioOffsetTuner" class="hideme"></div>
+        <div>
+          <input
+            type="range"
+            min="-1"
+            max="1"
+            value="0"
+            step="0.01"
+            id="audioOffsetTuner"
+            class="hideme"
+          />
+        </div>
         <div id="playbackSpeed"></div>
         <button id="save">Save Notes To Local File</button>
         <button id="load">Load Notes From Local File</button>
@@ -365,15 +412,13 @@
     </div>
     <div class="masthead-bottom">
       <div class="toolTip" id="toolTip"></div>
-
     </div>
     <div class="transcript" id="transcript">
       <!-- Transcript will be inserted here -->
-       Loading example transcript...
+      Loading example transcript...
     </div>
 
-    <ul class="list" id="list">
-    </ul>
+    <ul class="list" id="list"></ul>
 
     <!--<script src="app.js" type="module"></script>-->
     <script src="./src/index.js" type="module"></script>
