@@ -253,8 +253,8 @@ app.get("/data/loadDefault", (req, res) => {
           res.setHeader("Content-Type", "application/json");
           res.write(
             JSON.stringify({
-              defaultAudio: defaultAudioDataSanitized,
-              defaultAirtableWords: defaultTranscriptData,
+              audio: defaultAudioDataSanitized,
+              airtableWords: defaultTranscriptData,
             })
           );
           res.end();
@@ -269,39 +269,115 @@ app.get("/data/loadDefault", (req, res) => {
 });
 
 app.get("/data/loadIssues", (req, res) => {
-  const postData = "";
+  let airtableFeaturesString = "";
   let airtableIssuesString = "";
-  let airtableIssues = {};
-  let airtableIssuesSanitized = {};
-  const options1 = {
+
+  const airtableFeaturesSanitized = [];
+
+  const optionsFeatures = {
     hostname: "api.airtable.com",
-    path: `/v0/${AIRTABLE_BASE_ID}/BR%20issues`,
+    path: `/v0/${AIRTABLE_BASE_ID}/Target`, // Features table
     method: "GET",
     headers: {
       Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
     },
   };
 
-  const req1 = https.request(options1, (res1) => {
-    res1.setEncoding("utf8");
-    res1.on("data", (chunk) => {
-      airtableIssuesString += chunk;
+  const optionsIssues = {
+    hostname: "api.airtable.com",
+    path: `/v0/${AIRTABLE_BASE_ID}/BR%20issues`, // Issues table
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+    },
+  };
+
+  // First API call: Fetch Features
+  const reqFeatures = https.request(optionsFeatures, (resFeatures) => {
+    resFeatures.setEncoding("utf8");
+
+    resFeatures.on("data", (chunk) => {
+      airtableFeaturesString += chunk;
     });
-    res1.on("end", () => {
-      airtableIssues = JSON.parse(airtableIssuesString);
 
-      for (let i = 0; i < Object.keys(airtableIssues.records).length; i++) {
-        airtableIssuesSanitized[airtableIssues.records[i].id] =
-          airtableIssues.records[i].fields.Name;
-      }
+    resFeatures.on("end", () => {
+      const airtableFeatures = JSON.parse(airtableFeaturesString);
 
-      res.setHeader("Content-Type", "application/json");
-      res.write(JSON.stringify(airtableIssuesSanitized));
-      res.end();
+      // Prepare an object where each feature ID maps to a feature name and an empty issues array
+      airtableFeatures.records.forEach((record) => {
+        airtableFeaturesSanitized.push({
+          id: record.id,
+          name: record.fields.Name || "",
+          po: record.fields["Presentation order"] || "",
+          type: record.fields.type || "",
+          issues: [], // Placeholder for related issues
+        });
+      });
+
+      // Second API call: Fetch Issues
+      const reqIssues = https.request(optionsIssues, (resIssues) => {
+        resIssues.setEncoding("utf8");
+
+        resIssues.on("data", (chunk) => {
+          airtableIssuesString += chunk;
+        });
+
+        resIssues.on("end", () => {
+          const airtableIssues = JSON.parse(airtableIssuesString);
+
+          // Process Issues and link them to Features
+          airtableIssues.records.forEach((record) => {
+            const featureIds = record.fields["target"] || []; // List of related feature IDs
+            const issueData = {
+              id: record.id,
+              name: record.fields.Name || "",
+              po: record.fields["Presentation order"] || Infinity, // Default to large number for sorting
+              tgt: record.fields.target || "",
+            };
+
+            featureIds.forEach((featureId) => {
+              // Find feature by ID in the array
+              const feature = airtableFeaturesSanitized.find(
+                (f) => f.id === featureId
+              );
+              if (feature) {
+                feature.issues.push(issueData);
+              }
+            });
+          });
+
+          // Step 1: Sort issues within each feature by `po`
+          airtableFeaturesSanitized.forEach((feature) => {
+            feature.issues.sort((a, b) => a.po - b.po);
+          });
+
+          // Step 2: Sort features by `po`
+          airtableFeaturesSanitized.sort((a, b) => a.po - b.po);
+
+          // Send response
+          res.setHeader("Content-Type", "application/json");
+          res.statusCode = 200;
+          res.end(JSON.stringify(airtableFeaturesSanitized));
+        });
+      });
+
+      reqIssues.on("error", (error) => {
+        console.error("Airtable Issues Request Error:", error);
+        res.statusCode = 500;
+        res.end(JSON.stringify({ error: "Failed to fetch issues" }));
+      });
+
+      reqIssues.end();
     });
   });
-  req1.write(postData);
-  req1.end();
+
+  reqFeatures.on("error", (error) => {
+    console.error("Airtable Features Request Error:", error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ error: "Failed to fetch features" }));
+  });
+
+  reqFeatures.end();
 });
 
 app.get("/data/loadAudio/:AudioRecId", (req, res) => {
@@ -362,8 +438,8 @@ app.get("/data/loadAudio/:AudioRecId", (req, res) => {
             res.setHeader("Content-Type", "application/json");
             res.write(
               JSON.stringify({
-                selectedAudio: selectedAudioDataSanitized,
-                selectedAirtableWords: selectedAirtableWordsData,
+                audio: selectedAudioDataSanitized,
+                airtableWords: selectedAirtableWordsData,
               })
             );
             res.end();
