@@ -11,10 +11,77 @@ import {
   DEFAULT_AUDIO_REC_ID,
 } from "../config.js"; // Assume environment variables are imported here
 
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export default function createRoutes(app) {
   const router = express.Router();
   let AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_ONLY_VALUE;
 
+  // ✅ Wraps any async route in a try-catch, preventing server crashes
+  function safeRoute(handler) {
+    return async (req, res, next) => {
+      try {
+        await handler(req, res, next);
+      } catch (err) {
+        console.error("❌ Uncaught Route Error:", err);
+        next(err); // Pass error to Express global error handler
+      }
+    };
+  }
+
+  // ✅ Override `router.get`, `router.post`, etc. to always apply `safeRoute`
+  const methods = ["get", "post", "put", "patch", "delete", "all"];
+  methods.forEach((method) => {
+    const original = router[method];
+    router[method] = function (path, ...handlers) {
+      // Wrap every handler inside `safeRoute`
+      original.call(router, path, ...handlers.map(safeRoute));
+    };
+  });
+
+  //#region new routes
+  // NEW API (v1) - all new endpoints start with /v1/
+
+  const v1Router = express.Router();
+
+  v1Router.get("/authz", requiresAuth(), async (req, res) => {
+    const currentUserId = req.oidc.user.sub;
+
+    let peopleData, audioData;
+    try {
+      [peopleData, audioData] = await Promise.all([
+        fetchAirtableData("People"),
+        fetchAirtableData("Audio%20Source"),
+      ]);
+      console.log("Fetched People & Audio data from Airtable");
+    } catch (e) {
+      console.error("Failed to fetch People & Audio data from Airtable", e);
+      return res
+        .status(500)
+        .json({ error: "Failed to fetch People & Audio data from Airtable" });
+    }
+
+    // Curate data before sending to frontend
+
+    // todo
+
+    const filteredPeopleData = peopleData.filter(
+      (item) => item.fields["auth0 user_id"] === currentUserId
+    );
+
+    res.json({
+      currentUserId: currentUserId,
+      filteredPeopleData: filteredPeopleData,
+      peopleData: peopleData,
+      audioData: audioData,
+    });
+  });
+
+  router.use("/v1", v1Router);
+  //#endregion
+
+  //#region legacy routes
   // 🔹 AUTHORIZATION ROUTE (Legacy /authz)
   router.get("/authz", requiresAuth(), (req, res) => {
     ///////////////////////
@@ -33,9 +100,9 @@ export default function createRoutes(app) {
     ///// 1
     //////////////////////
 
+    let currentUserId = req.oidc.user.sub;
     let peopleObjectString = "";
     let peopleObject = {};
-    let currentUserId = req.oidc.user.sub;
     let currentUserAirtable;
     let currentUserAudioAccess;
     let audioObjectString = "";
@@ -630,33 +697,60 @@ export default function createRoutes(app) {
 
   // 🔹 CATCH-ALL ROUTE (Frontend SPA)
   router.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
   });
 
+  //#endregion
+
   // ✅ Helper: Fetch data from Airtable
-  function fetchAirtableData(res, airtablePath) {
-    const options = {
-      hostname: "api.airtable.com",
-      path: airtablePath,
-      method: "GET",
-      headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
-    };
+  function fetchAirtableData(tableName) {
+    return new Promise((resolve, reject) => {
+      const options = {
+        hostname: "api.airtable.com",
+        path: `/v0/${AIRTABLE_BASE_ID}/${tableName}`,
+        method: "GET",
+        headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
+      };
 
-    const airtableReq = https.request(options, (airtableRes) => {
-      let data = "";
-      airtableRes.setEncoding("utf8");
-      airtableRes.on("data", (chunk) => {
-        data += chunk;
+      const airtableReq = https.request(options, (airtableRes) => {
+        let data = "";
+        airtableRes.setEncoding("utf8");
+        airtableRes.on("data", (chunk) => {
+          data += chunk;
+        });
+        airtableRes.on("end", () => {
+          try {
+            console.log("Fetch function: Received response from Airtable");
+            const parsedData = JSON.parse(data);
+
+            if (!parsedData.records) {
+              console.error(
+                "Fetch function: No records field found in Airtable response",
+                parsedData
+              );
+              return reject(
+                "Fetch function: No records field found in Airtable response"
+              );
+            }
+
+            console.log(
+              "Fetch function: Successfully parsed data from Airtable"
+            );
+            resolve(parsedData.records);
+          } catch (error) {
+            console.error("Fetch function: JSON parse error");
+            reject("Fetch function: JSON parse error");
+          }
+        });
       });
-      airtableRes.on("end", () => {
-        res.json(JSON.parse(data));
+
+      airtableReq.on("error", (err) => {
+        console.error("Airtable Request Error:", err);
+        reject(err);
       });
+
+      airtableReq.end();
     });
-
-    airtableReq.on("error", (err) =>
-      res.status(500).json({ error: "Airtable request failed", details: err })
-    );
-    airtableReq.end();
   }
 
   // ✅ Helper: Forward API request to Airtable

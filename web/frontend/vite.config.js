@@ -9,6 +9,8 @@ export default defineConfig({
       "/api": "http://localhost:5000",
       "/authz": "http://localhost:5000",
       "/data": "http://localhost:5000",
+      "/authnew": "http://localhost:5000",
+      "/v1": "http://localhost:5000",
     },
   },
 });

@@ -33,8 +33,8 @@ const app = express();
 // Routes
 // Error handling
 
+// Enable authentication & apply global authentication
 app.use(auth(config));
-
 app.use(requiresAuth());
 
 app.use(function (req, res, next) {
@@ -42,13 +42,17 @@ app.use(function (req, res, next) {
   next();
 });
 
-if (environment_flag === "deva") {
-  app.use(express.static("../frontend/public", { index: "home.html" }));
-} else {
-  app.use(express.static("../frontend/dist", { index: "home.html" }));
-}
+const staticPath =
+  environment_flag === "deva" ? "../frontend/public" : "../frontend/dist";
+
+app.use(express.static(staticPath, { index: "home.html" }));
 
 app.use(createRoutes(app));
+
+app.use((err, req, res, next) => {
+  console.error("Global Server Error:", err);
+  res.status(500).json({ error: "Something went wrong on the serve" });
+});
 
 http.createServer(app).listen(port, () => {
   console.log(`Server running on port ${port}`);
