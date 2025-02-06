@@ -1,141 +1,142 @@
-import React, { useState, useEffect, useRef } from "react";
-// import styles from "./Home1.module.css";
+import { useEffect, useState, useRef } from "react";
+import { findActiveWordIndex } from "../utils/binarySearch";
+import { fetchData } from "../utils/api";
+import useFetchAudio from "../hooks/useFetchAudio";
+import useAudioSync from "../hooks/useAudioSync";
+import useFetchResources from "../hooks/useFetchResources";
+import Dropdown from "../components/Dropdown";
+import AudioPlayer from "../components/AudioPlayer";
+import TranscriptViewer from "../components/TranscriptViewer";
 
-function Home1() {
-  const [authz, setAuthz] = useState(null);
-  const [audios, setAudios] = useState(null);
-  const [defaultData, setDefaultData] = useState(null);
-  const [defaultAudio, setDefaultAudio] = useState(null);
-  const [defaultAirtableWords, setDefaultAirtableWords] = useState(null);
-  const [selectedData, setSelectedData] = useState(null);
-  const [audio, setAudio] = useState(null);
-  const [accentFeature, setAccentFeature] = useState(null);
-  const [accentIssues, setAccentIssues] = useState(null);
-  const [issuesSelected, setIssuesSelected] = useState(null);
-  const [issueSelected, setIssueSelected] = useState(null);
-  const [featureSelected, setFeatureSelected] = useState(null);
-  const [user, setUser] = useState(null);
-  const [people, setPeople] = useState(null);
-  const [userRole, setUserRole] = useState(null);
-  const [audioData, setAudioData] = useState(null);
-  const [speechData, setSpeechData] = useState(null);
-  const [annotationsLoaded, setAnnotationsLoaded] = useState(null);
-  const [issues, setIssues] = useState(null);
-  const [audioURLSelected, setAudioURLSelected] = useState(null);
-  const [transcriptSelected, setTranscriptSelected] = useState(null);
-  const [speechDataURL, setSpeechDataURL] = useState(null);
-  const [audioName, setAudioName] = useState(null);
-  const [audioNameURLEncoded, setAudioNameURLEncoded] = useState(null);
-  const [airtableWords, setAirtableWords] = useState(null);
-  const [airtableIssues, setAirtableIssues] = useState(null);
-  const [airtableIssuesObject, setAirtableIssuesObject] = useState({});
-  const [activeWord, setActiveWord] = useState(0); // index of the word currently being spoken
-  const [selectedWord, setSelectedWord] = useState(null); // index of the word whose annotations are being edited
-  const [inProgress, setInProgress] = useState({
-    // an object containing user-generated edits
-    // could be developed into an output
-    timeIntervals: [],
-    words: [],
-    notes: [],
-    ATRecs: [],
-  });
+export default function Home1() {
+  // Fetch People and Audio Resources
+  const {
+    people,
+    filteredAudio,
+    selectedPerson,
+    setSelectedPerson,
+    selectedAudio,
+    setSelectedAudio,
+  } = useFetchResources();
 
-  const audioPlayerRef = useRef(null);
-  const audioSourceRef = useRef(null);
-  const audioOffsetTunerRef = useRef(null);
-  const transcriptDivRef = useRef(null);
-  const toolTipRef = useRef(null);
-  const saveBtnRef = useRef(null);
-  const loadBtnRef = useRef(null);
-  const openFromAirtableBtnRef = useRef(null);
-  const saveToAirtableBtnRef = useRef(null);
-  const tempBtnRef = useRef(null);
-  const listRef = useRef(null);
-  const playbackSpeedRef = useRef(null);
-  const peopleSelectRef = useRef(null);
-  const audioSelectRef = useRef(null);
+  // Fetch Audio & Transcript Data
+  const { mp3url, transcriptData, allWords, airtableWords, fetchAudio } =
+    useFetchAudio();
 
+  // Reference for Audio Player
+  const audioRef = useRef(null);
+
+  // Track Current Time for Word Highlighting
+  const currentTime = useAudioSync(audioRef);
+  const [activeWordIndex, setActiveWordIndex] = useState(null);
+  const [annotations, setAnnotations] = useState([]);
+
+  // State for Airtable Issues
+  const [issuesData, setIssuesData] = useState([]);
+
+  // Fetch issues data on component mount
   useEffect(() => {
-    // Add event listeners and other initialization logic here
-    const saveBtn = saveBtnRef.current;
-    const loadBtn = loadBtnRef.current;
-    const openFromAirtableBtn = openFromAirtableBtnRef.current;
-    const saveToAirtableBtn = saveToAirtableBtnRef.current;
-    const tempBtn = tempBtnRef.current;
-
-    saveBtn.addEventListener("click", saveToJSON);
-    loadBtn.addEventListener("click", loadFromJSON);
-    openFromAirtableBtn.addEventListener("click", getAudio);
-    saveToAirtableBtn.addEventListener("click", saveToAirtable);
-    tempBtn.addEventListener("click", tempAirtableTest);
-
-    return () => {
-      // Clean up event listeners
-      saveBtn.removeEventListener("click", saveToJSON);
-      loadBtn.removeEventListener("click", loadFromJSON);
-      openFromAirtableBtn.removeEventListener("click", getAudio);
-      saveToAirtableBtn.removeEventListener("click", saveToAirtable);
-      tempBtn.removeEventListener("click", tempAirtableTest);
+    const fetchIssues = async () => {
+      try {
+        setIssuesData(await fetchData("/data/loadIssues"));
+      } catch (error) {
+        console.error("Error fetching issues:", error);
+      }
     };
+    fetchIssues();
   }, []);
 
-  async function saveToJSON() {
-    // Implement saveToJSON logic here
-  }
+  // Helper function to get issue names from IDs
+  const getIssueNames = (issueIds) => {
+    if (!issueIds || !issuesData.length) return [];
 
-  async function loadFromJSON() {
-    // Implement loadFromJSON logic here
-  }
+    return issueIds.map((id) => {
+      // Find the category that contains this issue
+      const category = issuesData.find((cat) =>
+        cat.issues.some((issue) => issue.id === id)
+      );
 
-  async function getAudio() {
-    // Implement getAudio logic here
-  }
+      if (category) {
+        const issue = category.issues.find((i) => i.id === id);
+        return issue ? issue.name : id;
+      }
+      return id;
+    });
+  };
 
-  async function saveToAirtable() {
-    // Implement saveToAirtable logic here
-  }
+  // Sync Active Word with Current Time
+  useEffect(() => {
+    if (!allWords.length) return;
+    setActiveWordIndex(findActiveWordIndex(allWords, currentTime));
+  }, [currentTime, allWords]);
 
-  async function tempAirtableTest() {
-    // Implement tempAirtableTest logic here
-  }
+  // Handle Audio Selection and Fetch
+  const handleAudioSelection = async () => {
+    await fetchAudio(selectedAudio);
+    if (audioRef.current) {
+      audioRef.current.load();
+    }
+  };
+
+  const handleAnnotationHover = (annotations) => {
+    const friendlyNames = getIssueNames(annotations);
+    setAnnotations(friendlyNames);
+  };
+
+  const handleAnnotationUpdate = async (wordIndex, annotations) => {
+    console.log("Updating annotations for word", wordIndex, annotations);
+    // Update Airtable
+    // Update local state
+    // Refresh UI
+  };
 
   return (
-    <div className={styles.container}>
-      <audio id="audioPlayer" ref={audioPlayerRef}>
-        <source id="audioSource" ref={audioSourceRef} />
-      </audio>
-      <input type="range" id="audioOffsetTuner" ref={audioOffsetTunerRef} />
-      <div id="transcript" ref={transcriptDivRef}></div>
-      <div id="toolTip" ref={toolTipRef}></div>
-      <button id="save" ref={saveBtnRef} className={styles.button}>
-        Save
-      </button>
-      <button id="load" ref={loadBtnRef} className={styles.button}>
-        Load
-      </button>
-      <button
-        id="openFromAirtable"
-        ref={openFromAirtableBtnRef}
-        className={styles.button}
-      >
-        Open from Airtable
-      </button>
-      <button
-        id="saveToAirtable"
-        ref={saveToAirtableBtnRef}
-        className={styles.button}
-      >
-        Save to Airtable
-      </button>
-      <button id="tempBtn" ref={tempBtnRef} className={styles.button}>
-        Temp
-      </button>
-      <div id="list" ref={listRef} className={styles.list}></div>
-      <input type="range" id="playbackSpeed" ref={playbackSpeedRef} />
-      <select id="peopleSelect" ref={peopleSelectRef}></select>
-      <select id="audioSelect" ref={audioSelectRef}></select>
+    <div>
+      <div>
+        <div className="masthead-top">
+          <div className="columnleftmastheadtop">
+            <h1>Transcript Viewer</h1>
+            <Dropdown
+              className="block"
+              label="Select person: "
+              options={people}
+              selectedValue={selectedPerson}
+              onChange={setSelectedPerson}
+            />
+            <Dropdown
+              className="block"
+              label="Select audio: &nbsp; "
+              options={filteredAudio}
+              selectedValue={selectedAudio}
+              onChange={setSelectedAudio}
+            />
+            <button className="block" onClick={handleAudioSelection}>
+              Open From Airtable
+            </button>
+            <AudioPlayer mp3url={mp3url} ref={audioRef} />
+            <div></div>
+          </div>
+        </div>
+
+        <p>Welcome to the home page!</p>
+      </div>
+      <div className="masthead-bottom">
+        <div className="toolTip">{annotations.join(", ")}</div>
+      </div>
+      <TranscriptViewer
+        transcriptData={transcriptData}
+        activeWordIndex={activeWordIndex}
+        airtableWords={airtableWords}
+        handleWordClick={(start_time) => {
+          audioRef.current.currentTime = start_time;
+          audioRef.current.play();
+        }}
+        onAnnotationHover={handleAnnotationHover}
+        issuesData={issuesData}
+        onAnnotationUpdate={handleAnnotationUpdate}
+      />
+
+      <ul className="list"></ul>
     </div>
   );
 }
-
-export default Home1;

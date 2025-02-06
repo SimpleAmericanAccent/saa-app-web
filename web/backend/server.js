@@ -40,7 +40,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-if (environment_flag === "dev") {
+if (environment_flag === "deva") {
   app.use(express.static("../frontend/public", { index: "home.html" }));
 } else {
   app.use(express.static("../frontend/dist", { index: "home.html" }));
@@ -178,6 +178,29 @@ app.get("/authz", requiresAuth(), (req, res) => {
           ///////////////////////
           ///// 3
           //////////////////////
+
+          // Remove duplicate speakers
+          const uniquePeople = {};
+          currentUserAudioAccessObjectSpeakerNames =
+            currentUserAudioAccessObjectSpeakerNames.filter((person) => {
+              if (!uniquePeople[person.id]) {
+                uniquePeople[person.id] = true;
+                return true;
+              }
+              return false;
+            });
+
+          // Remove duplicate audios
+          const uniqueAudios = {};
+          currentUserAudioAccessObject = currentUserAudioAccessObject.filter(
+            (audio) => {
+              if (!uniqueAudios[audio.id]) {
+                uniqueAudios[audio.id] = true;
+                return true;
+              }
+              return false;
+            }
+          );
 
           res.setHeader("Content-Type", "application/json");
           res.write(
