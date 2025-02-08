@@ -33,16 +33,16 @@ F1F2Marker.style.pointerEvents = "none";
 vowelDiagram.appendChild(F1F2Marker);
 
 const phoneticSymbols = [
-  { symbol: "i", F1: 350, F2: 2030 },
-  { symbol: "o", F1: 500, F2: 800 },
-  { symbol: "u", F1: 350, F2: 800 },
-  { symbol: "æ", F1: 660, F2: 1750 },
-  { symbol: "ə", F1: 525, F2: 1350 },
-  { symbol: "ɪ", F1: 410, F2: 1800 },
-  { symbol: "ɛ", F1: 600, F2: 1800 },
-  { symbol: "ʌ", F1: 600, F2: 1200 },
-  { symbol: "ʊ", F1: 430, F2: 1080 },
-  { symbol: "ɑ", F1: 700, F2: 1100 },
+  { symbol: "FLEECE", F1: 350, F2: 2030 },
+  // { symbol: "o", F1: 500, F2: 800 },
+  { symbol: "GOOSE", F1: 350, F2: 800 },
+  { symbol: "TRAP", F1: 700, F2: 1700 },
+  { symbol: "schwa", F1: 525, F2: 1350 },
+  { symbol: "KIT", F1: 410, F2: 1800 },
+  { symbol: "DRESS", F1: 630, F2: 1760 },
+  { symbol: "STRUT", F1: 600, F2: 1200 },
+  { symbol: "FOOT", F1: 430, F2: 1080 },
+  { symbol: "LOT", F1: 700, F2: 1100 },
 ];
 
 const xAxisMin = document.getElementById("xAxisMin");
