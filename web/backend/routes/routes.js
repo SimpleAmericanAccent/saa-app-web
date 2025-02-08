@@ -46,6 +46,8 @@ export default function createRoutes(app) {
   const v1Router = express.Router();
 
   v1Router.get("/authz", requiresAuth(), async (req, res) => {
+    // route not finished, use legacy route for now
+
     const currentUserId = req.oidc.user.sub;
 
     let peopleData, audioData;
@@ -70,10 +72,26 @@ export default function createRoutes(app) {
       (item) => item.fields["auth0 user_id"] === currentUserId
     );
 
+    const currentUserAirtableId = filteredPeopleData[0].id;
+
+    const audioFieldsToKeep = ["SpeakerName"];
+
+    const filteredAudioData = audioData
+      .filter((item) =>
+        item.fields["People with access"]?.includes(currentUserAirtableId)
+      )
+      .map((item) => ({
+        id: item.id,
+        createdTime: item.createdTime,
+        SpeakerName: item.fields?.SpeakerName || null,
+      }));
+
     res.json({
       currentUserId: currentUserId,
+      currentUserAirtableId: currentUserAirtableId,
+      filteredAudioData: filteredAudioData,
       filteredPeopleData: filteredPeopleData,
-      peopleData: peopleData,
+      // peopleData: peopleData,
       audioData: audioData,
     });
   });
@@ -447,7 +465,7 @@ export default function createRoutes(app) {
   });
 
   router.get("/data/loadAudio/:AudioRecId", (req, res) => {
-    if (app.locals.currentUserAudioAccess.includes(req.params.AudioRecId)) {
+    if (app.locals.currentUserAudioAccess?.includes(req.params.AudioRecId)) {
       const postData = "";
       let selectedAudioDataString = "";
       let selectedAudioData = {};
