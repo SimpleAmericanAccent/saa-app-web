@@ -9,6 +9,12 @@ body {
   flex-direction: column;
 }
 
+.nav {
+  text-align: left;
+  /* align-items: left; */
+  border: 2px solid black;
+}
+
 links {
   body {
     font-family: Arial, sans-serif;

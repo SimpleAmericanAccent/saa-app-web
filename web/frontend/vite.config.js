@@ -6,6 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      "/logout": "http://localhost:5000",
+      "/callback": "http://localhost:5000",
       "/api": "http://localhost:5000",
       "/authz": "http://localhost:5000",
       "/data": "http://localhost:5000",
