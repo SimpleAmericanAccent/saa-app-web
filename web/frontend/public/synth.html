@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./synth.css" />
   </head>
   <body>
-    <div id="nav">
+    <div id="nav" style="font: 16px Arial, sans-serif">
       <a href="/logout">Log Out</a> | <a href="/home.html">Home</a> |
       <a href="/stats.html">Stats</a> |
       <a href="/learn2.html">Words Lists & Spelling</a> |
@@ -15,117 +15,119 @@
       <a href="/synth.html">Vowel Synth</a>
     </div>
 
-    <h1>Vowel Sound Synthesizer</h1>
-    <div class="container">
-      <div class="column">
-        <div id="vowelDiagram">
-          <div class="overlay-container">
-            <div id="triangleOverlay"></div>
+    <div id="main">
+      <h1>Vowel Sound Synthesizer</h1>
+      <div class="container">
+        <div class="column">
+          <div id="vowelDiagram">
+            <div class="overlay-container">
+              <div id="triangleOverlay"></div>
+            </div>
+            <div class="axis-label x-axis-label">F2 (Hz)</div>
+            <div class="axis-label y-axis-label">F1 (Hz)</div>
+            <div class="x-axis-values" id="xAxisMin" style="left: 0"></div>
+            <div class="x-axis-values" id="xAxisMax" style="left: 100%"></div>
+            <div class="y-axis-values" id="yAxisMin" style="top: 0"></div>
+            <div class="y-axis-values" id="yAxisMax" style="top: 100%"></div>
           </div>
-          <div class="axis-label x-axis-label">F2 (Hz)</div>
-          <div class="axis-label y-axis-label">F1 (Hz)</div>
-          <div class="x-axis-values" id="xAxisMin" style="left: 0"></div>
-          <div class="x-axis-values" id="xAxisMax" style="left: 100%"></div>
-          <div class="y-axis-values" id="yAxisMin" style="top: 0"></div>
-          <div class="y-axis-values" id="yAxisMax" style="top: 100%"></div>
         </div>
-      </div>
-      <div class="column">
-        <div class="controls">
-          <div class="slider-container">
-            <label for="volume"
-              >Volume: <span id="volumeValue">100</span></label
-            >
-            <input
-              type="range"
-              id="volume"
-              name="volume"
-              min="0"
-              max="100"
-              value="100"
-              step="0.01"
-            />
-          </div>
+        <div class="column">
+          <div class="controls">
+            <div class="slider-container">
+              <label for="volume"
+                >Volume: <span id="volumeValue">100</span></label
+              >
+              <input
+                type="range"
+                id="volume"
+                name="volume"
+                min="0"
+                max="100"
+                value="100"
+                step="0.01"
+              />
+            </div>
 
-          <div class="slider-container">
-            <label for="pitch"
-              >Pitch (Hz): <span id="pitchValue">100</span></label
-            >
-            <input
-              type="range"
-              id="pitch"
-              name="pitch"
-              min="50"
-              max="300"
-              value="100"
-              step="1"
-            />
-          </div>
+            <div class="slider-container">
+              <label for="pitch"
+                >Pitch (Hz): <span id="pitchValue">100</span></label
+              >
+              <input
+                type="range"
+                id="pitch"
+                name="pitch"
+                min="50"
+                max="300"
+                value="100"
+                step="1"
+              />
+            </div>
 
-          <div class="frequency-display">
-            F1: <span id="F1Value">500</span> Hz, F2:
-            <span id="F2Value">1500</span> Hz, F3:
-            <span id="F3Value">2500</span> Hz
-          </div>
+            <div class="frequency-display">
+              F1: <span id="F1Value">500</span> Hz, F2:
+              <span id="F2Value">1500</span> Hz, F3:
+              <span id="F3Value">2500</span> Hz
+            </div>
 
-          <!-- F1, F2, F3 Sliders and Inputs -->
-          <div class="input-group">
-            <label for="F1">F1 (Hz)</label>
-            <input
-              type="range"
-              id="F1"
-              min="100"
-              max="1000"
-              value="500"
-              step="1"
-            />
-            <input
-              type="number"
-              id="F1Input"
-              value="500"
-              min="100"
-              max="1000"
-            />
-          </div>
-          <div class="input-group">
-            <label for="F2">F2 (Hz)</label>
-            <input
-              type="range"
-              id="F2"
-              min="500"
-              max="3000"
-              value="1500"
-              step="1"
-            />
-            <input
-              type="number"
-              id="F2Input"
-              value="1500"
-              min="500"
-              max="3000"
-            />
-          </div>
-          <div class="input-group">
-            <label for="F3">F3 (Hz)</label>
-            <input
-              type="range"
-              id="F3"
-              min="2000"
-              max="3500"
-              value="2500"
-              step="1"
-            />
-            <input
-              type="number"
-              id="F3Input"
-              value="2500"
-              min="2000"
-              max="3500"
-            />
-          </div>
+            <!-- F1, F2, F3 Sliders and Inputs -->
+            <div class="input-group">
+              <label for="F1">F1 (Hz)</label>
+              <input
+                type="range"
+                id="F1"
+                min="100"
+                max="1000"
+                value="500"
+                step="1"
+              />
+              <input
+                type="number"
+                id="F1Input"
+                value="500"
+                min="100"
+                max="1000"
+              />
+            </div>
+            <div class="input-group">
+              <label for="F2">F2 (Hz)</label>
+              <input
+                type="range"
+                id="F2"
+                min="500"
+                max="3000"
+                value="1500"
+                step="1"
+              />
+              <input
+                type="number"
+                id="F2Input"
+                value="1500"
+                min="500"
+                max="3000"
+              />
+            </div>
+            <div class="input-group">
+              <label for="F3">F3 (Hz)</label>
+              <input
+                type="range"
+                id="F3"
+                min="2000"
+                max="3500"
+                value="2500"
+                step="1"
+              />
+              <input
+                type="number"
+                id="F3Input"
+                value="2500"
+                min="2000"
+                max="3500"
+              />
+            </div>
 
-          <!-- Start/Stop Button -->
-          <button id="startStopButton">Start</button>
+            <!-- Start/Stop Button -->
+            <button id="startStopButton">Start</button>
+          </div>
         </div>
       </div>
     </div>

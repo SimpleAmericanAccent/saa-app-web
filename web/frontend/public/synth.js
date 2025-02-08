@@ -37,7 +37,7 @@ const phoneticSymbols = [
   // { symbol: "o", F1: 500, F2: 800 },
   { symbol: "GOOSE", F1: 350, F2: 800 },
   { symbol: "TRAP", F1: 700, F2: 1700 },
-  { symbol: "schwa", F1: 525, F2: 1350 },
+  { symbol: "schwa", F1: 525, F2: 1200 },
   { symbol: "KIT", F1: 410, F2: 1800 },
   { symbol: "DRESS", F1: 630, F2: 1760 },
   { symbol: "STRUT", F1: 600, F2: 1200 },

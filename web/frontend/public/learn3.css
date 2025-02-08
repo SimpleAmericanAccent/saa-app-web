@@ -1,4 +1,4 @@
-body {
+.main {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
@@ -101,7 +101,7 @@ tr:nth-child(even) {
   gap: 10px; /* Adjust the gap as needed */
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 550px) {
   .gambiarra,
   .respelled,
   .phonemic,
