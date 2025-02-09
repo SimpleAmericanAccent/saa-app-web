@@ -10,9 +10,10 @@ body {
   position: sticky;
   top: 0px;
   bottom: auto;
-  background-color: rgb(209, 209, 209);
+  background-color: white;
   padding: 0px;
   margin: 0px;
+  border: 1px solid black;
 }
 
 #main {
@@ -30,7 +31,7 @@ body {
 }
 
 #sideNav {
-  background-color: rgb(145, 145, 194);
+  /* background-color: #c9c9c9; */
   width: 200px;
   padding: 20px 0px;
   /* text-decoration: none; */
@@ -46,6 +47,11 @@ body {
 #sideNav ul ul {
   list-style-type: none;
   padding: 0px 0px 0px 20px;
+}
+
+#sideNav a {
+  text-decoration: none;
+  color: rgb(0, 1, 83);
 }
 
 #content {
