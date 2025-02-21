@@ -318,9 +318,20 @@ function adjustAnnotations(evt) {
     function convertIssuesToATIssueRecIDs(notes, airtableIssues) {
       let convertedOutput = [];
       for (let i = 0; i < notes.length; i++) {
-        for (let j = 0; j < Object.keys(airtableIssues).length; j++) {
-          if (Object.values(airtableIssues)[j] == notes[i]) {
-            convertedOutput.push(Object.keys(airtableIssues)[j]);
+        let flattenedAirtableIssues;
+
+        flattenedAirtableIssues = airtableIssues.reduce((acc, item) => {
+          item.issues.forEach((issue) => {
+            acc[issue.id] = issue.name;
+          });
+          return acc;
+        }, {});
+
+        // console.log(flattenedAirtableIssues);
+
+        for (let j = 0; j < Object.keys(flattenedAirtableIssues).length; j++) {
+          if (Object.values(flattenedAirtableIssues)[j] == notes[i]) {
+            convertedOutput.push(Object.keys(flattenedAirtableIssues)[j]);
           }
         }
       }
@@ -328,13 +339,11 @@ function adjustAnnotations(evt) {
     }
 
     function buildATFields() {
-      // going to need to swap some of these with dynamically looked-up airtable records IDs, sending string won't work
-      // hard-coding record IDs for now, just for testing. need to make dynamic.
       return {
         Name: transcriptState.words[transcriptState.selectedWord],
         "BR issues": convertIssuesToATIssueRecIDs(
           notes,
-          transcriptState.selectedWord
+          appState.airtableIssues
         ),
         "in timestamp (seconds)":
           transcriptState.timeIntervals[transcriptState.selectedWord],

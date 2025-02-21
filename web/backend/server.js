@@ -43,7 +43,7 @@ app.use(function (req, res, next) {
 });
 
 const staticPath =
-  environment_flag === "deva" ? "../frontend/public" : "../frontend/dist";
+  environment_flag === "dev" ? "../frontend/public" : "../frontend/dist";
 
 app.use(express.static(staticPath, { index: "home.html" }));
 
