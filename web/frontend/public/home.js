@@ -421,6 +421,7 @@ let playbackObj = {
   ArrowUp: () => {
     console.log("==============");
     console.log("transcriptState:", transcriptState);
+    console.log("appState:", appState);
     // console.log("airtableWords:", airtableWords);
     // console.log("speechData:", speechData);
     // console.log("transcriptSelected:", transcriptSelected);
