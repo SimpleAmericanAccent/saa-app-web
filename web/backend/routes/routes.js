@@ -96,6 +96,10 @@ export default function createRoutes(app) {
     });
   });
 
+  v1Router.get("/api/update", async (req, res) => {
+    //tbd
+  });
+
   router.use("/v1", v1Router);
   //#endregion
 
