@@ -96,8 +96,45 @@ export default function createRoutes(app) {
     });
   });
 
-  v1Router.get("/api/update", async (req, res) => {
+  v1Router.post("/api/update", async (req, res) => {
     //tbd
+
+    if (app.locals.currentUserRole === "write") {
+      AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;
+
+      let body = JSON.stringify({ records: [{ id: ATRec, fields: ATFields }] });
+      req.on("end", () => {
+        const options = {
+          hostname: "api.airtable.com",
+          path: `/v0/${AIRTABLE_BASE_ID}/Words%20%28instance%29`,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+          },
+        };
+
+        const req2 = https.request(options, (res2) => {
+          let body2 = "";
+          res2.setEncoding("utf8");
+          res.setHeader("Content-Type", "application/json");
+          res2.on("data", (chunk2) => {
+            body2 += chunk2.toString();
+          });
+          res2.on("end", () => {
+            res.write(body2);
+            console.log(body2);
+            res.end();
+          });
+        });
+        req2.write(body);
+        req2.end();
+      });
+    } else {
+      res.setHeader("Content-Type", "text/plain");
+      res.write("not authorized");
+      res.end();
+    }
   });
 
   router.use("/v1", v1Router);
