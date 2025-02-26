@@ -7,10 +7,12 @@ const audioPlayer = document.getElementById("audioPlayer"),
   transcriptDiv = document.getElementById("transcript"),
   toolTip = document.getElementById("toolTip"),
   openFromAirtableBtn = document.getElementById("openFromAirtable"),
+  filterBtn = document.getElementById("toggleFiltering"),
   list = document.getElementById("list"),
   playbackSpeed = document.getElementById("playbackSpeed"),
   peopleSelect = document.getElementById("peopleSelect"),
-  audioSelect = document.getElementById("audioSelect");
+  audioSelect = document.getElementById("audioSelect"),
+  issuesFilter = document.getElementById("columnrightmastheadtop");
 
 const appState = {
   userRole: null,
@@ -61,6 +63,7 @@ loadDefault();
 // #region event listeners
 
 openFromAirtableBtn.addEventListener("click", getAudio);
+filterBtn.addEventListener("click", toggleFiltering);
 peopleSelect.addEventListener("change", filterAudios);
 
 // detects key presses for keyboard playback control
@@ -83,10 +86,9 @@ async function loadDefault() {
 
   setInterval(highlightActiveWord, 30);
 
-  // document.querySelectorAll("td").forEach((tableElement) => {
-  //   tableElementContent = tableElement.innerHTML;
-  //   tableElement.addEventListener("click", filterAnnotations);
-  // });
+  document.querySelectorAll("td").forEach((tableElement) => {
+    tableElement.addEventListener("click", filterAnnotations);
+  });
 }
 
 /**
@@ -161,11 +163,11 @@ function showAnnotations(ind) {
   // displays any annotations applied to the word being hovered over
   toolTip.innerHTML = transcriptState.notes[ind].join(", ");
 }
-// function hideAnnotations() {
-//   document.querySelectorAll("span").forEach((sp) => {
-//     sp.classList.remove("annotated");
-//   });
-// }
+function hideAnnotations() {
+  document.querySelectorAll("span").forEach((sp) => {
+    sp.classList.remove("annotated");
+  });
+}
 function highlightActiveWord() {
   // highlights the word currently being spoken
   let currentTime = audioPlayer.currentTime;
@@ -491,27 +493,38 @@ function updateWordSpanListeners() {
     }
   }
 }
-// function filterAnnotations(evt) {
-//   hideAnnotations();
-//   const accentFeature = evt.currentTarget.innerHTML;
-//   console.log(accentFeature);
-//   if (Object.keys(issues.targets).includes(accentFeature)) {
-//     const issuesSelected = issues.targets[accentFeature];
-//     console.log(issuesSelected);
-//     console.log(issuesSelected.length);
-//   } else {
-//     console.log("no");
-//   }
-//   for (let i = 0; i < transcriptState.notes.length; i++) {
-//     let s = document.querySelectorAll("span")[i];
+function toggleFiltering() {
+  if (issuesFilter.style.display === "block") {
+    issuesFilter.style.display = "none";
+  } else {
+    issuesFilter.style.display = "block";
+  }
+}
+function filterAnnotations(evt) {
+  hideAnnotations();
 
-//     for (let j = 0; j < issuesSelected.length; j++) {
-//       if (transcriptState.notes[i].includes(issuesSelected[j])) {
-//         s.classList.add("annotated");
-//       }
-//     }
-//   }
-// }
+  const accentFeature = evt.currentTarget.innerHTML.trim(); // Ensure proper matching
+  const matchedIssue = appState.airtableIssues.find(
+    (issue) => issue.name === accentFeature
+  );
+
+  if (!matchedIssue) {
+    console.warn(`No issues found for accent feature: ${accentFeature}`);
+    return;
+  }
+
+  const issuesSelected = matchedIssue.issues.map((issue) => issue.name); // Extract issue names
+  console.log("Selected Issues:", issuesSelected);
+
+  const wordSpans = document.querySelectorAll("span"); // Cache elements
+
+  transcriptState.notes.forEach((note, i) => {
+    if (issuesSelected.some((issue) => note.includes(issue))) {
+      wordSpans[i].classList.add("annotated");
+    }
+  });
+}
+
 const onClickOutside = () => {
   list.style.display = "none";
   document.removeEventListener("click", onClickOutside);

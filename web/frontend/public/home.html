@@ -64,14 +64,17 @@
         <h1>Transcript Viewer</h1>
         <select id="peopleSelect"></select>
         <select id="audioSelect"></select>
-        <button id="openFromAirtable">Open From Airtable</button>
+        <div style="display: flex">
+          <button id="openFromAirtable">Open From Airtable</button>&nbsp;
+          <button id="toggleFiltering">Enable Filtering</button>
+        </div>
         <audio id="audioPlayer" controls>
           <source id="audioSource" src="" type="audio/mp3" />
           Your browser does not support the audio element.
         </audio>
         <div id="playbackSpeed"></div>
       </div>
-      <div class="columnrightmastheadtop">
+      <div class="columnrightmastheadtop" id="columnrightmastheadtop">
         <div class="annotation-list column2">
           <table>
             <tr>
