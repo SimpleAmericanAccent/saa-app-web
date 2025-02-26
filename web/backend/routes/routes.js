@@ -505,78 +505,96 @@ export default function createRoutes(app) {
     reqFeatures.end();
   });
 
-  router.get("/data/loadAudio/:AudioRecId", (req, res) => {
+  router.get("/data/loadAudio/:AudioRecId", async (req, res) => {
     if (app.locals.currentUserAudioAccess?.includes(req.params.AudioRecId)) {
-      const postData = "";
-      let selectedAudioDataString = "";
-      let selectedAudioData = {};
-      let selectedAudioDataSanitized = {};
-      let selectedAirtableWordsDataString = "";
-      let selectedAirtableWordsData = {};
-      let audioName;
-      let audioNameURLEncoded;
-      const options1 = {
-        hostname: "api.airtable.com",
-        path: `/v0/${AIRTABLE_BASE_ID}/Audio%20Source/${req.params.AudioRecId}`,
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+      // const postData = "";
+      // let selectedAudioDataString = "";
+      // let selectedAudioData = {};
+      // let selectedAudioDataSanitized = {};
+      // let selectedAirtableWordsDataString = "";
+      // let selectedAirtableWordsData = {};
+      // let audioName;
+      // let audioNameURLEncoded;
+      // const options1 = {
+      //   hostname: "api.airtable.com",
+      //   path: `/v0/${AIRTABLE_BASE_ID}/Audio%20Source/${req.params.AudioRecId}`,
+      //   method: "GET",
+      //   headers: {
+      //     Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+      //   },
+      // };
+
+      const audioData = await fetchAirtablePage(
+        `Audio%20Source/${req.params.AudioRecId}`
+      );
+
+      const wordsData = await fetchAllPages(
+        "Words%20(instance)",
+        encodeURIComponent(audioData.fields.Name)
+      );
+
+      res.json({
+        audio: {
+          mp3url: audioData.fields["mp3 url"],
+          tranurl: audioData.fields["tran/alignment JSON url"],
+          name: audioData.fields.Name,
         },
-      };
-
-      const req1 = https.request(options1, (res1) => {
-        res1.setEncoding("utf8");
-        res1.on("data", (chunk) => {
-          selectedAudioDataString += chunk;
-        });
-        res1.on("end", () => {
-          selectedAudioData = JSON.parse(selectedAudioDataString);
-
-          selectedAudioDataSanitized.mp3url =
-            selectedAudioData.fields["mp3 url"];
-          selectedAudioDataSanitized.tranurl =
-            selectedAudioData.fields["tran/alignment JSON url"];
-          selectedAudioDataSanitized.name = selectedAudioData.fields.Name;
-
-          audioName = selectedAudioData.fields["Name"];
-          audioNameURLEncoded = encodeURIComponent(audioName);
-
-          const postData2 = "";
-          let options2 = {
-            hostname: "api.airtable.com",
-            path: `/v0/${AIRTABLE_BASE_ID}/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`,
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-            },
-          };
-
-          const req2 = https.request(options2, (res2) => {
-            res2.setEncoding("utf8");
-            res2.on("data", (chunk) => {
-              selectedAirtableWordsDataString += chunk;
-            });
-            res2.on("end", () => {
-              selectedAirtableWordsData = JSON.parse(
-                selectedAirtableWordsDataString
-              );
-
-              res.setHeader("Content-Type", "application/json");
-              res.write(
-                JSON.stringify({
-                  audio: selectedAudioDataSanitized,
-                  airtableWords: selectedAirtableWordsData,
-                })
-              );
-              res.end();
-            });
-          });
-          req2.write(postData2);
-          req2.end();
-        });
+        airtableWords: { records: wordsData }, // Now includes ALL records
       });
-      req1.write(postData);
-      req1.end();
+
+      // const req1 = https.request(options1, (res1) => {
+      //   res1.setEncoding("utf8");
+      //   res1.on("data", (chunk) => {
+      //     selectedAudioDataString += chunk;
+      //   });
+      //   res1.on("end", () => {
+      //     selectedAudioData = JSON.parse(selectedAudioDataString);
+
+      //     selectedAudioDataSanitized.mp3url =
+      //       selectedAudioData.fields["mp3 url"];
+      //     selectedAudioDataSanitized.tranurl =
+      //       selectedAudioData.fields["tran/alignment JSON url"];
+      //     selectedAudioDataSanitized.name = selectedAudioData.fields.Name;
+
+      //     audioName = selectedAudioData.fields["Name"];
+      //     audioNameURLEncoded = encodeURIComponent(audioName);
+
+      //     const postData2 = "";
+      //     let options2 = {
+      //       hostname: "api.airtable.com",
+      //       path: `/v0/${AIRTABLE_BASE_ID}/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`,
+      //       method: "GET",
+      //       headers: {
+      //         Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+      //       },
+      //     };
+
+      //     const req2 = https.request(options2, (res2) => {
+      //       res2.setEncoding("utf8");
+      //       res2.on("data", (chunk) => {
+      //         selectedAirtableWordsDataString += chunk;
+      //       });
+      //       res2.on("end", () => {
+      //         selectedAirtableWordsData = JSON.parse(
+      //           selectedAirtableWordsDataString
+      //         );
+
+      //         res.setHeader("Content-Type", "application/json");
+      //         res.write(
+      //           JSON.stringify({
+      //             audio: selectedAudioDataSanitized,
+      //             airtableWords: selectedAirtableWordsData,
+      //           })
+      //         );
+      //         res.end();
+      //       });
+      //     });
+      //     req2.write(postData2);
+      //     req2.end();
+      //   });
+      // });
+      // req1.write(postData);
+      // req1.end();
     } else {
       res.setHeader("Content-Type", "text/plain");
       res.write("not found");
@@ -762,6 +780,145 @@ export default function createRoutes(app) {
   //#endregion
 
   // ✅ Helper: Fetch data from Airtable
+  async function fetchAllAirtableRecords(tableName) {
+    return new Promise((resolve, reject) => {
+      let allRecords = [];
+      let offset = null; // Starts as null
+
+      function fetchPage(nextOffset) {
+        let path = `/v0/${AIRTABLE_BASE_ID}/${tableName}`;
+        if (nextOffset) {
+          // Will be null on first pass, so this block is skipped
+          path += `?offset=${nextOffset}`;
+        }
+
+        const options = {
+          hostname: "api.airtable.com",
+          path: path,
+          method: "GET",
+          headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
+        };
+
+        const airtableReq = https.request(options, (airtableRes) => {
+          let data = "";
+          airtableRes.setEncoding("utf8");
+
+          airtableRes.on("data", (chunk) => {
+            data += chunk;
+          });
+
+          airtableRes.on("end", () => {
+            try {
+              const parsedData = JSON.parse(data);
+              if (!parsedData.records) {
+                return reject(new Error("Invalid response from Airtable"));
+              }
+
+              allRecords.push(...parsedData.records);
+              if (parsedData.offset) {
+                fetchPage(parsedData.offset); // Recursively fetch next batch
+              } else {
+                resolve(allRecords); // No more pages, return all records
+              }
+            } catch (error) {
+              reject(error);
+            }
+          });
+        });
+
+        airtableReq.on("error", (err) => reject(err));
+        airtableReq.end();
+      }
+
+      fetchPage(offset); // ✅ This always runs on the first pass!
+    });
+  }
+
+  async function fetchAirtablePage(endpoint) {
+    return new Promise((resolve, reject) => {
+      const options = {
+        hostname: "api.airtable.com",
+        path: `/v0/${AIRTABLE_BASE_ID}/${endpoint}`,
+        method: "GET",
+        headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
+      };
+
+      const airtableReq = https.request(options, (airtableRes) => {
+        let data = "";
+        airtableRes.setEncoding("utf8");
+
+        airtableRes.on("data", (chunk) => {
+          data += chunk;
+        });
+
+        airtableRes.on("end", () => {
+          try {
+            const parsedData = JSON.parse(data);
+            resolve(parsedData);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
+
+      airtableReq.on("error", (err) => reject(err));
+      airtableReq.end();
+    });
+  }
+
+  async function fetchAllPages(tableName, filterValue) {
+    return new Promise((resolve, reject) => {
+      let allRecords = [];
+      let offset = null;
+
+      function fetchPage(nextOffset) {
+        let path = `/v0/${AIRTABLE_BASE_ID}/${tableName}?filterByFormula=%7BAudio%20Source%7D%3D%22${filterValue}%22`;
+        if (nextOffset) {
+          path += `&offset=${nextOffset}`;
+        }
+
+        const options = {
+          hostname: "api.airtable.com",
+          path: path,
+          method: "GET",
+          headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
+        };
+
+        const airtableReq = https.request(options, (airtableRes) => {
+          let data = "";
+          airtableRes.setEncoding("utf8");
+
+          airtableRes.on("data", (chunk) => {
+            data += chunk;
+          });
+
+          airtableRes.on("end", () => {
+            try {
+              const parsedData = JSON.parse(data);
+              if (!parsedData.records) {
+                return reject(new Error("Invalid response from Airtable"));
+              }
+
+              allRecords.push(...parsedData.records);
+              if (parsedData.offset) {
+                fetchPage(parsedData.offset); // Recursively fetch next batch
+              } else {
+                resolve(allRecords); // No more pages, return all records
+              }
+            } catch (error) {
+              reject(error);
+            }
+          });
+        });
+
+        airtableReq.on("error", (err) => reject(err));
+        airtableReq.end();
+      }
+
+      fetchPage(offset);
+    });
+  }
+
   function fetchAirtableData(tableName) {
     return new Promise((resolve, reject) => {
       const options = {
