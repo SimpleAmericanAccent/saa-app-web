@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Add your models here
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  auth0Id    String?   @unique  // Maps to Airtable "auth0 user_id"
+  name       String?
+  role       String?   // Maps to Airtable "Role"
+  createdAt  DateTime  @default(now())
+  audios     Audio[]   @relation("UserAudios") // Access to audios relationship
+}
+
+model Audio {
+  id          Int      @id @default(autoincrement())
+  name        String
+  mp3url      String
+  tranurl     String
+  speakerId   Int?     // Reference to speaker
+  users       User[]   @relation("UserAudios")
+  words       Word[]
+  createdAt   DateTime @default(now())
+}
+
+model Word {
+  id          Int      @id @default(autoincrement())
+  name        String
+  audioId     Int
+  audio       Audio    @relation(fields: [audioId], references: [id])
+  wordIndex   Int
+  timestamp   Float
+  issues      Issue[]
+}
+
+model Issue {
+  id          Int      @id @default(autoincrement())
+  name        String
+  words       Word[]
+  featureId   Int
+  feature     Feature  @relation(fields: [featureId], references: [id])
+}
+
+model Feature {
+  id          Int      @id @default(autoincrement())
+  name        String
+  type        String?
+  order       Int?     // For presentation order
+  issues      Issue[]
+}

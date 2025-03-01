@@ -13,6 +13,7 @@ export default defineConfig({
       "/data": "http://localhost:5000",
       "/authnew": "http://localhost:5000",
       "/v1": "http://localhost:5000",
+      "/prisma": "http://localhost:5000",
     },
   },
 });

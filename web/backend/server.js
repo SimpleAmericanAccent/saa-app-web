@@ -7,9 +7,17 @@ import pkg from "express-openid-connect";
 const { auth, requiresAuth } = pkg;
 import createRoutes from "./routes/routes.js";
 import { environment_flag } from "./config.js"; // Assume environment variables are imported here
+import { PrismaClient } from "@prisma/client";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const prisma = new PrismaClient();
+
+// Add Prisma cleanup handler
+process.on("beforeExit", async () => {
+  await prisma.$disconnect();
+});
 
 const port = process.env.PORT || 5000;
 let currentUserAudioAccess;
@@ -46,6 +54,8 @@ const staticPath =
   environment_flag === "dev" ? "../frontend/public" : "../frontend/dist";
 
 app.use(express.static(staticPath, { index: "home.html" }));
+
+app.use(express.json());
 
 app.use(createRoutes(app));
 
