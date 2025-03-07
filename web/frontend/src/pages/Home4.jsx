@@ -1,7 +1,10 @@
-export default function Home4() {
+import TranscriptViewer2 from "../components/experimental/TranscriptViewer2";
+import { mockTranscript } from "../__mocks__/mockData";
+
+export default function Home1() {
   return (
     <div>
-      <h1>Home 4</h1>
+      <TranscriptViewer2 transcriptData={mockTranscript} />
     </div>
   );
 }
