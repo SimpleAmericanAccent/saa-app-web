@@ -300,12 +300,17 @@ function adjustAnnotations(evt) {
         notes.push(issueSelected);
       }
 
+      console.log("tempATRec: ", tempATRec);
+
       async function asyncCaller() {
+        console.log("entering asyncCaller");
         let ATResponse = await saveToAirtable(
           "POST",
           tempATRec,
           buildATFields()
         );
+        console.log("exiting ATResponse");
+        console.log("ATResponse: ", ATResponse);
         transcriptState.airtableWords.records.push(ATResponse.records[0]);
         transcriptState.ATRecs[transcriptState.selectedWord] =
           ATResponse.records[0].id;
@@ -351,7 +356,7 @@ function adjustAnnotations(evt) {
           transcriptState.timeIntervals[transcriptState.selectedWord],
         "word index": transcriptState.selectedWord,
         "Audio Source": [audioSelect.value],
-        Note: "test - delete",
+        Note: "updated via SAA web app",
       };
     }
   }
