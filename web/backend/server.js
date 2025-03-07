@@ -55,7 +55,9 @@ const staticPath =
 
 app.use(express.static(staticPath, { index: "home.html" }));
 
-app.use(express.json());
+// for some reason the below line broke Airtable CRUD (except delete)
+// maybe due to the way I was sort of manually handling things?
+// app.use(express.json());
 
 app.use(createRoutes(app));
 
