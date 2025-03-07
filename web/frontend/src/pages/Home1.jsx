@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { findActiveWordIndex } from "../utils/binarySearch";
 import { fetchData } from "../utils/api";
 import useFetchAudio from "../hooks/useFetchAudio";
@@ -20,8 +21,7 @@ export default function Home1() {
   } = useFetchResources();
 
   // Fetch Audio & Transcript Data
-  const { mp3url, transcriptData, allWords, airtableWords, fetchAudio } =
-    useFetchAudio();
+  const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudio();
 
   // Reference for Audio Player
   const audioRef = useRef(null);
@@ -64,11 +64,17 @@ export default function Home1() {
     });
   };
 
+  const flattenTranscript = (transcripts) => {
+    return transcripts.flatMap((paragraph) => paragraph.alignment);
+  };
+
   // Sync Active Word with Current Time
   useEffect(() => {
-    if (!allWords.length) return;
-    setActiveWordIndex(findActiveWordIndex(allWords, currentTime));
-  }, [currentTime, allWords]);
+    let transcriptFlattened = flattenTranscript(annotatedTranscript);
+
+    if (!transcriptFlattened.length) return;
+    setActiveWordIndex(findActiveWordIndex(transcriptFlattened, currentTime));
+  }, [currentTime, annotatedTranscript]);
 
   // Handle Audio Selection and Fetch
   const handleAudioSelection = async () => {
@@ -77,6 +83,35 @@ export default function Home1() {
       audioRef.current.load();
     }
   };
+
+  // Get QueryClient from the context
+  const queryClient = useQueryClient();
+
+  // Create mutation function
+  const updateAnnotationMutation = useMutation({
+    mutationFn: async ({ wordId, annotations }) => {
+      // Assuming you have an API endpoint for updating annotations
+      console.log("in the mutation thingy");
+      const response = await fetchData("/data/updateAnnotation", {
+        method: "POST",
+        body: JSON.stringify({ wordId, annotations }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response;
+    },
+    onSuccess: () => {
+      // Invalidate and refetch any queries that depend on this data
+      queryClient.invalidateQueries({
+        queryKey: ["transcriptData", selectedAudio],
+      });
+    },
+    onError: (error) => {
+      console.error("Error updating annotation:", error);
+      // Handle error state here
+    },
+  });
 
   const handleAnnotationHover = (annotations) => {
     const friendlyNames = getIssueNames(annotations);
@@ -87,9 +122,36 @@ export default function Home1() {
     console.log(
       "Updating annotations for word",
       wordIndex,
+      "\n annotation: ",
       annotations,
+      "\n issuesData: ",
       issuesData
     );
+
+    // Flatten the annotatedTranscript structure and find the word ID
+    const flattenedWords = annotatedTranscript.flatMap(
+      (segment) => segment.alignment
+    );
+    const wordId = flattenedWords[wordIndex]?.id;
+
+    if (!wordId) {
+      console.error("Word ID not found for index:", wordIndex);
+      return;
+    }
+
+    // Update Airtable via mutation
+    updateAnnotationMutation.mutate({ wordId, annotations });
+
+    // Optimistically update local state
+    const updatedWords = [...annotatedTranscript];
+    updatedWords[wordIndex] = {
+      ...updatedWords[wordIndex],
+      annotations: annotations,
+    };
+
+    // You may need to update your state management here
+    // depending on how your data is structured
+
     // Update Airtable
     // Update local state
     // Refresh UI
@@ -129,9 +191,8 @@ export default function Home1() {
         <div className="toolTip">{annotations.join(", ")}</div>
       </div>
       <TranscriptViewer
-        transcriptData={transcriptData}
+        annotatedTranscript={annotatedTranscript}
         activeWordIndex={activeWordIndex}
-        airtableWords={airtableWords}
         handleWordClick={(start_time) => {
           audioRef.current.currentTime = start_time;
           audioRef.current.play();

@@ -2,10 +2,9 @@
 import { useState, useEffect, useCallback } from "react";
 
 const TranscriptViewer = ({
-  transcriptData,
+  annotatedTranscript,
   activeWordIndex,
   handleWordClick,
-  airtableWords,
   onAnnotationHover,
   onAnnotationUpdate,
   issuesData,
@@ -18,10 +17,11 @@ const TranscriptViewer = ({
   });
 
   const getAnnotations = (wordIndex) => {
-    const record = airtableWords.records.find(
-      (record) => record.fields["word index"] === wordIndex
-    );
-    return record ? record.fields["BR issues"] : [];
+    const word = annotatedTranscript
+      .flatMap((paragraph) => paragraph.alignment)
+      .find((word) => word.wordIndex === wordIndex);
+    return word ? word["BR issues"] || [] : [];
+    // return record ? record.fields["BR issues"] : [];
   };
 
   const handleContextMenu = (e, wordIndex) => {
@@ -176,7 +176,7 @@ const TranscriptViewer = ({
 
   return (
     <div className="transcript">
-      {transcriptData.map((paragraph, index) => (
+      {annotatedTranscript.map((paragraph, index) => (
         <p key={index}>
           {paragraph.alignment.map((wordObj) => {
             const annotations = getAnnotations(wordObj.wordIndex);
