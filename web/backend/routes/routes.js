@@ -634,6 +634,9 @@ export default function createRoutes(app) {
   // 🔹 GENERIC AIRTABLE API ROUTE
   router.all("/api/*", (req, res) => {
     if (app.locals.currentUserRole === "write") {
+      console.log("\x1b[33m =====NEW CRUD OPERATION===== \x1b[0m");
+      console.log("Request URL:", req.url);
+      console.log("Request method:", req.method);
       AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;
 
       let pathSegments = req.url.split("/");
@@ -691,11 +694,11 @@ export default function createRoutes(app) {
             });
             res2.on("end", () => {
               res.write(body2);
-              console.log(body2);
               res.end();
             });
           });
           req2.write(body);
+          console.log(body);
           req2.end();
         });
       } else if (req.method === "PATCH") {
@@ -725,6 +728,7 @@ export default function createRoutes(app) {
             });
           });
           req2.write(body);
+          console.log(body);
           req2.end();
         });
       } else if (req.method === "DELETE") {
@@ -755,6 +759,7 @@ export default function createRoutes(app) {
             });
           });
           req2.write(body);
+          console.log(body);
           req2.end();
         });
       }
