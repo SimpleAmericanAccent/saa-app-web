@@ -84,7 +84,12 @@ export default function Home1() {
   };
 
   const handleAnnotationUpdate = async (wordIndex, annotations) => {
-    console.log("Updating annotations for word", wordIndex, annotations);
+    console.log(
+      "Updating annotations for word",
+      wordIndex,
+      annotations,
+      issuesData
+    );
     // Update Airtable
     // Update local state
     // Refresh UI
