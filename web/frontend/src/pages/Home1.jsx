@@ -71,6 +71,7 @@ export default function Home1() {
   // Sync Active Word with Current Time
   useEffect(() => {
     let transcriptFlattened = flattenTranscript(annotatedTranscript);
+    // console.log("transcriptFlattened", transcriptFlattened);
 
     if (!transcriptFlattened.length) return;
     setActiveWordIndex(findActiveWordIndex(transcriptFlattened, currentTime));
@@ -84,6 +85,11 @@ export default function Home1() {
     }
   };
 
+  const handleAnnotationHover = (annotations) => {
+    const friendlyNames = getIssueNames(annotations);
+    setAnnotations(friendlyNames);
+  };
+
   // Get QueryClient from the context
   const queryClient = useQueryClient();
 
@@ -92,13 +98,14 @@ export default function Home1() {
     mutationFn: async ({ wordId, annotations }) => {
       // Assuming you have an API endpoint for updating annotations
       console.log("in the mutation thingy");
-      const response = await fetchData("/data/updateAnnotation", {
+      const response = await fetchData("/v1/api/annotations/update", {
         method: "POST",
         body: JSON.stringify({ wordId, annotations }),
         headers: {
           "Content-Type": "application/json",
         },
       });
+      console.log("response", response);
       return response;
     },
     onSuccess: () => {
@@ -113,34 +120,32 @@ export default function Home1() {
     },
   });
 
-  const handleAnnotationHover = (annotations) => {
-    const friendlyNames = getIssueNames(annotations);
-    setAnnotations(friendlyNames);
-  };
-
   const handleAnnotationUpdate = async (wordIndex, annotations) => {
-    console.log(
-      "Updating annotations for word",
-      wordIndex,
-      "\n annotation: ",
-      annotations,
-      "\n issuesData: ",
-      issuesData
-    );
-
     // Flatten the annotatedTranscript structure and find the word ID
     const flattenedWords = annotatedTranscript.flatMap(
       (segment) => segment.alignment
     );
     const wordId = flattenedWords[wordIndex]?.id;
 
-    if (!wordId) {
-      console.error("Word ID not found for index:", wordIndex);
-      return;
-    }
+    console.log(
+      "Attempting to update annotations for wordIndex",
+      wordIndex,
+      "\n annotations target state: ",
+      annotations
+    );
+
+    let test123 = await fetchData("/v1/api/annotations/update", {
+      method: "POST",
+      body: JSON.stringify({ wordIndex, annotations }),
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
+
+    console.log("test123", test123);
 
     // Update Airtable via mutation
-    updateAnnotationMutation.mutate({ wordId, annotations });
+    // updateAnnotationMutation.mutate({ wordId, annotations });
 
     // Optimistically update local state
     const updatedWords = [...annotatedTranscript];

@@ -44,19 +44,18 @@ const TranscriptViewer = ({
 
   const handleIssueSelect = (wordIndex, issueId) => {
     const annotations = getAnnotations(wordIndex);
-    // Toggle the issue - if it exists, remove it, otherwise add it W: note that this might be wrong. maybe annotations is almost irrelevant and AirtableWords is what matters
-    const updatedAnnotations = annotations.includes(issueId)
+    const annotationsDesired = annotations.includes(issueId)
       ? annotations.filter((id) => id !== issueId)
       : [...annotations, issueId];
 
     if (onAnnotationUpdate) {
-      onAnnotationUpdate(wordIndex, updatedAnnotations);
+      onAnnotationUpdate(wordIndex, annotationsDesired);
     }
 
     // Here you would typically call a function to update the annotations in Airtable
     // For now, we'll just update the UI
     if (onAnnotationHover) {
-      onAnnotationHover(updatedAnnotations);
+      onAnnotationHover(annotationsDesired);
     }
     setContextMenu((prev) => ({ ...prev, visible: false }));
   };

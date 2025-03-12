@@ -99,45 +99,337 @@ export default function createRoutes(app) {
     });
   });
 
-  v1Router.post("/api/update", async (req, res) => {
+  v1Router.post("/api/annotations/update", async (req, res) => {
     //tbd
 
-    if (app.locals.currentUserRole === "write") {
+    if (app.locals.currentUserRole !== "write") {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+
+    try {
       AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;
 
-      let body = JSON.stringify({ records: [{ id: ATRec, fields: ATFields }] });
-      req.on("end", () => {
-        const options = {
-          hostname: "api.airtable.com",
-          path: `/v0/${AIRTABLE_BASE_ID}/Words%20%28instance%29`,
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-          },
-        };
-
-        const req2 = https.request(options, (res2) => {
-          let body2 = "";
-          res2.setEncoding("utf8");
-          res.setHeader("Content-Type", "application/json");
-          res2.on("data", (chunk2) => {
-            body2 += chunk2.toString();
-          });
-          res2.on("end", () => {
-            res.write(body2);
-            console.log(body2);
-            res.end();
-          });
-        });
-        req2.write(body);
-        req2.end();
+      let body = "";
+      req.on("data", (chunk) => {
+        body += chunk.toString();
       });
-    } else {
-      res.setHeader("Content-Type", "text/plain");
-      res.write("not authorized");
-      res.end();
+      req.on("end", () => {
+        console.log("body:", body);
+        let { wordIndex, annotations: annotationsDesired } = JSON.parse(body);
+        console.log("wordIndex:", wordIndex);
+        console.log("desired annotations:", annotationsDesired);
+
+        let wordsData = app.locals.wordsData;
+        let wordsEntry = wordsData.find(
+          (entry) => entry.fields["word index"] == wordIndex
+        );
+
+        let annotationsCurrent;
+        if (!wordsEntry) {
+          // handle case where no annotations exist yet for target word
+          annotationsCurrent = [];
+        } else {
+          annotationsCurrent = wordsEntry.fields["BR issues"] || [];
+        }
+        console.log("current annotations:", annotationsCurrent);
+
+        res.setHeader("Content-Type", "application/json");
+        res.json({
+          "server response": {
+            method: req.method,
+            wordIndex,
+            annotationsCurrent: annotationsCurrent,
+            annotationsDesired: annotationsDesired,
+            body,
+            wordsData,
+          },
+        });
+        res.end();
+      });
+    } catch (error) {
+      console.error("Error updating annotations:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
+
+    // imported code from home.js - considering moving functionality to backend instead of frontend
+
+    // async function saveToAirtable(ATMethod, ATRec, ATFields) {
+    //   const url = `/api/Words%20%28instance%29${
+    //     ATMethod === "DELETE" ? `?records[]=${ATRec}` : ""
+    //   }`;
+    //   const options = {
+    //     method: ATMethod,
+    //     ...(ATMethod !== "DELETE" && {
+    //       headers: {
+    //         Accept: "application/json",
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({ records: [{ id: ATRec, fields: ATFields }] }),
+    //     }),
+    //   };
+    //   return await fetchData(url, options);
+    // }
+    // function adjustAnnotations(evt) {
+    //   if (appState.userRole === "write") {
+    //     const issueSelected = evt.currentTarget.innerHTML;
+    //     let s = document.querySelectorAll("span")[transcriptState.selectedWord];
+
+    //     let notes = transcriptState.notes[transcriptState.selectedWord];
+    //     let tempATRec = transcriptState.ATRecs[transcriptState.selectedWord];
+
+    //     s.classList.add("annotated");
+
+    //     // may need to make this logic smarter than just checking relative to undefined
+    //     // I think airtableWords is probably getting out of sync with transcriptState and airtable's actual state
+    //     if (tempATRec !== undefined) {
+    //       // if we're here, we already have an Airtable Record ID. need to update the record using PATCH and/or delete the record using DELETE
+
+    //       if (notes.includes(issueSelected)) {
+    //         notes.splice(notes.indexOf(issueSelected), 1);
+    //         if (notes.length == 0) {
+    //           s.classList.remove("annotated");
+    //           //need to add DELETE here, once DELETE is implemented in back-end
+    //           saveToAirtable("DELETE", tempATRec, buildATFields());
+
+    //           // need to remove airtable record ID (set as undefined?) from local airtableWords object and/or transcriptState object
+    //           // console.log(airtableWords);
+    //           // remove here then console log to verify result
+
+    //           for (
+    //             let i = 0;
+    //             i < transcriptState.airtableWords.records.length;
+    //             i++
+    //           ) {
+    //             if (transcriptState.airtableWords.records[i] == tempATRec) {
+    //               transcriptState.airtableWords.records.splice(i, i);
+    //               i = i - 1;
+    //             }
+    //           }
+    //         } else if (notes.length != 0) {
+    //           saveToAirtable("PATCH", tempATRec, buildATFields());
+    //         }
+    //       } else {
+    //         notes.push(issueSelected);
+
+    //         saveToAirtable("PATCH", tempATRec, buildATFields());
+    //       }
+    //     } else if (tempATRec === undefined) {
+    //       // if we're here, we don't yet have an Airtable Record ID. so need to create the record using POST
+
+    //       if (notes.includes(issueSelected)) {
+    //         notes.splice(notes.indexOf(issueSelected), 1);
+    //         if (notes.length == 0) {
+    //           s.classList.remove("annotated");
+    //         } else if (notes.length != 0) {
+    //           // do nothing
+    //         }
+    //       } else {
+    //         notes.push(issueSelected);
+    //       }
+
+    //       console.log("tempATRec: ", tempATRec);
+
+    //       async function asyncCaller() {
+    //         console.log("entering asyncCaller");
+    //         let ATResponse = await saveToAirtable(
+    //           "POST",
+    //           tempATRec,
+    //           buildATFields()
+    //         );
+    //         console.log("exiting ATResponse");
+    //         console.log("ATResponse: ", ATResponse);
+    //         transcriptState.airtableWords.records.push(ATResponse.records[0]);
+    //         transcriptState.ATRecs[transcriptState.selectedWord] =
+    //           ATResponse.records[0].id;
+    //         return ATResponse.records[0];
+    //       }
+
+    //       asyncCaller();
+    //     }
+
+    //     // showAnnotations(transcriptState.selectedWord);
+
+    //     function convertIssuesToATIssueRecIDs(notes, airtableIssues) {
+    //       let convertedOutput = [];
+    //       for (let i = 0; i < notes.length; i++) {
+    //         let flattenedAirtableIssues;
+
+    //         flattenedAirtableIssues = airtableIssues.reduce((acc, item) => {
+    //           item.issues.forEach((issue) => {
+    //             acc[issue.id] = issue.name;
+    //           });
+    //           return acc;
+    //         }, {});
+
+    //         // console.log(flattenedAirtableIssues);
+
+    //         for (
+    //           let j = 0;
+    //           j < Object.keys(flattenedAirtableIssues).length;
+    //           j++
+    //         ) {
+    //           if (Object.values(flattenedAirtableIssues)[j] == notes[i]) {
+    //             convertedOutput.push(Object.keys(flattenedAirtableIssues)[j]);
+    //           }
+    //         }
+    //       }
+    //       return convertedOutput;
+    //     }
+
+    //     function buildATFields() {
+    //       return {
+    //         Name: transcriptState.words[transcriptState.selectedWord],
+    //         "BR issues": convertIssuesToATIssueRecIDs(
+    //           notes,
+    //           appState.airtableIssues
+    //         ),
+    //         "in timestamp (seconds)":
+    //           transcriptState.timeIntervals[transcriptState.selectedWord],
+    //         "word index": transcriptState.selectedWord,
+    //         "Audio Source": [audioSelect.value],
+    //         Note: "updated via SAA web app",
+    //       };
+    //     }
+    //   }
+    // }
+
+    // code from legacy api route
+
+    // if (app.locals.currentUserRole === "write") {
+    //   console.log("\x1b[33m =====NEW CRUD OPERATION===== \x1b[0m");
+    //   console.log("Request URL:", req.url);
+    //   console.log("Request method:", req.method);
+    //   AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;
+
+    //   let pathSegments = req.url.split("/");
+    //   let pathSegmentsFirst = pathSegments[1];
+    //   let pathSegmentsExceptFirst = pathSegments.slice(2, pathSegments.length);
+    //   let pathMinusFirstSegment = path.join
+    //     .apply(null, pathSegmentsExceptFirst)
+    //     .replace("\\", "/");
+
+    //   if (req.method === "GET") {
+    //     const postData = "";
+    //     const options = {
+    //       hostname: "api.airtable.com",
+    //       path: `/v0/${AIRTABLE_BASE_ID}/${pathMinusFirstSegment}`,
+    //       method: "GET",
+    //       headers: {
+    //         Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+    //       },
+    //     };
+
+    //     const req2 = https.request(options, (res2) => {
+    //       res2.setEncoding("utf8");
+    //       res.setHeader("Content-Type", "application/json");
+    //       res2.on("data", (chunk) => {
+    //         res.write(chunk);
+    //       });
+    //       res2.on("end", () => {
+    //         res.end();
+    //       });
+    //     });
+    //     req2.write(postData);
+    //     req2.end();
+    //   } else if (req.method === "POST") {
+    //     let body = "";
+    //     req.on("data", (chunk) => {
+    //       body += chunk.toString();
+    //     });
+    //     req.on("end", () => {
+    //       const options = {
+    //         hostname: "api.airtable.com",
+    //         path: `/v0/${AIRTABLE_BASE_ID}/${pathMinusFirstSegment}`,
+    //         method: "POST",
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //           Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+    //         },
+    //       };
+
+    //       const req2 = https.request(options, (res2) => {
+    //         let body2 = "";
+    //         res2.setEncoding("utf8");
+    //         res.setHeader("Content-Type", "application/json");
+    //         res2.on("data", (chunk2) => {
+    //           body2 += chunk2.toString();
+    //         });
+    //         res2.on("end", () => {
+    //           res.write(body2);
+    //           res.end();
+    //         });
+    //       });
+    //       req2.write(body);
+    //       console.log(body);
+    //       req2.end();
+    //     });
+    //   } else if (req.method === "PATCH") {
+    //     let body = "";
+    //     req.on("data", (chunk) => {
+    //       body += chunk.toString();
+    //     });
+    //     req.on("end", () => {
+    //       const options = {
+    //         hostname: "api.airtable.com",
+    //         path: `/v0/${AIRTABLE_BASE_ID}/${pathMinusFirstSegment}`,
+    //         method: "PATCH",
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //           Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+    //         },
+    //       };
+
+    //       const req2 = https.request(options, (res2) => {
+    //         res2.setEncoding("utf8");
+    //         res.setHeader("Content-Type", "application/json");
+    //         res2.on("data", (chunk2) => {
+    //           res.write(chunk2);
+    //         });
+    //         res2.on("end", () => {
+    //           res.end();
+    //         });
+    //       });
+    //       req2.write(body);
+    //       console.log(body);
+    //       req2.end();
+    //     });
+    //   } else if (req.method === "DELETE") {
+    //     let body = "";
+    //     req.on("data", (chunk) => {
+    //       body += chunk.toString();
+    //     });
+    //     req.on("end", () => {
+    //       const options = {
+    //         hostname: "api.airtable.com",
+    //         path: `/v0/${AIRTABLE_BASE_ID}/${pathMinusFirstSegment}`,
+    //         method: "DELETE",
+    //         headers: {
+    //           Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+    //         },
+    //       };
+
+    //       const req2 = https.request(options, (res2) => {
+    //         let body2 = "";
+    //         res2.setEncoding("utf8");
+    //         res.setHeader("Content-Type", "application/json");
+    //         res2.on("data", (chunk2) => {
+    //           body2 += chunk2.toString();
+    //         });
+    //         res2.on("end", () => {
+    //           res.write(body2);
+    //           res.end();
+    //         });
+    //       });
+    //       req2.write(body);
+    //       console.log(body);
+    //       req2.end();
+    //     });
+    //   }
+    // } else {
+    //   res.setHeader("Content-Type", "text/plain");
+    //   res.write("not authorized");
+    //   res.end();
+    // }
   });
 
   router.use("/v1", v1Router);
@@ -193,24 +485,24 @@ export default function createRoutes(app) {
           let user_id = peopleObject.records[i].fields["auth0 user_id"];
           if (typeof user_id !== "undefined") {
             if (user_id == currentUserId) {
-              console.log("peopleObject.records[i]:", peopleObject.records[i]);
+              // console.log("peopleObject.records[i]:", peopleObject.records[i]);
               currentUserAirtable = peopleObject.records[i];
               currentUserAudioAccess =
                 peopleObject.records[i].fields["Access to audios"];
               currentUserRole = peopleObject.records[i].fields["Role"];
-              console.log(
-                "Airtable match found for current user's Autho0 user_id: ",
-                user_id
-              );
+              // console.log(
+              //   "Airtable match found for current user's Autho0 user_id: ",
+              //   user_id
+              // );
               console.log("Current user email is: ", req.oidc.user.email);
-              console.log(
-                "Per Airtable, current user has access to the following audio/transcripts: ",
-                currentUserAudioAccess
-              );
-              console.log(
-                "Per Airtable, current user has role: ",
-                currentUserRole
-              );
+              // console.log(
+              //   "Per Airtable, current user has access to the following audio/transcripts: ",
+              //   currentUserAudioAccess
+              // );
+              // console.log(
+              //   "Per Airtable, current user has role: ",
+              //   currentUserRole
+              // );
               app.locals.currentUserAudioAccess = currentUserAudioAccess;
               app.locals.currentUserRole = currentUserRole;
             }
@@ -535,6 +827,8 @@ export default function createRoutes(app) {
         "Words%20(instance)",
         encodeURIComponent(audioData.fields.Name)
       );
+
+      app.locals.wordsData = wordsData;
 
       res.json({
         audio: {

@@ -46,7 +46,7 @@ const useFetchAudio = () => {
 
     const airtableMap = createAirtableMap(airtableWords);
     const annotated = annotateTranscript(transcriptData, airtableMap);
-    console.log("airtableMap", airtableMap);
+    // console.log("airtableMap", airtableMap);
     console.log("annotated", annotated);
     setAnnotatedTranscript(annotated);
   };
