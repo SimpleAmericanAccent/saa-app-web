@@ -241,3 +241,60 @@ a:hover {
     background-color: #f9f9f9;
   }
 }
+
+/* from learn2.css */
+
+#nav {
+  font: 16px Arial, sans-serif;
+  position: sticky;
+  top: 0px;
+  bottom: auto;
+  background-color: white;
+  padding: 0px;
+  margin: 0px;
+  border: 1px solid black;
+}
+
+#main {
+  display: flex;
+  /* background-color: rgb(119, 84, 84); */
+  overflow: hidden;
+  height: 100vh;
+}
+
+#sideNav,
+#content {
+  height: auto;
+  overflow-y: auto;
+  scroll-padding-top: 20px;
+}
+
+#sideNav {
+  /* background-color: #c9c9c9; */
+  width: 200px;
+  padding: 20px 0px;
+  /* text-decoration: none; */
+  /* margin: 20px 0px; */
+}
+
+#sideNav ul {
+  list-style-type: none;
+  padding: 0px 0px 0px 20px;
+  text-decoration: none;
+}
+
+#sideNav ul ul {
+  list-style-type: none;
+  padding: 0px 0px 0px 20px;
+}
+
+#sideNav a {
+  text-decoration: none;
+  color: rgb(0, 1, 83);
+}
+
+#content {
+  /* background-color: rgb(112, 185, 148); */
+  padding: 5px;
+  width: 100%;
+}

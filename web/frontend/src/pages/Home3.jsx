@@ -229,7 +229,7 @@ function Home3() {
             <tr>
               <td className="lex-set">MOUTH</td>
               <td className="playable" data-word="how'd">
-                <span className="audio-icon">🔊</span>how'd
+                <span className="audio-icon">🔊</span>how&apos;d
               </td>
               <td className="playable " data-word="bowed">
                 <span className="audio-icon">🔊</span>bowed
