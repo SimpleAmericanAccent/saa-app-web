@@ -8,7 +8,7 @@ import Home5 from "./pages/Home5.jsx";
 import Home6 from "./pages/Home6.jsx";
 import SuccessPath from "./pages/SuccessPath.jsx";
 import Quiz from "./pages/Quiz.jsx";
-import NavBar from "./components/NavBar/NavBar.jsx";
+import NavBar from "./src/components/NavBar/NavBar.jsx";
 
 function App() {
   return (
