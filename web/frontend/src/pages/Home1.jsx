@@ -24,8 +24,9 @@ export default function Home1() {
   // Fetch Audio & Transcript Data
   const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudio();
 
-  // Reference for Audio Player
+  // Reference for Audio Player & State for Playback Speed
   const audioRef = useRef(null);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
 
   // Track Current Time for Word Highlighting
   const currentTime = useAudioSync(audioRef);
@@ -85,6 +86,58 @@ export default function Home1() {
       audioRef.current.load();
     }
   };
+
+  // Add keyboard controls
+  useEffect(() => {
+    const handleKeydown = (e) => {
+      if (!audioRef.current) return;
+
+      switch (e.code) {
+        case "ArrowLeft":
+          e.preventDefault();
+          audioRef.current.currentTime = audioRef.current.currentTime - 1;
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          audioRef.current.currentTime = audioRef.current.currentTime + 1;
+          break;
+        case "Space":
+          e.preventDefault();
+          if (audioRef.current.paused) {
+            audioRef.current.play();
+          } else {
+            audioRef.current.pause();
+          }
+          break;
+        case "Comma": {
+          e.preventDefault();
+          const newSpeedDown = Math.max(
+            0.1,
+            audioRef.current.playbackRate - 0.1
+          );
+          audioRef.current.playbackRate = newSpeedDown;
+          setPlaybackSpeed(newSpeedDown);
+          break;
+        }
+        case "Period": {
+          e.preventDefault();
+          const newSpeedUp = Math.min(4.0, audioRef.current.playbackRate + 0.1);
+          audioRef.current.playbackRate = newSpeedUp;
+          setPlaybackSpeed(newSpeedUp);
+          break;
+        }
+        default:
+          break;
+      }
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("keydown", handleKeydown);
+    };
+  }, []); // Empty dependency array since we only want to set this up once
 
   const handleAnnotationHover = (annotations) => {
     const friendlyNames = getIssueNames(annotations);
@@ -203,6 +256,7 @@ export default function Home1() {
               Open From Airtable
             </button>
             <AudioPlayer mp3url={mp3url} ref={audioRef} />
+            <div>Playback speed: {playbackSpeed.toFixed(1)}x</div>
             <div></div>
           </div>
         </div>

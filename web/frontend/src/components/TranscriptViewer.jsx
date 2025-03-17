@@ -181,17 +181,19 @@ const TranscriptViewer = ({
             const annotations = getAnnotations(wordObj.wordIndex);
             const hasAnnotations = annotations.length > 0;
             return (
-              <span
-                key={wordObj.wordIndex}
-                className={`${
-                  activeWordIndex === wordObj.wordIndex ? "active" : ""
-                } ${hasAnnotations ? "annotated" : ""}`}
-                onClick={() => handleWordClick(wordObj.start_time)}
-                onMouseOver={() => handleAnnotationHover(wordObj.wordIndex)}
-                onContextMenu={(e) => handleContextMenu(e, wordObj.wordIndex)}
-              >
-                {wordObj.word}{" "}
-              </span>
+              <>
+                <span
+                  key={wordObj.wordIndex}
+                  className={`${
+                    activeWordIndex === wordObj.wordIndex ? "active" : ""
+                  } ${hasAnnotations ? "annotated" : ""}`}
+                  onClick={() => handleWordClick(wordObj.start_time)}
+                  onMouseOver={() => handleAnnotationHover(wordObj.wordIndex)}
+                  onContextMenu={(e) => handleContextMenu(e, wordObj.wordIndex)}
+                >
+                  {wordObj.word}
+                </span>{" "}
+              </>
             );
           })}
         </p>
