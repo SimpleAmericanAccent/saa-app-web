@@ -1,252 +1,279 @@
-function Home3() {
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+
+export default function Home3() {
+  const [selectedColumn, setSelectedColumn] = useState("gambiarra");
+  const [selectedSpeed, setSelectedSpeed] = useState("1.0");
+  const [audioCache, setAudioCache] = useState({});
+  const [timestampsData, setTimestampsData] = useState(null);
+  const [timeoutId, setTimeoutId] = useState(null);
+  const audioUrl =
+    "https://native-scga-audio.s3.us-east-2.amazonaws.com/2025+01+04+will+rosenberg+vowels+96+hz+h_d+b_d+b_t+frames.mp3";
+
+  useEffect(() => {
+    // Load timestamps data
+    fetch("/JSON/timestamps.json")
+      .then((response) => response.json())
+      .then((data) => setTimestampsData(data))
+      .catch((error) => console.error("Error loading timestamps:", error));
+  }, []);
+
+  const handlePlayAudio = (word) => {
+    if (!timestampsData || !timestampsData[word]) {
+      console.error("No data for word:", word);
+      return;
+    }
+
+    const audio = audioCache[0] || new Audio(audioUrl);
+    if (!audioCache[0]) {
+      setAudioCache({ 0: audio });
+    }
+
+    const wordData = timestampsData[word];
+    const duration = wordData.full.end - wordData.full.start;
+
+    // Clear any existing timeout
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    // Update audio position and speed
+    audio.currentTime = wordData.full.start;
+    audio.playbackRate = parseFloat(selectedSpeed);
+    audio.play();
+
+    // Set new timeout and store its ID
+    const newTimeoutId = setTimeout(() => {
+      audio.pause();
+    }, (duration / audio.playbackRate) * 1000);
+
+    setTimeoutId(newTimeoutId);
+  };
+
+  const handleColumnChange = (column) => {
+    setSelectedColumn(column);
+    // Hide all columns first
+    document
+      .querySelectorAll(
+        ".vs-gambiarra, .vs-respelled, .vs-phonemic, .vs-phonetic"
+      )
+      .forEach((element) => element.classList.add("vs-hidden"));
+
+    // Show selected column
+    document
+      .querySelectorAll(`.vs-${column}`)
+      .forEach((element) => element.classList.remove("vs-hidden"));
+  };
+
+  const PlayableWord = ({ word }) => (
+    <td
+      className="vs-playable"
+      data-word={word}
+      onClick={(e) => handlePlayAudio(e.currentTarget.dataset.word)}
+    >
+      <span className="vs-audio-icon">🔊</span>
+      {word}
+    </td>
+  );
+
+  PlayableWord.propTypes = {
+    word: PropTypes.string.isRequired,
+  };
+
   return (
     <>
-      <h1>Home 3</h1>
-      <p>Welcome to the home page!</p>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th className="lex-set-header">Lex Set</th>
-              <th className="">h_d</th>
-              <th className="">b_d</th>
-              <th className="">b_t</th>
-              <th className="gambiarra">Gambiarra</th>
-              <th className="respelled hidden">Respelled</th>
-              <th className="phonemic hidden">Phonemic</th>
-              <th className="phonetic hidden">Phonetic</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="lex-set">FLEECE</td>
-              <td className="playable" data-word="heed">
-                <span className="audio-icon">🔊</span>heed
-              </td>
-              <td className="playable " data-word="bead">
-                <span className="audio-icon">🔊</span>bead
-              </td>
-              <td className="playable " data-word="beat">
-                <span className="audio-icon">🔊</span>beat
-              </td>
-              <td className="gambiarra">i</td>
-              <td className="respelled hidden">ee</td>
-              <td className="phonemic hidden ipa-symbol">/i/</td>
-              <td className="phonetic hidden ipa-symbol">[i]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">KIT</td>
-              <td className="playable" data-word="hid">
-                <span className="audio-icon">🔊</span>hid
-              </td>
-              <td className="playable " data-word="bid">
-                <span className="audio-icon">🔊</span>bid
-              </td>
-              <td className="playable " data-word="bit">
-                <span className="audio-icon">🔊</span>bit
-              </td>
-              <td className="gambiarra">ê</td>
-              <td className="respelled hidden">i</td>
-              <td className="phonemic hidden ipa-symbol">/ɪ/</td>
-              <td className="phonetic hidden ipa-symbol">[ɪ]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">DRESS</td>
-              <td className="playable" data-word="head">
-                <span className="audio-icon">🔊</span>head
-              </td>
-              <td className="playable " data-word="bed">
-                <span className="audio-icon">🔊</span>bed
-              </td>
-              <td className="playable " data-word="bet">
-                <span className="audio-icon">🔊</span>bet
-              </td>
-              <td className="gambiarra">é</td>
-              <td className="respelled hidden">e</td>
-              <td className="phonemic hidden ipa-symbol">/ɛ/</td>
-              <td className="phonetic hidden ipa-symbol">[ɛ]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">TRAP</td>
-              <td className="playable" data-word="had">
-                <span className="audio-icon">🔊</span>had
-              </td>
-              <td className="playable " data-word="bad">
-                <span className="audio-icon">🔊</span>bad
-              </td>
-              <td className="playable " data-word="bat">
-                <span className="audio-icon">🔊</span>bat
-              </td>
-              <td className="gambiarra"></td>
-              <td className="respelled hidden">a</td>
-              <td className="phonemic hidden ipa-symbol">/æ/</td>
-              <td className="phonetic hidden ipa-symbol">[æ]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">TRAM</td>
-              <td className="playable" data-word="ham">
-                <span className="audio-icon">🔊</span>ham
-              </td>
-              <td className="playable " data-word="ban">
-                <span className="audio-icon">🔊</span>ban
-              </td>
-              <td className="playable " data-word="ban">
-                <span className="audio-icon">🔊</span>ban
-              </td>
-              <td className="gambiarra">êa</td>
-              <td className="respelled hidden">a</td>
-              <td className="phonemic hidden ipa-symbol">/æ/</td>
-              <td className="phonetic hidden ipa-symbol">[eə̯]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">GOOSE</td>
-              <td className="playable" data-word="hooed">
-                <span className="audio-icon">🔊</span>hooed
-              </td>
-              <td className="playable " data-word="booed">
-                <span className="audio-icon">🔊</span>booed
-              </td>
-              <td className="playable " data-word="boot">
-                <span className="audio-icon">🔊</span>boot
-              </td>
-              <td className="gambiarra">u</td>
-              <td className="respelled hidden">oo</td>
-              <td className="phonemic hidden ipa-symbol">/u/</td>
-              <td className="phonetic hidden ipa-symbol">[u]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">FOOT</td>
-              <td className="playable" data-word="hood">
-                <span className="audio-icon">🔊</span>hood
-              </td>
-              <td className="playable " data-word="b_d">
-                <span className="audio-icon">🔊</span>b_d
-              </td>
-              <td className="playable " data-word="b_t">
-                <span className="audio-icon">🔊</span>b_t
-              </td>
-              <td className="gambiarra"></td>
-              <td className="respelled hidden">u</td>
-              <td className="phonemic hidden ipa-symbol">/ʊ/</td>
-              <td className="phonetic hidden ipa-symbol">[ʊ]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">STRUT</td>
-              <td className="playable" data-word="HUD">
-                <span className="audio-icon">🔊</span>HUD
-              </td>
-              <td className="playable " data-word="bud">
-                <span className="audio-icon">🔊</span>bud
-              </td>
-              <td className="playable " data-word="but">
-                <span className="audio-icon">🔊</span>but
-              </td>
-              <td className="gambiarra"></td>
-              <td className="respelled hidden">uh</td>
-              <td className="phonemic hidden ipa-symbol">/ʌ/</td>
-              <td className="phonetic hidden ipa-symbol">[ʌ̟]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">LOT</td>
-              <td className="playable" data-word="hawed">
-                <span className="audio-icon">🔊</span>hawed
-              </td>
-              <td className="playable " data-word="bod">
-                <span className="audio-icon">🔊</span>bod
-              </td>
-              <td className="playable " data-word="bot">
-                <span className="audio-icon">🔊</span>bot
-              </td>
-              <td className="gambiarra">aa</td>
-              <td className="respelled hidden">aa</td>
-              <td className="phonemic hidden ipa-symbol">/ɑ/</td>
-              <td className="phonetic hidden ipa-symbol">[ɑ]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">FACE</td>
-              <td className="playable" data-word="hayed">
-                <span className="audio-icon">🔊</span>hayed
-              </td>
-              <td className="playable " data-word="bade">
-                <span className="audio-icon">🔊</span>bade
-              </td>
-              <td className="playable " data-word="bait">
-                <span className="audio-icon">🔊</span>bait
-              </td>
-              <td className="gambiarra">ei</td>
-              <td className="respelled hidden">ay</td>
-              <td className="phonemic hidden ipa-symbol">/eɪ/</td>
-              <td className="phonetic hidden ipa-symbol">[e̞ɪ̯]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">PRICE</td>
-              <td className="playable" data-word="hide">
-                <span className="audio-icon">🔊</span>hide
-              </td>
-              <td className="playable " data-word="bide">
-                <span className="audio-icon">🔊</span>bide
-              </td>
-              <td className="playable " data-word="bite">
-                <span className="audio-icon">🔊</span>bite
-              </td>
-              <td className="gambiarra">ai</td>
-              <td className="respelled hidden">ai</td>
-              <td className="phonemic hidden ipa-symbol">/aɪ/</td>
-              <td className="phonetic hidden ipa-symbol">[ɑ̟ɪ̯]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">CHOICE</td>
-              <td className="playable" data-word="hoyed">
-                <span className="audio-icon">🔊</span>hoyed
-              </td>
-              <td className="playable " data-word="Boyd">
-                <span className="audio-icon">🔊</span>Boyd
-              </td>
-              <td className="playable " data-word="Boyt">
-                <span className="audio-icon">🔊</span>Boyt
-              </td>
-              <td className="gambiarra">ôi</td>
-              <td className="respelled hidden">oy</td>
-              <td className="phonemic hidden ipa-symbol">/ɔɪ/</td>
-              <td className="phonetic hidden ipa-symbol">[o̞ɪ̯]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">GOAT</td>
-              <td className="playable" data-word="hoed">
-                <span className="audio-icon">🔊</span>hoed
-              </td>
-              <td className="playable " data-word="bode">
-                <span className="audio-icon">🔊</span>bode
-              </td>
-              <td className="playable " data-word="boat">
-                <span className="audio-icon">🔊</span>boat
-              </td>
-              <td className="gambiarra"></td>
-              <td className="respelled hidden">ow</td>
-              <td className="phonemic hidden ipa-symbol">/oʊ/</td>
-              <td className="phonetic hidden ipa-symbol">[ʌʊ̯]</td>
-            </tr>
-            <tr>
-              <td className="lex-set">MOUTH</td>
-              <td className="playable" data-word="how'd">
-                <span className="audio-icon">🔊</span>how&apos;d
-              </td>
-              <td className="playable " data-word="bowed">
-                <span className="audio-icon">🔊</span>bowed
-              </td>
-              <td className="playable " data-word="bout">
-                <span className="audio-icon">🔊</span>bout
-              </td>
-              <td className="gambiarra">au</td>
-              <td className="respelled hidden">au</td>
-              <td className="phonemic hidden ipa-symbol">/aʊ/</td>
-              <td className="phonetic hidden ipa-symbol">[aʊ̯]</td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="vs-main">
+        <div className="vs-table-container">
+          {/* Add controls section */}
+          <div className="vs-sticky-footer">
+            <div className="vs-controls">
+              <label htmlFor="audio-speed">Select audio speed:</label>
+              <select
+                id="audio-speed"
+                value={selectedSpeed}
+                onChange={(e) => setSelectedSpeed(e.target.value)}
+              >
+                <option value="1">1x</option>
+                <option value="0.75">0.75x</option>
+                <option value="0.5">0.5x</option>
+                <option value="0.25">0.25x</option>
+              </select>
+              <label htmlFor="column-select" className="vs-column-select">
+                Select column:
+              </label>
+              <select
+                id="column-select"
+                className="vs-column-select"
+                value={selectedColumn}
+                onChange={(e) => handleColumnChange(e.target.value)}
+              >
+                <option value="gambiarra">gambiarra</option>
+                <option value="respelled">respelled</option>
+                <option value="phonemic">phonemic</option>
+                <option value="phonetic">phonetic</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <table className="vs-table">
+              <thead>
+                <tr>
+                  <th className="vs-lex-set-header">Lex Set</th>
+                  <th className="">h_d</th>
+                  <th className="">b_d</th>
+                  <th className="">b_t</th>
+                  <th className="vs-gambiarra">gambiarra</th>
+                  <th className="vs-respelled vs-hidden">respelled</th>
+                  <th className="vs-phonemic vs-hidden">phonemic</th>
+                  <th className="vs-phonetic vs-hidden">phonetic</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="vs-lex-set">FLEECE</td>
+                  <PlayableWord word="heed" />
+                  <PlayableWord word="bead" />
+                  <PlayableWord word="beat" />
+                  <td className="vs-gambiarra">i</td>
+                  <td className="vs-respelled vs-hidden">ee</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/i/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[i]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">KIT</td>
+                  <PlayableWord word="hid" />
+                  <PlayableWord word="bid" />
+                  <PlayableWord word="bit" />
+                  <td className="vs-gambiarra">ê</td>
+                  <td className="vs-respelled vs-hidden">i</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/ɪ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[ɪ]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">DRESS</td>
+                  <PlayableWord word="head" />
+                  <PlayableWord word="bed" />
+                  <PlayableWord word="bet" />
+                  <td className="vs-gambiarra">é</td>
+                  <td className="vs-respelled vs-hidden">e</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/ɛ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[ɛ]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">TRAP</td>
+                  <PlayableWord word="had" />
+                  <PlayableWord word="bad" />
+                  <PlayableWord word="bat" />
+                  <td className="vs-gambiarra"></td>
+                  <td className="vs-respelled vs-hidden">a</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/æ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[æ]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">TRAM</td>
+                  <PlayableWord word="ham" />
+                  <PlayableWord word="ban" />
+                  <PlayableWord word="ban" />
+                  <td className="vs-gambiarra">êa</td>
+                  <td className="vs-respelled vs-hidden">a</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/æ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[eə̯]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">GOOSE</td>
+                  <PlayableWord word="hooed" />
+                  <PlayableWord word="booed" />
+                  <PlayableWord word="boot" />
+                  <td className="vs-gambiarra">u</td>
+                  <td className="vs-respelled vs-hidden">oo</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/u/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[u]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">FOOT</td>
+                  <PlayableWord word="hood" />
+                  <PlayableWord word="b_d" />
+                  <PlayableWord word="b_t" />
+                  <td className="vs-gambiarra"></td>
+                  <td className="vs-respelled vs-hidden">u</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/ʊ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[ʊ]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">STRUT</td>
+                  <PlayableWord word="HUD" />
+                  <PlayableWord word="bud" />
+                  <PlayableWord word="but" />
+                  <td className="vs-gambiarra"></td>
+                  <td className="vs-respelled vs-hidden">uh</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/ʌ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[ʌ̟]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">LOT</td>
+                  <PlayableWord word="hawed" />
+                  <PlayableWord word="bod" />
+                  <PlayableWord word="bot" />
+                  <td className="vs-gambiarra">aa</td>
+                  <td className="vs-respelled vs-hidden">aa</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/ɑ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[ɑ]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">FACE</td>
+                  <PlayableWord word="hayed" />
+                  <PlayableWord word="bade" />
+                  <PlayableWord word="bait" />
+                  <td className="vs-gambiarra">ei</td>
+                  <td className="vs-respelled vs-hidden">ay</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/eɪ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[e̞ɪ̯]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">PRICE</td>
+                  <PlayableWord word="hide" />
+                  <PlayableWord word="bide" />
+                  <PlayableWord word="bite" />
+                  <td className="vs-gambiarra">ai</td>
+                  <td className="vs-respelled vs-hidden">ai</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/aɪ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[ɑ̟ɪ̯]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">CHOICE</td>
+                  <PlayableWord word="hoyed" />
+                  <PlayableWord word="Boyd" />
+                  <PlayableWord word="Boyt" />
+                  <td className="vs-gambiarra">ôi</td>
+                  <td className="vs-respelled vs-hidden">oy</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/ɔɪ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[o̞ɪ̯]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">GOAT</td>
+                  <PlayableWord word="hoed" />
+                  <PlayableWord word="bode" />
+                  <PlayableWord word="boat" />
+                  <td className="vs-gambiarra"></td>
+                  <td className="vs-respelled vs-hidden">ow</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/oʊ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[ʌʊ̯]</td>
+                </tr>
+                <tr>
+                  <td className="vs-lex-set">MOUTH</td>
+                  <PlayableWord word="how'd" />
+                  <PlayableWord word="bowed" />
+                  <PlayableWord word="bout" />
+                  <td className="vs-gambiarra">au</td>
+                  <td className="vs-respelled vs-hidden">au</td>
+                  <td className="vs-phonemic vs-hidden vs-ipa-symbol">/aʊ/</td>
+                  <td className="vs-phonetic vs-hidden vs-ipa-symbol">[aʊ̯]</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </>
   );
 }
-
-export default Home3;

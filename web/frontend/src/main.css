@@ -242,59 +242,154 @@ a:hover {
   }
 }
 
-/* from learn2.css */
-
-#nav {
-  font: 16px Arial, sans-serif;
-  position: sticky;
-  top: 0px;
-  bottom: auto;
-  background-color: white;
-  padding: 0px;
-  margin: 0px;
-  border: 1px solid black;
+/* For Word Lists & Spelling (wls) page */
+.wls-page {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  height: 100vh;
+  overflow: hidden;
 }
 
-#main {
+.wls-container {
   display: flex;
-  /* background-color: rgb(119, 84, 84); */
   overflow: hidden;
   height: 100vh;
 }
 
-#sideNav,
-#content {
-  height: auto;
+.wls-content {
+  flex: 1;
+  padding: 20px;
   overflow-y: auto;
   scroll-padding-top: 20px;
 }
 
-#sideNav {
-  /* background-color: #c9c9c9; */
+.wls-sidenav {
   width: 200px;
   padding: 20px 0px;
-  /* text-decoration: none; */
-  /* margin: 20px 0px; */
+  overflow-y: auto;
+  border-right: 1px solid #eee;
+  background: white;
 }
 
-#sideNav ul {
+.wls-sidenav ul {
   list-style-type: none;
-  padding: 0px 0px 0px 20px;
+  padding: 0;
+  margin: 0;
+}
+
+.wls-sidenav ul ul {
+  margin-left: 20px;
+}
+
+.wls-sidenav a {
   text-decoration: none;
+  color: black;
 }
 
-#sideNav ul ul {
-  list-style-type: none;
-  padding: 0px 0px 0px 20px;
+.wls-sidenav a:hover {
+  text-decoration: underline;
 }
 
-#sideNav a {
-  text-decoration: none;
-  color: rgb(0, 1, 83);
+/* For Vowel Sounds (vs) page */
+.vs-main {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-#content {
-  /* background-color: rgb(112, 185, 148); */
-  padding: 5px;
+.vs-table-container {
   width: 100%;
+  margin: auto;
+  overflow-x: hidden;
+  text-align: center;
+}
+
+.vs-table {
+  border-collapse: collapse;
+  max-width: 800px;
+  margin: auto;
+}
+
+.vs-table td,
+.vs-table th {
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.vs-table th {
+  vertical-align: bottom;
+}
+
+.vs-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.vs-lex-set {
+  font-weight: bold;
+  position: sticky;
+  left: 0;
+  background-color: #f9f9f9;
+  z-index: 2;
+}
+
+.vs-lex-set-header {
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 3;
+}
+
+.vs-playable {
+  cursor: pointer;
+  color: blue;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.vs-audio-icon {
+  margin-right: 5px;
+  font-size: 14px;
+  color: gray;
+  text-decoration: none;
+  display: none;
+}
+
+.vs-ipa-symbol {
+  font-family: "Arial Unicode MS", "Lucida Sans Unicode", sans-serif;
+}
+
+.vs-hidden {
+  display: none;
+}
+
+.vs-sticky-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  z-index: 4;
+}
+
+.vs-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+@media (min-width: 550px) {
+  .vs-gambiarra,
+  .vs-respelled,
+  .vs-phonemic,
+  .vs-phonetic {
+    display: table-cell;
+  }
+  .vs-column-select {
+    display: none;
+  }
 }
