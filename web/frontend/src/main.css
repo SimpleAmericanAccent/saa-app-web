@@ -393,3 +393,162 @@ a:hover {
     display: none;
   }
 }
+
+/* Vowel Synthesizer (vsynth) Styles */
+.vsynth-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 20px;
+}
+
+.vsynth-diagram {
+  position: relative;
+  width: 600px; /* Match legacy width */
+  height: 400px; /* Match legacy height */
+  border: 2px solid #333;
+  background-image: none;
+  background-position: center;
+  cursor: crosshair;
+  margin-right: 20px;
+}
+
+.vsynth-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: crosshair;
+  user-select: none;
+  touch-action: none; /* Prevents touch scrolling while interacting */
+}
+
+.vsynth-marker {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.vsynth-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  min-width: 300px;
+}
+
+.vsynth-formant-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vsynth-formant-control label {
+  min-width: 70px;
+}
+
+.vsynth-formant-control input[type="range"] {
+  flex: 1;
+}
+
+.vsynth-formant-control input[type="number"] {
+  width: 80px;
+}
+
+.vsynth-axis-value {
+  position: absolute;
+  font-size: 0.8em;
+  color: #333;
+}
+
+.vsynth-axis-label {
+  position: absolute;
+  font-size: 1em;
+  color: #333;
+}
+
+.vsynth-x-axis {
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.vsynth-y-axis {
+  top: 50%;
+  left: -50px;
+  transform: translateY(-50%) rotate(-90deg);
+}
+
+.vsynth-vowel-symbol {
+  position: absolute;
+  font-family: Arial, sans-serif; /* Match legacy font */
+  font-size: 14px; /* Adjust size to match legacy */
+  pointer-events: none;
+  user-select: none;
+  transform: translate(-50%, -50%);
+}
+
+.vsynth-button {
+  padding: 10px 20px;
+  background: #646cff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.vsynth-button:hover {
+  background: #535bf2;
+}
+
+.vsynth-triangle-overlay {
+  position: absolute;
+  width: 700px;
+  height: 0;
+  border-left: 150px solid transparent;
+  border-right: 250px solid transparent;
+  border-top: 400px solid rgba(0, 0, 255, 0.3);
+  pointer-events: none;
+  clip-path: inset(0 0 0 0);
+}
+
+.vsynth-axis-tick {
+  position: absolute;
+  font-size: 0.8em;
+  color: #333;
+}
+
+.vsynth-x-min {
+  bottom: -20px;
+  left: 0;
+}
+
+.vsynth-x-max {
+  bottom: -20px;
+  right: 0;
+}
+
+.vsynth-y-min {
+  left: -40px;
+  top: 0;
+}
+
+.vsynth-y-max {
+  left: -40px;
+  bottom: 0;
+}
+
+.vsynth-heading {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  margin-bottom: 20px;
+}
