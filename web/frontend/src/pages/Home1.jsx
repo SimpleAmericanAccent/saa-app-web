@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { findActiveWordIndex } from "../utils/binarySearch";
 import { fetchData } from "../utils/api";
+import { setCookie, getCookie } from "../utils/cookies";
 import useFetchAudio from "../hooks/useFetchAudio";
 import useAudioSync from "../hooks/useAudioSync";
 import useFetchResources from "../hooks/useFetchResources";
@@ -122,10 +123,6 @@ export default function Home1() {
 
   const handleAnnotationUpdate = async (wordIndex, annotations) => {
     // Flatten the annotatedTranscript structure and find the word ID
-    const flattenedWords = annotatedTranscript.flatMap(
-      (segment) => segment.alignment
-    );
-    const wordId = flattenedWords[wordIndex]?.id;
 
     console.log(
       "Attempting to update annotations for wordIndex",
@@ -134,25 +131,45 @@ export default function Home1() {
       annotations
     );
 
-    let test123 = await fetchData("/v1/api/annotations/update", {
+    const flattenedWords = annotatedTranscript.flatMap(
+      (segment) => segment.alignment
+    );
+
+    const wordId = flattenedWords[wordIndex]?.id;
+    const word = flattenedWords[wordIndex]?.word;
+    const timestamp = flattenedWords[wordIndex]?.start_time;
+
+    let response = await fetchData("/v1/api/annotations/update", {
       method: "POST",
-      body: JSON.stringify({ wordIndex, annotations }),
+      body: JSON.stringify({
+        wordIndex,
+        annotations,
+        audioId: [selectedAudio],
+        word,
+        timestamp,
+      }),
       headers: {
         "Content-Type": "text/plain",
       },
     });
 
-    console.log("test123", test123);
+    console.log("server response", response);
+
+    // Update transcript state
+    fetchAudio(selectedAudio); // Refetch to update state
+
+    // Update tooltip
+    handleAnnotationHover(annotations, wordIndex);
 
     // Update Airtable via mutation
     // updateAnnotationMutation.mutate({ wordId, annotations });
 
     // Optimistically update local state
-    const updatedWords = [...annotatedTranscript];
-    updatedWords[wordIndex] = {
-      ...updatedWords[wordIndex],
-      annotations: annotations,
-    };
+    // const updatedWords = [...annotatedTranscript];
+    // updatedWords[wordIndex] = {
+    //   ...updatedWords[wordIndex],
+    //   annotations: annotations,
+    // };
 
     // You may need to update your state management here
     // depending on how your data is structured
