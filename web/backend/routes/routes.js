@@ -688,116 +688,62 @@ export default function createRoutes(app) {
     req1.end();
   });
 
-  router.get("/data/loadIssues", (req, res) => {
+  router.get("/data/loadIssues", async (req, res) => {
     let airtableFeaturesString = "";
     let airtableIssuesString = "";
 
     const airtableFeaturesSanitized = [];
 
-    const optionsFeatures = {
-      hostname: "api.airtable.com",
-      path: `/v0/${AIRTABLE_BASE_ID}/Target`, // Features table
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-      },
-    };
+    const airtableFeatures = await fetchAllPages2("Target");
 
-    const optionsIssues = {
-      hostname: "api.airtable.com",
-      path: `/v0/${AIRTABLE_BASE_ID}/BR%20issues`, // Issues table
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-      },
-    };
+    const airtableIssues = await fetchAllPages2("BR%20issues");
 
-    // First API call: Fetch Features
-    const reqFeatures = https.request(optionsFeatures, (resFeatures) => {
-      resFeatures.setEncoding("utf8");
+    // console.log(airtableIssues);
 
-      resFeatures.on("data", (chunk) => {
-        airtableFeaturesString += chunk;
-      });
-
-      resFeatures.on("end", () => {
-        const airtableFeatures = JSON.parse(airtableFeaturesString);
-
-        // Prepare an object where each feature ID maps to a feature name and an empty issues array
-        airtableFeatures.records.forEach((record) => {
-          airtableFeaturesSanitized.push({
-            id: record.id,
-            name: record.fields.Name || "",
-            po: record.fields["Presentation order"] || "",
-            type: record.fields.type || "",
-            issues: [], // Placeholder for related issues
-          });
-        });
-
-        // Second API call: Fetch Issues
-        const reqIssues = https.request(optionsIssues, (resIssues) => {
-          resIssues.setEncoding("utf8");
-
-          resIssues.on("data", (chunk) => {
-            airtableIssuesString += chunk;
-          });
-
-          resIssues.on("end", () => {
-            const airtableIssues = JSON.parse(airtableIssuesString);
-
-            // Process Issues and link them to Features
-            airtableIssues.records.forEach((record) => {
-              const featureIds = record.fields["target"] || []; // List of related feature IDs
-              const issueData = {
-                id: record.id,
-                name: record.fields.Name || "",
-                po: record.fields["Presentation order"] || Infinity, // Default to large number for sorting
-                tgt: record.fields.target || "",
-              };
-
-              featureIds.forEach((featureId) => {
-                // Find feature by ID in the array
-                const feature = airtableFeaturesSanitized.find(
-                  (f) => f.id === featureId
-                );
-                if (feature) {
-                  feature.issues.push(issueData);
-                }
-              });
-            });
-
-            // Step 1: Sort issues within each feature by `po`
-            airtableFeaturesSanitized.forEach((feature) => {
-              feature.issues.sort((a, b) => a.po - b.po);
-            });
-
-            // Step 2: Sort features by `po`
-            airtableFeaturesSanitized.sort((a, b) => a.po - b.po);
-
-            // Send response
-            res.setHeader("Content-Type", "application/json");
-            res.statusCode = 200;
-            res.end(JSON.stringify(airtableFeaturesSanitized));
-          });
-        });
-
-        reqIssues.on("error", (error) => {
-          console.error("Airtable Issues Request Error:", error);
-          res.statusCode = 500;
-          res.end(JSON.stringify({ error: "Failed to fetch issues" }));
-        });
-
-        reqIssues.end();
+    // Prepare an object where each feature ID maps to a feature name and an empty issues array
+    airtableFeatures.forEach((record) => {
+      airtableFeaturesSanitized.push({
+        id: record.id,
+        name: record.fields.Name || "",
+        po: record.fields["Presentation order"] || "",
+        type: record.fields.type || "",
+        issues: [], // Placeholder for related issues
       });
     });
 
-    reqFeatures.on("error", (error) => {
-      console.error("Airtable Features Request Error:", error);
-      res.statusCode = 500;
-      res.end(JSON.stringify({ error: "Failed to fetch features" }));
+    // Process Issues and link them to Features
+    airtableIssues.forEach((record) => {
+      const featureIds = record.fields["target"] || []; // List of related feature IDs
+      const issueData = {
+        id: record.id,
+        name: record.fields.Name || "",
+        po: record.fields["Presentation order"] || Infinity, // Default to large number for sorting
+        tgt: record.fields.target || "",
+      };
+
+      featureIds.forEach((featureId) => {
+        // Find feature by ID in the array
+        const feature = airtableFeaturesSanitized.find(
+          (f) => f.id === featureId
+        );
+        if (feature) {
+          feature.issues.push(issueData);
+        }
+      });
     });
 
-    reqFeatures.end();
+    // Step 1: Sort issues within each feature by `po`
+    airtableFeaturesSanitized.forEach((feature) => {
+      feature.issues.sort((a, b) => a.po - b.po);
+    });
+
+    // Step 2: Sort features by `po`
+    airtableFeaturesSanitized.sort((a, b) => a.po - b.po);
+
+    // Send response
+    res.setHeader("Content-Type", "application/json");
+    res.statusCode = 200;
+    res.end(JSON.stringify(airtableFeaturesSanitized));
   });
 
   router.get("/data/loadAudio/:AudioRecId", async (req, res) => {
@@ -1277,6 +1223,68 @@ export default function createRoutes(app) {
 
               allRecords.push(...parsedData.records);
               if (parsedData.offset) {
+                fetchPage(parsedData.offset); // Recursively fetch next batch
+              } else {
+                resolve(allRecords); // No more pages, return all records
+              }
+            } catch (error) {
+              reject(error);
+            }
+          });
+        });
+
+        airtableReq.on("error", (err) => reject(err));
+        airtableReq.end();
+      }
+
+      fetchPage(offset);
+    });
+  }
+
+  async function fetchAllPages2(tableName) {
+    // console.log("tableName:", tableName);
+    return new Promise((resolve, reject) => {
+      let allRecords = [];
+      let offset = null;
+
+      function fetchPage(nextOffset) {
+        let path = `/v0/${AIRTABLE_BASE_ID}/${tableName}`;
+        if (nextOffset) {
+          path += `?offset=${nextOffset}`;
+        }
+
+        // console.log("path:", path);
+
+        const options = {
+          hostname: "api.airtable.com",
+          path: path,
+          method: "GET",
+          headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
+        };
+
+        const airtableReq = https.request(options, (airtableRes) => {
+          let data = "";
+          airtableRes.setEncoding("utf8");
+
+          airtableRes.on("data", (chunk) => {
+            data += chunk;
+          });
+
+          airtableRes.on("end", async () => {
+            if (tableName === "BR%20issues") {
+              // console.log("data:", data);
+            }
+            try {
+              const parsedData = JSON.parse(data);
+              if (!parsedData.records) {
+                return reject(new Error("Invalid response from Airtable"));
+              }
+
+              allRecords.push(...parsedData.records);
+              if (parsedData.offset) {
+                // console.log("allRecords", allRecords);
+                // console.log("parsedData.offset:", parsedData.offset);
+                // await new Promise((r) => setTimeout(r, 5000));
                 fetchPage(parsedData.offset); // Recursively fetch next batch
               } else {
                 resolve(allRecords); // No more pages, return all records
