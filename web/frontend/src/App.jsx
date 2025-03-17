@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home0 from "./pages/Home0.jsx";
 import Home1 from "./pages/Home1.jsx";
 import Home2 from "./pages/Home2.jsx";
@@ -20,12 +21,36 @@ function App() {
         <Route path="/home1" element={<Home1 />} />
         <Route path="/home2" element={<Home2 />} />
         <Route path="/home3" element={<Home3 />} />
-        <Route path="/home4" element={<Home4 />} />
         <Route path="/home5" element={<Home5 />} />
         <Route path="/home6" element={<Home6 />} />
-        <Route path="/path" element={<SuccessPath />} />
-        <Route path="/quiz" element={<Quiz />} />
         <Route path="*" element={<Home0 />} />
+
+        {/* Protected routes for write access */}
+        <Route
+          path="/home4"
+          element={
+            <ProtectedRoute requiredRole="wee">
+              <Home4 />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/path"
+          element={
+            <ProtectedRoute requiredRole="write">
+              <SuccessPath />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz"
+          element={
+            <ProtectedRoute requiredRole="write">
+              <Quiz />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );
