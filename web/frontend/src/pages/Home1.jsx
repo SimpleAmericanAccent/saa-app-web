@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { findActiveWordIndex } from "../utils/binarySearch";
 import { fetchData } from "../utils/api";
 import { setCookie, getCookie } from "../utils/cookies";
@@ -152,36 +151,6 @@ export default function Home1() {
     const friendlyNames = getIssueNames(annotations);
     setAnnotations(friendlyNames);
   };
-
-  // Get QueryClient from the context
-  const queryClient = useQueryClient();
-
-  // Create mutation function
-  const updateAnnotationMutation = useMutation({
-    mutationFn: async ({ wordId, annotations }) => {
-      // Assuming you have an API endpoint for updating annotations
-      console.log("in the mutation thingy");
-      const response = await fetchData("/v1/api/annotations/update", {
-        method: "POST",
-        body: JSON.stringify({ wordId, annotations }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log("response", response);
-      return response;
-    },
-    onSuccess: () => {
-      // Invalidate and refetch any queries that depend on this data
-      queryClient.invalidateQueries({
-        queryKey: ["transcriptData", selectedAudio],
-      });
-    },
-    onError: (error) => {
-      console.error("Error updating annotation:", error);
-      // Handle error state here
-    },
-  });
 
   const handleAnnotationUpdate = async (wordIndex, annotations) => {
     // Flatten the annotatedTranscript structure and find the word ID

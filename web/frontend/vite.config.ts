@@ -1,9 +1,11 @@
+import path from "path";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
     proxy: {
@@ -15,6 +17,11 @@ export default defineConfig({
       "/authnew": "http://localhost:5000",
       "/v1": "http://localhost:5000",
       "/prisma": "http://localhost:5000",
+    },
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 });
