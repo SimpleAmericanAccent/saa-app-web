@@ -1010,11 +1010,8 @@ export default function createRoutes(app) {
     environment_flag === "dev" ? "../frontend/public" : "../frontend/dist";
 
   router.get("/callback", requiresAuth(), (req, res) => {
-    console.log(
-      "callback -> send file at:",
-      path.join(__dirname, staticPath, "/index.html")
-    );
-    res.sendFile(path.join(__dirname, staticPath, "/index.html"));
+    console.log("callback");
+    res.redirect("/");
   });
 
   // 🔹 CATCH-ALL ROUTE (Frontend SPA)
