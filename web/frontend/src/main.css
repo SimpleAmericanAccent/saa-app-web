@@ -552,3 +552,65 @@ a:hover {
   font-family: Arial, sans-serif;
   margin-bottom: 20px;
 }
+
+/* help / keyboard shortcuts modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.shortcuts-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.shortcut {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+kbd {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  display: inline-block;
+  text-align: center;
+}
+
+.modal-close {
+  margin-top: 1.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #e9ecef;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background-color: #dee2e6;
+}

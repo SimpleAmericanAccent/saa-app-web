@@ -9,6 +9,7 @@ import useFetchResources from "../hooks/useFetchResources";
 import Dropdown from "../components/Dropdown";
 import AudioPlayer from "../components/AudioPlayer";
 import TranscriptViewer from "../components/TranscriptViewer";
+import KeyboardShortcutsModal from "../components/KeyboardShortcutsModal";
 
 export default function Home1() {
   // Fetch People and Audio Resources
@@ -35,6 +36,9 @@ export default function Home1() {
 
   // State for Airtable Issues
   const [issuesData, setIssuesData] = useState([]);
+
+  // Add state for modal visibility
+  const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
 
   // Fetch issues data on component mount
   useEffect(() => {
@@ -124,6 +128,11 @@ export default function Home1() {
           const newSpeedUp = Math.min(4.0, audioRef.current.playbackRate + 0.1);
           audioRef.current.playbackRate = newSpeedUp;
           setPlaybackSpeed(newSpeedUp);
+          break;
+        }
+        case "Slash": {
+          e.preventDefault();
+          setIsShortcutsModalOpen((prev) => !prev);
           break;
         }
         default:
@@ -252,8 +261,9 @@ export default function Home1() {
               selectedValue={selectedAudio}
               onChange={setSelectedAudio}
             />
-            <button className="block" onClick={handleAudioSelection}>
-              Open From Airtable
+            <button onClick={handleAudioSelection}>Open From Airtable</button>
+            <button onClick={() => setIsShortcutsModalOpen(true)}>
+              Keyboard Shortcuts (?)
             </button>
             <AudioPlayer mp3url={mp3url} ref={audioRef} />
             <div>Playback speed: {playbackSpeed.toFixed(1)}x</div>
@@ -276,6 +286,10 @@ export default function Home1() {
         onAnnotationHover={handleAnnotationHover}
         issuesData={issuesData}
         onAnnotationUpdate={handleAnnotationUpdate}
+      />
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsModalOpen}
+        onClose={() => setIsShortcutsModalOpen(false)}
       />
 
       <ul className="list"></ul>

@@ -16,8 +16,5 @@ export default defineConfig({
       "/v1": "http://localhost:5000",
       "/prisma": "http://localhost:5000",
     },
-    watch: {
-      usePolling: true, // Ensures file changes are detected in all environments
-    },
   },
 });
