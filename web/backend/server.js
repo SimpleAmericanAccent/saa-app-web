@@ -51,9 +51,21 @@ app.use(function (req, res, next) {
 });
 
 const staticPath =
-  environment_flag === "dev" ? "../frontend/public" : "../frontend/dist";
+  environment_flag === "dev"
+    ? "../frontend/public" // Dev run: serve from public
+    : environment_flag === "dev-build"
+    ? "../frontend/dist" // Dev build: serve from dist
+    : "../frontend/dist"; // Prod: serve from dist
 
-app.use(express.static(staticPath, { index: "home.html" }));
+console.log("staticPath", staticPath);
+
+// Let Express use index.html only for build/prod
+const staticOptions =
+  environment_flag === "dev"
+    ? {} // Dev run: no default index
+    : { index: "index.html" }; // Dev build & Prod: use index.html
+
+app.use(express.static(staticPath, staticOptions));
 
 // for some reason the below line broke Airtable CRUD (except delete)
 // maybe due to the way I was sort of manually handling things?

@@ -1006,9 +1006,6 @@ export default function createRoutes(app) {
     res.send(JSON.stringify(req.oidc.user, null, 3));
   });
 
-  const staticPath =
-    environment_flag === "dev" ? "../frontend/public" : "../frontend/dist";
-
   router.get("/callback", requiresAuth(), (req, res) => {
     console.log("callback");
     res.redirect("/");
@@ -1016,11 +1013,16 @@ export default function createRoutes(app) {
 
   // 🔹 CATCH-ALL ROUTE (Frontend SPA)
   router.get("*", (req, res) => {
-    console.log(
-      "catch-all -> send file at:",
-      path.join(__dirname, staticPath, "/index.html")
-    );
-    res.sendFile(path.join(__dirname, staticPath, "/index.html"));
+    // For development, proxy to Vite dev server
+    if (environment_flag === "dev") {
+      res.redirect("http://localhost:5173");
+      return;
+    }
+
+    // For production, serve the built index.html
+    const indexPath = path.join(__dirname, "../../frontend/dist/index.html");
+    console.log("catch-all -> send file at:", indexPath);
+    res.sendFile(indexPath);
   });
 
   //#endregion
