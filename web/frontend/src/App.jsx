@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Home0 from "./pages/Home0.jsx";
 import Home1 from "./pages/Home1.jsx";
 import Home2 from "./pages/Home2.jsx";
 import Home3 from "./pages/Home3.jsx";

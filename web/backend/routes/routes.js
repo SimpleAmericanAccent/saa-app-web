@@ -11,6 +11,7 @@ import {
   DEFAULT_AUDIO_REC_ID,
 } from "../config.js"; // Assume environment variables are imported here
 import { PrismaClient } from "@prisma/client";
+import { environment_flag } from "../config.js";
 
 const prisma = new PrismaClient();
 
@@ -1005,13 +1006,24 @@ export default function createRoutes(app) {
     res.send(JSON.stringify(req.oidc.user, null, 3));
   });
 
+  const staticPath =
+    environment_flag === "dev" ? "../frontend/public" : "../frontend/dist";
+
   router.get("/callback", requiresAuth(), (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/public/home.html"));
+    console.log(
+      "callback -> send file at:",
+      path.join(__dirname, staticPath, "/index.html")
+    );
+    res.sendFile(path.join(__dirname, staticPath, "/index.html"));
   });
 
   // 🔹 CATCH-ALL ROUTE (Frontend SPA)
   router.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+    console.log(
+      "catch-all -> send file at:",
+      path.join(__dirname, staticPath, "/index.html")
+    );
+    res.sendFile(path.join(__dirname, staticPath, "/index.html"));
   });
 
   //#endregion
