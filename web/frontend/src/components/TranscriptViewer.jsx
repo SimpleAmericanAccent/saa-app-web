@@ -188,7 +188,8 @@ const TranscriptViewer = ({
                   className={cn(
                     "cursor-pointer transition-colors duration-200",
                     activeWordIndex === wordObj.wordIndex && "bg-primary/20",
-                    hasAnnotations && "text-primary underline decoration-dotted"
+                    hasAnnotations &&
+                      "text-primary underline decoration-dotted bg-[#aec2d0]"
                   )}
                   onClick={() => handleWordClick(wordObj.start_time)}
                   onMouseOver={() => handleAnnotationHover(wordObj.wordIndex)}

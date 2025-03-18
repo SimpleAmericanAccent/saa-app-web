@@ -246,6 +246,11 @@ export default function VowelSynthesizer() {
 
   return (
     <div className="vsynth-container">
+      <p className="text-muted-foreground text-sm mt-4 mb-6 text-center">
+        Click and drag anywhere on the vowel diagram below to explore different
+        vowel sounds. The position of your cursor controls the first two formant
+        frequencies (F1 and F2).
+      </p>
       <div className="vsynth-diagram" ref={diagramRef}>
         {/* Add tick marks and values */}
         <div className="vsynth-axis-ticks">
@@ -402,7 +407,10 @@ export default function VowelSynthesizer() {
           />
         </div>
 
-        <button onClick={isPlaying ? stopSound : startSound}>
+        <button
+          onClick={isPlaying ? stopSound : startSound}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md"
+        >
           {isPlaying ? "Stop" : "Start"}
         </button>
       </div>

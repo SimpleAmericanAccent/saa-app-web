@@ -247,7 +247,7 @@ a:hover {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  height: 100vh;
+  height: calc(100vh - 25px);
   overflow: hidden;
 }
 
@@ -259,14 +259,56 @@ a:hover {
 
 .wls-content {
   flex: 1;
-  padding: 20px;
+  padding: 0px 20px;
   overflow-y: auto;
-  scroll-padding-top: 20px;
+  scroll-padding-top: 0px;
 }
+
+/* Typography styles scoped to wls-content */
+.wls-content h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.wls-content h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0.5rem;
+  color: #444;
+}
+
+.wls-content ul {
+  margin: 0.5rem 0;
+  padding-left: 2rem;
+  list-style-type: none;
+}
+
+.wls-content ul li {
+  margin-bottom: 0.5rem;
+  line-height: 1;
+  position: relative;
+}
+
+.wls-content ul li:before {
+  content: "•";
+  color: #666;
+  position: absolute;
+  left: -1rem;
+}
+
+.wls-content br {
+  margin: 0.5rem 0;
+}
+
+/* Sidenav styles */
 
 .wls-sidenav {
   width: 200px;
-  padding: 20px 0px;
+  padding: 0px 0;
   overflow-y: auto;
   border-right: 1px solid #eee;
   background: white;
@@ -279,16 +321,21 @@ a:hover {
 }
 
 .wls-sidenav ul ul {
-  margin-left: 20px;
+  margin-left: 1.25rem;
 }
 
 .wls-sidenav a {
+  display: block;
+  padding: 0rem 1rem;
+  color: #666;
   text-decoration: none;
-  color: black;
+  font-size: 0.9rem;
+  transition: all 0.2s;
 }
 
 .wls-sidenav a:hover {
-  text-decoration: underline;
+  color: #000;
+  background: #f5f5f5;
 }
 
 /* For Vowel Sounds (vs) page */
