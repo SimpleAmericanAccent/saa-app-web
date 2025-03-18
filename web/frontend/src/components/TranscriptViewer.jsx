@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useCallback } from "react";
+import { cn } from "@/lib/utils";
 
 const TranscriptViewer = ({
   annotatedTranscript,
@@ -174,9 +175,9 @@ const TranscriptViewer = ({
   };
 
   return (
-    <div className="transcript">
+    <div className="w-full max-w-4xl mx-auto p-4 mt-[calc(230px+12vh)] space-y-4">
       {annotatedTranscript.map((paragraph, index) => (
-        <p key={index}>
+        <p key={index} className="leading-relaxed">
           {paragraph.alignment.map((wordObj) => {
             const annotations = getAnnotations(wordObj.wordIndex);
             const hasAnnotations = annotations.length > 0;
@@ -184,9 +185,11 @@ const TranscriptViewer = ({
               <>
                 <span
                   key={wordObj.wordIndex}
-                  className={`${
-                    activeWordIndex === wordObj.wordIndex ? "active" : ""
-                  } ${hasAnnotations ? "annotated" : ""}`}
+                  className={cn(
+                    "cursor-pointer transition-colors duration-200",
+                    activeWordIndex === wordObj.wordIndex && "bg-primary/20",
+                    hasAnnotations && "text-primary underline decoration-dotted"
+                  )}
                   onClick={() => handleWordClick(wordObj.start_time)}
                   onMouseOver={() => handleAnnotationHover(wordObj.wordIndex)}
                   onContextMenu={(e) => handleContextMenu(e, wordObj.wordIndex)}

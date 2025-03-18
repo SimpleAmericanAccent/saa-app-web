@@ -211,39 +211,51 @@ export default function Home1() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-background">
       <div>
-        <div className="masthead-top">
-          <div className="columnleftmastheadtop">
-            <h1>Transcript Viewer</h1>
+        <div className="fixed top-0 left-0 w-full h-[230px] min-h-[100px] bg-card p-4 z-10">
+          <div className="max-w-[450px]">
+            <h1 className="text-2xl font-semibold mb-4">Transcript Viewer</h1>
             <Dropdown
-              className="block"
+              className="block mb-2"
               label="Select person: "
               options={people}
               selectedValue={selectedPerson}
               onChange={setSelectedPerson}
             />
             <Dropdown
-              className="block"
+              className="block mb-2"
               label="Select audio: &nbsp; "
               options={filteredAudio}
               selectedValue={selectedAudio}
               onChange={setSelectedAudio}
             />
-            <button onClick={handleAudioSelection}>Open From Airtable</button>
-            <button onClick={() => setIsShortcutsModalOpen(true)}>
+            <button
+              onClick={handleAudioSelection}
+              className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+            >
+              Open From Airtable
+            </button>
+            <button
+              onClick={() => setIsShortcutsModalOpen(true)}
+              className="bg-secondary text-secondary-foreground px-4 py-2 rounded-md hover:bg-secondary/90"
+            >
               Keyboard Shortcuts (?)
             </button>
             <AudioPlayer mp3url={mp3url} ref={audioRef} />
-            <div>Playback speed: {playbackSpeed.toFixed(1)}x</div>
+            <div className="text-sm text-muted-foreground">
+              Playback speed: {playbackSpeed.toFixed(1)}x
+            </div>
             <div></div>
           </div>
         </div>
 
         <p>Welcome to the home page!</p>
       </div>
-      <div className="masthead-bottom">
-        <div className="toolTip">{annotations.join(", ")}</div>
+      <div className="fixed top-[230px] left-0 w-full h-[12vh] min-h-[100px] bg-card p-4 z-0">
+        <div className="border border-border rounded-md p-2 mb-4">
+          {annotations.join(", ")}
+        </div>
       </div>
       <TranscriptViewer
         annotatedTranscript={annotatedTranscript}
