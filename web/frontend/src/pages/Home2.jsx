@@ -46,11 +46,11 @@ export default function Home2() {
     }
   };
   return (
-    <div className="wls-page">
+    <div className="bg-background fixed top-[35px]">
       <div className="wls-container">
         {/* Side Navigation */}
-        <div className="wls-sidenav">
-          <ul>
+        <div className="w-[180px] h-screen sticky top-0 overflow-y-auto border-r bg-card p-4">
+          <ul className="space-y-1">
             {headings.map((h1) => (
               <li key={h1.id}>
                 <a
@@ -62,7 +62,7 @@ export default function Home2() {
                 >
                   {h1.text}
                 </a>
-                <ul>
+                <ul className="ml-4 space-y-1">
                   {h1.h2s.map((h2) => (
                     <li key={h2.id}>
                       <a

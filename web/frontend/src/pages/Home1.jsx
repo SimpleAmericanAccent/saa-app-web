@@ -202,7 +202,7 @@ export default function Home1() {
       <div>
         <div className="fixed top-0 left-0 w-full h-[230px] min-h-[100px] bg-background p-4 z-10">
           <div className="max-w-[450px]">
-            <h1 className="text-2xl font-semibold mb-4 mt-3">
+            <h1 className="text-2xl font-semibold mb-2 mt-6">
               Transcript Viewer
             </h1>
             <div className="flex items-center gap-2 mb-2">
