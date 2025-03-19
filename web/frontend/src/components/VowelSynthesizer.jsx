@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 
 const VOWEL_SYMBOLS = [
   { symbol: "FLEECE", F1: 350, F2: 2030 },
@@ -299,120 +301,139 @@ export default function VowelSynthesizer() {
         </div>
       </div>
 
-      <div className="vsynth-controls">
-        <div className="formant-control">
-          <label htmlFor="pitch">Pitch (Hz):</label>
-          <input
-            type="range"
-            id="pitch"
-            min="80"
-            max="200"
-            value={pitch}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setPitch(value);
-              if (oscillatorRef.current) {
-                oscillatorRef.current.frequency.setValueAtTime(
-                  value,
-                  audioContextRef.current.currentTime
-                );
-              }
-            }}
-          />
-          <input
-            type="number"
-            value={pitch}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setPitch(value);
-              if (oscillatorRef.current) {
-                oscillatorRef.current.frequency.setValueAtTime(
-                  value,
-                  audioContextRef.current.currentTime
-                );
-              }
-            }}
-          />
-        </div>
+      <div className="grid gap-6 p-4">
+        <div className="space-y-4">
+          <div className="grid items-center gap-2">
+            <label htmlFor="pitch" className="text-sm font-medium">
+              Pitch (Hz):
+            </label>
 
-        <div className="formant-control">
-          <label htmlFor="volume">Volume:</label>
-          <input
-            type="range"
-            id="volume"
-            min="0"
-            max="100" // Changed from 1 to 100 for better control
-            step="0.01" // Changed from 0.01 to 1
-            value={volume} // Scale to 0-100 range
-            onChange={(e) => {
-              const value = Number(e.target.value); // Scale back to 0-1
-              setVolume(value);
-              if (gainNodeRef.current) {
-                gainNodeRef.current.gain.setValueAtTime(
-                  value, // Apply master volume scaling
-                  audioContextRef.current.currentTime
-                );
-              }
-            }}
-          />
-        </div>
-        <div className="formant-control">
-          <label htmlFor="F1">F1 (Hz):</label>
-          <input
-            type="range"
-            id="F1"
-            min="200"
-            max="1000"
-            value={formants.F1}
-            onChange={(e) => handleFormantChange("F1", e.target.value)}
-          />
-          <input
-            type="number"
-            value={formants.F1}
-            onChange={(e) => handleFormantChange("F1", e.target.value)}
-          />
-        </div>
+            <div className="flex items-center gap-4">
+              <Slider
+                id="pitch"
+                min={80}
+                max={200}
+                value={[pitch]}
+                onValueChange={([value]) => {
+                  setPitch(value);
+                  if (oscillatorRef.current) {
+                    oscillatorRef.current.frequency.setValueAtTime(
+                      value,
+                      audioContextRef.current.currentTime
+                    );
+                  }
+                }}
+                className="flex-1"
+              />
+              <input
+                type="number"
+                value={pitch}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  setPitch(value);
+                  if (oscillatorRef.current) {
+                    oscillatorRef.current.frequency.setValueAtTime(
+                      value,
+                      audioContextRef.current.currentTime
+                    );
+                  }
+                }}
+              />
+            </div>
+          </div>
 
-        <div className="formant-control">
-          <label htmlFor="F2">F2 (Hz):</label>
-          <input
-            type="range"
-            id="F2"
-            min="500"
-            max="3000"
-            value={formants.F2}
-            onChange={(e) => handleFormantChange("F2", e.target.value)}
-          />
-          <input
-            type="number"
-            value={formants.F2}
-            onChange={(e) => handleFormantChange("F2", e.target.value)}
-          />
-        </div>
+          <div className="grid items-center gap-2">
+            <label htmlFor="volume" className="text-sm font-medium">
+              Volume:
+            </label>
+            <Slider
+              id="volume"
+              min={0}
+              max={100}
+              value={[volume]}
+              onValueChange={([value]) => {
+                setVolume(value);
+                if (gainNodeRef.current) {
+                  gainNodeRef.current.gain.setValueAtTime(
+                    value,
+                    audioContextRef.current.currentTime
+                  );
+                }
+              }}
+            />
+          </div>
 
-        <div className="formant-control">
-          <label htmlFor="F3">F3 (Hz):</label>
-          <input
-            type="range"
-            id="F3"
-            min="2000"
-            max="3500"
-            value={formants.F3}
-            onChange={(e) => handleFormantChange("F3", e.target.value)}
-          />
-          <input
-            type="number"
-            value={formants.F3}
-            onChange={(e) => handleFormantChange("F3", e.target.value)}
-          />
-        </div>
+          <div className="grid items-center gap-2">
+            <label htmlFor="F1" className="text-sm font-medium">
+              F1 (Hz):
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                id="F1"
+                min="200"
+                max="1000"
+                value={formants.F1}
+                onChange={(e) => handleFormantChange("F1", e.target.value)}
+              />
+              <input
+                type="number"
+                value={formants.F1}
+                onChange={(e) => handleFormantChange("F1", e.target.value)}
+              />
+            </div>
+          </div>
 
-        <button
-          onClick={isPlaying ? stopSound : startSound}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md"
-        >
-          {isPlaying ? "Stop" : "Start"}
-        </button>
+          <div className="grid items-center gap-2">
+            <label htmlFor="F2" className="text-sm font-medium">
+              F2 (Hz):
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                id="F2"
+                min="500"
+                max="3000"
+                value={formants.F2}
+                onChange={(e) => handleFormantChange("F2", e.target.value)}
+              />
+              <input
+                type="number"
+                value={formants.F2}
+                onChange={(e) => handleFormantChange("F2", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="grid items-center gap-2">
+            <label htmlFor="F3" className="text-sm font-medium">
+              F3 (Hz):
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="range"
+                id="F3"
+                min="2000"
+                max="3500"
+                value={formants.F3}
+                onChange={(e) => handleFormantChange("F3", e.target.value)}
+              />
+              <input
+                type="number"
+                value={formants.F3}
+                onChange={(e) => handleFormantChange("F3", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <Button
+            onClick={isPlaying ? stopSound : startSound}
+            variant={isPlaying ? "destructive" : "default"}
+            className="w-full"
+          >
+            {isPlaying ? "Stop" : "Start"}
+          </Button>
+        </div>
       </div>
     </div>
   );
