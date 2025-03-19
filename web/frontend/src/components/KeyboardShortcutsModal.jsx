@@ -20,7 +20,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
         <div className="grid gap-4 py-4">
           <div className="grid gap-4">
             <div className="flex items-center justify-between">
-              <kbd className="px-2 py-1.5 text-xs font-semibold text-background bg-muted border rounded-md">
+              <kbd className="px-2 py-1.5 text-xs font-semibold text-[black] border rounded-md">
                 Space
               </kbd>
               <span className="text-sm text-muted-foreground">
@@ -28,7 +28,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <kbd className="px-2 py-1.5 text-xs font-semibold text-background bg-muted border rounded-md">
+              <kbd className="px-2 py-1.5 text-xs font-semibold text-[black] border rounded-md">
                 ←
               </kbd>
               <span className="text-sm text-muted-foreground">
@@ -36,7 +36,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <kbd className="px-2 py-1.5 text-xs font-semibold text-background bg-muted border rounded-md">
+              <kbd className="px-2 py-1.5 text-xs font-semibold text-[black] border rounded-md">
                 →
               </kbd>
               <span className="text-sm text-muted-foreground">
@@ -44,7 +44,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <kbd className="px-2 py-1.5 text-xs font-semibold text-background bg-muted border rounded-md">
+              <kbd className="px-2 py-1.5 text-xs font-semibold text-[black] border rounded-md">
                 - or &lt;
               </kbd>
               <span className="text-sm text-muted-foreground">
@@ -52,7 +52,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <kbd className="px-2 py-1.5 text-xs font-semibold text-background bg-muted border rounded-md">
+              <kbd className="px-2 py-1.5 text-xs font-semibold text-[black] border rounded-md">
                 + or &gt;
               </kbd>
               <span className="text-sm text-muted-foreground">
@@ -60,7 +60,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <kbd className="px-2 py-1.5 text-xs font-semibold text-background bg-muted border rounded-md">
+              <kbd className="px-2 py-1.5 text-xs font-semibold text-[black] border rounded-md">
                 ?
               </kbd>
               <span className="text-sm text-muted-foreground">
