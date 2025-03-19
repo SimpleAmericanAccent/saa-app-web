@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router";
+import { ThemeProvider } from "@/components/theme-provider";
 import NavBar from "./components/navbar/NavBar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Home1 from "./pages/Home1.jsx";
@@ -14,43 +15,45 @@ import Home6 from "./pages/Home6.jsx";
 function App() {
   return (
     <>
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<Home1 />} />
-        <Route path="/home1" element={<Home1 />} />
-        <Route path="/home2" element={<Home2 />} />
-        <Route path="/home3" element={<Home3 />} />
-        <Route path="/home5" element={<Home5 />} />
-        <Route path="/home6" element={<Home6 />} />
-        <Route path="*" element={<Home1 />} />
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home1 />} />
+          <Route path="/home1" element={<Home1 />} />
+          <Route path="/home2" element={<Home2 />} />
+          <Route path="/home3" element={<Home3 />} />
+          <Route path="/home5" element={<Home5 />} />
+          <Route path="/home6" element={<Home6 />} />
+          <Route path="*" element={<Home1 />} />
 
-        {/* Protected routes for write access */}
-        <Route
-          path="/home4"
-          element={
-            <ProtectedRoute requiredRole="write">
-              {/* <Home4 /> */}
-            </ProtectedRoute>
-          }
-        />
+          {/* Protected routes for write access */}
+          <Route
+            path="/home4"
+            element={
+              <ProtectedRoute requiredRole="write">
+                {/* <Home4 /> */}
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/path"
-          element={
-            <ProtectedRoute requiredRole="write">
-              {/* <SuccessPath /> */}
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/quiz"
-          element={
-            <ProtectedRoute requiredRole="write">
-              {/* <Quiz /> */}
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+          <Route
+            path="/path"
+            element={
+              <ProtectedRoute requiredRole="write">
+                {/* <SuccessPath /> */}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quiz"
+            element={
+              <ProtectedRoute requiredRole="write">
+                {/* <Quiz /> */}
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </ThemeProvider>
     </>
   );
 }

@@ -175,7 +175,7 @@ const TranscriptViewer = ({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 mt-[calc(230px+12vh)] space-y-4">
+    <div className="w-full max-w-4xl p-4 mt-[calc(250px)] space-y-4">
       {annotatedTranscript.map((paragraph, index) => (
         <p key={index} className="leading-relaxed">
           {paragraph.alignment.map((wordObj) => {
@@ -186,10 +186,12 @@ const TranscriptViewer = ({
                 <span
                   key={wordObj.wordIndex}
                   className={cn(
-                    "cursor-pointer transition-colors duration-200",
-                    activeWordIndex === wordObj.wordIndex && "bg-primary/20",
+                    "cursor-pointer rounded-[5px]",
                     hasAnnotations &&
-                      "text-primary underline decoration-dotted bg-[#aec2d0]"
+                      "text-primary underline decoration-dotted bg-[#aec2d0]",
+                    activeWordIndex === wordObj.wordIndex &&
+                      "bg-[#aa00aaaa] !text-inherit", // Added !text-inherit to override annotation text color
+                    "hover:bg-[#e0e0e0]"
                   )}
                   onClick={() => handleWordClick(wordObj.start_time)}
                   onMouseOver={() => handleAnnotationHover(wordObj.wordIndex)}
