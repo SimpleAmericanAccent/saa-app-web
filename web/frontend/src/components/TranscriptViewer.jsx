@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useCallback } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
 
 const TranscriptViewer = ({
@@ -181,17 +182,20 @@ const TranscriptViewer = ({
           {paragraph.alignment.map((wordObj) => {
             const annotations = getAnnotations(wordObj.wordIndex);
             const hasAnnotations = annotations.length > 0;
+            const isActive = activeWordIndex === wordObj.wordIndex;
+
             return (
-              <>
+              <React.Fragment key={wordObj.wordIndex}>
                 <span
                   key={wordObj.wordIndex}
                   className={cn(
                     "cursor-pointer rounded-[5px]",
-                    hasAnnotations &&
-                      "text-primary underline decoration-dotted bg-[#aec2d0]",
-                    activeWordIndex === wordObj.wordIndex &&
-                      "bg-[#aa00aaaa] !text-inherit", // Added !text-inherit to override annotation text color
-                    "hover:bg-[#e0e0e0]"
+                    {
+                      "text-annotation-foreground bg-[hsl(var(--annotation))]":
+                        hasAnnotations && !isActive,
+                      "!bg-[#aa00aa80]": isActive,
+                    },
+                    "hover:bg-[hsl(var(--hover))]"
                   )}
                   onClick={() => handleWordClick(wordObj.start_time)}
                   onMouseOver={() => handleAnnotationHover(wordObj.wordIndex)}
@@ -199,7 +203,7 @@ const TranscriptViewer = ({
                 >
                   {wordObj.word}
                 </span>{" "}
-              </>
+              </React.Fragment>
             );
           })}
         </p>
