@@ -101,53 +101,45 @@ export default function Home1() {
   // Add keyboard controls
   useEffect(() => {
     const handleKeydown = (e) => {
-      if (!audioRef.current) return;
+      // Only handle shortcuts if we have audio or it's the help shortcut
+      if (!audioRef.current && e.code !== "Slash") return;
+
+      e.preventDefault();
 
       switch (e.code) {
-        case "ArrowLeft":
-          e.preventDefault();
-          audioRef.current.currentTime = audioRef.current.currentTime - 1;
+        case "ArrowLeft": {
+          audioRef.current.currentTime -= 1;
           break;
-        case "ArrowRight":
-          e.preventDefault();
-          audioRef.current.currentTime = audioRef.current.currentTime + 1;
+        }
+        case "ArrowRight": {
+          audioRef.current.currentTime += 1;
           break;
-        case "Space":
-          e.preventDefault();
-          if (audioRef.current.paused) {
-            audioRef.current.play();
-          } else {
-            audioRef.current.pause();
-          }
+        }
+        case "Space": {
+          const action = audioRef.current.paused ? "play" : "pause";
+          audioRef.current[action]();
           break;
+        }
         case "Comma":
         case "Minus":
         case "NumpadSubtract": {
-          e.preventDefault();
-          const newSpeedDown = Math.max(
-            0.1,
-            audioRef.current.playbackRate - 0.1
-          );
-          audioRef.current.playbackRate = newSpeedDown;
-          setPlaybackSpeed(newSpeedDown);
+          const newSpeed = Math.max(0.1, audioRef.current.playbackRate - 0.1);
+          audioRef.current.playbackRate = newSpeed;
+          setPlaybackSpeed(newSpeed);
           break;
         }
         case "Period":
         case "Equal":
         case "NumpadAdd": {
-          e.preventDefault();
-          const newSpeedUp = Math.min(4.0, audioRef.current.playbackRate + 0.1);
-          audioRef.current.playbackRate = newSpeedUp;
-          setPlaybackSpeed(newSpeedUp);
+          const newSpeed = Math.min(4.0, audioRef.current.playbackRate + 0.1);
+          audioRef.current.playbackRate = newSpeed;
+          setPlaybackSpeed(newSpeed);
           break;
         }
         case "Slash": {
-          e.preventDefault();
           setIsShortcutsModalOpen((prev) => !prev);
           break;
         }
-        default:
-          break;
       }
     };
 

@@ -64,7 +64,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
                 ?
               </kbd>
               <span className="text-sm text-muted-foreground">
-                Show/Hide this modal
+                Show/Hide this Keyboard Shortcuts menu
               </span>
             </div>
           </div>
