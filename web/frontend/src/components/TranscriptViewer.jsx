@@ -2,6 +2,15 @@
 import { useState, useEffect, useCallback } from "react";
 import React from "react";
 import { cn } from "@/lib/utils";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 const TranscriptViewer = ({
   annotatedTranscript,
@@ -12,9 +21,6 @@ const TranscriptViewer = ({
   issuesData,
 }) => {
   const [contextMenu, setContextMenu] = useState({
-    visible: false,
-    x: 0,
-    y: 0,
     wordIndex: null,
   });
 
@@ -27,22 +33,10 @@ const TranscriptViewer = ({
   };
 
   const handleContextMenu = (e, wordIndex) => {
-    e.preventDefault();
-    // Prevent menu repositioning if clicking inside existing menu
-    if (e.target.closest(".menu-list")) {
-      return;
-    }
     setContextMenu({
-      visible: true,
-      x: e.clientX,
-      y: e.clientY,
       wordIndex,
     });
   };
-
-  const handleClickOutside = useCallback(() => {
-    setContextMenu((prev) => ({ ...prev, visible: false }));
-  }, []);
 
   const handleIssueSelect = (wordIndex, issueId) => {
     const annotations = getAnnotations(wordIndex);
@@ -59,113 +53,6 @@ const TranscriptViewer = ({
     if (onAnnotationHover) {
       onAnnotationHover(annotationsDesired);
     }
-    setContextMenu((prev) => ({ ...prev, visible: false }));
-  };
-
-  useEffect(() => {
-    if (contextMenu.visible) {
-      document.addEventListener("click", handleClickOutside);
-    } else {
-      document.removeEventListener("click", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [contextMenu.visible, handleClickOutside]);
-
-  const renderContextMenu = () => {
-    if (!contextMenu.visible) return null;
-
-    const adjustMenuPosition = (element) => {
-      const windowHeight = window.innerHeight;
-      const windowWidth = window.innerWidth;
-      const menuRect = element.getBoundingClientRect();
-
-      // Adjust vertical position if menu overflows bottom
-      if (menuRect.bottom > windowHeight) {
-        // const overflowAmount = menuRect.bottom - windowHeight;
-        // element.style.top = `${Math.max(0, contextMenu.y - overflowAmount)}px`;
-        element.style.top = `0px`;
-      }
-
-      // Adjust horizontal position if menu overflows right
-      if (menuRect.right > windowWidth) {
-        element.style.left = `${windowWidth - menuRect.width - 10}px`;
-      }
-    };
-
-    const adjustSubmenuPosition = (element, parentRect) => {
-      const windowHeight = window.innerHeight;
-      const windowWidth = window.innerWidth;
-      const submenuRect = element.getBoundingClientRect();
-
-      // Try to position submenu to the right of parent menu
-      let left = parentRect.right;
-      let top = parentRect.top;
-
-      // If submenu would overflow right, position to left of parent
-      if (left + submenuRect.width > windowWidth) {
-        left = parentRect.left - submenuRect.width;
-      }
-
-      // If submenu would overflow bottom, align bottom with window
-      if (top + submenuRect.height > windowHeight) {
-        top = windowHeight - submenuRect.height;
-      }
-
-      element.style.left = `${left}px`;
-      element.style.top = `${top}px`;
-    };
-
-    return (
-      <>
-        <ul
-          className="menu-list"
-          style={{
-            position: "fixed",
-            top: contextMenu.y,
-            left: contextMenu.x,
-            zIndex: 1000,
-          }}
-          ref={(element) => {
-            if (element) {
-              adjustMenuPosition(element);
-            }
-          }}
-        >
-          {issuesData.map((target) => (
-            <li
-              key={target.id}
-              className="menu-item"
-              onMouseEnter={(e) => {
-                const submenu = e.currentTarget.querySelector(".submenu");
-                if (submenu) {
-                  adjustSubmenuPosition(
-                    submenu,
-                    e.currentTarget.getBoundingClientRect()
-                  );
-                }
-              }}
-            >
-              <span>{target.name}</span>
-              <ul className="submenu">
-                {target.issues.map((issue) => (
-                  <li
-                    key={issue.id}
-                    className="submenu-item"
-                    onClick={() =>
-                      handleIssueSelect(contextMenu.wordIndex, issue.id)
-                    }
-                  >
-                    {issue.name}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-      </>
-    );
   };
 
   const handleAnnotationHover = (wordIndex) => {
@@ -176,40 +63,65 @@ const TranscriptViewer = ({
   };
 
   return (
-    <div className="w-full max-w-4xl p-4 mt-[calc(250px)] space-y-4">
-      {annotatedTranscript.map((paragraph, index) => (
-        <p key={index} className="leading-relaxed">
-          {paragraph.alignment.map((wordObj) => {
-            const annotations = getAnnotations(wordObj.wordIndex);
-            const hasAnnotations = annotations.length > 0;
-            const isActive = activeWordIndex === wordObj.wordIndex;
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <div className="w-full max-w-4xl p-4 mt-[calc(250px)] space-y-4">
+          {annotatedTranscript.map((paragraph, index) => (
+            <p key={index} className="leading-relaxed">
+              {paragraph.alignment.map((wordObj) => {
+                const annotations = getAnnotations(wordObj.wordIndex);
+                const hasAnnotations = annotations.length > 0;
+                const isActive = activeWordIndex === wordObj.wordIndex;
 
-            return (
-              <React.Fragment key={wordObj.wordIndex}>
-                <span
-                  key={wordObj.wordIndex}
-                  className={cn(
-                    "cursor-pointer rounded-[5px]",
-                    {
-                      "text-annotation-foreground bg-[hsl(var(--annotation))]":
-                        hasAnnotations && !isActive,
-                      "!bg-[#aa00aa80]": isActive,
-                    },
-                    "hover:bg-[hsl(var(--hover))]"
-                  )}
-                  onClick={() => handleWordClick(wordObj.start_time)}
-                  onMouseOver={() => handleAnnotationHover(wordObj.wordIndex)}
-                  onContextMenu={(e) => handleContextMenu(e, wordObj.wordIndex)}
+                return (
+                  <React.Fragment key={wordObj.wordIndex}>
+                    <span
+                      className={cn(
+                        "cursor-pointer rounded-[5px]",
+                        {
+                          "text-annotation-foreground bg-[hsl(var(--annotation))]":
+                            hasAnnotations && !isActive,
+                          "!bg-[#aa00aa80]": isActive,
+                        },
+                        "hover:bg-[hsl(var(--hover))]"
+                      )}
+                      onClick={() => handleWordClick(wordObj.start_time)}
+                      onMouseOver={() =>
+                        handleAnnotationHover(wordObj.wordIndex)
+                      }
+                      onContextMenu={(e) =>
+                        handleContextMenu(e, wordObj.wordIndex)
+                      }
+                    >
+                      {wordObj.word}
+                    </span>{" "}
+                  </React.Fragment>
+                );
+              })}
+            </p>
+          ))}
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        {issuesData.map((target) => (
+          <ContextMenuSub key={target.id}>
+            <ContextMenuSubTrigger>{target.name}</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              {target.issues.map((issue) => (
+                <ContextMenuItem
+                  key={issue.id}
+                  onSelect={() =>
+                    handleIssueSelect(contextMenu.wordIndex, issue.id)
+                  }
                 >
-                  {wordObj.word}
-                </span>{" "}
-              </React.Fragment>
-            );
-          })}
-        </p>
-      ))}
-      {renderContextMenu()}
-    </div>
+                  {issue.name}
+                </ContextMenuItem>
+              ))}
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+        ))}
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };
 

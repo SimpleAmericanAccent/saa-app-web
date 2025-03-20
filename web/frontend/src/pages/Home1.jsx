@@ -280,8 +280,6 @@ export default function Home1() {
         isOpen={isShortcutsModalOpen}
         onClose={() => setIsShortcutsModalOpen(false)}
       />
-
-      <ul className="list"></ul>
     </div>
   );
 }
