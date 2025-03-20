@@ -104,18 +104,19 @@ export default function Home1() {
       // Only handle shortcuts if we have audio or it's the help shortcut
       if (!audioRef.current && e.code !== "Slash") return;
 
-      e.preventDefault();
-
       switch (e.code) {
         case "ArrowLeft": {
+          e.preventDefault();
           audioRef.current.currentTime -= 1;
           break;
         }
         case "ArrowRight": {
+          e.preventDefault();
           audioRef.current.currentTime += 1;
           break;
         }
         case "Space": {
+          e.preventDefault();
           const action = audioRef.current.paused ? "play" : "pause";
           audioRef.current[action]();
           break;
@@ -123,6 +124,7 @@ export default function Home1() {
         case "Comma":
         case "Minus":
         case "NumpadSubtract": {
+          e.preventDefault();
           const newSpeed = Math.max(0.1, audioRef.current.playbackRate - 0.1);
           audioRef.current.playbackRate = newSpeed;
           setPlaybackSpeed(newSpeed);
@@ -131,12 +133,14 @@ export default function Home1() {
         case "Period":
         case "Equal":
         case "NumpadAdd": {
+          e.preventDefault();
           const newSpeed = Math.min(4.0, audioRef.current.playbackRate + 0.1);
           audioRef.current.playbackRate = newSpeed;
           setPlaybackSpeed(newSpeed);
           break;
         }
         case "Slash": {
+          e.preventDefault();
           setIsShortcutsModalOpen((prev) => !prev);
           break;
         }
