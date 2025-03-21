@@ -12,8 +12,9 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
-function NavBar() {
+function NavBar({ showSidebarTrigger = false }) {
   const { userRole, isLoading, fetchUserRole } = useAuthStore();
 
   useEffect(() => {
@@ -155,6 +156,7 @@ function NavBar() {
       </NavigationMenu>
 
       <div className="flex items-center gap-4">
+        {showSidebarTrigger && <SidebarTrigger />}
         <ModeToggle />
       </div>
     </div>

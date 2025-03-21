@@ -1,6 +1,9 @@
 import { Routes, Route } from "react-router";
 import { ThemeProvider } from "@/components/theme-provider";
-import Layout from "./components/layout.jsx";
+import Layout1 from "./components/layout1.jsx";
+import Layout2 from "./components/layout2.jsx";
+import { SidebarProvider } from "@/components/ui/sidebar";
+
 import NavBar from "./components/navbar/NavBar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Home1 from "./pages/Home1.jsx";
@@ -17,44 +20,48 @@ function App() {
   return (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <Layout>
+        <SidebarProvider>
           <Routes>
-            <Route path="/" element={<Home1 />} />
-            <Route path="/home1" element={<Home1 />} />
-            <Route path="/home2" element={<Home2 />} />
-            <Route path="/home3" element={<Home3 />} />
-            <Route path="/home5" element={<Home5 />} />
-            <Route path="/home6" element={<Home6 />} />
-            <Route path="*" element={<Home1 />} />
+            <Route element={<Layout1 />}>
+              <Route path="/" element={<Home1 />} />
+              <Route path="*" element={<Home1 />} />
+              <Route path="/home1" element={<Home1 />} />
+            </Route>
+            <Route element={<Layout2 />}>
+              <Route path="/home2" element={<Home2 />} />
+              <Route path="/home3" element={<Home3 />} />
+              <Route path="/home5" element={<Home5 />} />
+              <Route path="/home6" element={<Home6 />} />
 
-            {/* Protected routes for write access */}
-            <Route
-              path="/home4"
-              element={
-                <ProtectedRoute requiredRole="write">
-                  {/* <Home4 /> */}
-                </ProtectedRoute>
-              }
-            />
+              {/* Protected routes for write access */}
+              <Route
+                path="/home4"
+                element={
+                  <ProtectedRoute requiredRole="write">
+                    {/* <Home4 /> */}
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/path"
-              element={
-                <ProtectedRoute requiredRole="write">
-                  {/* <SuccessPath /> */}
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/quiz"
-              element={
-                <ProtectedRoute requiredRole="write">
-                  {/* <Quiz /> */}
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/path"
+                element={
+                  <ProtectedRoute requiredRole="write">
+                    {/* <SuccessPath /> */}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/quiz"
+                element={
+                  <ProtectedRoute requiredRole="write">
+                    {/* <Quiz /> */}
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
           </Routes>
-        </Layout>
+        </SidebarProvider>
       </ThemeProvider>
     </>
   );
