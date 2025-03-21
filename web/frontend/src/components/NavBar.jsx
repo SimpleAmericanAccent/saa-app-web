@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { useEffect } from "react";
-import useAuthStore from "../../stores/authStore";
-import { ModeToggle } from "../mode-toggle";
+import useAuthStore from "../stores/authStore";
+import { ModeToggle } from "./mode-toggle";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -30,7 +30,7 @@ function NavBar({ showSidebarTrigger = false }) {
   }
 
   return (
-    <div className="sticky top-0 border-b z-50 px-4 flex items-center justify-between">
+    <nav className="sticky top-0 border-b z-50 px-4 flex items-center justify-between">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
@@ -159,7 +159,7 @@ function NavBar({ showSidebarTrigger = false }) {
         {showSidebarTrigger && <SidebarTrigger />}
         <ModeToggle />
       </div>
-    </div>
+    </nav>
   );
 }
 

@@ -1,10 +1,9 @@
 import { Routes, Route } from "react-router";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import Layout1 from "./components/layout1.jsx";
 import Layout2 from "./components/layout2.jsx";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
-import NavBar from "./components/navbar/NavBar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Home1 from "./pages/Home1.jsx";
 import Home2 from "./pages/Home2.jsx";

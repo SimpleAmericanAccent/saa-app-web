@@ -1,4 +1,4 @@
-import NavBar from "@/components/navbar/NavBar.jsx";
+import NavBar from "@/components/NavBar.jsx";
 import { SidebarRight } from "@/components/sidebar-right";
 import { Outlet } from "react-router";
 
