@@ -204,7 +204,7 @@ export default function Home1() {
   return (
     <div className="bg-background">
       <div>
-        <div className="fixed top-0 left-0 w-full h-[230px] min-h-[100px] bg-background p-4 z-10">
+        <div className="fixed top-0 left-0 w-full h-[230px] min-h-[100px] p-4 z-10">
           <div className="max-w-[450px]">
             <h1 className="text-2xl font-semibold mb-2 mt-6">
               Transcript Viewer
@@ -263,8 +263,8 @@ export default function Home1() {
           </div>
         </div>
       </div>
-      <div className="fixed top-[230px] left-0 w-full h-[5vh] min-h-[0px] bg-background p-4 z-0">
-        <div className="max-w-[875px] border border-border rounded-md p-2 mb-4 bg-background min-h-[2rem] flex items-center">
+      <div className="fixed top-[230px] left-0 w-full h-[5vh] min-h-[0px] p-4 z-0">
+        <div className="max-w-[875px] border border-border rounded-md p-2 mb-4 min-h-[2rem] flex items-center">
           {annotations.join(", ") || "\u00A0"}{" "}
           {/* Added non-breaking space as fallback */}
         </div>
