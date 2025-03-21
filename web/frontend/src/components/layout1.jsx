@@ -4,7 +4,7 @@ import { Outlet } from "react-router";
 
 export default function Layout1({ children }) {
   return (
-    <div className="min-h-screen bg-background w-screen">
+    <div className="w-screen">
       <NavBar showSidebarTrigger="true" />
       <div className="flex">
         <main className="flex1">

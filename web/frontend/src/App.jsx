@@ -20,7 +20,7 @@ function App() {
   return (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <SidebarProvider>
+        <SidebarProvider style={{ "--sidebar-width": "500px" }}>
           <Routes>
             <Route element={<Layout1 />}>
               <Route path="/" element={<Home1 />} />

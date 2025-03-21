@@ -30,7 +30,7 @@ function NavBar({ showSidebarTrigger = false }) {
   }
 
   return (
-    <div className="sticky top-0 bg-background border-b z-50 px-4 flex items-center justify-between">
+    <div className="sticky top-0 border-b z-50 px-4 flex items-center justify-between">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>

@@ -38,25 +38,16 @@ const data = {
 
 export function SidebarRight() {
   return (
-    <Sidebar side="right" className=" top-0 h-svh border-l">
+    <Sidebar side="right" className="border-l">
       <SidebarHeader className="h-16 border-b border-sidebar-border">
-        header
+        Data
       </SidebarHeader>
       <SidebarContent>
         hey
         <SidebarSeparator className="mx-0" />
         heyhey
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Plus />
-              <span>New Calendar</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+      <SidebarFooter>Footer</SidebarFooter>
     </Sidebar>
   );
 }
