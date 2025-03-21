@@ -4,59 +4,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Global styles */
-* {
-  @apply box-border;
-}
-
-body {
-  @apply m-0;
-}
-
 /* Link styling */
 a {
   @apply font-medium text-indigo-600 no-underline;
 }
-
 a:hover {
   @apply text-indigo-500;
-}
-
-/* Main container styling */
-.maindiv {
-  @apply min-w-[350px] max-w-[800px] p-5 mx-auto my-2 rounded-lg bg-white;
-}
-
-/* Masthead top (fixed header) */
-.masthead-top {
-  @apply fixed top-0 left-0 w-screen p-[1vw] z-10;
-  height: 230px; /* Custom height not supported directly in Tailwind */
-  min-height: 100px; /* Fallback height */
-  background-color: #dddddd;
-}
-
-/* Masthead bottom (fixed footer) */
-.masthead-bottom {
-  @apply fixed left-0 w-screen p-[1vw] z-0;
-  top: 230px; /* Match the height of masthead top */
-  height: 12vh; /* Use viewport height */
-  min-height: 100px;
-  background-color: #dddddd;
-}
-
-/* Column left in masthead top */
-.columnleftmastheadtop {
-  @apply float-left w-[450px];
-}
-
-/* Tooltip styling */
-.toolTip {
-  @apply mx-auto my-[1vh] p-[1vh] w-[80vw] h-[5vh] min-h-[45px] rounded bg-white border border-gray-400;
-}
-
-/* Utility class for block display */
-.block {
-  @apply block;
 }
 
 /* Typography styles scoped to wls-content */
