@@ -46,10 +46,10 @@ export default function Home2() {
     }
   };
   return (
-    <div className="bg-background fixed top-[35px]">
-      <div className="wls-container">
+    <div className="bg-background">
+      <div className="flex fixed">
         {/* Side Navigation */}
-        <div className="w-[180px] h-screen sticky top-0 overflow-y-auto border-r bg-card p-4">
+        <div className="w-[180px] h-screen top-0 overflow-y-auto border-r bg-card p-4">
           <ul className="space-y-1">
             {headings.map((h1) => (
               <li key={h1.id}>
@@ -83,7 +83,7 @@ export default function Home2() {
         </div>
 
         {/* Main Content */}
-        <div className="wls-content">
+        <div className="wls-content h-screen flex-1 px-5 overflow-y-auto scroll-py-0">
           <h1 id="Vowels">Vowels</h1>
           <h2 id="FLEECE">FLEECE</h2>
           Spellings & Example Words:

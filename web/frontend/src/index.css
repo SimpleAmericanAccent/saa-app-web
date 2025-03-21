@@ -4,6 +4,200 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Global styles */
+* {
+  @apply box-border;
+}
+
+body {
+  @apply m-0;
+}
+
+/* Link styling */
+a {
+  @apply font-medium text-indigo-600 no-underline;
+}
+
+a:hover {
+  @apply text-indigo-500;
+}
+
+/* Main container styling */
+.maindiv {
+  @apply min-w-[350px] max-w-[800px] p-5 mx-auto my-2 rounded-lg bg-white;
+}
+
+/* Masthead top (fixed header) */
+.masthead-top {
+  @apply fixed top-0 left-0 w-screen p-[1vw] z-10;
+  height: 230px; /* Custom height not supported directly in Tailwind */
+  min-height: 100px; /* Fallback height */
+  background-color: #dddddd;
+}
+
+/* Masthead bottom (fixed footer) */
+.masthead-bottom {
+  @apply fixed left-0 w-screen p-[1vw] z-0;
+  top: 230px; /* Match the height of masthead top */
+  height: 12vh; /* Use viewport height */
+  min-height: 100px;
+  background-color: #dddddd;
+}
+
+/* Column left in masthead top */
+.columnleftmastheadtop {
+  @apply float-left w-[450px];
+}
+
+/* Tooltip styling */
+.toolTip {
+  @apply mx-auto my-[1vh] p-[1vh] w-[80vw] h-[5vh] min-h-[45px] rounded bg-white border border-gray-400;
+}
+
+/* Utility class for block display */
+.block {
+  @apply block;
+}
+
+/* Typography styles scoped to wls-content */
+.wls-content h1 {
+  @apply text-4xl font-semibold m-0 text-foreground border-b-2 border-gray-200 pb-2;
+}
+
+.wls-content h2 {
+  @apply text-3xl font-semibold my-2 text-foreground;
+}
+
+.wls-content ul {
+  @apply my-2 pl-8 list-none;
+}
+
+.wls-content ul li {
+  @apply mb-2 leading-none relative;
+}
+
+.wls-content ul li::before {
+  @apply text-foreground;
+  content: "•";
+  position: absolute;
+  left: -1rem;
+}
+
+.wls-content br {
+  @apply my-2;
+}
+
+/* General container */
+.vsynth-container {
+  @apply flex flex-wrap items-start justify-center p-5;
+}
+
+/* Diagram area */
+.vsynth-diagram {
+  @apply relative w-[600px] h-[400px] border-2 border-gray-800 cursor-crosshair mr-5;
+  background-image: none;
+  background-position: center;
+}
+
+/* Overlay area */
+.vsynth-overlay {
+  @apply absolute w-full h-full overflow-hidden cursor-crosshair select-none touch-none;
+}
+
+/* Marker for diagram points */
+.vsynth-marker {
+  @apply absolute w-2.5 h-2.5 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none;
+}
+
+/* Control panel */
+.vsynth-controls {
+  @apply flex flex-col gap-5 p-5 bg-gray-100 rounded-lg min-w-[300px];
+}
+
+/* Formant control */
+.vsynth-formant-control {
+  @apply flex items-center gap-2.5;
+}
+
+.vsynth-formant-control label {
+  @apply min-w-[70px];
+}
+
+.vsynth-formant-control input[type="range"] {
+  @apply flex-1;
+}
+
+.vsynth-formant-control input[type="number"] {
+  @apply w-[80px];
+}
+
+/* Axis values and labels */
+.vsynth-axis-value {
+  @apply absolute text-sm text-gray-800;
+}
+
+.vsynth-axis-label {
+  @apply absolute text-base text-gray-800;
+}
+
+/* X and Y axis positioning */
+.vsynth-x-axis {
+  @apply absolute bottom-[-30px] left-1/2 transform -translate-x-1/2;
+}
+
+.vsynth-y-axis {
+  @apply absolute top-1/2 left-[-50px] transform -translate-y-1/2 -rotate-90;
+}
+
+/* Vowel symbols */
+.vsynth-vowel-symbol {
+  @apply absolute font-sans text-sm pointer-events-none select-none transform -translate-x-1/2 -translate-y-1/2;
+}
+
+/* Button styling */
+.vsynth-button {
+  @apply px-5 py-2.5 bg-blue-600 text-white rounded cursor-pointer text-lg;
+}
+
+.vsynth-button:hover {
+  @apply bg-blue-500;
+}
+
+/* Triangle overlay */
+.vsynth-triangle-overlay {
+  @apply absolute w-[700px] h-0 pointer-events-none;
+  border-left: 150px solid transparent;
+  border-right: 250px solid transparent;
+  border-top: 400px solid rgba(0, 0, 255, 0.3);
+  clip-path: inset(0 0 0 0);
+}
+
+/* Axis ticks */
+.vsynth-axis-tick {
+  @apply absolute text-sm text-gray-800;
+}
+
+.vsynth-x-min {
+  @apply absolute bottom-[-20px] left-0;
+}
+
+.vsynth-x-max {
+  @apply absolute bottom-[-20px] right-0;
+}
+
+.vsynth-y-min {
+  @apply absolute left-[-40px] top-0;
+}
+
+.vsynth-y-max {
+  @apply absolute left-[-40px] bottom-0;
+}
+
+/* Heading styling */
+.vsynth-heading {
+  @apply text-center font-sans mb-5;
+}
+
 :root {
   --radius: 0.625rem;
   --annotation: 210 40% 85%; /* Light blue-gray background */
