@@ -65,7 +65,7 @@ const TranscriptViewer = ({
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div className="max-w-3xl py-4 space-y-4">
+        <div className="py-4 space-y-4">
           {annotatedTranscript.map((paragraph, index) => (
             <p key={index} className="leading-relaxed">
               {paragraph.alignment.map((wordObj) => {

@@ -41,7 +41,7 @@ const AudioPlayer = forwardRef(
     };
 
     return (
-      <div className="flex flex-col gap-1 w-[300px] p-1 border rounded-md">
+      <div className="p-1 border rounded-md">
         {/* Only render audio element if mp3url exists */}
         {mp3url ? (
           <audio
@@ -85,9 +85,9 @@ const AudioPlayer = forwardRef(
             disabled={isDisabled}
           />
 
-          <div className="flex flex-col gap-0.5 w-[100px]">
+          <div className="flex flex-col gap-0.5 w-[150px]">
             <div className="flex items-center gap-1 h-4">
-              <Volume2 className="h-3 w-3 shrink-0" />
+              <Volume2 className="h-3.5 w-3.5 shrink-0" />
               <Slider
                 value={[volume * 100]}
                 min={0}

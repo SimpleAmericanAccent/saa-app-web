@@ -23,14 +23,14 @@ function NavBar({ showSidebarTrigger = false }) {
 
   if (isLoading) {
     return (
-      <div className="sticky top-0 bg-background z-50 border-b p-2">
+      <div className="min-h-[var(--navbar-height)] max-h-[var(--navbar-height)] sticky bg-background top-0 border-b z-50 px-4 flex items-center justify-between">
         Loading...
       </div>
     );
   }
 
   return (
-    <nav className="sticky top-0 border-b z-50 px-4 flex items-center justify-between">
+    <nav className="min-h-[var(--navbar-height)] max-h-[var(--navbar-height)] sticky bg-background top-0 border-b z-50 px-4 flex items-center justify-between">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>

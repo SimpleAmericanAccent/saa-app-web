@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 
 export default function Home1() {
+  // #region declarations
   // Fetch People and Audio Resources
   const {
     people,
@@ -46,7 +47,9 @@ export default function Home1() {
 
   // Add state for modal visibility
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  // #endregion
 
+  // #region do stuff
   // Fetch issues data on component mount
   useEffect(() => {
     const fetchIssues = async () => {
@@ -200,56 +203,53 @@ export default function Home1() {
     // Update tooltip
     handleAnnotationHover(annotations, wordIndex);
   };
+  // #endregion
 
   return (
-    <div className="px-4">
-      <div>
-        <div className="top-0 left-0 w-full z-10 ">
-          <div className="flex items-center gap-2 my-2">
-            <Select value={selectedPerson} onValueChange={setSelectedPerson}>
-              <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
-                <SelectValue placeholder="Select a person" />
-              </SelectTrigger>
-              <SelectContent>
-                {people.map((person) => (
-                  <SelectItem key={person.id} value={person.id}>
-                    {person.Name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2 mb-2">
-            <Select value={selectedAudio} onValueChange={setSelectedAudio}>
-              <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
-                <SelectValue placeholder="Select an audio file" />
-              </SelectTrigger>
-              <SelectContent>
-                {filteredAudio.map((audio) => (
-                  <SelectItem key={audio.id} value={audio.id}>
-                    {audio.Name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex gap-2 m-2">
-            <Button
-              onClick={handleAudioSelection}
-              className="cursor-pointer"
-              size="sm"
-            >
-              Open Transcript
-            </Button>
-            <Button
-              onClick={() => setIsShortcutsModalOpen(true)}
-              className="cursor-pointer"
-              variant="secondary"
-              size="sm"
-            >
-              Keyboard Shortcuts (?)
-            </Button>
-          </div>
+    <div className="px-4 bg-background">
+      <header className="flex flex-col sticky top-[var(--navbar-height)] z-0 bg-background">
+        <div className="flex">
+          <Select value={selectedPerson} onValueChange={setSelectedPerson}>
+            <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
+              <SelectValue placeholder="Select a person" />
+            </SelectTrigger>
+            <SelectContent>
+              {people.map((person) => (
+                <SelectItem key={person.id} value={person.id}>
+                  {person.Name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={selectedAudio} onValueChange={setSelectedAudio}>
+            <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
+              <SelectValue placeholder="Select an audio file" />
+            </SelectTrigger>
+            <SelectContent>
+              {filteredAudio.map((audio) => (
+                <SelectItem key={audio.id} value={audio.id}>
+                  {audio.Name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={handleAudioSelection}
+            className="cursor-pointer"
+            size="sm"
+          >
+            Open Transcript
+          </Button>
+          <Button
+            onClick={() => setIsShortcutsModalOpen(true)}
+            className="cursor-pointer"
+            variant="secondary"
+            size="sm"
+          >
+            Keyboard Shortcuts (?)
+          </Button>
+        </div>
+        <div>
           <AudioPlayer
             mp3url={mp3url}
             ref={audioRef}
@@ -257,28 +257,31 @@ export default function Home1() {
             onPlaybackSpeedChange={setPlaybackSpeed}
           />
         </div>
-      </div>
-      <div className="z-0">
         <div className="border border-border rounded-md p-2  ">
           {annotations.join(", ") || "\u00A0"}{" "}
           {/* Added non-breaking space as fallback */}
         </div>
-      </div>
-      <TranscriptViewer
-        annotatedTranscript={annotatedTranscript}
-        activeWordIndex={activeWordIndex}
-        handleWordClick={(start_time) => {
-          audioRef.current.currentTime = start_time;
-          audioRef.current.play();
-        }}
-        onAnnotationHover={handleAnnotationHover}
-        issuesData={issuesData}
-        onAnnotationUpdate={handleAnnotationUpdate}
-      />
-      <KeyboardShortcutsModal
-        isOpen={isShortcutsModalOpen}
-        onClose={() => setIsShortcutsModalOpen(false)}
-      />
+      </header>
+      <section>
+        <TranscriptViewer
+          annotatedTranscript={annotatedTranscript}
+          activeWordIndex={activeWordIndex}
+          handleWordClick={(start_time) => {
+            audioRef.current.currentTime = start_time;
+            audioRef.current.play();
+          }}
+          onAnnotationHover={handleAnnotationHover}
+          issuesData={issuesData}
+          onAnnotationUpdate={handleAnnotationUpdate}
+        />
+      </section>
+
+      <aside>
+        <KeyboardShortcutsModal
+          isOpen={isShortcutsModalOpen}
+          onClose={() => setIsShortcutsModalOpen(false)}
+        />
+      </aside>
     </div>
   );
 }

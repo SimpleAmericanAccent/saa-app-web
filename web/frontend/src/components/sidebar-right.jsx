@@ -38,16 +38,18 @@ const data = {
 
 export function SidebarRight() {
   return (
-    <Sidebar side="right" className="border-l">
-      <SidebarHeader className="h-16 border-b border-sidebar-border">
-        Data
-      </SidebarHeader>
-      <SidebarContent>
-        hey
-        <SidebarSeparator className="mx-0" />
-        heyhey
-      </SidebarContent>
-      <SidebarFooter>Footer</SidebarFooter>
-    </Sidebar>
+    <aside>
+      <Sidebar side="right" className="border-l top-[var(--navbar-height)]">
+        <SidebarHeader className="h-16 border-b border-sidebar-border">
+          Data
+        </SidebarHeader>
+        <SidebarContent>
+          hey
+          <SidebarSeparator className="mx-0" />
+          heyhey
+        </SidebarContent>
+        <SidebarFooter>Footer</SidebarFooter>
+      </Sidebar>
+    </aside>
   );
 }
