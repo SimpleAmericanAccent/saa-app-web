@@ -120,7 +120,7 @@ a:hover {
 /* #endregion */
 :root {
   --navbar-height: 3rem;
-  --rsidebar-width: 40vw;
+  --rsidebar-width: 38vw;
   --radius: 0.625rem;
   --annotation: 210 40% 85%; /* Light blue-gray background */
   --annotation-foreground: 210 50% 20%; /* Dark blue-gray text */
