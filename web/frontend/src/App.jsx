@@ -5,6 +5,7 @@ import Layout1 from "./components/layout1.jsx";
 import Layout2 from "./components/layout2.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Home0 from "./pages/Home0.jsx";
 import Home1 from "./pages/Home1.jsx";
 import Home2 from "./pages/Home2.jsx";
 import Home3 from "./pages/Home3.jsx";
@@ -25,7 +26,9 @@ function App() {
           }}
         >
           <Routes>
+            <Route path="/home0" element={<Home0 />} />
             <Route element={<Layout1 />}>
+              <Route path="/home1" element={<Home1 />} />
               <Route path="/" element={<Home1 />} />
               <Route path="*" element={<Home1 />} />
               <Route path="/home1" element={<Home1 />} />

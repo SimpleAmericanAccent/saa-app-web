@@ -1,12 +1,7 @@
-import "../main.css";
+import GridExample from "../components/table/page";
 
-function Home1() {
-  return (
-    <div className="maindiv">
-      <h1>Home 0</h1>
-      <p>Welcome to the home page!</p>
-    </div>
-  );
+function Home0() {
+  return <GridExample />;
 }
 
-export default Home1;
+export default Home0;
