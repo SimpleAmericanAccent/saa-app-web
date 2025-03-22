@@ -216,8 +216,8 @@ export default function Transcript() {
       <ResizablePanel>
         <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
           <div className="px-4 bg-background">
-            <header className="flex flex-col sticky top-[var(--navbar-height)] z-0 bg-background">
-              <div className="flex">
+            <header className="flex flex-col sticky top-0 z-0 bg-background">
+              <div className="">
                 <Select
                   value={selectedPerson}
                   onValueChange={setSelectedPerson}
