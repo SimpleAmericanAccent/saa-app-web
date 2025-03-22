@@ -8,6 +8,7 @@ import useFetchResources from "../hooks/useFetchResources";
 import Dropdown from "../components/Dropdown";
 import AudioPlayer from "../components/AudioPlayer";
 import TranscriptViewer from "../components/transcript-viewer";
+import TranscriptStats from "../components/transcript-stats";
 import KeyboardShortcutsModal from "../components/KeyboardShortcutsModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +36,12 @@ export default function Transcript() {
     selectedAudio,
     setSelectedAudio,
   } = useFetchResources();
+
+  const [activeFilters, setActiveFilters] = useState([]);
+
+  const handleFilterChange = (activeIssues) => {
+    setActiveFilters(activeIssues);
+  };
 
   // Fetch Audio & Transcript Data
   const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudio();
@@ -285,6 +292,7 @@ export default function Transcript() {
                 onAnnotationHover={handleAnnotationHover}
                 issuesData={issuesData}
                 onAnnotationUpdate={handleAnnotationUpdate}
+                activeFilters={activeFilters}
               />
             </section>
             <aside>
@@ -299,7 +307,13 @@ export default function Transcript() {
       <ResizableHandle withHandle />
       <ResizablePanel className="h-[calc(100vh-var(--navbar-height))]">
         <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
-          panel 2
+          <div className="px-4 bg-background">
+            <TranscriptStats
+              annotatedTranscript={annotatedTranscript}
+              issuesData={issuesData}
+              onFilterChange={handleFilterChange}
+            />
+          </div>
         </ScrollArea>
       </ResizablePanel>
     </ResizablePanelGroup>
