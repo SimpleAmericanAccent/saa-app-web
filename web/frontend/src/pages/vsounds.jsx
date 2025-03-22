@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function Home3() {
+export default function VSounds() {
   const [selectedColumn, setSelectedColumn] = useState("gambiarra");
   const [selectedSpeed, setSelectedSpeed] = useState("1.0");
   const [audioCache, setAudioCache] = useState({});

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function Home2() {
+export default function WLS() {
   const [headings, setHeadings] = useState([]);
 
   useEffect(() => {

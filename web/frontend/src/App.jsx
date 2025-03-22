@@ -2,15 +2,14 @@ import { Routes, Route } from "react-router";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import Layout1 from "./components/layout1.jsx";
-import Layout2 from "./components/layout2.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import Home1 from "./pages/Home1.jsx";
-import Home2 from "./pages/Home2.jsx";
-import Home3 from "./pages/Home3.jsx";
+import Transcript from "./pages/transcript.jsx";
+import WLS from "./pages/wls.jsx";
+import VSounds from "./pages/vsounds.jsx";
 import Home4 from "./pages/Home4.jsx";
-import Home5 from "./pages/Home5.jsx";
-import Home6 from "./pages/Home6.jsx";
+import VSynth from "./pages/vsynth.jsx";
+import Home6 from "./pages/stats.jsx";
 // import SuccessPath from "./pages/SuccessPath.jsx";
 // import Quiz from "./pages/Quiz.jsx";
 // import NavBar from "./components/navbar/NavBar";
@@ -26,16 +25,12 @@ function App() {
         >
           <Routes>
             <Route element={<Layout1 />}>
-              <Route path="/home1" element={<Home1 />} />
-              <Route path="/" element={<Home1 />} />
-              <Route path="*" element={<Home1 />} />
-              <Route path="/home1" element={<Home1 />} />
-            </Route>
-            <Route element={<Layout2 />}>
-              <Route path="/home2" element={<Home2 />} />
-              <Route path="/home3" element={<Home3 />} />
-              <Route path="/home5" element={<Home5 />} />
-              <Route path="/home6" element={<Home6 />} />
+              <Route path="/transcript" element={<Transcript />} />
+              <Route path="/" element={<Transcript />} />
+              <Route path="/wls" element={<WLS />} />
+              <Route path="/vsounds" element={<VSounds />} />
+              <Route path="/vsynth" element={<VSynth />} />
+              <Route path="/stats" element={<Home6 />} />
 
               {/* Protected routes for write access */}
               <Route
@@ -63,6 +58,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
+              <Route path="*" element={<Transcript />} />
             </Route>
           </Routes>
         </SidebarProvider>

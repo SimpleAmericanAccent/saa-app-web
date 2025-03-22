@@ -7,7 +7,7 @@ import useAudioSync from "../hooks/useAudioSync";
 import useFetchResources from "../hooks/useFetchResources";
 import Dropdown from "../components/Dropdown";
 import AudioPlayer from "../components/AudioPlayer";
-import TranscriptViewer from "../components/TranscriptViewer";
+import TranscriptViewer from "../components/transcript-viewer";
 import KeyboardShortcutsModal from "../components/KeyboardShortcutsModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +17,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-export default function Home1() {
+export default function Transcript() {
   // #region declarations
   // Fetch People and Audio Resources
   const {
@@ -206,82 +212,96 @@ export default function Home1() {
   // #endregion
 
   return (
-    <div className="px-4 bg-background">
-      <header className="flex flex-col sticky top-[var(--navbar-height)] z-0 bg-background">
-        <div className="flex">
-          <Select value={selectedPerson} onValueChange={setSelectedPerson}>
-            <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
-              <SelectValue placeholder="Select a person" />
-            </SelectTrigger>
-            <SelectContent>
-              {people.map((person) => (
-                <SelectItem key={person.id} value={person.id}>
-                  {person.Name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedAudio} onValueChange={setSelectedAudio}>
-            <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
-              <SelectValue placeholder="Select an audio file" />
-            </SelectTrigger>
-            <SelectContent>
-              {filteredAudio.map((audio) => (
-                <SelectItem key={audio.id} value={audio.id}>
-                  {audio.Name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            onClick={handleAudioSelection}
-            className="cursor-pointer"
-            size="sm"
-          >
-            Open Transcript
-          </Button>
-          <Button
-            onClick={() => setIsShortcutsModalOpen(true)}
-            className="cursor-pointer"
-            variant="secondary"
-            size="sm"
-          >
-            Keyboard Shortcuts (?)
-          </Button>
-        </div>
-        <div>
-          <AudioPlayer
-            mp3url={mp3url}
-            ref={audioRef}
-            playbackSpeed={playbackSpeed}
-            onPlaybackSpeedChange={setPlaybackSpeed}
-          />
-        </div>
-        <div className="border border-border rounded-md p-2  ">
-          {annotations.join(", ") || "\u00A0"}{" "}
-          {/* Added non-breaking space as fallback */}
-        </div>
-      </header>
-      <section>
-        <TranscriptViewer
-          annotatedTranscript={annotatedTranscript}
-          activeWordIndex={activeWordIndex}
-          handleWordClick={(start_time) => {
-            audioRef.current.currentTime = start_time;
-            audioRef.current.play();
-          }}
-          onAnnotationHover={handleAnnotationHover}
-          issuesData={issuesData}
-          onAnnotationUpdate={handleAnnotationUpdate}
-        />
-      </section>
-
-      <aside>
-        <KeyboardShortcutsModal
-          isOpen={isShortcutsModalOpen}
-          onClose={() => setIsShortcutsModalOpen(false)}
-        />
-      </aside>
-    </div>
+    <ResizablePanelGroup direction="horizontal">
+      <ResizablePanel>
+        <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
+          <div className="px-4 bg-background">
+            <header className="flex flex-col sticky top-[var(--navbar-height)] z-0 bg-background">
+              <div className="flex">
+                <Select
+                  value={selectedPerson}
+                  onValueChange={setSelectedPerson}
+                >
+                  <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
+                    <SelectValue placeholder="Select a person" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {people.map((person) => (
+                      <SelectItem key={person.id} value={person.id}>
+                        {person.Name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={selectedAudio} onValueChange={setSelectedAudio}>
+                  <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
+                    <SelectValue placeholder="Select an audio file" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredAudio.map((audio) => (
+                      <SelectItem key={audio.id} value={audio.id}>
+                        {audio.Name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  onClick={handleAudioSelection}
+                  className="cursor-pointer"
+                  size="sm"
+                >
+                  Open Transcript
+                </Button>
+                <Button
+                  onClick={() => setIsShortcutsModalOpen(true)}
+                  className="cursor-pointer"
+                  variant="secondary"
+                  size="sm"
+                >
+                  Keyboard Shortcuts (?)
+                </Button>
+              </div>
+              <div>
+                <AudioPlayer
+                  mp3url={mp3url}
+                  ref={audioRef}
+                  playbackSpeed={playbackSpeed}
+                  onPlaybackSpeedChange={setPlaybackSpeed}
+                />
+              </div>
+              <div className="border border-border rounded-md p-2  ">
+                {annotations.join(", ") || "\u00A0"}{" "}
+                {/* Added non-breaking space as fallback */}
+              </div>
+            </header>
+            <section>
+              <TranscriptViewer
+                annotatedTranscript={annotatedTranscript}
+                activeWordIndex={activeWordIndex}
+                handleWordClick={(start_time) => {
+                  audioRef.current.currentTime = start_time;
+                  audioRef.current.play();
+                }}
+                onAnnotationHover={handleAnnotationHover}
+                issuesData={issuesData}
+                onAnnotationUpdate={handleAnnotationUpdate}
+              />
+            </section>
+            <aside>
+              <KeyboardShortcutsModal
+                isOpen={isShortcutsModalOpen}
+                onClose={() => setIsShortcutsModalOpen(false)}
+              />
+            </aside>
+          </div>
+        </ScrollArea>
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel className="h-[calc(100vh-var(--navbar-height))]">
+        <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
+          panel 2
+        </ScrollArea>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 }

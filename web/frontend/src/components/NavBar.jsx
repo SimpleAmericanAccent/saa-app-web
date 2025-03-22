@@ -35,7 +35,7 @@ function NavBar({ showSidebarTrigger = false }) {
         <NavigationMenuList>
           <NavigationMenuItem>
             <Link
-              to="/Home1"
+              to="/transcript"
               className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
             >
               Transcript Viewer
@@ -49,7 +49,7 @@ function NavBar({ showSidebarTrigger = false }) {
                 <li>
                   <NavigationMenuLink asChild>
                     <Link
-                      to="/Home2"
+                      to="/wls"
                       className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                     >
                       <div className="text-sm font-medium leading-none">
@@ -64,7 +64,7 @@ function NavBar({ showSidebarTrigger = false }) {
                 <li>
                   <NavigationMenuLink asChild>
                     <Link
-                      to="/Home3"
+                      to="/vsounds"
                       className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                     >
                       <div className="text-sm font-medium leading-none">
@@ -79,7 +79,7 @@ function NavBar({ showSidebarTrigger = false }) {
                 <li>
                   <NavigationMenuLink asChild>
                     <Link
-                      to="/Home5"
+                      to="/vsynth"
                       className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                     >
                       <div className="text-sm font-medium leading-none">
@@ -97,7 +97,7 @@ function NavBar({ showSidebarTrigger = false }) {
 
           <NavigationMenuItem>
             <Link
-              to="/Home6"
+              to="/stats"
               className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
             >
               Stats

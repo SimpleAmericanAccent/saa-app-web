@@ -1,4 +1,4 @@
-export default function Home6() {
+export default function Stats() {
   return (
     <>
       <h1>Stats (across all Brazilian clients)</h1>

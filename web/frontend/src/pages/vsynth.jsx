@@ -1,6 +1,6 @@
 import VowelSynthesizer from "../components/VowelSynthesizer";
 
-export default function Home5() {
+export default function VSynth() {
   return (
     <>
       <section>
