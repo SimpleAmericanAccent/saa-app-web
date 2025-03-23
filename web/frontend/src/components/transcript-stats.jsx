@@ -165,9 +165,9 @@ const TranscriptStats = ({
         % Words Annotated:{" "}
         {Math.round((stats.annotatedWords / stats.totalWords) * 100)}%
       </p>
-      <p>Accent Issues In Database: {stats.totalIssues}</p>
+      {/* <p>Accent Issues In Database: {stats.totalIssues}</p>
       <p>Accent Issues In Database Used: {stats.accentIssues}</p>
-      <p>Accent Issue Instances: {stats.accentIssueInstances}</p>
+      <p>Accent Issue Instances: {stats.accentIssueInstances}</p> */}
 
       <div className="mt-4">
         <h3 className="text-xl">Targets, Issues, & Associated Words</h3>
