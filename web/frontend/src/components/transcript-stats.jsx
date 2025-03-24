@@ -6,6 +6,18 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+} from "@/components/ui/dropdown-menu";
+import { Settings } from "lucide-react";
 
 const TranscriptStats = ({
   annotatedTranscript,
@@ -14,6 +26,10 @@ const TranscriptStats = ({
 }) => {
   // Initialize selectedIssues only when issuesData changes, not on every render
   const [selectedIssues, setSelectedIssues] = useState({});
+  const [targetSortOrder, setTargetSortOrder] = useState("instances"); // Changed from "standard"
+  const [issueSortOrder, setIssueSortOrder] = useState("instances"); // Changed from "standard"
+  const [hideEmptyTargets, setHideEmptyTargets] = useState(true); // Changed from false
+  const [hideEmptyIssues, setHideEmptyIssues] = useState(true); // Changed from false
 
   // Initialize issues once when issuesData is first available
   useEffect(() => {
@@ -156,6 +172,71 @@ const TranscriptStats = ({
     setSelectedIssues((prev) => ({ ...prev, [issueId]: checked }));
   };
 
+  // Modify the sortedIssuesData memo to filter empty targets and issues
+  const sortedIssuesData = useMemo(() => {
+    if (!issuesData) return [];
+
+    let sortedData = [...issuesData];
+
+    // Filter out empty targets if hideEmptyTargets is true
+    if (hideEmptyTargets) {
+      sortedData = sortedData.filter((target) => {
+        const targetInstances = target.issues.reduce(
+          (total, issue) => total + (stats.issueWordMap[issue.id]?.length || 0),
+          0
+        );
+        return targetInstances > 0;
+      });
+    }
+
+    // Sort targets if needed
+    if (targetSortOrder === "instances") {
+      sortedData = sortedData.sort((targetA, targetB) => {
+        const targetAInstances = targetA.issues.reduce(
+          (total, issue) => total + (stats.issueWordMap[issue.id]?.length || 0),
+          0
+        );
+
+        const targetBInstances = targetB.issues.reduce(
+          (total, issue) => total + (stats.issueWordMap[issue.id]?.length || 0),
+          0
+        );
+
+        return targetBInstances - targetAInstances;
+      });
+    }
+
+    // Filter and sort issues within targets
+    sortedData = sortedData.map((target) => ({
+      ...target,
+      issues: [...target.issues]
+        // Filter out empty issues if hideEmptyIssues is true
+        .filter(
+          (issue) =>
+            !hideEmptyIssues || (stats.issueWordMap[issue.id]?.length || 0) > 0
+        )
+        // Sort issues if needed
+        .sort((a, b) => {
+          if (issueSortOrder === "instances") {
+            return (
+              (stats.issueWordMap[b.id]?.length || 0) -
+              (stats.issueWordMap[a.id]?.length || 0)
+            );
+          }
+          return 0;
+        }),
+    }));
+
+    return sortedData;
+  }, [
+    targetSortOrder,
+    issueSortOrder,
+    hideEmptyTargets,
+    hideEmptyIssues,
+    issuesData,
+    stats.issueWordMap,
+  ]);
+
   return (
     <div>
       <h2 className="text-2xl">Transcript Statistics</h2>
@@ -184,9 +265,60 @@ const TranscriptStats = ({
           >
             Select/Unselect All
           </label>
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Settings className="mr-2 h-4 w-4" />
+                  View Options
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Sorting</DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      setTargetSortOrder((prev) =>
+                        prev === "standard" ? "instances" : "standard"
+                      )
+                    }
+                  >
+                    Sort Targets by{" "}
+                    {targetSortOrder === "standard" ? "Instances" : "Standard"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      setIssueSortOrder((prev) =>
+                        prev === "standard" ? "instances" : "standard"
+                      )
+                    }
+                  >
+                    Sort Issues by{" "}
+                    {issueSortOrder === "standard" ? "Instances" : "Standard"}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Visibility</DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuCheckboxItem
+                    checked={hideEmptyTargets}
+                    onCheckedChange={setHideEmptyTargets}
+                  >
+                    Hide Empty Targets
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={hideEmptyIssues}
+                    onCheckedChange={setHideEmptyIssues}
+                  >
+                    Hide Empty Issues
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-        {issuesData &&
-          issuesData.map((target, targetIndex) => {
+        {sortedIssuesData &&
+          sortedIssuesData.map((target, targetIndex) => {
             const targetInstances = target.issues.reduce((total, issue) => {
               return total + (stats.issueWordMap[issue.id]?.length || 0);
             }, 0);
