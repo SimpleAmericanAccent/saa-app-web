@@ -219,13 +219,15 @@ export default function Transcript() {
   };
   // #endregion
 
+  const hasAudioLoaded = Boolean(mp3url && annotatedTranscript?.length);
+
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel>
         <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
           <div className="px-4 bg-background">
             <header className="flex flex-col sticky top-0 z-0 bg-background">
-              <div className="">
+              <div className="flex items-center gap-4">
                 <PersonAudioSelector
                   people={people}
                   filteredAudio={filteredAudio}
@@ -234,6 +236,13 @@ export default function Transcript() {
                   onPersonSelect={setSelectedPerson}
                   onAudioSelect={setSelectedAudio}
                 />
+                {!hasAudioLoaded && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="text-2xl">
+                      ← Select a person and audio file to begin
+                    </div>
+                  </div>
+                )}
                 <Button
                   onClick={() => setIsShortcutsModalOpen(true)}
                   className="fixed left-4 bottom-4 rounded-full shadow-md cursor-pointer hover:bg-secondary hover:scale-105 active:scale-100"
@@ -244,32 +253,40 @@ export default function Transcript() {
                   <span className="sr-only">Keyboard Shortcuts</span>
                 </Button>
               </div>
-              <div>
-                <AudioPlayer
-                  mp3url={mp3url}
-                  ref={audioRef}
-                  playbackSpeed={playbackSpeed}
-                  onPlaybackSpeedChange={setPlaybackSpeed}
-                />
-              </div>
-              <div className="border border-border rounded-md p-2  ">
-                {annotations.join(", ") || "\u00A0"}{" "}
-                {/* Added non-breaking space as fallback */}
-              </div>
+              {/* Only show these once audio is loaded */}
+              {hasAudioLoaded && (
+                <>
+                  <div>
+                    <AudioPlayer
+                      mp3url={mp3url}
+                      ref={audioRef}
+                      playbackSpeed={playbackSpeed}
+                      onPlaybackSpeedChange={setPlaybackSpeed}
+                    />
+                  </div>
+                  <div className="border border-border rounded-md p-2  ">
+                    {annotations.join(", ") || "\u00A0"}{" "}
+                    {/* Added non-breaking space as fallback */}
+                  </div>
+                </>
+              )}
             </header>
             <section>
-              <TranscriptViewer
-                annotatedTranscript={annotatedTranscript}
-                activeWordIndex={activeWordIndex}
-                handleWordClick={(start_time) => {
-                  audioRef.current.currentTime = start_time;
-                  audioRef.current.play();
-                }}
-                onAnnotationHover={handleAnnotationHover}
-                issuesData={issuesData}
-                onAnnotationUpdate={handleAnnotationUpdate}
-                activeFilters={activeFilters}
-              />
+              {/* Only show transcript viewer when audio is loaded */}
+              {hasAudioLoaded && (
+                <TranscriptViewer
+                  annotatedTranscript={annotatedTranscript}
+                  activeWordIndex={activeWordIndex}
+                  handleWordClick={(start_time) => {
+                    audioRef.current.currentTime = start_time;
+                    audioRef.current.play();
+                  }}
+                  onAnnotationHover={handleAnnotationHover}
+                  issuesData={issuesData}
+                  onAnnotationUpdate={handleAnnotationUpdate}
+                  activeFilters={activeFilters}
+                />
+              )}
             </section>
             <aside>
               <KeyboardShortcutsModal
@@ -281,17 +298,20 @@ export default function Transcript() {
         </ScrollArea>
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel className="h-[calc(100vh-var(--navbar-height))]">
-        <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
-          <div className="px-4 bg-background">
-            <TranscriptStats
-              annotatedTranscript={annotatedTranscript}
-              issuesData={issuesData}
-              onFilterChange={handleFilterChange}
-            />
-          </div>
-        </ScrollArea>
-      </ResizablePanel>
+      {/* Only show right panel when audio is loaded */}
+      {hasAudioLoaded && (
+        <ResizablePanel className="h-[calc(100vh-var(--navbar-height))]">
+          <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
+            <div className="px-4 bg-background">
+              <TranscriptStats
+                annotatedTranscript={annotatedTranscript}
+                issuesData={issuesData}
+                onFilterChange={handleFilterChange}
+              />
+            </div>
+          </ScrollArea>
+        </ResizablePanel>
+      )}
     </ResizablePanelGroup>
   );
 }
