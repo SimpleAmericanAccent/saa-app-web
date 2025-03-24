@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import useAuthStore from "../stores/authStore";
 import { ModeToggle } from "./mode-toggle";
