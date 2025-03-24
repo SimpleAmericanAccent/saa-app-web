@@ -5,25 +5,19 @@ import { setCookie, getCookie } from "../utils/cookies";
 import useFetchAudio from "../hooks/useFetchAudio";
 import useAudioSync from "../hooks/useAudioSync";
 import useFetchResources from "../hooks/useFetchResources";
-import Dropdown from "../components/Dropdown";
 import AudioPlayer from "../components/AudioPlayer";
 import TranscriptViewer from "../components/transcript-viewer";
 import TranscriptStats from "../components/transcript-stats";
 import KeyboardShortcutsModal from "../components/KeyboardShortcutsModal";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { PersonAudioSelector } from "@/components/person-audio-selector";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { HelpCircle } from "lucide-react";
 
 export default function Transcript() {
   // #region declarations
@@ -113,6 +107,13 @@ export default function Transcript() {
       audioRef.current.load();
     }
   };
+
+  // Move audio selection logic into useEffect
+  useEffect(() => {
+    if (selectedAudio) {
+      handleAudioSelection();
+    }
+  }, [selectedAudio]); // Run when selectedAudio changes
 
   // Add keyboard controls
   useEffect(() => {
@@ -225,47 +226,22 @@ export default function Transcript() {
           <div className="px-4 bg-background">
             <header className="flex flex-col sticky top-0 z-0 bg-background">
               <div className="">
-                <Select
-                  value={selectedPerson}
-                  onValueChange={setSelectedPerson}
-                >
-                  <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
-                    <SelectValue placeholder="Select a person" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {people.map((person) => (
-                      <SelectItem key={person.id} value={person.id}>
-                        {person.Name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={selectedAudio} onValueChange={setSelectedAudio}>
-                  <SelectTrigger className="w-[300px] cursor-pointer" size="sm">
-                    <SelectValue placeholder="Select an audio file" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filteredAudio.map((audio) => (
-                      <SelectItem key={audio.id} value={audio.id}>
-                        {audio.Name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  onClick={handleAudioSelection}
-                  className="cursor-pointer"
-                  size="sm"
-                >
-                  Open Transcript
-                </Button>
+                <PersonAudioSelector
+                  people={people}
+                  filteredAudio={filteredAudio}
+                  selectedPerson={selectedPerson}
+                  selectedAudio={selectedAudio}
+                  onPersonSelect={setSelectedPerson}
+                  onAudioSelect={setSelectedAudio}
+                />
                 <Button
                   onClick={() => setIsShortcutsModalOpen(true)}
-                  className="cursor-pointer"
+                  className="fixed left-4 bottom-4 rounded-full shadow-md cursor-pointer hover:bg-secondary hover:scale-105 active:scale-100"
                   variant="secondary"
-                  size="sm"
+                  size="icon"
                 >
-                  Keyboard Shortcuts (?)
+                  <HelpCircle className="h-5 w-5" />
+                  <span className="sr-only">Keyboard Shortcuts</span>
                 </Button>
               </div>
               <div>
