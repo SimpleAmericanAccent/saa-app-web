@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 function NavBar({ showSidebarTrigger = false }) {
-  const { userRole, isLoading, fetchUserRole } = useAuthStore();
+  const { userRole, isLoading, fetchUserRole, logout } = useAuthStore();
 
   useEffect(() => {
     fetchUserRole();
@@ -145,12 +145,12 @@ function NavBar({ showSidebarTrigger = false }) {
           )}
 
           <NavigationMenuItem>
-            <Link
-              to="/logout"
+            <button
+              onClick={logout}
               className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
             >
               Log Out
-            </Link>
+            </button>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
