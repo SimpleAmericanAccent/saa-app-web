@@ -6,6 +6,7 @@ import {
   Settings,
   Smile,
   User,
+  FileAudio,
 } from "lucide-react";
 
 import {
@@ -37,6 +38,7 @@ export function PersonAudioSelector({
   onAudioSelect,
 }) {
   const [open, setOpen] = React.useState(false);
+  const [searchValue, setSearchValue] = React.useState("");
 
   // Get names for display
   const getPersonName = (id) =>
@@ -72,8 +74,12 @@ export function PersonAudioSelector({
             Select a person first, then choose from their available audio files
           </DialogDescription>
         </DialogHeader>
-        <Command>
-          <CommandInput placeholder="Search people and audio files..." />
+        <Command onValueChange={setSearchValue}>
+          <CommandInput
+            placeholder="Search people and audio files..."
+            value={searchValue}
+            onValueChange={setSearchValue}
+          />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             {!selectedPerson ? (
@@ -86,6 +92,7 @@ export function PersonAudioSelector({
                       key={person.id}
                       onSelect={() => {
                         onPersonSelect(person.id);
+                        setSearchValue(""); // Clear search when person selected
                       }}
                     >
                       <User className="mr-2 h-4 w-4" />
@@ -101,6 +108,7 @@ export function PersonAudioSelector({
                     onSelect={() => {
                       onPersonSelect(null); // Clear selection
                       onAudioSelect(null);
+                      setSearchValue("");
                     }}
                   >
                     <User className="mr-2 h-4 w-4" />
@@ -120,7 +128,7 @@ export function PersonAudioSelector({
                         setOpen(false);
                       }}
                     >
-                      <CreditCard className="mr-2 h-4 w-4" />
+                      <FileAudio className="mr-2 h-4 w-4" />
                       {audio.Name}
                     </CommandItem>
                   ))}
