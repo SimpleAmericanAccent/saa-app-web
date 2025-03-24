@@ -143,21 +143,18 @@ function NavBar({ showSidebarTrigger = false }) {
               </NavigationMenuContent>
             </NavigationMenuItem>
           )}
-
-          <NavigationMenuItem>
-            <button
-              onClick={logout}
-              className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
-            >
-              Log Out
-            </button>
-          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
 
       <div className="flex items-center gap-4">
         {showSidebarTrigger && <SidebarTrigger />}
         <ModeToggle />
+        <button
+          onClick={logout}
+          className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
+        >
+          Log Out
+        </button>
       </div>
     </nav>
   );
