@@ -247,13 +247,16 @@ export default function VowelSynthesizer() {
   }, [formants.F1, formants.F2]);
 
   return (
-    <div className="vsynth-container">
+    <div className="flex flex-wrap items-start justify-center p-5">
       <p className="text-muted-foreground text-sm mt-4 mb-6 text-center">
         Click and drag anywhere on the vowel diagram below to explore different
         vowel sounds. The position of your cursor controls the first two formant
         frequencies (F1 and F2).
       </p>
-      <div className="vsynth-diagram" ref={diagramRef}>
+      <div
+        className="relative w-[600px] h-[400px] border-2 border-gray-800 cursor-crosshair mr-5"
+        ref={diagramRef}
+      >
         {/* Add tick marks and values */}
         <div className="vsynth-axis-ticks">
           <div className="vsynth-axis-tick vsynth-x-min">
@@ -270,7 +273,7 @@ export default function VowelSynthesizer() {
           </div>
         </div>
         <div
-          className="vsynth-overlay"
+          className="absolute w-full h-full overflow-hidden cursor-crosshair select-none touch-none"
           onMouseDown={handleMouseDownOnDiagram}
           onMouseMove={handleMouseMoveOnDiagram}
         >
@@ -278,7 +281,7 @@ export default function VowelSynthesizer() {
           {VOWEL_SYMBOLS.map(({ symbol, F1, F2 }) => (
             <div
               key={symbol}
-              className="vsynth-vowel-symbol"
+              className="absolute font-sans text-sm pointer-events-none select-none transform -translate-x-1/2 -translate-y-1/2"
               style={{
                 left: `${
                   ((F2_MAX_DISPLAY - F2) / (F2_MAX_DISPLAY - F2_MIN_DISPLAY)) *
@@ -293,7 +296,10 @@ export default function VowelSynthesizer() {
               {symbol}
             </div>
           ))}
-          <div ref={markerRef} className="vsynth-marker" />
+          <div
+            ref={markerRef}
+            className="absolute w-2.5 h-2.5 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          />
         </div>
         <div className="vsynth-axis-labels">
           <div className="vsynth-axis-label vsynth-x-axis">F2 (Hz)</div>

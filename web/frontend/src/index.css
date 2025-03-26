@@ -40,38 +40,7 @@ a:hover {
 /* #endregion */
 
 /* #region vs page only (vowel synth) */
-.vsynth-container {
-  @apply flex flex-wrap items-start justify-center p-5;
-}
-.vsynth-diagram {
-  @apply relative w-[600px] h-[400px] border-2 border-gray-800 cursor-crosshair mr-5;
-  background-image: none;
-  background-position: center;
-}
-.vsynth-overlay {
-  @apply absolute w-full h-full overflow-hidden cursor-crosshair select-none touch-none;
-}
-.vsynth-marker {
-  @apply absolute w-2.5 h-2.5 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none;
-}
-.vsynth-controls {
-  @apply flex flex-col gap-5 p-5 bg-gray-100 rounded-lg min-w-[300px];
-}
-.vsynth-formant-control {
-  @apply flex items-center gap-2.5;
-}
-.vsynth-formant-control label {
-  @apply min-w-[70px];
-}
-.vsynth-formant-control input[type="range"] {
-  @apply flex-1;
-}
-.vsynth-formant-control input[type="number"] {
-  @apply w-[80px];
-}
-.vsynth-axis-value {
-  @apply absolute text-sm text-gray-800;
-}
+
 .vsynth-axis-label {
   @apply absolute text-base text-gray-800;
 }
@@ -81,15 +50,7 @@ a:hover {
 .vsynth-y-axis {
   @apply absolute top-1/2 left-[-50px] transform -translate-y-1/2 -rotate-90;
 }
-.vsynth-vowel-symbol {
-  @apply absolute font-sans text-sm pointer-events-none select-none transform -translate-x-1/2 -translate-y-1/2;
-}
-.vsynth-button {
-  @apply px-5 py-2.5 bg-blue-600 text-white rounded cursor-pointer text-lg;
-}
-.vsynth-button:hover {
-  @apply bg-blue-500;
-}
+
 .vsynth-triangle-overlay {
   @apply absolute w-[700px] h-0 pointer-events-none;
   border-left: 150px solid transparent;
@@ -112,9 +73,7 @@ a:hover {
 .vsynth-y-max {
   @apply absolute left-[-40px] bottom-0;
 }
-.vsynth-heading {
-  @apply text-center font-sans mb-5;
-}
+
 /* #endregion */
 
 /* #endregion */
