@@ -44,7 +44,13 @@ export default function createRoutes(app) {
     };
   });
 
-  //#region new routes
+  //#region v2 routes
+
+  const v2 = express.Router();
+
+  //#endregion
+
+  //#region v1 routes
   // NEW API (v1) - all new endpoints start with /v1/
 
   const v1Router = express.Router();
@@ -196,11 +202,6 @@ export default function createRoutes(app) {
           }
         }
 
-        // Update local wordsData cache to match new state
-        if (results.every((r) => r.success)) {
-          updateLocalWordsData(wordIndex, annotationsDesired);
-        }
-
         res.setHeader("Content-Type", "application/json");
         res.json({
           "server response": {
@@ -320,32 +321,6 @@ export default function createRoutes(app) {
 
       req.end();
     });
-  }
-
-  // Helper function to update local cache
-  function updateLocalWordsData(wordIndex, newAnnotations) {
-    // Find the entry index
-    const entryIndex = app.locals.wordsData.findIndex(
-      (entry) => entry.fields["word index"] == wordIndex
-    );
-
-    if (entryIndex !== -1) {
-      if (newAnnotations.length === 0) {
-        // If no annotations left, remove the entry completely
-        app.locals.wordsData.splice(entryIndex, 1);
-      } else {
-        // Update existing entry with new annotations
-        app.locals.wordsData[entryIndex].fields["BR issues"] = newAnnotations;
-      }
-    } else if (newAnnotations.length > 0) {
-      // Add new entry if it doesn't exist and we have annotations
-      app.locals.wordsData.push({
-        fields: {
-          "word index": wordIndex,
-          "BR issues": newAnnotations,
-        },
-      });
-    }
   }
 
   router.use("/v1", v1Router);
