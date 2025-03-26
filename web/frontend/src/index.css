@@ -39,43 +39,6 @@ a:hover {
 }
 /* #endregion */
 
-/* #region vs page only (vowel synth) */
-
-.vsynth-axis-label {
-  @apply absolute text-base text-gray-800;
-}
-.vsynth-x-axis {
-  @apply absolute bottom-[-30px] left-1/2 transform -translate-x-1/2;
-}
-.vsynth-y-axis {
-  @apply absolute top-1/2 left-[-50px] transform -translate-y-1/2 -rotate-90;
-}
-
-.vsynth-triangle-overlay {
-  @apply absolute w-[700px] h-0 pointer-events-none;
-  border-left: 150px solid transparent;
-  border-right: 250px solid transparent;
-  border-top: 400px solid rgba(0, 0, 255, 0.3);
-  clip-path: inset(0 0 0 0);
-}
-.vsynth-axis-tick {
-  @apply absolute text-sm text-gray-800;
-}
-.vsynth-x-min {
-  @apply absolute bottom-[-20px] left-0;
-}
-.vsynth-x-max {
-  @apply absolute bottom-[-20px] right-0;
-}
-.vsynth-y-min {
-  @apply absolute left-[-40px] top-0;
-}
-.vsynth-y-max {
-  @apply absolute left-[-40px] bottom-0;
-}
-
-/* #endregion */
-
 /* #endregion */
 :root {
   --navbar-height: 3rem;

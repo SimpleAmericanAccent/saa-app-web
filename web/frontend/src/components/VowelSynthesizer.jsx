@@ -258,17 +258,17 @@ export default function VowelSynthesizer() {
         ref={diagramRef}
       >
         {/* Add tick marks and values */}
-        <div className="vsynth-axis-ticks">
-          <div className="vsynth-axis-tick vsynth-x-min">
+        <div>
+          <div className="absolute text-sm text-gray-800 bottom-[-20px] left-0">
             {Math.round(F2_MAX_DISPLAY)}
           </div>
-          <div className="vsynth-axis-tick vsynth-x-max">
+          <div className="absolute text-sm text-gray-800 bottom-[-20px] right-0">
             {Math.round(F2_MIN_DISPLAY)}
           </div>
-          <div className="vsynth-axis-tick vsynth-y-min">
+          <div className="absolute text-sm text-gray-800 left-[-40px] top-0">
             {Math.round(F1_MIN_DISPLAY)}
           </div>
-          <div className="vsynth-axis-tick vsynth-y-max">
+          <div className="absolute text-sm text-gray-800 left-[-40px] bottom-0">
             {Math.round(F1_MAX_DISPLAY)}
           </div>
         </div>
@@ -277,7 +277,16 @@ export default function VowelSynthesizer() {
           onMouseDown={handleMouseDownOnDiagram}
           onMouseMove={handleMouseMoveOnDiagram}
         >
-          <div className="vsynth-triangle-overlay" />
+          <div
+            className="absolute w-[700px] h-0 pointer-events-none border-solid border-transparent"
+            style={{
+              borderLeftWidth: "150px",
+              borderRightWidth: "250px",
+              borderTopWidth: "400px",
+              borderTopColor: "rgba(0, 0, 255, 0.3)",
+              clipPath: "inset(0 0 0 0)",
+            }}
+          />
           {VOWEL_SYMBOLS.map(({ symbol, F1, F2 }) => (
             <div
               key={symbol}
@@ -301,9 +310,13 @@ export default function VowelSynthesizer() {
             className="absolute w-2.5 h-2.5 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
           />
         </div>
-        <div className="vsynth-axis-labels">
-          <div className="vsynth-axis-label vsynth-x-axis">F2 (Hz)</div>
-          <div className="vsynth-axis-label vsynth-y-axis">F1 (Hz)</div>
+        <div>
+          <div className="absolute text-base text-gray-800 bottom-[-30px] left-1/2 transform -translate-x-1/2">
+            F2 (Hz)
+          </div>
+          <div className="absolute text-base text-gray-800 top-1/2 left-[-50px] transform -translate-y-1/2 -rotate-90">
+            F1 (Hz)
+          </div>
         </div>
       </div>
 
