@@ -13,7 +13,7 @@ export default function Stats() {
 
   return (
     <>
-      <h1>Stats (across all Brazilian clients)</h1>
+      <h1>Stats (across many Brazilian clients)</h1>
       <div
         style={{
           position: "relative",

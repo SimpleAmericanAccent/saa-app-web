@@ -79,6 +79,21 @@ function NavBar({ showSidebarTrigger = false }) {
                 <li>
                   <NavigationMenuLink asChild>
                     <Link
+                      to="/stats"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Group Accent Stats
+                      </div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Aggregated accent data for many Brazilian clients
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
                       to="/vsynth"
                       className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                     >
@@ -93,15 +108,6 @@ function NavBar({ showSidebarTrigger = false }) {
                 </li>
               </ul>
             </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <Link
-              to="/stats"
-              className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
-            >
-              Stats
-            </Link>
           </NavigationMenuItem>
 
           {userRole === "write" && (
