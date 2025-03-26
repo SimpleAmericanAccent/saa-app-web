@@ -46,7 +46,150 @@ export default function createRoutes(app) {
 
   //#region v2 routes
 
-  const v2 = express.Router();
+  // Add to v2 routes region
+  const v2Router = express.Router();
+
+  // Get words and annotations for an audio
+  v2Router.get("/api/audio/:audioId", async (req, res) => {
+    if (!app.locals.currentUserAudioAccess?.includes(req.params.audioId)) {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    try {
+      const audioData = await fetchAirtablePage(
+        `Audio%20Source/${req.params.audioId}`
+      );
+
+      // Fetch v2 words and annotations
+      const wordsDataV2 = await fetchAllPages(
+        "Words%20(v2)",
+        encodeURIComponent(audioData.fields.Name)
+      );
+
+      app.locals.wordsDataV2 = wordsDataV2;
+
+      res.json({
+        audio: {
+          mp3url: audioData.fields["mp3 url"],
+          tranurl: audioData.fields["tran/alignment JSON url"],
+          name: audioData.fields.Name,
+        },
+        airtableWords: { records: wordsDataV2 },
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Create/update annotations
+  v2Router.post("/api/annotations", async (req, res) => {
+    if (app.locals.currentUserRole !== "write") {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+
+    try {
+      AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;
+
+      const { wordIndex, annotations, audioId, word } = req.body;
+
+      let wordsEntry = wordsDataV2.find(
+        (entry) => entry.fields["word index"] == wordIndex
+      );
+
+      const operations = determineV2Operations(
+        wordIndex,
+        annotations,
+        audioId,
+        word
+      );
+      const results = await executeV2Operations(operations);
+
+      res.json({
+        success: results.every((r) => r.success),
+        operations: results,
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  router.use("/v2", v2Router);
+
+  function determineV2Operations(wordIndex, annotations) {
+    // Find existing word without relying on cache
+    const operations = [];
+
+    operations.push({
+      type: "CREATE_WORD",
+      data: {
+        wordIndex,
+        annotations: [], // Will be populated by annotation operations
+      },
+    });
+
+    // Handle annotation operations
+    annotations.forEach((annotation) => {
+      operations.push({
+        type: "UPSERT_ANNOTATION",
+        data: {
+          wordIndex,
+          ortho_start: annotation.ortho_start,
+          ortho_end: annotation.ortho_end,
+          stoplight: annotation.stoplight,
+          target: annotation.target,
+        },
+      });
+    });
+
+    return operations;
+  }
+
+  async function executeV2Operations(operations) {
+    const results = [];
+
+    for (const op of operations) {
+      try {
+        let result;
+        switch (op.type) {
+          case "CREATE_WORD":
+            result = await executeAirtableOperation({
+              method: "POST",
+              path: "Words%20(v2)",
+              data: {
+                fields: {
+                  "word index": op.data.wordIndex,
+                  "annotation version": "v2",
+                },
+              },
+            });
+            // Store word ID for annotations
+            op.wordId = result.id;
+            break;
+
+          case "UPSERT_ANNOTATION":
+            result = await executeAirtableOperation({
+              method: "POST",
+              path: "Annotations%20(v2)",
+              data: {
+                fields: {
+                  Word: [operations[0].wordId], // Get ID from created word
+                  ortho_start: op.data.ortho_start,
+                  ortho_end: op.data.ortho_end,
+                  stoplight: op.data.stoplight,
+                  target: [op.data.target],
+                },
+              },
+            });
+            break;
+        }
+        results.push({ success: true, data: result });
+      } catch (err) {
+        results.push({ success: false, error: err.message });
+      }
+    }
+
+    return results;
+  }
 
   //#endregion
 
@@ -508,7 +651,7 @@ export default function createRoutes(app) {
     req1.end();
   });
 
-  // 🔹 DATA ROUTES
+  // #region🔹 DATA ROUTES
   router.get("/data/loadDefault", (req, res) => {
     const postData = "";
     let defaultAudioDataString = "";
@@ -639,23 +782,6 @@ export default function createRoutes(app) {
 
   router.get("/data/loadAudio/:AudioRecId", async (req, res) => {
     if (app.locals.currentUserAudioAccess?.includes(req.params.AudioRecId)) {
-      // const postData = "";
-      // let selectedAudioDataString = "";
-      // let selectedAudioData = {};
-      // let selectedAudioDataSanitized = {};
-      // let selectedAirtableWordsDataString = "";
-      // let selectedAirtableWordsData = {};
-      // let audioName;
-      // let audioNameURLEncoded;
-      // const options1 = {
-      //   hostname: "api.airtable.com",
-      //   path: `/v0/${AIRTABLE_BASE_ID}/Audio%20Source/${req.params.AudioRecId}`,
-      //   method: "GET",
-      //   headers: {
-      //     Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-      //   },
-      // };
-
       const audioData = await fetchAirtablePage(
         `Audio%20Source/${req.params.AudioRecId}`
       );
@@ -675,60 +801,6 @@ export default function createRoutes(app) {
         },
         airtableWords: { records: wordsData }, // Now includes ALL records
       });
-
-      // const req1 = https.request(options1, (res1) => {
-      //   res1.setEncoding("utf8");
-      //   res1.on("data", (chunk) => {
-      //     selectedAudioDataString += chunk;
-      //   });
-      //   res1.on("end", () => {
-      //     selectedAudioData = JSON.parse(selectedAudioDataString);
-
-      //     selectedAudioDataSanitized.mp3url =
-      //       selectedAudioData.fields["mp3 url"];
-      //     selectedAudioDataSanitized.tranurl =
-      //       selectedAudioData.fields["tran/alignment JSON url"];
-      //     selectedAudioDataSanitized.name = selectedAudioData.fields.Name;
-
-      //     audioName = selectedAudioData.fields["Name"];
-      //     audioNameURLEncoded = encodeURIComponent(audioName);
-
-      //     const postData2 = "";
-      //     let options2 = {
-      //       hostname: "api.airtable.com",
-      //       path: `/v0/${AIRTABLE_BASE_ID}/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`,
-      //       method: "GET",
-      //       headers: {
-      //         Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-      //       },
-      //     };
-
-      //     const req2 = https.request(options2, (res2) => {
-      //       res2.setEncoding("utf8");
-      //       res2.on("data", (chunk) => {
-      //         selectedAirtableWordsDataString += chunk;
-      //       });
-      //       res2.on("end", () => {
-      //         selectedAirtableWordsData = JSON.parse(
-      //           selectedAirtableWordsDataString
-      //         );
-
-      //         res.setHeader("Content-Type", "application/json");
-      //         res.write(
-      //           JSON.stringify({
-      //             audio: selectedAudioDataSanitized,
-      //             airtableWords: selectedAirtableWordsData,
-      //           })
-      //         );
-      //         res.end();
-      //       });
-      //     });
-      //     req2.write(postData2);
-      //     req2.end();
-      //   });
-      // });
-      // req1.write(postData);
-      // req1.end();
     } else {
       res.setHeader("Content-Type", "text/plain");
       res.write("not found");
@@ -901,7 +973,9 @@ export default function createRoutes(app) {
     }
   });
 
-  // 🔹 Postgres routes
+  // #endregion
+
+  // #region🔹 Postgres routes
   // Add test route before returning router
   router.get("/test-prisma", async (req, res) => {
     try {
@@ -974,8 +1048,9 @@ export default function createRoutes(app) {
       res.status(500).json({ error: error.message });
     }
   });
+  //#endregion
 
-  // 🔹 USER ROUTES
+  // #region 🔹  USER ROUTES
   router.get("/user", requiresAuth(), (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify(req.oidc.user, null, 3));
@@ -985,6 +1060,8 @@ export default function createRoutes(app) {
     console.log("callback");
     res.redirect("/");
   });
+
+  // #endregion
 
   // 🔹 CATCH-ALL ROUTE (Frontend SPA)
   router.get("*", (req, res) => {
