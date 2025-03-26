@@ -90,15 +90,32 @@ export default function createRoutes(app) {
     try {
       AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;
 
-      const { wordIndex, annotations, audioId, word } = req.body;
+      const {
+        wordIndex,
+        annotations: annotationsDesired,
+        audioId,
+        word,
+      } = req.body;
 
+      console.table({
+        wordIndex,
+        annotations: annotationsDesired,
+        audioId,
+        word,
+      });
+
+      let wordsDataV2 = app.locals.wordsDataV2;
       let wordsEntry = wordsDataV2.find(
         (entry) => entry.fields["word index"] == wordIndex
       );
 
+      // Get current annotations or empty array if none exist
+      const annotationsCurrent = wordsEntry?.fields["Annotations"] || [];
+      console.log("current annotations:", annotationsCurrent);
+
       const operations = determineV2Operations(
         wordIndex,
-        annotations,
+        annotationsDesired,
         audioId,
         word
       );
