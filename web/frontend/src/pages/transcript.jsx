@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { HelpCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Transcript() {
   // #region declarations
@@ -32,6 +33,8 @@ export default function Transcript() {
   } = useFetchResources();
 
   const [activeFilters, setActiveFilters] = useState([]);
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
+  const [loadError, setLoadError] = useState(null);
 
   const handleFilterChange = (activeIssues) => {
     setActiveFilters(activeIssues);
@@ -102,9 +105,17 @@ export default function Transcript() {
 
   // Handle Audio Selection and Fetch
   const handleAudioSelection = async () => {
-    await fetchAudio(selectedAudio);
-    if (audioRef.current) {
-      audioRef.current.load();
+    setIsAudioLoading(true);
+    try {
+      await fetchAudio(selectedAudio);
+      if (audioRef.current) {
+        audioRef.current.load();
+      }
+    } catch (error) {
+      setError("Failed to load audio or transcript data");
+      console.error("Error loading audio:", error);
+    } finally {
+      setIsAudioLoading(false);
     }
   };
 
@@ -227,7 +238,13 @@ export default function Transcript() {
         <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
           <div className="px-4 bg-background">
             <header className="flex flex-col sticky top-0 z-0 bg-background">
-              <div className="flex items-center gap-4">
+              <div
+                className={cn(
+                  "flex items-center gap-4",
+                  (!hasAudioLoaded || loadError) &&
+                    "h-[calc(100vh-var(--navbar-height))] justify-center flex-col"
+                )}
+              >
                 <PersonAudioSelector
                   people={people}
                   filteredAudio={filteredAudio}
@@ -236,23 +253,26 @@ export default function Transcript() {
                   onPersonSelect={setSelectedPerson}
                   onAudioSelect={setSelectedAudio}
                 />
-                {!hasAudioLoaded && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <div className="text-2xl">
-                      ← Select a person and audio file to begin
-                    </div>
+
+                {(isAudioLoading || (selectedAudio && !hasAudioLoaded)) && (
+                  <div className={cn("text-muted-foreground text-center")}>
+                    {isAudioLoading
+                      ? "Loading..."
+                      : "Selected audio file appears to be empty"}
                   </div>
                 )}
-                <Button
-                  onClick={() => setIsShortcutsModalOpen(true)}
-                  className="fixed left-4 bottom-4 rounded-full shadow-md cursor-pointer hover:bg-secondary hover:scale-105 active:scale-100"
-                  variant="secondary"
-                  size="icon"
-                >
-                  <HelpCircle className="h-5 w-5" />
-                  <span className="sr-only">Keyboard Shortcuts</span>
-                </Button>
               </div>
+
+              <Button
+                onClick={() => setIsShortcutsModalOpen(true)}
+                className="fixed left-4 bottom-4 rounded-full shadow-md cursor-pointer hover:bg-secondary hover:scale-105 active:scale-100"
+                variant="secondary"
+                size="icon"
+              >
+                <HelpCircle className="h-5 w-5" />
+                <span className="sr-only">Keyboard Shortcuts</span>
+              </Button>
+
               {/* Only show these once audio is loaded */}
               {hasAudioLoaded && (
                 <>
