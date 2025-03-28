@@ -19,6 +19,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import useVersionStore from "@/stores/versionStore";
 
 export default function Transcript() {
   // #region declarations
@@ -35,6 +36,7 @@ export default function Transcript() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
+  const { version } = useVersionStore();
 
   const handleFilterChange = (activeIssues) => {
     setActiveFilters(activeIssues);

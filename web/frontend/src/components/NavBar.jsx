@@ -13,9 +13,21 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import useVersionStore from "@/stores/versionStore";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Check } from "lucide-react";
 
 function NavBar({ showSidebarTrigger = false }) {
   const { userRole, isLoading, fetchUserRole, logout } = useAuthStore();
+  const { version, setVersion } = useVersionStore();
 
   useEffect(() => {
     fetchUserRole();
@@ -118,16 +130,6 @@ function NavBar({ showSidebarTrigger = false }) {
                   <li>
                     <NavigationMenuLink asChild>
                       <Link
-                        to="/Home4"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        TV2
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
                         to="/path"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
@@ -154,6 +156,58 @@ function NavBar({ showSidebarTrigger = false }) {
 
       <div className="flex items-center gap-4">
         {showSidebarTrigger && <SidebarTrigger />}
+        {userRole === "write" && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className={cn(navigationMenuTriggerStyle(), "gap-2")}>
+                Version {version.toUpperCase()}
+                <span className="text-xs text-muted-foreground">
+                  {version === "v1" ? "(Current)" : "(Beta)"}
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  onClick={() => setVersion("v1")}
+                  className="flex items-center gap-2"
+                >
+                  <div
+                    className={cn(
+                      "flex h-4 w-4 items-center justify-center rounded-sm border",
+                      version === "v1"
+                        ? "bg-primary border-primary"
+                        : "border-muted"
+                    )}
+                  >
+                    {version === "v1" && (
+                      <Check className="h-3 w-3 text-primary-foreground" />
+                    )}
+                  </div>
+                  Version 1 (Current)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setVersion("v2")}
+                  className="flex items-center gap-2"
+                >
+                  <div
+                    className={cn(
+                      "flex h-4 w-4 items-center justify-center rounded-sm border",
+                      version === "v2"
+                        ? "bg-primary border-primary"
+                        : "border-muted"
+                    )}
+                  >
+                    {version === "v2" && (
+                      <Check className="h-3 w-3 text-primary-foreground" />
+                    )}
+                  </div>
+                  Version 2 (Beta)
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         <ModeToggle />
         <button
           onClick={logout}

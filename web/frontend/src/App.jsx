@@ -7,7 +7,6 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Transcript from "./pages/transcript.jsx";
 import WLS from "./pages/wls.jsx";
 import VSounds from "./pages/vsounds.jsx";
-import Home4 from "./pages/Home4.jsx";
 import VSynth from "./pages/vsynth.jsx";
 import Home6 from "./pages/stats.jsx";
 // import SuccessPath from "./pages/SuccessPath.jsx";
@@ -33,14 +32,6 @@ function App() {
               <Route path="/stats" element={<Home6 />} />
 
               {/* Protected routes for write access */}
-              <Route
-                path="/home4"
-                element={
-                  <ProtectedRoute requiredRole="write">
-                    {/* <Home4 /> */}
-                  </ProtectedRoute>
-                }
-              />
 
               <Route
                 path="/path"
