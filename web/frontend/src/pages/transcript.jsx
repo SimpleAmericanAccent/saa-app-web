@@ -6,8 +6,6 @@ import useFetchAudio from "../hooks/useFetchAudio";
 import useAudioSync from "../hooks/useAudioSync";
 import useFetchResources from "../hooks/useFetchResources";
 import AudioPlayer from "../components/AudioPlayer";
-import TranscriptViewer from "../components/transcript-viewer";
-import TranscriptStats from "../components/transcript-stats";
 import KeyboardShortcutsModal from "../components/KeyboardShortcutsModal";
 import { Button } from "@/components/ui/button";
 import { PersonAudioSelector } from "@/components/person-audio-selector";
@@ -20,6 +18,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useVersionStore from "@/stores/versionStore";
+import TranscriptViewerV1 from "../components/transcript-viewer-v1";
+import TranscriptViewerV2 from "@/components/transcript-viewer-v2";
+import TranscriptStatsV1 from "../components/transcript-stats-v1";
+import TranscriptStatsV2 from "@/components/transcript-stats-v2";
 
 export default function Transcript() {
   // #region declarations
@@ -296,20 +298,35 @@ export default function Transcript() {
             </header>
             <section>
               {/* Only show transcript viewer when audio is loaded */}
-              {hasAudioLoaded && (
-                <TranscriptViewer
-                  annotatedTranscript={annotatedTranscript}
-                  activeWordIndex={activeWordIndex}
-                  handleWordClick={(start_time) => {
-                    audioRef.current.currentTime = start_time;
-                    audioRef.current.play();
-                  }}
-                  onAnnotationHover={handleAnnotationHover}
-                  issuesData={issuesData}
-                  onAnnotationUpdate={handleAnnotationUpdate}
-                  activeFilters={activeFilters}
-                />
-              )}
+              {hasAudioLoaded &&
+                (version === "v1" ? (
+                  <TranscriptViewerV1
+                    annotatedTranscript={annotatedTranscript}
+                    activeWordIndex={activeWordIndex}
+                    handleWordClick={(start_time) => {
+                      audioRef.current.currentTime = start_time;
+                      audioRef.current.play();
+                    }}
+                    onAnnotationHover={handleAnnotationHover}
+                    issuesData={issuesData}
+                    onAnnotationUpdate={handleAnnotationUpdate}
+                    activeFilters={activeFilters}
+                  />
+                ) : (
+                  <TranscriptViewerV2
+                    // Same props as v1
+                    annotatedTranscript={annotatedTranscript}
+                    activeWordIndex={activeWordIndex}
+                    handleWordClick={(start_time) => {
+                      audioRef.current.currentTime = start_time;
+                      audioRef.current.play();
+                    }}
+                    onAnnotationHover={handleAnnotationHover}
+                    issuesData={issuesData}
+                    onAnnotationUpdate={handleAnnotationUpdate}
+                    activeFilters={activeFilters}
+                  />
+                ))}
             </section>
             <aside>
               <KeyboardShortcutsModal
@@ -326,11 +343,19 @@ export default function Transcript() {
         <ResizablePanel className="h-[calc(100vh-var(--navbar-height))]">
           <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
             <div className="px-4 bg-background">
-              <TranscriptStats
+              (version === "v1" ? (
+              <TranscriptStatsV1
                 annotatedTranscript={annotatedTranscript}
                 issuesData={issuesData}
                 onFilterChange={handleFilterChange}
               />
+              ) : (
+              <TranscriptStatsV2
+                annotatedTranscript={annotatedTranscript}
+                issuesData={issuesData}
+                onFilterChange={handleFilterChange}
+              />
+              ))
             </div>
           </ScrollArea>
         </ResizablePanel>

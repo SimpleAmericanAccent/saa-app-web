@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Settings } from "lucide-react";
 
-const TranscriptStats = ({
+const TranscriptStatsV1 = ({
   annotatedTranscript,
   issuesData,
   onFilterChange,
@@ -413,4 +413,4 @@ const TranscriptStats = ({
   );
 };
 
-export default TranscriptStats;
+export default TranscriptStatsV1;

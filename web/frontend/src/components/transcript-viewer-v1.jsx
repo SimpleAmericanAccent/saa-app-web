@@ -12,7 +12,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 
-const TranscriptViewer = ({
+const TranscriptViewerV1 = ({
   annotatedTranscript,
   activeWordIndex,
   handleWordClick,
@@ -135,4 +135,4 @@ const TranscriptViewer = ({
   );
 };
 
-export default TranscriptViewer;
+export default TranscriptViewerV1;

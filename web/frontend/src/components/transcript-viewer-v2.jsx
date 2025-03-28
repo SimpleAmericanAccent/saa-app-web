@@ -26,7 +26,6 @@ const TranscriptViewerV2 = ({
   });
 
   const getAnnotations = (wordIndex) => {
-    console.log("V2!");
     const word = annotatedTranscript
       .flatMap((paragraph) => paragraph.alignment)
       .find((word) => word.wordIndex === wordIndex);
