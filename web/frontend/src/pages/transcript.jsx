@@ -254,6 +254,7 @@ export default function Transcript() {
                   selectedAudio={selectedAudio}
                   onPersonSelect={setSelectedPerson}
                   onAudioSelect={setSelectedAudio}
+                  size={!hasAudioLoaded || loadError ? "large" : "default"}
                 />
 
                 {(isAudioLoading || (selectedAudio && !hasAudioLoaded)) && (

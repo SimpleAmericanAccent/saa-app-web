@@ -36,6 +36,7 @@ export function PersonAudioSelector({
   selectedAudio,
   onPersonSelect,
   onAudioSelect,
+  size = "default",
 }) {
   const [open, setOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
@@ -52,9 +53,10 @@ export function PersonAudioSelector({
         <Button
           variant="outline"
           className={cn(
-            "justify-start text-left",
+            "justify-start text-left cursor-pointer",
             !selectedAudio &&
-              "animate-pulse shadow-md shadow-primary/25 border-primary/50" // Add pulse effect when no audio selected
+              "animate-pulse shadow-md shadow-primary/25 border-primary/50", // Add pulse effect when no audio selected
+            size === "large" && "text-2xl"
           )}
         >
           {selectedPerson ? (
