@@ -19,7 +19,7 @@ const TranscriptViewerV2 = ({
   onAnnotationHover,
   onAnnotationUpdate,
   issuesData,
-  activeFilters = [],
+  // activeFilters = [],
 }) => {
   const [contextMenu, setContextMenu] = useState({
     wordIndex: null,
@@ -29,16 +29,18 @@ const TranscriptViewerV2 = ({
     const word = annotatedTranscript
       .flatMap((paragraph) => paragraph.alignment)
       .find((word) => word.wordIndex === wordIndex);
-    return word ? word["BR issues"] || [] : [];
+    return word.Annotations
+      ? word.Annotations.map((annotation) => annotation.Target) || []
+      : [];
     // return record ? record.fields["BR issues"] : [];
   };
 
-  const shouldHighlightWord = (word) => {
-    if (!activeFilters.length) return true; // Show all if no filters
-    return word["BR issues"]?.some((issueId) =>
-      activeFilters.includes(issueId)
-    );
-  };
+  // const shouldHighlightWord = (word) => {
+  //   if (!activeFilters.length) return true; // Show all if no filters
+  //   return word["BR issues"]?.some((issueId) =>
+  //     activeFilters.includes(issueId)
+  //   );
+  // };
 
   const handleContextMenu = (e, wordIndex) => {
     setContextMenu({
@@ -88,9 +90,8 @@ const TranscriptViewerV2 = ({
                         "cursor-pointer rounded-[5px]",
                         {
                           "text-annotation-foreground bg-[hsl(var(--annotation))]":
-                            shouldHighlightWord(wordObj) &&
-                            hasAnnotations &&
-                            !isActive,
+                            // shouldHighlightWord(wordObj) &&
+                            hasAnnotations && !isActive,
                           "!bg-[#aa00aa80]": isActive,
                         },
                         "hover:bg-[hsl(var(--hover))]"

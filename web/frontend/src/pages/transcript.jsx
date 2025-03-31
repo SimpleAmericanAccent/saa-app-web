@@ -99,6 +99,25 @@ export default function Transcript() {
     });
   };
 
+  // Helper function to get target names from IDs
+  const getTargetNames = (targetIds) => {
+    if (!targetIds || !issuesData.length) return [];
+
+    console.log("issuesData", issuesData);
+
+    return targetIds.map((array) =>
+      array.map((id) => {
+        // Find the category that contains this issue
+        const category = issuesData.find((cat) => cat.id === id);
+
+        if (category) {
+          return category.name;
+        }
+        return id;
+      })
+    );
+  };
+
   const flattenTranscript = (transcripts) => {
     return transcripts.flatMap((paragraph) => paragraph.alignment);
   };
@@ -194,8 +213,16 @@ export default function Transcript() {
   }, []); // Empty dependency array since we only want to set this up once
 
   const handleAnnotationHover = (annotations) => {
-    const friendlyNames = getIssueNames(annotations);
-    setAnnotations(friendlyNames);
+    if (version === "v1") {
+      const friendlyIssueNames = getIssueNames(annotations);
+      setAnnotations(friendlyIssueNames);
+    } else if (version === "v2") {
+      const friendlyTargetNames = getTargetNames(annotations);
+      console.log("friendlyTargetNames", friendlyTargetNames);
+      console.log("annotations", annotations);
+      console.log("issuesData", issuesData);
+      setAnnotations(friendlyTargetNames);
+    }
   };
 
   const handleAnnotationUpdate = async (wordIndex, annotations) => {
