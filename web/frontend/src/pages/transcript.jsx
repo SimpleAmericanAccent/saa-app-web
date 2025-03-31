@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from "react";
+import useFetchResources from "../hooks/useFetchResources";
+import useFetchAudioV1 from "../hooks/useFetchAudioV1";
+
 import { findActiveWordIndex } from "../utils/binarySearch";
 import { fetchData } from "../utils/api";
 import { setCookie, getCookie } from "../utils/cookies";
-import useFetchAudio from "../hooks/useFetchAudio";
 import useAudioSync from "../hooks/useAudioSync";
-import useFetchResources from "../hooks/useFetchResources";
 import AudioPlayer from "../components/AudioPlayer";
 import KeyboardShortcutsModal from "../components/KeyboardShortcutsModal";
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,7 @@ export default function Transcript() {
   };
 
   // Fetch Audio & Transcript Data
-  const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudio();
+  const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudioV1();
 
   // Reference for Audio Player & State for Playback Speed
   const audioRef = useRef(null);
@@ -343,19 +344,19 @@ export default function Transcript() {
         <ResizablePanel className="h-[calc(100vh-var(--navbar-height))]">
           <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
             <div className="px-4 bg-background">
-              (version === "v1" ? (
-              <TranscriptStatsV1
-                annotatedTranscript={annotatedTranscript}
-                issuesData={issuesData}
-                onFilterChange={handleFilterChange}
-              />
+              {version === "v1" ? (
+                <TranscriptStatsV1
+                  annotatedTranscript={annotatedTranscript}
+                  issuesData={issuesData}
+                  onFilterChange={handleFilterChange}
+                />
               ) : (
-              <TranscriptStatsV2
-                annotatedTranscript={annotatedTranscript}
-                issuesData={issuesData}
-                onFilterChange={handleFilterChange}
-              />
-              ))
+                <TranscriptStatsV2
+                  annotatedTranscript={annotatedTranscript}
+                  issuesData={issuesData}
+                  onFilterChange={handleFilterChange}
+                />
+              )}
             </div>
           </ScrollArea>
         </ResizablePanel>

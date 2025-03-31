@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { fetchData } from "../utils/api";
 
-const useFetchAudio = () => {
+const useFetchAudioV2 = () => {
   const [mp3url, setMp3Url] = useState("");
   const [annotatedTranscript, setAnnotatedTranscript] = useState([]);
 
@@ -94,4 +94,4 @@ const useFetchAudio = () => {
   };
 };
 
-export default useFetchAudio;
+export default useFetchAudioV2;
