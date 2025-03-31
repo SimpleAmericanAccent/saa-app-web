@@ -61,11 +61,13 @@ const useFetchAudioV2 = () => {
         if (!acc[paragraphIndex]) {
           acc[paragraphIndex] = { alignment: [] };
         }
-        // Add wordIndex based on audio word index
+        // Add wordIndex based on audio word index and flatten fields structure
         const wordWithIndex = {
-          ...word,
+          ...word.fields, // Spread fields at top level
+          id: word.id,
+          createdTime: word.createdTime,
           wordIndex: word.fields["audio word index"] ?? 0,
-          word: word.fields.Name, // Also ensure word is at top level for consistency
+          word: word.fields.Name,
         };
         acc[paragraphIndex].alignment.push(wordWithIndex);
         return acc;
