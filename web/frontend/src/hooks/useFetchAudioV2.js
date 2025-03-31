@@ -9,33 +9,79 @@ const useFetchAudioV2 = () => {
     if (!selectedAudio) return;
 
     try {
-      const response = await fetchData(`/data/loadAudio/${selectedAudio}`);
-      const { audio, airtableWords } = response || {};
-      const { mp3url, tranurl } = audio || {};
+      const response = await fetchData(`/v2/api/audio/${selectedAudio}`);
+      const { audio, airtableWords, annotationData } = response || {};
+      const { mp3url } = audio || {};
       setMp3Url(mp3url);
 
-      const transcriptResponse = await fetchData(tranurl);
-      const transcriptWithIndices = addWordIndices(
-        transcriptResponse.speech.transcripts
+      // sort airtableWords by word index
+      const records = airtableWords?.records || airtableWords || [];
+      const sortedAirtableWords = [...records].sort((a, b) => {
+        const indexA = a?.fields?.["audio word index"] ?? Infinity;
+        const indexB = b?.fields?.["audio word index"] ?? Infinity;
+        return indexA - indexB;
+      });
+
+      console.log(sortedAirtableWords, "sortedAirtableWords");
+      console.log(annotationData, "annotationData");
+
+      // Create annotation lookup map
+      const annotationMap = (annotationData?.records || []).reduce(
+        (acc, annotation) => {
+          acc[annotation.id] = annotation;
+          return acc;
+        },
+        {}
       );
 
-      createAnnotatedTranscript(transcriptWithIndices, airtableWords);
+      // Merge annotations into sortedAirtableWords
+      const enrichedAirtableWords = sortedAirtableWords.map((word) => {
+        const annotations = word.fields?.Annotations || [];
+        const enrichedAnnotations = annotations.map((annotationId) => ({
+          id: annotationId,
+          ...annotationMap[annotationId]?.fields,
+        }));
+
+        return {
+          ...word,
+          fields: {
+            ...word.fields,
+            Annotations: enrichedAnnotations,
+          },
+        };
+      });
+
+      console.log(enrichedAirtableWords, "enrichedAirtableWords");
+
+      // put words into paragraphs
+
+      // Group words into paragraphs
+      const paragraphs = enrichedAirtableWords.reduce((acc, word) => {
+        const paragraphIndex = word.fields["paragraph index"] ?? 0;
+        if (!acc[paragraphIndex]) {
+          acc[paragraphIndex] = { alignment: [] };
+        }
+        // Add wordIndex based on audio word index
+        const wordWithIndex = {
+          ...word,
+          wordIndex: word.fields["audio word index"] ?? 0,
+          word: word.fields.Name, // Also ensure word is at top level for consistency
+        };
+        acc[paragraphIndex].alignment.push(wordWithIndex);
+        return acc;
+      }, {});
+
+      // Convert paragraphs object to array and sort by paragraph index
+      const orderedParagraphs = Object.entries(paragraphs)
+        .sort(([indexA], [indexB]) => Number(indexA) - Number(indexB))
+        .map(([_, paragraph]) => paragraph);
+
+      setAnnotatedTranscript(orderedParagraphs);
+
+      // createAnnotatedTranscript(transcriptWithIndices, airtableWords);
     } catch (error) {
       console.error("Error fetching audio or transcript:", error);
     }
-  };
-
-  const addWordIndices = (transcripts) => {
-    let wordCounter = 0;
-    return transcripts.map((paragraph) => ({
-      ...paragraph,
-      alignment: paragraph.alignment.map((word) => ({
-        ...word,
-        paragraph_start_offset_conv: paragraph.start_offset / 16000,
-        start_time: word.start + paragraph.start_offset / 16000,
-        wordIndex: wordCounter++,
-      })),
-    }));
   };
 
   const createAnnotatedTranscript = (transcriptData, airtableWords) => {

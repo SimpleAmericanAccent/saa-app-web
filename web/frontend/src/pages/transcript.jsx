@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import useFetchResources from "../hooks/useFetchResources";
 import useFetchAudioV1 from "../hooks/useFetchAudioV1";
+import useFetchAudioV2 from "../hooks/useFetchAudioV2";
 
 import { findActiveWordIndex } from "../utils/binarySearch";
 import { fetchData } from "../utils/api";
@@ -46,7 +47,10 @@ export default function Transcript() {
   };
 
   // Fetch Audio & Transcript Data
-  const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudioV1();
+  const { mp3url, annotatedTranscript, fetchAudio } =
+    version === "v1" ? useFetchAudioV1() : useFetchAudioV2();
+
+  console.log("annotatedTranscript", annotatedTranscript);
 
   // Reference for Audio Player & State for Playback Speed
   const audioRef = useRef(null);
@@ -113,6 +117,7 @@ export default function Transcript() {
     setIsAudioLoading(true);
     try {
       await fetchAudio(selectedAudio);
+      console.log("annotatedTranscript", annotatedTranscript);
       if (audioRef.current) {
         audioRef.current.load();
       }

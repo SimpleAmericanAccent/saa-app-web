@@ -17,6 +17,7 @@ export default defineConfig({
       "/authnew": "http://localhost:5000",
       "/v1": "http://localhost:5000",
       "/prisma": "http://localhost:5000",
+      "/v2": "http://localhost:5000",
     },
   },
   resolve: {

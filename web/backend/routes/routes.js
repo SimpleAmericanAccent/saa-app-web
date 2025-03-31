@@ -66,7 +66,15 @@ export default function createRoutes(app) {
         encodeURIComponent(audioData.fields.Name)
       );
 
+      const annotationDataV2 = await fetchAllPages(
+        "Annotations%20(v2)",
+        encodeURIComponent(audioData.fields.Name)
+      );
+
       app.locals.wordsDataV2 = wordsDataV2;
+
+      // console.log("Fetched wordsDataV2:", wordsDataV2);
+      // console.log("Fetched annotationDataV2:", annotationDataV2);
 
       res.json({
         audio: {
@@ -75,6 +83,7 @@ export default function createRoutes(app) {
           name: audioData.fields.Name,
         },
         airtableWords: { records: wordsDataV2 },
+        annotationData: { records: annotationDataV2 },
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
