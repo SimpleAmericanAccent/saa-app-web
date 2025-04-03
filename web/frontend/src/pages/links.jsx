@@ -1,4 +1,4 @@
-export default function Learn() {
+export default function Links() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold">SAA Resources</h1>
