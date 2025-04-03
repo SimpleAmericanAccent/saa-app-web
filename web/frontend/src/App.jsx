@@ -9,6 +9,7 @@ import WLS from "./pages/wls.jsx";
 import VSounds from "./pages/vsounds.jsx";
 import VSynth from "./pages/vsynth.jsx";
 import Home6 from "./pages/stats.jsx";
+import Learn from "./pages/learn.jsx";
 // import SuccessPath from "./pages/SuccessPath.jsx";
 // import Quiz from "./pages/Quiz.jsx";
 // import NavBar from "./components/navbar/NavBar";
@@ -30,6 +31,7 @@ function App() {
               <Route path="/vsounds" element={<VSounds />} />
               <Route path="/vsynth" element={<VSynth />} />
               <Route path="/stats" element={<Home6 />} />
+              <Route path="/learn" element={<Learn />} />
 
               {/* Protected routes for write access */}
 
