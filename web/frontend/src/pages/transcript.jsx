@@ -2,11 +2,20 @@ import { useEffect, useState, useRef } from "react";
 import useFetchResources from "../hooks/useFetchResources";
 import useFetchAudioV1 from "../hooks/useFetchAudioV1";
 import useFetchAudioV2 from "../hooks/useFetchAudioV2";
+import useAudioSync from "../hooks/useAudioSync";
 
 import { findActiveWordIndex } from "../utils/binarySearch";
 import { fetchData } from "../utils/api";
 import { setCookie, getCookie } from "../utils/cookies";
-import useAudioSync from "../hooks/useAudioSync";
+import { cn } from "@/lib/utils";
+
+import useVersionStore from "@/stores/versionStore";
+import { HelpCircle } from "lucide-react";
+
+import TranscriptViewerV1 from "../components/transcript-viewer-v1";
+import TranscriptViewerV2 from "@/components/transcript-viewer-v2";
+import TranscriptStatsV1 from "../components/transcript-stats-v1";
+import TranscriptStatsV2 from "@/components/transcript-stats-v2";
 import AudioPlayer from "../components/AudioPlayer";
 import KeyboardShortcutsModal from "../components/KeyboardShortcutsModal";
 import { Button } from "@/components/ui/button";
@@ -17,13 +26,6 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { HelpCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import useVersionStore from "@/stores/versionStore";
-import TranscriptViewerV1 from "../components/transcript-viewer-v1";
-import TranscriptViewerV2 from "@/components/transcript-viewer-v2";
-import TranscriptStatsV1 from "../components/transcript-stats-v1";
-import TranscriptStatsV2 from "@/components/transcript-stats-v2";
 
 export default function Transcript() {
   // #region declarations
@@ -50,7 +52,6 @@ export default function Transcript() {
   const { mp3url, annotatedTranscript, fetchAudio } =
     version === "v1" ? useFetchAudioV1() : useFetchAudioV2();
 
-  console.log("annotatedTranscript", annotatedTranscript);
 
   // Reference for Audio Player & State for Playback Speed
   const audioRef = useRef(null);
@@ -136,7 +137,7 @@ export default function Transcript() {
     setIsAudioLoading(true);
     try {
       await fetchAudio(selectedAudio);
-      console.log("annotatedTranscript", annotatedTranscript);
+      // console.log("annotatedTranscript", annotatedTranscript);
       if (audioRef.current) {
         audioRef.current.load();
       }

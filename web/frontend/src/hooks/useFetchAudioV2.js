@@ -78,6 +78,8 @@ const useFetchAudioV2 = () => {
         .sort(([indexA], [indexB]) => Number(indexA) - Number(indexB))
         .map(([_, paragraph]) => paragraph);
 
+      console.log(orderedParagraphs, "orderedParagraphs");
+
       setAnnotatedTranscript(orderedParagraphs);
 
       // createAnnotatedTranscript(transcriptWithIndices, airtableWords);
