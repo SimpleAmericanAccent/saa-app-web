@@ -52,10 +52,10 @@ app.use(function (req, res, next) {
 
 const staticPath =
   environment_flag === "dev"
-    ? "../frontend/public" // Dev run: serve from public
+    ? "../web/public" // Dev run: serve from public
     : environment_flag === "dev-build"
-    ? "../frontend/dist" // Dev build: serve from dist
-    : "../frontend/dist"; // Prod: serve from dist
+    ? "../web/dist" // Dev build: serve from dist
+    : "../web/dist"; // Prod: serve from dist
 
 console.log("staticPath", staticPath);
 
