@@ -1,1 +1,4 @@
 /.vscode
+/python/venv
+/python/output
+/python/scripts/__pycache__
