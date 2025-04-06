@@ -1,0 +1,13 @@
+name: saa
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - montreal-forced-aligner
+  - pip
+  - pip:
+      - openai-whisper>=20240930
+      - pydub>=0.25.1
+      - requests>=2.32.0
+      - tqdm>=4.65.0

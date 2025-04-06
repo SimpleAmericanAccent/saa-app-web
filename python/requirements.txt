@@ -1,5 +1,0 @@
-# Python dependencies for audio transcription
-requests>=2.31.0
-tqdm>=4.66.0  # for progress bars
-openai-whisper>=20231117
-torch>=2.2.0  # required by whisper 

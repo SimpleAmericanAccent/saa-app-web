@@ -1,4 +1,8 @@
+# IDE settings
 /.vscode
-/python/venv
+
+# Python
+__pycache__/
+
+# Project specific
 /python/output
-/python/scripts/__pycache__
