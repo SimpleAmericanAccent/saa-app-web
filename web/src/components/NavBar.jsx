@@ -54,6 +54,42 @@ function NavBar({ showSidebarTrigger = false }) {
             </Link>
           </NavigationMenuItem>
 
+          {/* New Onboarding Dropdown */}
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Onboarding</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-4 w-[400px] md:w-[500px] md:grid-cols-2">
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/onboarding/lexical-sets"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Lexical Sets
+                      </div>
+                      <p className="text-sm leading-snug text-muted-foreground">
+                        Learn how vowels are organized into sound-based
+                        categories, independent of spelling.
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+                {/* More onboarding topics can be added here later */}
+                <li className="row-span-3 rounded-md border p-4">
+                  <div className="mb-2 mt-4 text-sm font-medium">
+                    Getting Started
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    These lessons will help you understand the fundamentals of
+                    English pronunciation. Start with Lexical Sets and progress
+                    through new topics as they become available.
+                  </p>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
           <NavigationMenuItem>
             <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
             <NavigationMenuContent>
