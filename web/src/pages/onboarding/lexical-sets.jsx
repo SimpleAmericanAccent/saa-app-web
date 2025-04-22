@@ -67,6 +67,8 @@ So the word kit contains the KIT vowel, and fleece contains the FLEECE vowel.
 If you want to master the American accent, you can’t trust spelling alone.
 
 You need to train your ear to recognize the actual sounds — and lexical sets (with their helpful keywords) give you a reliable, consistent way to do that.
+
+Check out the other pages in the Resources section to see lexical sets in action.
 `;
 
 export default function LexicalSets() {
