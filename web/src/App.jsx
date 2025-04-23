@@ -11,6 +11,7 @@ import VSynth from "./pages/vsynth.jsx";
 import Home6 from "./pages/stats.jsx";
 import Links from "./pages/links.jsx";
 import LexicalSets from "./pages/onboarding/lexical-sets.jsx";
+import LexicalSetsQuiz from "./pages/onboarding/lexical-sets-quiz.jsx";
 // import SuccessPath from "./pages/SuccessPath.jsx";
 // import Quiz from "./pages/Quiz.jsx";
 // import NavBar from "./components/navbar/NavBar";
@@ -36,6 +37,10 @@ function App() {
               <Route
                 path="/onboarding/lexical-sets"
                 element={<LexicalSets />}
+              />
+              <Route
+                path="/onboarding/lexical-sets-quiz"
+                element={<LexicalSetsQuiz />}
               />
 
               {/* Protected routes for write access */}

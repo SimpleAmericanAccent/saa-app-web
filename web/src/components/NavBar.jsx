@@ -75,6 +75,22 @@ function NavBar({ showSidebarTrigger = false }) {
                     </Link>
                   </NavigationMenuLink>
                 </li>
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/onboarding/lexical-sets-quiz"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Lexical Sets Quiz
+                      </div>
+                      <p className="text-sm leading-snug text-muted-foreground">
+                        Test your knowledge of lexical sets with interactive
+                        exercises.
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
                 {/* More onboarding topics can be added here later */}
                 <li className="row-span-3 rounded-md border p-4">
                   <div className="mb-2 mt-4 text-sm font-medium">
