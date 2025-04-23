@@ -247,211 +247,230 @@ export default function VowelSynthesizer() {
   }, [formants.F1, formants.F2]);
 
   return (
-    <div className="flex flex-wrap items-start justify-center p-5">
+    <div className="flex flex-col items-center max-w-[] mx-auto p-5">
       <p className="text-muted-foreground text-sm mt-4 mb-6 text-center">
         Click and drag anywhere on the vowel diagram below to explore different
         vowel sounds. The position of your cursor controls the first two formant
         frequencies (F1 and F2).
       </p>
-      <div
-        className="relative w-[600px] h-[400px] border-2 border-gray-800 cursor-crosshair mr-5"
-        ref={diagramRef}
-      >
-        {/* Add tick marks and values */}
-        <div>
-          <div className="absolute text-sm text-gray-800 bottom-[-20px] left-0">
-            {Math.round(F2_MAX_DISPLAY)}
-          </div>
-          <div className="absolute text-sm text-gray-800 bottom-[-20px] right-0">
-            {Math.round(F2_MIN_DISPLAY)}
-          </div>
-          <div className="absolute text-sm text-gray-800 left-[-40px] top-0">
-            {Math.round(F1_MIN_DISPLAY)}
-          </div>
-          <div className="absolute text-sm text-gray-800 left-[-40px] bottom-0">
-            {Math.round(F1_MAX_DISPLAY)}
-          </div>
-        </div>
+      <div className="flex flex-row gap-8 items-center">
         <div
-          className="absolute w-full h-full overflow-hidden cursor-crosshair select-none touch-none"
-          onMouseDown={handleMouseDownOnDiagram}
-          onMouseMove={handleMouseMoveOnDiagram}
+          className="relative w-[600px] h-[400px] border-2 border-gray-800 cursor-crosshair"
+          ref={diagramRef}
         >
+          {/* Add tick marks and values */}
+          <div>
+            <div className="absolute text-sm text-gray-800 bottom-[-20px] left-0">
+              {Math.round(F2_MAX_DISPLAY)}
+            </div>
+            <div className="absolute text-sm text-gray-800 bottom-[-20px] right-0">
+              {Math.round(F2_MIN_DISPLAY)}
+            </div>
+            <div className="absolute text-sm text-gray-800 left-[-40px] top-0">
+              {Math.round(F1_MIN_DISPLAY)}
+            </div>
+            <div className="absolute text-sm text-gray-800 left-[-40px] bottom-0">
+              {Math.round(F1_MAX_DISPLAY)}
+            </div>
+          </div>
           <div
-            className="absolute w-[700px] h-0 pointer-events-none border-solid border-transparent"
-            style={{
-              borderLeftWidth: "150px",
-              borderRightWidth: "250px",
-              borderTopWidth: "400px",
-              borderTopColor: "rgba(0, 0, 255, 0.3)",
-              clipPath: "inset(0 0 0 0)",
-            }}
-          />
-          {VOWEL_SYMBOLS.map(({ symbol, F1, F2 }) => (
+            className="absolute w-full h-full overflow-hidden cursor-crosshair select-none touch-none"
+            onMouseDown={handleMouseDownOnDiagram}
+            onMouseMove={handleMouseMoveOnDiagram}
+          >
             <div
-              key={symbol}
-              className="absolute font-sans text-sm pointer-events-none select-none transform -translate-x-1/2 -translate-y-1/2"
+              className="absolute w-[700px] h-0 pointer-events-none border-solid border-transparent"
               style={{
-                left: `${
-                  ((F2_MAX_DISPLAY - F2) / (F2_MAX_DISPLAY - F2_MIN_DISPLAY)) *
-                  100
-                }%`,
-                top: `${
-                  ((F1 - F1_MIN_DISPLAY) / (F1_MAX_DISPLAY - F1_MIN_DISPLAY)) *
-                  100
-                }%`,
-              }}
-            >
-              {symbol}
-            </div>
-          ))}
-          <div
-            ref={markerRef}
-            className="absolute w-2.5 h-2.5 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-          />
-        </div>
-        <div>
-          <div className="absolute text-base text-gray-800 bottom-[-30px] left-1/2 transform -translate-x-1/2">
-            F2 (Hz)
-          </div>
-          <div className="absolute text-base text-gray-800 top-1/2 left-[-50px] transform -translate-y-1/2 -rotate-90">
-            F1 (Hz)
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-6 p-4">
-        <div className="space-y-4">
-          <div className="grid items-center gap-2">
-            <label htmlFor="pitch" className="text-sm font-medium">
-              Pitch (Hz):
-            </label>
-
-            <div className="flex items-center gap-4">
-              <Slider
-                id="pitch"
-                min={80}
-                max={200}
-                value={[pitch]}
-                onValueChange={([value]) => {
-                  setPitch(value);
-                  if (oscillatorRef.current) {
-                    oscillatorRef.current.frequency.setValueAtTime(
-                      value,
-                      audioContextRef.current.currentTime
-                    );
-                  }
-                }}
-                className="flex-1"
-              />
-              <input
-                type="number"
-                value={pitch}
-                onChange={(e) => {
-                  const value = Number(e.target.value);
-                  setPitch(value);
-                  if (oscillatorRef.current) {
-                    oscillatorRef.current.frequency.setValueAtTime(
-                      value,
-                      audioContextRef.current.currentTime
-                    );
-                  }
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="grid items-center gap-2">
-            <label htmlFor="volume" className="text-sm font-medium">
-              Volume:
-            </label>
-            <Slider
-              id="volume"
-              min={0}
-              max={100}
-              value={[volume]}
-              onValueChange={([value]) => {
-                setVolume(value);
-                if (gainNodeRef.current) {
-                  gainNodeRef.current.gain.setValueAtTime(
-                    value,
-                    audioContextRef.current.currentTime
-                  );
-                }
+                borderLeftWidth: "150px",
+                borderRightWidth: "250px",
+                borderTopWidth: "400px",
+                borderTopColor: "rgba(0, 0, 255, 0.3)",
+                clipPath: "inset(0 0 0 0)",
               }}
             />
+            {VOWEL_SYMBOLS.map(({ symbol, F1, F2 }) => (
+              <div
+                key={symbol}
+                className="absolute font-sans text-sm pointer-events-none select-none transform -translate-x-1/2 -translate-y-1/2"
+                style={{
+                  left: `${
+                    ((F2_MAX_DISPLAY - F2) /
+                      (F2_MAX_DISPLAY - F2_MIN_DISPLAY)) *
+                    100
+                  }%`,
+                  top: `${
+                    ((F1 - F1_MIN_DISPLAY) /
+                      (F1_MAX_DISPLAY - F1_MIN_DISPLAY)) *
+                    100
+                  }%`,
+                }}
+              >
+                {symbol}
+              </div>
+            ))}
+            <div
+              ref={markerRef}
+              className="absolute w-2.5 h-2.5 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            />
           </div>
-
-          <div className="grid items-center gap-2">
-            <label htmlFor="F1" className="text-sm font-medium">
-              F1 (Hz):
-            </label>
-            <div className="flex items-center gap-4">
-              <input
-                type="range"
-                id="F1"
-                min="200"
-                max="1000"
-                value={formants.F1}
-                onChange={(e) => handleFormantChange("F1", e.target.value)}
-              />
-              <input
-                type="number"
-                value={formants.F1}
-                onChange={(e) => handleFormantChange("F1", e.target.value)}
-              />
+          <div>
+            <div className="absolute text-base text-gray-800 bottom-[-30px] left-1/2 transform -translate-x-1/2">
+              F2 (Hz)
+            </div>
+            <div className="absolute text-base text-gray-800 top-1/2 left-[-50px] transform -translate-y-1/2 -rotate-90">
+              F1 (Hz)
             </div>
           </div>
+        </div>
 
-          <div className="grid items-center gap-2">
-            <label htmlFor="F2" className="text-sm font-medium">
-              F2 (Hz):
-            </label>
-            <div className="flex items-center gap-4">
-              <input
-                type="range"
-                id="F2"
-                min="500"
-                max="3000"
-                value={formants.F2}
-                onChange={(e) => handleFormantChange("F2", e.target.value)}
-              />
-              <input
-                type="number"
-                value={formants.F2}
-                onChange={(e) => handleFormantChange("F2", e.target.value)}
-              />
+        <div className="w-[600px] grid gap-6 p-4">
+          <div className="space-y-4">
+            <div className="grid items-center gap-2">
+              <label htmlFor="pitch" className="text-sm font-medium">
+                Pitch (Hz):
+              </label>
+
+              <div className="flex items-center gap-4">
+                <Slider
+                  id="pitch"
+                  min={80}
+                  max={200}
+                  value={[pitch]}
+                  onValueChange={([value]) => {
+                    setPitch(value);
+                    if (oscillatorRef.current) {
+                      oscillatorRef.current.frequency.setValueAtTime(
+                        value,
+                        audioContextRef.current.currentTime
+                      );
+                    }
+                  }}
+                  className="flex-1"
+                />
+                <input
+                  type="number"
+                  value={pitch}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    setPitch(value);
+                    if (oscillatorRef.current) {
+                      oscillatorRef.current.frequency.setValueAtTime(
+                        value,
+                        audioContextRef.current.currentTime
+                      );
+                    }
+                  }}
+                  className="w-20"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="grid items-center gap-2">
-            <label htmlFor="F3" className="text-sm font-medium">
-              F3 (Hz):
-            </label>
-            <div className="flex items-center gap-4">
-              <input
-                type="range"
-                id="F3"
-                min="2000"
-                max="3500"
-                value={formants.F3}
-                onChange={(e) => handleFormantChange("F3", e.target.value)}
-              />
-              <input
-                type="number"
-                value={formants.F3}
-                onChange={(e) => handleFormantChange("F3", e.target.value)}
-              />
+            <div className="grid items-center gap-2">
+              <label htmlFor="volume" className="text-sm font-medium">
+                Volume:
+              </label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  id="volume"
+                  min={0}
+                  max={100}
+                  value={[volume]}
+                  onValueChange={([value]) => {
+                    setVolume(value);
+                    if (gainNodeRef.current) {
+                      gainNodeRef.current.gain.setValueAtTime(
+                        value,
+                        audioContextRef.current.currentTime
+                      );
+                    }
+                  }}
+                  className="flex-1"
+                />
+                <input
+                  type="number"
+                  value={volume}
+                  onChange={(e) => setVolume(Number(e.target.value))}
+                  className="w-20"
+                />
+              </div>
             </div>
-          </div>
 
-          <Button
-            onClick={isPlaying ? stopSound : startSound}
-            variant={isPlaying ? "destructive" : "default"}
-            className="w-full"
-          >
-            {isPlaying ? "Stop" : "Start"}
-          </Button>
+            <div className="grid items-center gap-2">
+              <label htmlFor="F1" className="text-sm font-medium">
+                F1 (Hz):
+              </label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  id="F1"
+                  min="200"
+                  max="1000"
+                  value={[formants.F1]}
+                  onValueChange={([value]) => handleFormantChange("F1", value)}
+                  className="flex-1"
+                />
+
+                <input
+                  type="number"
+                  value={formants.F1}
+                  onChange={(e) => handleFormantChange("F1", e.target.value)}
+                  className="w-20"
+                />
+              </div>
+            </div>
+
+            <div className="grid items-center gap-2">
+              <label htmlFor="F2" className="text-sm font-medium">
+                F2 (Hz):
+              </label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  id="F2"
+                  min={500}
+                  max={3000}
+                  value={[formants.F2]}
+                  onValueChange={([value]) => handleFormantChange("F2", value)}
+                  className="flex-1"
+                />
+
+                <input
+                  type="number"
+                  value={formants.F2}
+                  onChange={(e) => handleFormantChange("F2", e.target.value)}
+                  className="w-20"
+                />
+              </div>
+            </div>
+
+            <div className="grid items-center gap-2">
+              <label htmlFor="F3" className="text-sm font-medium">
+                F3 (Hz):
+              </label>
+              <div className="flex items-center gap-4">
+                <Slider
+                  id="F3"
+                  min={2000}
+                  max={3500}
+                  value={[formants.F3]}
+                  onValueChange={([value]) => handleFormantChange("F3", value)}
+                  className="flex-1"
+                />
+                <input
+                  type="number"
+                  value={formants.F3}
+                  onChange={(e) => handleFormantChange("F3", e.target.value)}
+                  className="w-20"
+                />
+              </div>
+            </div>
+
+            <Button
+              onClick={isPlaying ? stopSound : startSound}
+              variant={isPlaying ? "destructive" : "default"}
+              className="w-full"
+            >
+              {isPlaying ? "Stop" : "Start"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
