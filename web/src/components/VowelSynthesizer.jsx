@@ -402,8 +402,8 @@ export default function VowelSynthesizer() {
               <div className="flex items-center gap-4">
                 <Slider
                   id="F1"
-                  min="200"
-                  max="1000"
+                  min={200}
+                  max={1000}
                   value={[formants.F1]}
                   onValueChange={([value]) => handleFormantChange("F1", value)}
                   className="flex-1"
