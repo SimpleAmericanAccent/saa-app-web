@@ -639,14 +639,14 @@ export default function LexicalSetsQuiz() {
       </Card>
 
       {/* Running list of answers */}
-      <div className="grid grid-cols-2 gap-8">
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-emerald-600 dark:text-emerald-500">
-            Correct Answers
-          </h3>
-          <ul className="space-y-2">
-            {currentQuestion > 0 &&
-              questions.map((q, index) => {
+      {totalAnswered > 0 && (
+        <div className="grid grid-cols-2 gap-8">
+          <div>
+            <h3 className="text-lg font-semibold mb-3 text-emerald-600 dark:text-emerald-500">
+              Correct Answers
+            </h3>
+            <ul className="space-y-2">
+              {questions.map((q, index) => {
                 const isCorrect =
                   index < currentQuestion && !incorrectIndices.has(index);
                 if (!isCorrect) return null;
@@ -661,16 +661,15 @@ export default function LexicalSetsQuiz() {
                   </li>
                 );
               })}
-          </ul>
-        </div>
+            </ul>
+          </div>
 
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-red-600 dark:text-red-500">
-            Incorrect Answers
-          </h3>
-          <ul className="space-y-2">
-            {currentQuestion > 0 &&
-              questions.map((q, index) => {
+          <div>
+            <h3 className="text-lg font-semibold mb-3 text-red-600 dark:text-red-500">
+              Incorrect Answers
+            </h3>
+            <ul className="space-y-2">
+              {questions.map((q, index) => {
                 const isIncorrect = incorrectIndices.has(index);
                 if (!isIncorrect) return null;
                 return (
@@ -687,9 +686,10 @@ export default function LexicalSetsQuiz() {
                   </li>
                 );
               })}
-          </ul>
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
