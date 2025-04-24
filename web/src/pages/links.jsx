@@ -168,9 +168,9 @@ export default function Links() {
           >
             Praat
           </a>{" "}
-          - The website looks terrible but Praat is heavily used in
-          academic/professional accent analysis, if you <i>really</i> want to
-          dive deep.
+          - The website might look outdated, but Praat is a powerful tool widely
+          used in academic and professional accent analysis—perfect if you
+          really want to dive deep.
         </li>
       </ul>
 
