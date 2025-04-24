@@ -59,12 +59,12 @@ So:
 - Group 2 (like seek) is called the **FLEECE** set.
 
 Each keyword represents the vowel sound in its set.
-So the word kit contains the KIT vowel, and fleece contains the FLEECE vowel.
+So the word kit contains the KIT vowel sound, and fleece contains the FLEECE vowel sound.
 
-> 👉 These keywords might seem a little random at first, but they're carefully chosen to be distinct from each other — and they're worth learning.
+> 👉 Why use "KIT" and "FLEECE" instead of simpler words? It's actually a clever choice. Consider if we had used "bit" and "beat" instead. These words are too similar — many English learners have trouble telling them apart! (For instance, a Brazilian student might think they're saying "bit" when they're actually saying "beat".) This can lead to lots of confusion if we're trying to verbally tell someone which lexical set we're referring to. That's why we use keywords like "KIT" and "FLEECE" that sound completely different from each other. 
 
 ## ✅ Why This Matters
-If you want to master the American accent, you can’t trust spelling alone.
+If you want to master the American accent, you can't trust spelling alone.
 
 You need to train your ear to recognize the actual sounds — and lexical sets (with their helpful keywords) give you a reliable, consistent way to do that.
 
