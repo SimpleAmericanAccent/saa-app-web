@@ -12,6 +12,7 @@ import Home6 from "./pages/stats.jsx";
 import Links from "./pages/links.jsx";
 import LexicalSets from "./pages/onboarding/lexical-sets.jsx";
 import LexicalSetsQuiz from "./pages/onboarding/lexical-sets-quiz.jsx";
+import Phonemes from "./pages/phonemes.jsx";
 // import SuccessPath from "./pages/SuccessPath.jsx";
 // import Quiz from "./pages/Quiz.jsx";
 // import NavBar from "./components/navbar/NavBar";
@@ -34,6 +35,7 @@ function App() {
               <Route path="/vsynth" element={<VSynth />} />
               <Route path="/stats" element={<Home6 />} />
               <Route path="/links" element={<Links />} />
+              <Route path="/phonemes" element={<Phonemes />} />
               <Route
                 path="/onboarding/lexical-sets"
                 element={<LexicalSets />}

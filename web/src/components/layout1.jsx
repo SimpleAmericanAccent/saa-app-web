@@ -17,7 +17,7 @@ export default function Layout1({ children }) {
   return (
     <div className="w-screen h-screen flex flex-col">
       <NavBar />
-      <main>
+      <main className="w-full">
         <Outlet />
       </main>
     </div>
