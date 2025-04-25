@@ -317,10 +317,6 @@
         {
           "pattern": "au",
           "examples": ["laugh", "laughter"]
-        },
-        {
-          "pattern": "ea",
-          "examples": ["catch", "match", "batch", "latch", "patch", "thatch"]
         }
       ],
       "representations": {

@@ -13,6 +13,7 @@ import Links from "./pages/links.jsx";
 import LexicalSets from "./pages/onboarding/lexical-sets.jsx";
 import LexicalSetsQuiz from "./pages/onboarding/lexical-sets-quiz.jsx";
 import Phonemes from "./pages/phonemes.jsx";
+import SpellingPronunciationPage from "./pages/SpellingPronunciationPage.jsx";
 // import SuccessPath from "./pages/SuccessPath.jsx";
 // import Quiz from "./pages/Quiz.jsx";
 // import NavBar from "./components/navbar/NavBar";
@@ -36,6 +37,10 @@ function App() {
               <Route path="/stats" element={<Home6 />} />
               <Route path="/links" element={<Links />} />
               <Route path="/phonemes" element={<Phonemes />} />
+              <Route
+                path="/spelling-pronunciation"
+                element={<SpellingPronunciationPage />}
+              />
               <Route
                 path="/onboarding/lexical-sets"
                 element={<LexicalSets />}
