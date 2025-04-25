@@ -1098,7 +1098,10 @@ export default function createRoutes(app) {
     }
 
     // For production, serve the built index.html
-    const indexPath = path.join(__dirname, "../../web/dist/index.html");
+    const indexPath = path.join(
+      __dirname,
+      "../../frontend-web/dist/index.html"
+    );
     console.log("catch-all -> send file at:", indexPath);
     res.sendFile(indexPath);
   });
