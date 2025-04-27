@@ -22,7 +22,7 @@ export default function createRoutes(app) {
   const router = express.Router();
   let AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_ONLY_VALUE;
 
-  // ✅ Wraps any async route in a try-catch, preventing server crashes
+  //#region Wraps any async route in a try-catch, preventing server crashes
   function safeRoute(handler) {
     return async (req, res, next) => {
       try {
@@ -43,6 +43,7 @@ export default function createRoutes(app) {
       original.call(router, path, ...handlers.map(safeRoute));
     };
   });
+  //#endregion
 
   //#region v2 routes
 
@@ -1100,61 +1101,7 @@ export default function createRoutes(app) {
 
   //#endregion
 
-  // ✅ Helper: Fetch data from Airtable
-  async function fetchAllAirtableRecords(tableName) {
-    return new Promise((resolve, reject) => {
-      let allRecords = [];
-      let offset = null; // Starts as null
-
-      function fetchPage(nextOffset) {
-        let path = `/v0/${AIRTABLE_BASE_ID}/${tableName}`;
-        if (nextOffset) {
-          // Will be null on first pass, so this block is skipped
-          path += `?offset=${nextOffset}`;
-        }
-
-        const options = {
-          hostname: "api.airtable.com",
-          path: path,
-          method: "GET",
-          headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
-        };
-
-        const airtableReq = https.request(options, (airtableRes) => {
-          let data = "";
-          airtableRes.setEncoding("utf8");
-
-          airtableRes.on("data", (chunk) => {
-            data += chunk;
-          });
-
-          airtableRes.on("end", () => {
-            try {
-              const parsedData = JSON.parse(data);
-              if (!parsedData.records) {
-                return reject(new Error("Invalid response from Airtable"));
-              }
-
-              allRecords.push(...parsedData.records);
-              if (parsedData.offset) {
-                fetchPage(parsedData.offset); // Recursively fetch next batch
-              } else {
-                resolve(allRecords); // No more pages, return all records
-              }
-            } catch (error) {
-              reject(error);
-            }
-          });
-        });
-
-        airtableReq.on("error", (err) => reject(err));
-        airtableReq.end();
-      }
-
-      fetchPage(offset); // ✅ This always runs on the first pass!
-    });
-  }
-
+  //#region Airtable Helper Functions
   async function fetchAirtablePage(endpoint) {
     return new Promise((resolve, reject) => {
       const options = {
@@ -1241,65 +1188,37 @@ export default function createRoutes(app) {
   }
 
   async function fetchAllPages2(tableName) {
-    // console.log("tableName:", tableName);
-    return new Promise((resolve, reject) => {
-      let allRecords = [];
-      let offset = null;
+    let allRecords = [];
+    let offset = null;
 
-      function fetchPage(nextOffset) {
-        let path = `/v0/${AIRTABLE_BASE_ID}/${tableName}`;
-        if (nextOffset) {
-          path += `?offset=${nextOffset}`;
-        }
-
-        // console.log("path:", path);
-
-        const options = {
-          hostname: "api.airtable.com",
-          path: path,
-          method: "GET",
-          headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
-        };
-
-        const airtableReq = https.request(options, (airtableRes) => {
-          let data = "";
-          airtableRes.setEncoding("utf8");
-
-          airtableRes.on("data", (chunk) => {
-            data += chunk;
-          });
-
-          airtableRes.on("end", async () => {
-            if (tableName === "BR%20issues") {
-              // console.log("data:", data);
-            }
-            try {
-              const parsedData = JSON.parse(data);
-              if (!parsedData.records) {
-                return reject(new Error("Invalid response from Airtable"));
-              }
-
-              allRecords.push(...parsedData.records);
-              if (parsedData.offset) {
-                // console.log("allRecords", allRecords);
-                // console.log("parsedData.offset:", parsedData.offset);
-                // await new Promise((r) => setTimeout(r, 5000));
-                fetchPage(parsedData.offset); // Recursively fetch next batch
-              } else {
-                resolve(allRecords); // No more pages, return all records
-              }
-            } catch (error) {
-              reject(error);
-            }
-          });
-        });
-
-        airtableReq.on("error", (err) => reject(err));
-        airtableReq.end();
+    async function fetchPage(nextOffset) {
+      let path = `/v0/${AIRTABLE_BASE_ID}/${tableName}`;
+      if (nextOffset) {
+        path += `?offset=${nextOffset}`;
       }
 
-      fetchPage(offset);
-    });
+      try {
+        const response = await fetch(`https://api.airtable.com${path}`, {
+          headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
+        });
+
+        const parsedData = await response.json();
+
+        if (!parsedData.records) {
+          throw new Error("Invalid response from Airtable");
+        }
+
+        allRecords.push(...parsedData.records);
+        if (parsedData.offset) {
+          await fetchPage(parsedData.offset); // Recursively fetch next batch
+        }
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    await fetchPage(offset);
+    return allRecords;
   }
 
   function fetchAirtableData(tableName) {
@@ -1352,32 +1271,7 @@ export default function createRoutes(app) {
     });
   }
 
-  // ✅ Helper: Forward API request to Airtable
-  function forwardAirtableRequest(req, res, airtablePath) {
-    const options = {
-      hostname: "api.airtable.com",
-      path: `/v0/${AIRTABLE_BASE_ID}/${airtablePath}`,
-      method: req.method,
-      headers: {
-        Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-        "Content-Type": "application/json",
-      },
-    };
-
-    const airtableReq = https.request(options, (airtableRes) => {
-      let data = "";
-      airtableRes.setEncoding("utf8");
-      airtableRes.on("data", (chunk) => {
-        data += chunk;
-      });
-      airtableRes.on("end", () => {
-        res.json(JSON.parse(data));
-      });
-    });
-
-    req.on("data", (chunk) => airtableReq.write(chunk));
-    req.on("end", () => airtableReq.end());
-  }
+  //#endregion
 
   return router;
 }
