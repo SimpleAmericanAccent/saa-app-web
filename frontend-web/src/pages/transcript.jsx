@@ -52,7 +52,6 @@ export default function Transcript() {
   const { mp3url, annotatedTranscript, fetchAudio } =
     version === "v1" ? useFetchAudioV1() : useFetchAudioV2();
 
-
   // Reference for Audio Player & State for Playback Speed
   const audioRef = useRef(null);
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
@@ -254,7 +253,7 @@ export default function Transcript() {
         timestamp,
       }),
       headers: {
-        "Content-Type": "text/plain",
+        "Content-Type": "application/json",
       },
     });
 

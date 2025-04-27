@@ -285,117 +285,126 @@ export default function createRoutes(app) {
     try {
       AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;
 
-      let body = "";
-      req.on("data", (chunk) => {
-        body += chunk.toString();
-      });
-      req.on("end", async () => {
-        console.log("body:", body);
-        let {
-          wordIndex,
-          annotations: annotationsDesired,
-          audioId,
-          word,
-          timestamp,
-        } = JSON.parse(body);
-        console.log("wordIndex:", wordIndex);
-        console.log("desired annotations:", annotationsDesired);
+      // Add validation
+      if (!req.body || typeof req.body !== "object") {
+        return res.status(400).json({
+          error: "Invalid request body",
+          received: req.body,
+        });
+      }
 
-        let wordsData = app.locals.wordsData;
-        let wordsEntry = wordsData.find(
-          (entry) => entry.fields["word index"] == wordIndex
-        );
+      const {
+        wordIndex,
+        annotations: annotationsDesired,
+        audioId,
+        word,
+        timestamp,
+      } = req.body;
 
-        // Get current annotations or empty array if none exist
-        const annotationsCurrent = wordsEntry?.fields["BR issues"] || [];
-        console.log("current annotations:", annotationsCurrent);
+      // Add validation for required fields
+      if (!wordIndex || !annotationsDesired) {
+        return res.status(400).json({
+          error: "Missing required fields",
+          required: ["wordIndex", "annotations"],
+          received: req.body,
+        });
+      }
 
-        // Determine operations needed
-        const operations = determineRequiredOperations(
-          annotationsCurrent,
-          annotationsDesired,
-          wordsEntry
-        );
+      console.log("wordIndex:", wordIndex);
+      console.log("desired annotations:", annotationsDesired);
 
-        // Execute the operations
-        const results = [];
-        for (const operation of operations) {
-          try {
-            let result;
-            switch (operation.type) {
-              case "CREATE":
-                result = await executeAirtableOperation({
-                  method: "POST",
-                  path: "Words%20(instance)",
-                  data: {
-                    fields: {
-                      "word index": wordIndex,
-                      "BR issues": operation.data.annotations,
-                      // Add other required fields here
-                      "Audio Source": audioId, // Need to track this
-                      Name: word,
-                      "in timestamp (seconds)": timestamp,
-                      Note: "Created via SAA web app",
-                    },
+      let wordsData = app.locals.wordsData;
+      let wordsEntry = wordsData.find(
+        (entry) => entry.fields["word index"] == wordIndex
+      );
+
+      // Get current annotations or empty array if none exist
+      const annotationsCurrent = wordsEntry?.fields["BR issues"] || [];
+      console.log("current annotations:", annotationsCurrent);
+
+      // Determine operations needed
+      const operations = determineRequiredOperations(
+        annotationsCurrent,
+        annotationsDesired,
+        wordsEntry
+      );
+
+      // Execute the operations
+      const results = [];
+      for (const operation of operations) {
+        try {
+          let result;
+          switch (operation.type) {
+            case "CREATE":
+              result = await executeAirtableOperation({
+                method: "POST",
+                path: "Words%20(instance)",
+                data: {
+                  fields: {
+                    "word index": wordIndex,
+                    "BR issues": operation.data.annotations,
+                    // Add other required fields here
+                    "Audio Source": audioId, // Need to track this
+                    Name: word,
+                    "in timestamp (seconds)": timestamp,
+                    Note: "Created via SAA web app",
                   },
-                });
-                break;
+                },
+              });
+              break;
 
-              case "UPDATE":
-                result = await executeAirtableOperation({
-                  method: "PATCH",
-                  path: `Words%20(instance)/${operation.recordId}`,
-                  data: {
-                    fields: {
-                      "BR issues": operation.data.annotations,
-                      Note: "Updated via SAA web app",
-                    },
+            case "UPDATE":
+              result = await executeAirtableOperation({
+                method: "PATCH",
+                path: `Words%20(instance)/${operation.recordId}`,
+                data: {
+                  fields: {
+                    "BR issues": operation.data.annotations,
+                    Note: "Updated via SAA web app",
                   },
-                });
-                break;
+                },
+              });
+              break;
 
-              case "DELETE":
-                result = await executeAirtableOperation({
-                  method: "DELETE",
-                  path: `Words%20(instance)/${operation.recordId}`,
-                });
-                break;
-            }
-            results.push({ type: operation.type, success: true, data: result });
-          } catch (err) {
-            results.push({
-              type: operation.type,
-              success: false,
-              error: err.message,
-            });
+            case "DELETE":
+              result = await executeAirtableOperation({
+                method: "DELETE",
+                path: `Words%20(instance)/${operation.recordId}`,
+              });
+              break;
           }
+          results.push({ type: operation.type, success: true, data: result });
+        } catch (err) {
+          results.push({
+            type: operation.type,
+            success: false,
+            error: err.message,
+          });
         }
+      }
 
-        res.setHeader("Content-Type", "application/json");
-        res.json({
-          "server response": {
-            input: {
-              method: req.method,
-              wordIndex,
-              annotationsCurrent: annotationsCurrent,
-              annotationsDesired: annotationsDesired,
-              body,
+      res.json({
+        "server response": {
+          input: {
+            method: req.method,
+            wordIndex,
+            annotationsCurrent: annotationsCurrent,
+            annotationsDesired: annotationsDesired,
+            body: req.body,
+          },
+          output: {
+            operations: {
+              "operations to be done": operations,
+              "operations done": results,
             },
-            output: {
-              operations: {
-                "operations to be done": operations,
-                "operations done": results,
-              },
-              success: results.every((r) => r.success),
-              newState: {
-                wordIndex,
-                annotations: annotationsDesired,
-                wordsData,
-              },
+            success: results.every((r) => r.success),
+            newState: {
+              wordIndex,
+              annotations: annotationsDesired,
+              wordsData,
             },
           },
-        });
-        res.end();
+        },
       });
     } catch (error) {
       console.error("Error updating annotations:", error);
@@ -658,15 +667,11 @@ export default function createRoutes(app) {
               }
             );
 
-            res.setHeader("Content-Type", "application/json");
-            res.write(
-              JSON.stringify({
-                people: currentUserAudioAccessObjectSpeakerNames,
-                audios: currentUserAudioAccessObject,
-                userRole: currentUserRole,
-              })
-            );
-            res.end();
+            res.json({
+              people: currentUserAudioAccessObjectSpeakerNames,
+              audios: currentUserAudioAccessObject,
+              userRole: currentUserRole,
+            });
           });
         });
         req2.write(postData2);
@@ -730,14 +735,10 @@ export default function createRoutes(app) {
           res2.on("end", () => {
             defaultTranscriptData = JSON.parse(defaultTranscriptDataString);
 
-            res.setHeader("Content-Type", "application/json");
-            res.write(
-              JSON.stringify({
-                audio: defaultAudioDataSanitized,
-                airtableWords: defaultTranscriptData,
-              })
-            );
-            res.end();
+            res.json({
+              audio: defaultAudioDataSanitized,
+              airtableWords: defaultTranscriptData,
+            });
           });
         });
         req2.write(postData2);
@@ -801,9 +802,7 @@ export default function createRoutes(app) {
     airtableFeaturesSanitized.sort((a, b) => a.po - b.po);
 
     // Send response
-    res.setHeader("Content-Type", "application/json");
-    res.statusCode = 200;
-    res.end(JSON.stringify(airtableFeaturesSanitized));
+    res.json(airtableFeaturesSanitized);
   });
 
   router.get("/data/loadAudio/:AudioRecId", async (req, res) => {
@@ -828,9 +827,7 @@ export default function createRoutes(app) {
         airtableWords: { records: wordsData }, // Now includes ALL records
       });
     } else {
-      res.setHeader("Content-Type", "text/plain");
-      res.write("not found");
-      res.end();
+      res.status(404).json({ error: "not found" });
     }
   });
 
@@ -851,9 +848,7 @@ export default function createRoutes(app) {
       });
       res1.on("end", () => {
         successPath = JSON.parse(successPathString);
-        res.setHeader("Content-Type", "application/json");
-        res.write(JSON.stringify(successPath));
-        res.end();
+        res.json(successPath);
       });
     });
     req1.write(postData);
@@ -993,9 +988,7 @@ export default function createRoutes(app) {
         });
       }
     } else {
-      res.setHeader("Content-Type", "text/plain");
-      res.write("not authorized");
-      res.end();
+      res.status(401).json({ error: "not authorized" });
     }
   });
 
@@ -1078,8 +1071,7 @@ export default function createRoutes(app) {
 
   // #region 🔹  USER ROUTES
   router.get("/user", requiresAuth(), (req, res) => {
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify(req.oidc.user, null, 3));
+    res.json(req.oidc.user);
   });
 
   router.get("/callback", requiresAuth(), (req, res) => {
