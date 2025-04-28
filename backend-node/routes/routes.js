@@ -9,7 +9,6 @@ import { wrapMethodsWithSafeRoute } from "../middleware/safeRoute.js";
 const router = express.Router();
 
 wrapMethodsWithSafeRoute(router);
-
 router.use("/", baseRouter);
 router.use("/v1", v1Router);
 router.use("/v2", v2Router);

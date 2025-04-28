@@ -4,105 +4,89 @@ import { fetchAirtableRecords } from "../services/airtable.js";
 const baseRouter = express.Router();
 
 baseRouter.get("/authz", async (req, res) => {
-  ///////////////////////
-  ///// 1) look up people/user list in Airtable and see if can find currently logged in user. if yes, store relevant info such as which resources they have access to
-  //////////////////////
-
-  let currentUserId = req.oidc.user.sub;
-  let peopleObject = {};
-  let currentUserAirtable;
-  let currentUserAudioAccess;
-  let currentUserAudioAccessObject = [];
-  let currentUserAudioAccessObjectSpeakerNames = [];
-  let currentUserRole;
-
-  peopleObject = { records: await fetchAirtableRecords("People") };
-
-  for (let i = 0; i < Object.keys(peopleObject.records).length; i++) {
-    let user_id = peopleObject.records[i].fields["auth0 user_id"];
-    if (typeof user_id !== "undefined") {
-      if (user_id == currentUserId) {
-        currentUserAirtable = peopleObject.records[i];
-        currentUserAudioAccess =
-          peopleObject.records[i].fields["Access to audios"];
-        currentUserRole = peopleObject.records[i].fields["Role"];
-        console.log("Current user email is: ", req.oidc.user.email);
-        req.app.locals.currentUserAudioAccess = currentUserAudioAccess;
-        req.app.locals.currentUserRole = currentUserRole;
-      }
-    }
-  }
-
-  ///////////////////////
-  ///// 2) look up audio list in Airtable and grab the info for the audios the currently logged in user has access to
-  //////////////////////
-
-  const audioObject = {
-    records: await fetchAirtableRecords("Audio%20Source"),
+  // Helper function to find a record by user ID
+  const findUserById = (peopleRecords, userId) => {
+    return peopleRecords.find(
+      (record) => record.fields["auth0 user_id"] === userId
+    );
   };
 
-  for (let i = 0, k = 0; i < currentUserAudioAccess.length; i++) {
-    for (let j = 0; j < Object.keys(audioObject.records).length; j++) {
-      if (currentUserAudioAccess[i] === audioObject.records[j].id) {
-        currentUserAudioAccessObject[k] = {};
-        currentUserAudioAccessObject[k].id = audioObject.records[j].id;
-        currentUserAudioAccessObject[k].Name =
-          audioObject.records[j].fields.Name;
-        currentUserAudioAccessObject[k].SpeakerName =
-          audioObject.records[j].fields.Speaker[0];
-        k++;
-      }
-    }
-  }
+  // Helper function to find audio records the user has access to
+  const findAudiosByAccess = (audioRecords, accessList) => {
+    return accessList
+      .map((audioId) => {
+        const audio = audioRecords.find((record) => record.id === audioId);
+        return audio
+          ? {
+              id: audio.id,
+              Name: audio.fields.Name,
+              SpeakerName: audio.fields.Speaker[0],
+            }
+          : null;
+      })
+      .filter(Boolean);
+  };
 
-  for (let i = 0, k = 0; i < Object.keys(peopleObject.records).length; i++) {
-    for (let j = 0; j < currentUserAudioAccessObject.length; j++) {
-      if (
-        peopleObject.records[i].id ===
-        currentUserAudioAccessObject[j].SpeakerName
-      ) {
-        currentUserAudioAccessObjectSpeakerNames[k] = {};
-        currentUserAudioAccessObjectSpeakerNames[k].id =
-          peopleObject.records[i].id;
-        currentUserAudioAccessObjectSpeakerNames[k].Name =
-          peopleObject.records[i].fields.Name;
-        k++;
-      }
-    }
-  }
+  // Helper function to get speakers info for audios the user has access to
+  const findSpeakersForAudios = (peopleRecords, audioAccessList) => {
+    return audioAccessList
+      .map((audio) => {
+        const speaker = peopleRecords.find(
+          (record) => record.id === audio.SpeakerName
+        );
+        return speaker ? { id: speaker.id, Name: speaker.fields.Name } : null;
+      })
+      .filter(Boolean);
+  };
 
-  ///////////////////////
-  ///// 3) respond with whatever info the front-end needs / is allowed to see
-  //////////////////////
+  // Step 1: Look up current user
+  const currentUserId = req.oidc.user.sub;
+  const peopleObject = { records: await fetchAirtableRecords("People") };
+  const currentUser = findUserById(peopleObject.records, currentUserId);
+  if (currentUser) {
+    const {
+      "Access to audios": currentUserAudioAccess,
+      Role: currentUserRole,
+    } = currentUser.fields;
+    req.app.locals.currentUserRole = currentUserRole;
+    req.app.locals.currentUserAudioAccess = currentUserAudioAccess;
 
-  // Remove duplicate speakers
-  const uniquePeople = {};
-  currentUserAudioAccessObjectSpeakerNames =
-    currentUserAudioAccessObjectSpeakerNames.filter((person) => {
-      if (!uniquePeople[person.id]) {
-        uniquePeople[person.id] = true;
-        return true;
-      }
-      return false;
+    // Step 2: Look up audio list
+    const audioObject = {
+      records: await fetchAirtableRecords("Audio%20Source"),
+    };
+    const currentUserAudioAccessObject = findAudiosByAccess(
+      audioObject.records,
+      currentUserAudioAccess
+    );
+
+    // Step 3: Get speakers info for audios the user has access to
+    const currentUserAudioAccessObjectSpeakerNames = findSpeakersForAudios(
+      peopleObject.records,
+      currentUserAudioAccessObject
+    );
+
+    // Step 4: Remove duplicates
+    const uniqueSpeakers = [
+      ...new Map(
+        currentUserAudioAccessObjectSpeakerNames.map((item) => [item.id, item])
+      ).values(),
+    ];
+    const uniqueAudios = [
+      ...new Map(
+        currentUserAudioAccessObject.map((item) => [item.id, item])
+      ).values(),
+    ];
+
+    // Respond with the necessary info
+    res.json({
+      people: uniqueSpeakers,
+      audios: uniqueAudios,
+      userRole: currentUserRole,
     });
-
-  // Remove duplicate audios
-  const uniqueAudios = {};
-  currentUserAudioAccessObject = currentUserAudioAccessObject.filter(
-    (audio) => {
-      if (!uniqueAudios[audio.id]) {
-        uniqueAudios[audio.id] = true;
-        return true;
-      }
-      return false;
-    }
-  );
-
-  res.json({
-    people: currentUserAudioAccessObjectSpeakerNames,
-    audios: currentUserAudioAccessObject,
-    userRole: currentUserRole,
-  });
+  } else {
+    res.status(404).json({ error: "User not found" });
+  }
 });
 
 baseRouter.get("/data/loadIssues", async (req, res) => {

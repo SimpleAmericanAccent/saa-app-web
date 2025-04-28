@@ -2,10 +2,8 @@ import path from "path";
 import url from "url";
 import express from "express";
 import { auth } from "express-openid-connect";
-import createRoutes from "./routes/routes.js";
-import { environment_flag } from "./config.js"; // Assume environment variables are imported here
+import { environment_flag, auth0Config } from "./config.js";
 import router from "./routes/routes.js";
-import { auth0Config } from "./config.js";
 
 //#region main server setup
 // setup
