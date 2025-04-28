@@ -132,28 +132,33 @@ baseRouter.get("/data/loadIssues", async (req, res) => {
 });
 
 baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
-  if (req.app.locals.currentUserAudioAccess?.includes(req.params.AudioRecId)) {
-    const audioData = await fetchAirtableRecords("Audio%20Source", {
-      recordId: req.params.AudioRecId,
-    });
-
-    const wordsData = await fetchAirtableRecords("Words%20(instance)", {
-      filterByFormula: `{Audio Source} = "${audioData.fields.Name}"`,
-    });
-
-    req.app.locals.wordsData = wordsData;
-
-    res.json({
-      audio: {
-        mp3url: audioData.fields["mp3 url"],
-        tranurl: audioData.fields["tran/alignment JSON url"],
-        name: audioData.fields.Name,
-      },
-      airtableWords: { records: wordsData }, // Now includes ALL records
-    });
-  } else {
-    res.status(404).json({ error: "not found" });
+  // Check if the user has access to the audio
+  if (!req.app.locals.currentUserAudioAccess?.includes(req.params.AudioRecId)) {
+    return res.status(404).json({ error: "Not found" });
   }
+
+  const audioData = await fetchAirtableRecords("Audio%20Source", {
+    recordId: req.params.AudioRecId,
+  });
+
+  if (!audioData) {
+    return res.status(404).json({ error: "Audio not found" });
+  }
+
+  const wordsData = await fetchAirtableRecords("Words%20(instance)", {
+    filterByFormula: `{Audio Source} = "${audioData.fields.Name}"`,
+  });
+
+  req.app.locals.wordsData = wordsData;
+
+  res.json({
+    audio: {
+      mp3url: audioData.fields["mp3 url"],
+      tranurl: audioData.fields["tran/alignment JSON url"],
+      name: audioData.fields.Name,
+    },
+    airtableWords: { records: wordsData }, // Now includes ALL records
+  });
 });
 
 export default baseRouter;
