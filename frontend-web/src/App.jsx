@@ -14,9 +14,8 @@ import LexicalSets from "./pages/onboarding/lexical-sets.jsx";
 import LexicalSetsQuiz from "./pages/onboarding/lexical-sets-quiz.jsx";
 import Phonemes from "./pages/phonemes.jsx";
 import SpellingPronunciationPage from "./pages/SpellingPronunciationPage.jsx";
-// import SuccessPath from "./pages/SuccessPath.jsx";
-// import Quiz from "./pages/Quiz.jsx";
-// import NavBar from "./components/navbar/NavBar";
+import WLSDataExplorer from "./pages/WLSDataExplorer.jsx";
+import DictionaryAdmin from "./pages/DictionaryAdmin.jsx";
 
 function App() {
   return (
@@ -51,7 +50,22 @@ function App() {
               />
 
               {/* Protected routes for write access */}
-
+              <Route
+                path="/wls-data"
+                element={
+                  <ProtectedRoute requiredRole="write">
+                    <WLSDataExplorer />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dictionary-admin"
+                element={
+                  <ProtectedRoute requiredRole="write">
+                    <DictionaryAdmin />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/path"
                 element={
