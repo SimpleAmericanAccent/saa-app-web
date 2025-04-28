@@ -1,25 +1,23 @@
-import http from "http";
-import url from "url";
 import path from "path";
+import url from "url";
 import express from "express";
-import pkg from "express-openid-connect";
-const { auth, requiresAuth } = pkg;
+import { auth } from "express-openid-connect";
 import createRoutes from "./routes/routes.js";
 import { environment_flag } from "./config.js"; // Assume environment variables are imported here
-import { PrismaClient } from "@prisma/client";
 
+// setup
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const prisma = new PrismaClient();
-
-// Add Prisma cleanup handler
-process.on("beforeExit", async () => {
-  await prisma.$disconnect();
-});
-
 const port = process.env.PORT || 5000;
+const isDev = environment_flag === "dev";
 
+// initialize express app
+const app = express();
+
+// general middleware
+app.use(express.json());
+
+//#region auth
 const config = {
   authRequired: true,
   auth0Logout: true,
@@ -28,50 +26,48 @@ const config = {
   clientID: process.env.AUTH0_CLIENT_ID,
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_ID,
 };
-
-const app = express();
-
-// Configuration & environment
-// Express app creation
-// Initialize services
-// Initialize controllers
-// Auth middleware
-// Routes
-// Error handling
-
-// Enable authentication & apply global authentication
 app.use(auth(config));
+//#endregion auth
 
-app.use(function (req, res, next) {
-  app.locals.user = req.oidc.user;
-  next();
+//#region api
+app.use(createRoutes());
+//#endregion api
+
+//#region frontend
+// static files
+const staticPath = path.join(
+  __dirname,
+  isDev ? "../frontend-web/public" : "../frontend-web/dist"
+);
+const indexPath = path.join(staticPath, "index.html");
+app.use(express.static(staticPath));
+
+// Handle root GET after login
+app.get("/", (req, res) => {
+  if (isDev) {
+    res.redirect("http://localhost:5173/");
+    return;
+  }
+  res.sendFile(indexPath);
 });
 
-const staticPath =
-  environment_flag === "dev"
-    ? "../frontend-web/public" // Dev run: serve from public
-    : environment_flag === "dev-build"
-    ? "../frontend-web/dist" // Dev build: serve from dist
-    : "../frontend-web/dist"; // Prod: serve from dist
-
-console.log("staticPath", staticPath);
-
-// Let Express use index.html only for build/prod
-const staticOptions =
-  environment_flag === "dev"
-    ? {} // Dev run: no default index
-    : { index: "index.html" }; // Dev build & Prod: use index.html
-
-app.use(express.static(staticPath, staticOptions));
-
-app.use(express.json());
-app.use(createRoutes(app));
+// catch-all for SPA
+app.get("*", (req, res) => {
+  if (isDev) {
+    res
+      .status(404)
+      .send("SPA frontend is running separately at http://localhost:5173");
+    return;
+  }
+  res.sendFile(indexPath);
+});
+//#endregion frontend
 
 app.use((err, req, res, next) => {
   console.error("Global Server Error:", err);
-  res.status(500).json({ error: "Something went wrong on the serve" });
+  res.status(500).json({ error: "Something went wrong on the server" });
 });
 
-http.createServer(app).listen(port, () => {
+app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

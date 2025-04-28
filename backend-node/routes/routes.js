@@ -1,20 +1,11 @@
 import express from "express";
-import pkg from "express-openid-connect";
-import path from "path";
-import url from "url";
 import {
   AIRTABLE_BASE_ID,
   AIRTABLE_KEY_READ_WRITE_VALUE,
   AIRTABLE_KEY_READ_ONLY_VALUE,
   DEFAULT_AUDIO_REC_ID,
 } from "../config.js"; // Assume environment variables are imported here
-import { PrismaClient } from "@prisma/client";
-import { environment_flag } from "../config.js";
-
-const prisma = new PrismaClient();
-
-const __filename = url.fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import prisma from "../services/prisma.js";
 
 export default function createRoutes(app) {
   const router = express.Router();
@@ -50,7 +41,7 @@ export default function createRoutes(app) {
 
   // Get words and annotations for an audio
   v2Router.get("/api/audio/:audioId", async (req, res) => {
-    if (!app.locals.currentUserAudioAccess?.includes(req.params.audioId)) {
+    if (!req.app.locals.currentUserAudioAccess?.includes(req.params.audioId)) {
       return res.status(404).json({ error: "Not found" });
     }
 
@@ -71,7 +62,7 @@ export default function createRoutes(app) {
         }
       );
 
-      app.locals.wordsDataV2 = wordsDataV2;
+      req.app.locals.wordsDataV2 = wordsDataV2;
 
       // console.log("Fetched wordsDataV2:", wordsDataV2);
       // console.log("Fetched annotationDataV2:", annotationDataV2);
@@ -92,7 +83,7 @@ export default function createRoutes(app) {
 
   // Create/update annotations
   v2Router.post("/api/annotations", async (req, res) => {
-    if (app.locals.currentUserRole !== "write") {
+    if (req.app.locals.currentUserRole !== "write") {
       return res.status(403).json({ error: "Not authorized" });
     }
 
@@ -113,7 +104,7 @@ export default function createRoutes(app) {
         word,
       });
 
-      let wordsDataV2 = app.locals.wordsDataV2;
+      let wordsDataV2 = req.app.locals.wordsDataV2;
       let wordsEntry = wordsDataV2.find(
         (entry) => entry.fields["word index"] == wordIndex
       );
@@ -278,7 +269,7 @@ export default function createRoutes(app) {
   v1Router.post("/api/annotations/update", async (req, res) => {
     //tbd
 
-    if (app.locals.currentUserRole !== "write") {
+    if (req.app.locals.currentUserRole !== "write") {
       return res.status(403).json({ error: "Not authorized" });
     }
 
@@ -313,7 +304,7 @@ export default function createRoutes(app) {
       console.log("wordIndex:", wordIndex);
       console.log("desired annotations:", annotationsDesired);
 
-      let wordsData = app.locals.wordsData;
+      let wordsData = req.app.locals.wordsData;
       let wordsEntry = wordsData.find(
         (entry) => entry.fields["word index"] == wordIndex
       );
@@ -509,8 +500,8 @@ export default function createRoutes(app) {
             peopleObject.records[i].fields["Access to audios"];
           currentUserRole = peopleObject.records[i].fields["Role"];
           console.log("Current user email is: ", req.oidc.user.email);
-          app.locals.currentUserAudioAccess = currentUserAudioAccess;
-          app.locals.currentUserRole = currentUserRole;
+          req.app.locals.currentUserAudioAccess = currentUserAudioAccess;
+          req.app.locals.currentUserRole = currentUserRole;
         }
       }
     }
@@ -711,7 +702,9 @@ export default function createRoutes(app) {
   });
 
   router.get("/data/loadAudio/:AudioRecId", async (req, res) => {
-    if (app.locals.currentUserAudioAccess?.includes(req.params.AudioRecId)) {
+    if (
+      req.app.locals.currentUserAudioAccess?.includes(req.params.AudioRecId)
+    ) {
       const audioData = await fetchAirtableRecords("Audio%20Source", {
         recordId: req.params.AudioRecId,
       });
@@ -720,7 +713,7 @@ export default function createRoutes(app) {
         filterByFormula: `{Audio Source} = "${audioData.fields.Name}"`,
       });
 
-      app.locals.wordsData = wordsData;
+      req.app.locals.wordsData = wordsData;
 
       res.json({
         audio: {
@@ -840,29 +833,9 @@ export default function createRoutes(app) {
     res.json(req.oidc.user);
   });
 
-  router.get("/callback", (req, res) => {
-    console.log("callback");
-    res.redirect("/");
-  });
-
   // #endregion
 
   // 🔹 CATCH-ALL ROUTE (Frontend SPA)
-  router.get("*", (req, res) => {
-    // For development, proxy to Vite dev server
-    if (environment_flag === "dev") {
-      res.redirect("http://localhost:5173");
-      return;
-    }
-
-    // For production, serve the built index.html
-    const indexPath = path.join(
-      __dirname,
-      "../../frontend-web/dist/index.html"
-    );
-    console.log("catch-all -> send file at:", indexPath);
-    res.sendFile(indexPath);
-  });
 
   //#endregion
 
