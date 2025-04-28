@@ -4,7 +4,9 @@ import express from "express";
 import { auth } from "express-openid-connect";
 import createRoutes from "./routes/routes.js";
 import { environment_flag } from "./config.js"; // Assume environment variables are imported here
+import router from "./routes/routes.js";
 
+//#region setup
 // setup
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,6 +18,8 @@ const app = express();
 
 // general middleware
 app.use(express.json());
+
+//#endregion setup
 
 //#region auth
 const config = {
@@ -29,9 +33,9 @@ const config = {
 app.use(auth(config));
 //#endregion auth
 
-//#region api
-app.use(createRoutes());
-//#endregion api
+//#region main routes
+app.use(router);
+//#endregion routes
 
 //#region frontend
 // static files
@@ -63,6 +67,7 @@ app.get("*", (req, res) => {
 });
 //#endregion frontend
 
+//#region global error handler & server listener
 app.use((err, req, res, next) => {
   console.error("Global Server Error:", err);
   res.status(500).json({ error: "Something went wrong on the server" });
@@ -71,3 +76,4 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+//#endregion global error handler & server listener
