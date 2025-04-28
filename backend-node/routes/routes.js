@@ -57,19 +57,20 @@ export default function createRoutes(app) {
     }
 
     try {
-      const audioData = await fetchAirtablePage(
-        `Audio%20Source/${req.params.audioId}`
-      );
+      const audioData = await fetchAirtableRecords("Audio%20Source", {
+        recordId: req.params.audioId,
+      });
 
       // Fetch v2 words and annotations
-      const wordsDataV2 = await fetchAllPages(
-        "Words%20(v2)",
-        encodeURIComponent(audioData.fields.Name)
-      );
+      const wordsDataV2 = await fetchAirtableRecords("Words%20(v2)", {
+        filterByFormula: `{Audio Source}="${audioData.fields.Name}"`,
+      });
 
-      const annotationDataV2 = await fetchAllPages(
+      const annotationDataV2 = await fetchAirtableRecords(
         "Annotations%20(v2)",
-        encodeURIComponent(audioData.fields.Name)
+        {
+          filterByFormula: `{Audio Source}="${audioData.fields.Name}"`,
+        }
       );
 
       app.locals.wordsDataV2 = wordsDataV2;
@@ -233,8 +234,8 @@ export default function createRoutes(app) {
     let peopleData, audioData;
     try {
       [peopleData, audioData] = await Promise.all([
-        fetchAirtableData("People"),
-        fetchAirtableData("Audio%20Source"),
+        fetchAirtableRecords("People"),
+        fetchAirtableRecords("Audio%20Source"),
       ]);
       console.log("Fetched People & Audio data from Airtable");
     } catch (e) {
@@ -756,9 +757,9 @@ export default function createRoutes(app) {
 
     const airtableFeaturesSanitized = [];
 
-    const airtableFeatures = await fetchAllPages2("Target");
+    const airtableFeatures = await fetchAirtableRecords("Target");
 
-    const airtableIssues = await fetchAllPages2("BR%20issues");
+    const airtableIssues = await fetchAirtableRecords("BR%20issues");
 
     // console.log(airtableIssues);
 
@@ -808,14 +809,13 @@ export default function createRoutes(app) {
 
   router.get("/data/loadAudio/:AudioRecId", async (req, res) => {
     if (app.locals.currentUserAudioAccess?.includes(req.params.AudioRecId)) {
-      const audioData = await fetchAirtablePage(
-        `Audio%20Source/${req.params.AudioRecId}`
-      );
+      const audioData = await fetchAirtableRecords("Audio%20Source", {
+        recordId: req.params.AudioRecId,
+      });
 
-      const wordsData = await fetchAllPages(
-        "Words%20(instance)",
-        encodeURIComponent(audioData.fields.Name)
-      );
+      const wordsData = await fetchAirtableRecords("Words%20(instance)", {
+        filterByFormula: `{Audio Source} = "${audioData.fields.Name}"`,
+      });
 
       app.locals.wordsData = wordsData;
 
@@ -963,174 +963,76 @@ export default function createRoutes(app) {
 
   //#endregion
 
-  //#region Airtable Helper Functions
-  async function fetchAirtablePage(endpoint) {
-    return new Promise((resolve, reject) => {
-      const options = {
-        hostname: "api.airtable.com",
-        path: `/v0/${AIRTABLE_BASE_ID}/${endpoint}`,
-        method: "GET",
-        headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
-      };
-
-      const airtableReq = https.request(options, (airtableRes) => {
-        let data = "";
-        airtableRes.setEncoding("utf8");
-
-        airtableRes.on("data", (chunk) => {
-          data += chunk;
-        });
-
-        airtableRes.on("end", () => {
-          try {
-            const parsedData = JSON.parse(data);
-            resolve(parsedData);
-          } catch (error) {
-            reject(error);
-          }
-        });
-      });
-
-      airtableReq.on("error", (err) => reject(err));
-      airtableReq.end();
-    });
-  }
-
-  async function fetchAllPages(tableName, filterValue) {
-    return new Promise((resolve, reject) => {
-      let allRecords = [];
-      let offset = null;
-
-      function fetchPage(nextOffset) {
-        let path = `/v0/${AIRTABLE_BASE_ID}/${tableName}?filterByFormula=%7BAudio%20Source%7D%3D%22${filterValue}%22`;
-        if (nextOffset) {
-          path += `&offset=${nextOffset}`;
-        }
-
-        const options = {
-          hostname: "api.airtable.com",
-          path: path,
-          method: "GET",
-          headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
-        };
-
-        const airtableReq = https.request(options, (airtableRes) => {
-          let data = "";
-          airtableRes.setEncoding("utf8");
-
-          airtableRes.on("data", (chunk) => {
-            data += chunk;
-          });
-
-          airtableRes.on("end", () => {
-            try {
-              const parsedData = JSON.parse(data);
-              if (!parsedData.records) {
-                return reject(new Error("Invalid response from Airtable"));
-              }
-
-              allRecords.push(...parsedData.records);
-              if (parsedData.offset) {
-                fetchPage(parsedData.offset); // Recursively fetch next batch
-              } else {
-                resolve(allRecords); // No more pages, return all records
-              }
-            } catch (error) {
-              reject(error);
-            }
-          });
-        });
-
-        airtableReq.on("error", (err) => reject(err));
-        airtableReq.end();
-      }
-
-      fetchPage(offset);
-    });
-  }
-
-  async function fetchAllPages2(tableName) {
-    let allRecords = [];
-    let offset = null;
-
-    async function fetchPage(nextOffset) {
-      let path = `/v0/${AIRTABLE_BASE_ID}/${tableName}`;
-      if (nextOffset) {
-        path += `?offset=${nextOffset}`;
-      }
-
-      try {
+  //#region Airtable Helper Function
+  /**
+   * Fetches records from Airtable with support for pagination, filtering, and single record lookup
+   * @param {string} tableName - Name of the table to fetch from
+   * @param {Object} [options]
+   * @param {string} [options.recordId] - Optional record ID for single record lookup
+   * @param {string} [options.filterByFormula] - Optional Airtable formula for filtering records
+   * @returns {Promise<Array|Object>} Returns array of records or single record object
+   */
+  async function fetchAirtableRecords(
+    tableName,
+    { recordId = null, filterByFormula = null } = {}
+  ) {
+    try {
+      // Handle single record fetch
+      if (recordId) {
+        const path = `/v0/${AIRTABLE_BASE_ID}/${tableName}/${recordId}`;
         const response = await fetch(`https://api.airtable.com${path}`, {
           headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
         });
 
-        const parsedData = await response.json();
+        if (!response.ok) {
+          throw new Error(`Airtable API request failed: ${response.status}`);
+        }
 
-        if (!parsedData.records) {
+        return await response.json();
+      }
+
+      // Handle paginated fetch
+      let allRecords = [];
+      let offset = null;
+      do {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (offset) {
+          params.append("offset", offset);
+        }
+
+        if (filterByFormula) {
+          params.append("filterByFormula", filterByFormula);
+        }
+
+        const queryString = params.toString();
+        let path = `/v0/${AIRTABLE_BASE_ID}/${tableName}${
+          queryString ? "?" + queryString : ""
+        }`;
+
+        const response = await fetch(`https://api.airtable.com${path}`, {
+          headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Airtable API request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.records) {
           throw new Error("Invalid response from Airtable");
         }
 
-        allRecords.push(...parsedData.records);
-        if (parsedData.offset) {
-          await fetchPage(parsedData.offset); // Recursively fetch next batch
-        }
-      } catch (error) {
-        throw error;
-      }
+        allRecords.push(...data.records);
+        offset = data.offset;
+      } while (offset);
+
+      return allRecords;
+    } catch (error) {
+      console.error("Airtable fetch error:", error);
+      throw error;
     }
-
-    await fetchPage(offset);
-    return allRecords;
-  }
-
-  function fetchAirtableData(tableName) {
-    return new Promise((resolve, reject) => {
-      const options = {
-        hostname: "api.airtable.com",
-        path: `/v0/${AIRTABLE_BASE_ID}/${tableName}`,
-        method: "GET",
-        headers: { Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}` },
-      };
-
-      const airtableReq = https.request(options, (airtableRes) => {
-        let data = "";
-        airtableRes.setEncoding("utf8");
-        airtableRes.on("data", (chunk) => {
-          data += chunk;
-        });
-        airtableRes.on("end", () => {
-          try {
-            console.log("Fetch function: Received response from Airtable");
-            const parsedData = JSON.parse(data);
-
-            if (!parsedData.records) {
-              console.error(
-                "Fetch function: No records field found in Airtable response",
-                parsedData
-              );
-              return reject(
-                "Fetch function: No records field found in Airtable response"
-              );
-            }
-
-            console.log(
-              "Fetch function: Successfully parsed data from Airtable"
-            );
-            resolve(parsedData.records);
-          } catch (error) {
-            console.error("Fetch function: JSON parse error");
-            reject("Fetch function: JSON parse error");
-          }
-        });
-      });
-
-      airtableReq.on("error", (err) => {
-        console.error("Airtable Request Error:", err);
-        reject(err);
-      });
-
-      airtableReq.end();
-    });
   }
 
   //#endregion
