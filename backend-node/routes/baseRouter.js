@@ -90,57 +90,45 @@ baseRouter.get("/authz", async (req, res) => {
 });
 
 baseRouter.get("/data/loadIssues", async (req, res) => {
-  let airtableFeaturesString = "";
-  let airtableIssuesString = "";
-
-  const airtableFeaturesSanitized = [];
-
   const airtableFeatures = await fetchAirtableRecords("Target");
-
   const airtableIssues = await fetchAirtableRecords("BR%20issues");
 
-  // console.log(airtableIssues);
-
-  // Prepare an object where each feature ID maps to a feature name and an empty issues array
-  airtableFeatures.forEach((record) => {
-    airtableFeaturesSanitized.push({
+  // Prepare features with empty issues arrays
+  const featuresMap = airtableFeatures.reduce((acc, record) => {
+    acc[record.id] = {
       id: record.id,
       name: record.fields.Name || "",
-      po: record.fields["Presentation order"] || "",
+      po: record.fields["Presentation order"] || Infinity,
       type: record.fields.type || "",
-      issues: [], // Placeholder for related issues
-    });
-  });
+      issues: [],
+    };
+    return acc;
+  }, {});
 
-  // Process Issues and link them to Features
+  // Link issues to features
   airtableIssues.forEach((record) => {
-    const featureIds = record.fields["target"] || []; // List of related feature IDs
     const issueData = {
       id: record.id,
       name: record.fields.Name || "",
-      po: record.fields["Presentation order"] || Infinity, // Default to large number for sorting
-      tgt: record.fields.target || "",
+      po: record.fields["Presentation order"] || Infinity,
     };
 
-    featureIds.forEach((featureId) => {
-      // Find feature by ID in the array
-      const feature = airtableFeaturesSanitized.find((f) => f.id === featureId);
+    (record.fields["target"] || []).forEach((featureId) => {
+      const feature = featuresMap[featureId];
       if (feature) {
         feature.issues.push(issueData);
       }
     });
   });
 
-  // Step 1: Sort issues within each feature by `po`
-  airtableFeaturesSanitized.forEach((feature) => {
-    feature.issues.sort((a, b) => a.po - b.po);
-  });
-
-  // Step 2: Sort features by `po`
-  airtableFeaturesSanitized.sort((a, b) => a.po - b.po);
+  // Sort issues and features by po
+  Object.values(featuresMap).forEach((feature) =>
+    feature.issues.sort((a, b) => a.po - b.po)
+  );
+  const sortedFeatures = Object.values(featuresMap).sort((a, b) => a.po - b.po);
 
   // Send response
-  res.json(airtableFeaturesSanitized);
+  res.json(sortedFeatures);
 });
 
 baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
