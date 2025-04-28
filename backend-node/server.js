@@ -5,8 +5,9 @@ import { auth } from "express-openid-connect";
 import createRoutes from "./routes/routes.js";
 import { environment_flag } from "./config.js"; // Assume environment variables are imported here
 import router from "./routes/routes.js";
+import { auth0Config } from "./config.js";
 
-//#region setup
+//#region main server setup
 // setup
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,27 +16,10 @@ const isDev = environment_flag === "dev";
 
 // initialize express app
 const app = express();
-
-// general middleware
 app.use(express.json());
-
-//#endregion setup
-
-//#region auth
-const config = {
-  authRequired: true,
-  auth0Logout: true,
-  secret: process.env.AUTH0_SECRET,
-  baseURL: process.env.AUTH0_BASE_URL,
-  clientID: process.env.AUTH0_CLIENT_ID,
-  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_ID,
-};
-app.use(auth(config));
-//#endregion auth
-
-//#region main routes
+app.use(auth(auth0Config));
 app.use(router);
-//#endregion routes
+//#endregion setup
 
 //#region frontend
 // static files
@@ -47,24 +31,17 @@ const indexPath = path.join(staticPath, "index.html");
 app.use(express.static(staticPath));
 
 // Handle root GET after login
-app.get("/", (req, res) => {
-  if (isDev) {
-    res.redirect("http://localhost:5173/");
-    return;
-  }
-  res.sendFile(indexPath);
-});
-
+app.get("/", (req, res) =>
+  isDev ? res.redirect("http://localhost:5173/") : res.sendFile(indexPath)
+);
 // catch-all for SPA
-app.get("*", (req, res) => {
-  if (isDev) {
-    res
-      .status(404)
-      .send("SPA frontend is running separately at http://localhost:5173");
-    return;
-  }
-  res.sendFile(indexPath);
-});
+app.get("*", (req, res) =>
+  isDev
+    ? res
+        .status(404)
+        .send("SPA frontend is running separately at http://localhost:5173")
+    : res.sendFile(indexPath)
+);
 //#endregion frontend
 
 //#region global error handler & server listener
