@@ -462,45 +462,24 @@ export default function createRoutes(app) {
 
   // Helper function to execute Airtable operations
   async function executeAirtableOperation({ method, path, data = null }) {
-    return new Promise((resolve, reject) => {
-      const options = {
-        hostname: "api.airtable.com",
-        path: `/v0/${AIRTABLE_BASE_ID}/${path}`,
-        method: method,
+    const response = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${path}`,
+      {
+        method,
         headers: {
           Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
           "Content-Type": "application/json",
         },
-      };
-
-      const req = https.request(options, (res) => {
-        let responseData = "";
-        res.on("data", (chunk) => (responseData += chunk));
-        res.on("end", () => {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            try {
-              resolve(JSON.parse(responseData));
-            } catch (e) {
-              resolve(responseData);
-            }
-          } else {
-            reject(
-              new Error(
-                `Airtable request failed: ${res.statusCode} ${responseData}`
-              )
-            );
-          }
-        });
-      });
-
-      req.on("error", reject);
-
-      if (data) {
-        req.write(JSON.stringify(data));
+        ...(data && { body: JSON.stringify(data) }),
       }
+    );
 
-      req.end();
-    });
+    if (!response.ok) {
+      throw new Error(`Airtable request failed: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    return responseData;
   }
 
   router.use("/v1", v1Router);
@@ -508,180 +487,106 @@ export default function createRoutes(app) {
 
   //#region legacy routes
   // 🔹 AUTHORIZATION ROUTE (Legacy /authz)
-  router.get("/authz", requiresAuth(), (req, res) => {
+  router.get("/authz", requiresAuth(), async (req, res) => {
     ///////////////////////
     ///// 1) look up people/user list in Airtable and see if can find currently logged in user. if yes, store relevant info such as which resources they have access to
     //////////////////////
+
+    let currentUserId = req.oidc.user.sub;
+    let peopleObject = {};
+    let currentUserAirtable;
+    let currentUserAudioAccess;
+    let currentUserAudioAccessObject = [];
+    let currentUserAudioAccessObjectSpeakerNames = [];
+    let currentUserRole;
+
+    peopleObject = { records: await fetchAirtableRecords("People") };
+
+    for (let i = 0; i < Object.keys(peopleObject.records).length; i++) {
+      let user_id = peopleObject.records[i].fields["auth0 user_id"];
+      if (typeof user_id !== "undefined") {
+        if (user_id == currentUserId) {
+          currentUserAirtable = peopleObject.records[i];
+          currentUserAudioAccess =
+            peopleObject.records[i].fields["Access to audios"];
+          currentUserRole = peopleObject.records[i].fields["Role"];
+          console.log("Current user email is: ", req.oidc.user.email);
+          app.locals.currentUserAudioAccess = currentUserAudioAccess;
+          app.locals.currentUserRole = currentUserRole;
+        }
+      }
+    }
 
     ///////////////////////
     ///// 2) look up audio list in Airtable and grab the info for the audios the currently logged in user has access to
     //////////////////////
 
+    const audioObject = {
+      records: await fetchAirtableRecords("Audio%20Source"),
+    };
+
+    for (let i = 0, k = 0; i < currentUserAudioAccess.length; i++) {
+      for (let j = 0; j < Object.keys(audioObject.records).length; j++) {
+        if (currentUserAudioAccess[i] === audioObject.records[j].id) {
+          currentUserAudioAccessObject[k] = {};
+          currentUserAudioAccessObject[k].id = audioObject.records[j].id;
+          currentUserAudioAccessObject[k].Name =
+            audioObject.records[j].fields.Name;
+          currentUserAudioAccessObject[k].SpeakerName =
+            audioObject.records[j].fields.Speaker[0];
+          k++;
+        }
+      }
+    }
+
+    for (let i = 0, k = 0; i < Object.keys(peopleObject.records).length; i++) {
+      for (let j = 0; j < currentUserAudioAccessObject.length; j++) {
+        if (
+          peopleObject.records[i].id ===
+          currentUserAudioAccessObject[j].SpeakerName
+        ) {
+          currentUserAudioAccessObjectSpeakerNames[k] = {};
+          currentUserAudioAccessObjectSpeakerNames[k].id =
+            peopleObject.records[i].id;
+          currentUserAudioAccessObjectSpeakerNames[k].Name =
+            peopleObject.records[i].fields.Name;
+          k++;
+        }
+      }
+    }
+
     ///////////////////////
     ///// 3) respond with whatever info the front-end needs / is allowed to see
     //////////////////////
 
-    ///////////////////////
-    ///// 1
-    //////////////////////
-
-    let currentUserId = req.oidc.user.sub;
-    let peopleObjectString = "";
-    let peopleObject = {};
-    let currentUserAirtable;
-    let currentUserAudioAccess;
-    let audioObjectString = "";
-    let audioObject = {};
-    let currentUserAudioAccessObject = [];
-    let currentUserAudioAccessObjectSpeakerNames = [];
-    let currentUserRole;
-    const postData1 = "";
-    let options1 = {
-      hostname: "api.airtable.com",
-      path: `/v0/${AIRTABLE_BASE_ID}/People`,
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-      },
-    };
-
-    const req1 = https.request(options1, (res1) => {
-      res1.setEncoding("utf8");
-      res1.on("data", (chunk) => {
-        peopleObjectString += chunk;
-      });
-      res1.on("end", () => {
-        peopleObject = JSON.parse(peopleObjectString);
-        for (let i = 0; i < Object.keys(peopleObject.records).length; i++) {
-          let user_id = peopleObject.records[i].fields["auth0 user_id"];
-          if (typeof user_id !== "undefined") {
-            if (user_id == currentUserId) {
-              // console.log("peopleObject.records[i]:", peopleObject.records[i]);
-              currentUserAirtable = peopleObject.records[i];
-              currentUserAudioAccess =
-                peopleObject.records[i].fields["Access to audios"];
-              currentUserRole = peopleObject.records[i].fields["Role"];
-              // console.log(
-              //   "Airtable match found for current user's Autho0 user_id: ",
-              //   user_id
-              // );
-              console.log("Current user email is: ", req.oidc.user.email);
-              // console.log(
-              //   "Per Airtable, current user has access to the following audio/transcripts: ",
-              //   currentUserAudioAccess
-              // );
-              // console.log(
-              //   "Per Airtable, current user has role: ",
-              //   currentUserRole
-              // );
-              app.locals.currentUserAudioAccess = currentUserAudioAccess;
-              app.locals.currentUserRole = currentUserRole;
-            }
-          }
+    // Remove duplicate speakers
+    const uniquePeople = {};
+    currentUserAudioAccessObjectSpeakerNames =
+      currentUserAudioAccessObjectSpeakerNames.filter((person) => {
+        if (!uniquePeople[person.id]) {
+          uniquePeople[person.id] = true;
+          return true;
         }
-
-        ///////////////////////
-        ///// 2) look up audio list in Airtable and grab the info for the audios the currently logged in user has access to
-        //////////////////////
-
-        const postData2 = "";
-        let options2 = {
-          hostname: "api.airtable.com",
-          path: `/v0/${AIRTABLE_BASE_ID}/Audio%20Source`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-          },
-        };
-
-        const req2 = https.request(options2, (res2) => {
-          res2.setEncoding("utf8");
-          res2.on("data", (chunk) => {
-            audioObjectString += chunk;
-          });
-          res2.on("end", () => {
-            audioObject = JSON.parse(audioObjectString);
-            peopleObject;
-
-            for (let i = 0, k = 0; i < currentUserAudioAccess.length; i++) {
-              for (
-                let j = 0;
-                j < Object.keys(audioObject.records).length;
-                j++
-              ) {
-                if (currentUserAudioAccess[i] === audioObject.records[j].id) {
-                  currentUserAudioAccessObject[k] = {};
-                  currentUserAudioAccessObject[k].id =
-                    audioObject.records[j].id;
-                  currentUserAudioAccessObject[k].Name =
-                    audioObject.records[j].fields.Name;
-                  currentUserAudioAccessObject[k].SpeakerName =
-                    audioObject.records[j].fields.Speaker[0];
-                  k++;
-                }
-              }
-            }
-
-            for (
-              let i = 0, k = 0;
-              i < Object.keys(peopleObject.records).length;
-              i++
-            ) {
-              for (let j = 0; j < currentUserAudioAccessObject.length; j++) {
-                if (
-                  peopleObject.records[i].id ===
-                  currentUserAudioAccessObject[j].SpeakerName
-                ) {
-                  currentUserAudioAccessObjectSpeakerNames[k] = {};
-                  currentUserAudioAccessObjectSpeakerNames[k].id =
-                    peopleObject.records[i].id;
-                  currentUserAudioAccessObjectSpeakerNames[k].Name =
-                    peopleObject.records[i].fields.Name;
-                  k++;
-                }
-              }
-            }
-
-            ///////////////////////
-            ///// 3
-            //////////////////////
-
-            // Remove duplicate speakers
-            const uniquePeople = {};
-            currentUserAudioAccessObjectSpeakerNames =
-              currentUserAudioAccessObjectSpeakerNames.filter((person) => {
-                if (!uniquePeople[person.id]) {
-                  uniquePeople[person.id] = true;
-                  return true;
-                }
-                return false;
-              });
-
-            // Remove duplicate audios
-            const uniqueAudios = {};
-            currentUserAudioAccessObject = currentUserAudioAccessObject.filter(
-              (audio) => {
-                if (!uniqueAudios[audio.id]) {
-                  uniqueAudios[audio.id] = true;
-                  return true;
-                }
-                return false;
-              }
-            );
-
-            res.json({
-              people: currentUserAudioAccessObjectSpeakerNames,
-              audios: currentUserAudioAccessObject,
-              userRole: currentUserRole,
-            });
-          });
-        });
-        req2.write(postData2);
-        req2.end();
+        return false;
       });
+
+    // Remove duplicate audios
+    const uniqueAudios = {};
+    currentUserAudioAccessObject = currentUserAudioAccessObject.filter(
+      (audio) => {
+        if (!uniqueAudios[audio.id]) {
+          uniqueAudios[audio.id] = true;
+          return true;
+        }
+        return false;
+      }
+    );
+
+    res.json({
+      people: currentUserAudioAccessObjectSpeakerNames,
+      audios: currentUserAudioAccessObject,
+      userRole: currentUserRole,
     });
-    req1.write(postData1);
-    req1.end();
   });
 
   // #region🔹 DATA ROUTES
