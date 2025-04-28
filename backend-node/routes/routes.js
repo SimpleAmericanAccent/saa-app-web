@@ -1,7 +1,5 @@
 import express from "express";
-import https from "https";
 import pkg from "express-openid-connect";
-const { auth, requiresAuth } = pkg;
 import path from "path";
 import url from "url";
 import {
@@ -226,7 +224,7 @@ export default function createRoutes(app) {
 
   const v1Router = express.Router();
 
-  v1Router.get("/authz", requiresAuth(), async (req, res) => {
+  v1Router.get("/authz", async (req, res) => {
     // route not finished, use legacy route for now
 
     const currentUserId = req.oidc.user.sub;
@@ -487,7 +485,7 @@ export default function createRoutes(app) {
 
   //#region legacy routes
   // 🔹 AUTHORIZATION ROUTE (Legacy /authz)
-  router.get("/authz", requiresAuth(), async (req, res) => {
+  router.get("/authz", async (req, res) => {
     ///////////////////////
     ///// 1) look up people/user list in Airtable and see if can find currently logged in user. if yes, store relevant info such as which resources they have access to
     //////////////////////
@@ -590,71 +588,71 @@ export default function createRoutes(app) {
   });
 
   // #region🔹 DATA ROUTES
-  router.get("/data/loadDefault", (req, res) => {
-    const postData = "";
-    let defaultAudioDataString = "";
-    let defaultAudioData = {};
-    let defaultAudioDataSanitized = {};
-    let defaultAudioRecId = `${DEFAULT_AUDIO_REC_ID}`;
-    let defaultTranscriptDataString = "";
-    let defaultTranscriptData = {};
-    let audioName;
-    let audioNameURLEncoded;
-    const options1 = {
-      hostname: "api.airtable.com",
-      path: `/v0/${AIRTABLE_BASE_ID}/Audio%20Source/${defaultAudioRecId}`,
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-      },
-    };
+  // router.get("/data/loadDefault", (req, res) => {
+  //   const postData = "";
+  //   let defaultAudioDataString = "";
+  //   let defaultAudioData = {};
+  //   let defaultAudioDataSanitized = {};
+  //   let defaultAudioRecId = `${DEFAULT_AUDIO_REC_ID}`;
+  //   let defaultTranscriptDataString = "";
+  //   let defaultTranscriptData = {};
+  //   let audioName;
+  //   let audioNameURLEncoded;
+  //   const options1 = {
+  //     hostname: "api.airtable.com",
+  //     path: `/v0/${AIRTABLE_BASE_ID}/Audio%20Source/${defaultAudioRecId}`,
+  //     method: "GET",
+  //     headers: {
+  //       Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+  //     },
+  //   };
 
-    const req1 = https.request(options1, (res1) => {
-      res1.setEncoding("utf8");
-      res1.on("data", (chunk) => {
-        defaultAudioDataString += chunk;
-      });
-      res1.on("end", () => {
-        defaultAudioData = JSON.parse(defaultAudioDataString);
+  //   const req1 = https.request(options1, (res1) => {
+  //     res1.setEncoding("utf8");
+  //     res1.on("data", (chunk) => {
+  //       defaultAudioDataString += chunk;
+  //     });
+  //     res1.on("end", () => {
+  //       defaultAudioData = JSON.parse(defaultAudioDataString);
 
-        defaultAudioDataSanitized.mp3url = defaultAudioData.fields["mp3 url"];
-        defaultAudioDataSanitized.tranurl =
-          defaultAudioData.fields["tran/alignment JSON url"];
-        defaultAudioDataSanitized.name = defaultAudioData.fields.Name;
-        audioName = defaultAudioData.fields["Name"];
-        audioNameURLEncoded = encodeURIComponent(audioName);
+  //       defaultAudioDataSanitized.mp3url = defaultAudioData.fields["mp3 url"];
+  //       defaultAudioDataSanitized.tranurl =
+  //         defaultAudioData.fields["tran/alignment JSON url"];
+  //       defaultAudioDataSanitized.name = defaultAudioData.fields.Name;
+  //       audioName = defaultAudioData.fields["Name"];
+  //       audioNameURLEncoded = encodeURIComponent(audioName);
 
-        const postData2 = "";
-        let options2 = {
-          hostname: "api.airtable.com",
-          path: `/v0/${AIRTABLE_BASE_ID}/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
-          },
-        };
+  //       const postData2 = "";
+  //       let options2 = {
+  //         hostname: "api.airtable.com",
+  //         path: `/v0/${AIRTABLE_BASE_ID}/Words%20(instance)?filterByFormula=%7BAudio%20Source%7D%3D%22${audioNameURLEncoded}%22`,
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Bearer ${AIRTABLE_KEY_SELECTED}`,
+  //         },
+  //       };
 
-        const req2 = https.request(options2, (res2) => {
-          res2.setEncoding("utf8");
-          res2.on("data", (chunk) => {
-            defaultTranscriptDataString += chunk;
-          });
-          res2.on("end", () => {
-            defaultTranscriptData = JSON.parse(defaultTranscriptDataString);
+  //       const req2 = https.request(options2, (res2) => {
+  //         res2.setEncoding("utf8");
+  //         res2.on("data", (chunk) => {
+  //           defaultTranscriptDataString += chunk;
+  //         });
+  //         res2.on("end", () => {
+  //           defaultTranscriptData = JSON.parse(defaultTranscriptDataString);
 
-            res.json({
-              audio: defaultAudioDataSanitized,
-              airtableWords: defaultTranscriptData,
-            });
-          });
-        });
-        req2.write(postData2);
-        req2.end();
-      });
-    });
-    req1.write(postData);
-    req1.end();
-  });
+  //           res.json({
+  //             audio: defaultAudioDataSanitized,
+  //             airtableWords: defaultTranscriptData,
+  //           });
+  //         });
+  //       });
+  //       req2.write(postData2);
+  //       req2.end();
+  //     });
+  //   });
+  //   req1.write(postData);
+  //   req1.end();
+  // });
 
   router.get("/data/loadIssues", async (req, res) => {
     let airtableFeaturesString = "";
@@ -737,29 +735,29 @@ export default function createRoutes(app) {
     }
   });
 
-  router.get("/data/loadSuccessPath", (req, res) => {
-    const postData = "";
-    let successPathString = "";
-    let successPath = {};
-    const options1 = {
-      hostname: "saa-success-path.s3.us-east-2.amazonaws.com",
-      path: `/path.json`,
-      method: "GET",
-    };
+  // router.get("/data/loadSuccessPath", (req, res) => {
+  //   const postData = "";
+  //   let successPathString = "";
+  //   let successPath = {};
+  //   const options1 = {
+  //     hostname: "saa-success-path.s3.us-east-2.amazonaws.com",
+  //     path: `/path.json`,
+  //     method: "GET",
+  //   };
 
-    const req1 = https.request(options1, (res1) => {
-      res1.setEncoding("utf8");
-      res1.on("data", (chunk) => {
-        successPathString += chunk;
-      });
-      res1.on("end", () => {
-        successPath = JSON.parse(successPathString);
-        res.json(successPath);
-      });
-    });
-    req1.write(postData);
-    req1.end();
-  });
+  //   const req1 = https.request(options1, (res1) => {
+  //     res1.setEncoding("utf8");
+  //     res1.on("data", (chunk) => {
+  //       successPathString += chunk;
+  //     });
+  //     res1.on("end", () => {
+  //       successPath = JSON.parse(successPathString);
+  //       res.json(successPath);
+  //     });
+  //   });
+  //   req1.write(postData);
+  //   req1.end();
+  // });
   // #endregion
 
   // #region🔹 Postgres routes
@@ -838,11 +836,11 @@ export default function createRoutes(app) {
   //#endregion
 
   // #region 🔹  USER ROUTES
-  router.get("/user", requiresAuth(), (req, res) => {
+  router.get("/user", (req, res) => {
     res.json(req.oidc.user);
   });
 
-  router.get("/callback", requiresAuth(), (req, res) => {
+  router.get("/callback", (req, res) => {
     console.log("callback");
     res.redirect("/");
   });

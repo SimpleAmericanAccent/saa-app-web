@@ -1,5 +1,4 @@
 import http from "http";
-// import https from "https";
 import url from "url";
 import path from "path";
 import express from "express";
@@ -20,7 +19,6 @@ process.on("beforeExit", async () => {
 });
 
 const port = process.env.PORT || 5000;
-let currentUserAudioAccess;
 
 const config = {
   authRequired: true,
@@ -43,7 +41,6 @@ const app = express();
 
 // Enable authentication & apply global authentication
 app.use(auth(config));
-app.use(requiresAuth());
 
 app.use(function (req, res, next) {
   app.locals.user = req.oidc.user;
