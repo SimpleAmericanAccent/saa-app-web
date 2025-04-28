@@ -8,57 +8,6 @@ import {
 
 const v1Router = express.Router();
 
-v1Router.get("/authz", async (req, res) => {
-  // route not finished, use legacy route for now
-
-  const currentUserId = req.oidc.user.sub;
-
-  let peopleData, audioData;
-  try {
-    [peopleData, audioData] = await Promise.all([
-      fetchAirtableRecords("People"),
-      fetchAirtableRecords("Audio%20Source"),
-    ]);
-    console.log("Fetched People & Audio data from Airtable");
-  } catch (e) {
-    console.error("Failed to fetch People & Audio data from Airtable", e);
-    return res
-      .status(500)
-      .json({ error: "Failed to fetch People & Audio data from Airtable" });
-  }
-
-  // Curate data before sending to frontend
-
-  // todo
-
-  const filteredPeopleData = peopleData.filter(
-    (item) => item.fields["auth0 user_id"] === currentUserId
-  );
-
-  const currentUserAirtableId = filteredPeopleData[0].id;
-
-  const audioFieldsToKeep = ["SpeakerName"];
-
-  const filteredAudioData = audioData
-    .filter((item) =>
-      item.fields["People with access"]?.includes(currentUserAirtableId)
-    )
-    .map((item) => ({
-      id: item.id,
-      createdTime: item.createdTime,
-      SpeakerName: item.fields?.SpeakerName || null,
-    }));
-
-  res.json({
-    currentUserId: currentUserId,
-    currentUserAirtableId: currentUserAirtableId,
-    filteredAudioData: filteredAudioData,
-    filteredPeopleData: filteredPeopleData,
-    // peopleData: peopleData,
-    audioData: audioData,
-  });
-});
-
 v1Router.post("/api/annotations/update", async (req, res) => {
   //tbd
 
