@@ -4,6 +4,7 @@ import v1Router from "./v1Router.js";
 import v2Router from "./v2Router.js";
 import baseRouter from "./baseRouter.js";
 import prismaRouter from "./prismaRouter.js";
+import dictionaryRouter from "./dictionaryRouter.js";
 import { wrapMethodsWithSafeRoute } from "../middleware/safeRoute.js";
 
 const router = express.Router();
@@ -13,5 +14,6 @@ router.use("/", baseRouter);
 router.use("/v1", v1Router);
 router.use("/v2", v2Router);
 router.use("/prisma", prismaRouter);
+router.use("/api/dictionary", dictionaryRouter);
 
 export default router;

@@ -36,6 +36,19 @@ const VOWEL_AUDIO_MAP = {
   TRAM: "ham", // TRAM uses "ham" for its audio
 };
 
+export const PhonemeCardCompact = ({ name, description, className = "" }) => {
+  return (
+    <Card className={className}>
+      <CardContent className="p-4">
+        <div className="font-medium">{name}</div>
+        {description && (
+          <div className="text-sm text-muted-foreground">{description}</div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
 export function PhonemeCard({
   name,
   respelling,
@@ -44,6 +57,7 @@ export function PhonemeCard({
   spellings = [],
   examples = [],
   type = "vowel", // or "consonant"
+  onClick, // Add onClick prop
 }) {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [timestampsData, setTimestampsData] = useState(null);
@@ -122,20 +136,27 @@ export function PhonemeCard({
 
   const hasAudio = type === "vowel" && VOWEL_AUDIO_MAP[name];
 
+  const handleClick = (e) => {
+    // Only stop propagation if we're handling audio
+    if (hasAudio || examples.length > 0) {
+      e.stopPropagation();
+      if (hasAudio) {
+        playVowelSound(VOWEL_AUDIO_MAP[name]);
+      } else if (examples.length > 0) {
+        speakWord(examples[0]);
+      }
+    }
+    // Call the onClick prop if provided
+    onClick?.(e);
+  };
+
   return (
     <TooltipProvider delayDuration={700}>
       <Tooltip delayDuration={700}>
         <TooltipTrigger asChild>
           <Card
-            className="cursor-pointer transition-all duration-200 hover:shadow-lg w-full max-w-[60px]"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (hasAudio) {
-                playVowelSound(VOWEL_AUDIO_MAP[name]);
-              } else if (examples.length > 0) {
-                speakWord(examples[0]);
-              }
-            }}
+            className="cursor-pointer transition-all duration-200 hover:shadow-lg w-full"
+            onClick={handleClick}
           >
             <CardHeader className="p-0.5 flex items-center justify-center min-h-[32px]">
               <CardTitle className="text-sm leading-none py-0 flex items-center gap-0.5">
