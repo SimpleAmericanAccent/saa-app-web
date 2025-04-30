@@ -93,6 +93,7 @@
         }
       ],
       "representations": {
+        "gambiarra": "i",
         "respelling": "ee",
         "phonemic": "/i/",
         "phonetic": "[i]"
@@ -163,6 +164,7 @@
         }
       ],
       "representations": {
+        "gambiarra": "i",
         "respelling": "ee",
         "phonemic": "/i/",
         "phonetic": "[i]"
@@ -244,27 +246,26 @@
           "examples": [
             "bed",
             "red",
-            "head",
-            "get",
-            "let",
-            "men",
-            "pen",
-            "then",
-            "when"
+            "fed",
+            "led",
+            "deck",
+            "end",
+            "ten",
+            "spell",
+            "left"
           ]
         },
         {
           "pattern": "ea",
           "examples": [
             "bread",
-            "dead",
             "head",
+            "dead",
             "lead",
             "read",
+            "spread",
             "thread",
-            "weather",
-            "leather",
-            "heaven"
+            "instead"
           ]
         },
         {
@@ -280,16 +281,25 @@
           "examples": ["friend"]
         },
         {
+          "pattern": "ay",
+          "examples": ["says"]
+        },
+        {
+          "pattern": "ei",
+          "examples": ["heifer"]
+        },
+        {
           "pattern": "eo",
           "examples": ["leopard", "jeopardy"]
         },
         {
-          "pattern": "u",
-          "examples": ["bury"]
+          "pattern": "ue",
+          "examples": ["guess", "guest"]
         }
       ],
       "representations": {
-        "respelling": "e",
+        "gambiarra": "é",
+        "respelling": ["e", "eh"],
         "phonemic": "/ɛ/",
         "phonetic": "[ɛ]"
       }
@@ -299,21 +309,20 @@
         {
           "pattern": "a",
           "examples": [
-            "cat",
-            "hat",
-            "map",
+            "ad",
             "bad",
-            "hand",
-            "stand",
-            "land",
-            "man",
-            "can",
-            "than"
+            "sad",
+            "mad",
+            "hat",
+            "cat",
+            "Dad",
+            "sack",
+            "rack"
           ]
         },
         {
           "pattern": "ai",
-          "examples": ["plaid", "said", "again", "against"]
+          "examples": ["plaid"]
         },
         {
           "pattern": "au",
@@ -324,6 +333,139 @@
         "respelling": "a",
         "phonemic": "/æ/",
         "phonetic": "[æ]"
+      }
+    },
+    "GOOSE": {
+      "spellings": [
+        {
+          "pattern": "o",
+          "examples": ["do", "who", "to"]
+        },
+        {
+          "pattern": "oo",
+          "examples": [
+            "too",
+            "boo",
+            "moo",
+            "zoo",
+            "room",
+            "food",
+            "soon",
+            "mood",
+            "moon",
+            "loop",
+            "noon"
+          ]
+        },
+        {
+          "pattern": "ou",
+          "examples": ["you", "youth", "soup", "through"]
+        },
+        {
+          "pattern": "u",
+          "examples": [
+            "tutor",
+            "tune",
+            "tube",
+            "truth",
+            "truly",
+            "include",
+            "produce",
+            "solution"
+          ]
+        },
+        {
+          "pattern": "ue",
+          "examples": ["blue", "true", "due", "sue", "glue", "issue", "Tuesday"]
+        },
+        {
+          "pattern": "ew",
+          "examples": [
+            "new",
+            "threw",
+            "dew",
+            "flew",
+            "crew",
+            "chew",
+            "grew",
+            "knew"
+          ]
+        },
+        {
+          "pattern": "wo",
+          "examples": ["two"]
+        },
+        {
+          "pattern": "eu",
+          "examples": [
+            "deuce",
+            "pseudo",
+            "sleuth",
+            "neuter",
+            "neutral",
+            "neutron"
+          ]
+        },
+        {
+          "pattern": "ui",
+          "examples": ["bruise", "juice", "suit"]
+        },
+        {
+          "pattern": "ieu",
+          "examples": ["lieu", "lieutenant"]
+        },
+        {
+          "pattern": "oe",
+          "examples": ["shoe", "canoe"]
+        }
+      ],
+      "representations": {
+        "gambiarra": "u",
+        "respelling": "oo",
+        "phonemic": "/u/",
+        "phonetic": "[u]"
+      }
+    },
+    "FOOT": {
+      "spellings": [
+        {
+          "pattern": "oo",
+          "examples": [
+            "wood",
+            "cook",
+            "foot",
+            "look",
+            "good",
+            "book",
+            "stood",
+            "cookies"
+          ]
+        },
+        {
+          "pattern": "u",
+          "examples": [
+            "put",
+            "pudding",
+            "sugar",
+            "butcher",
+            "push",
+            "bush",
+            "cushion"
+          ]
+        },
+        {
+          "pattern": "o",
+          "examples": ["woman"]
+        },
+        {
+          "pattern": "ou",
+          "examples": ["could", "should", "would"]
+        }
+      ],
+      "representations": {
+        "respelling": "u",
+        "phonemic": "/ʊ/",
+        "phonetic": "[ʊ]"
       }
     },
     "STRUT": {
@@ -503,141 +645,10 @@
         }
       ],
       "representations": {
+        "gambiarra": "aa",
         "respelling": ["aa", "ah"],
         "phonemic": "/ɑ/",
         "phonetic": "[ɑ]"
-      }
-    },
-    "FOOT": {
-      "spellings": [
-        {
-          "pattern": "oo",
-          "examples": [
-            "wood",
-            "cook",
-            "foot",
-            "look",
-            "good",
-            "book",
-            "stood",
-            "cookies"
-          ]
-        },
-        {
-          "pattern": "u",
-          "examples": [
-            "put",
-            "pudding",
-            "sugar",
-            "butcher",
-            "push",
-            "bush",
-            "cushion"
-          ]
-        },
-        {
-          "pattern": "o",
-          "examples": ["woman"]
-        },
-        {
-          "pattern": "ou",
-          "examples": ["could", "should", "would"]
-        }
-      ],
-      "representations": {
-        "respelling": "u",
-        "phonemic": "/ʊ/",
-        "phonetic": "[ʊ]"
-      }
-    },
-    "GOOSE": {
-      "spellings": [
-        {
-          "pattern": "o",
-          "examples": ["do", "who", "to"]
-        },
-        {
-          "pattern": "oo",
-          "examples": [
-            "too",
-            "boo",
-            "moo",
-            "zoo",
-            "room",
-            "food",
-            "soon",
-            "mood",
-            "moon",
-            "loop",
-            "noon"
-          ]
-        },
-        {
-          "pattern": "ou",
-          "examples": ["you", "youth", "soup", "through"]
-        },
-        {
-          "pattern": "u",
-          "examples": [
-            "tutor",
-            "tune",
-            "tube",
-            "truth",
-            "truly",
-            "include",
-            "produce",
-            "solution"
-          ]
-        },
-        {
-          "pattern": "ue",
-          "examples": ["blue", "true", "due", "sue", "glue", "issue", "Tuesday"]
-        },
-        {
-          "pattern": "ew",
-          "examples": [
-            "new",
-            "threw",
-            "dew",
-            "flew",
-            "crew",
-            "chew",
-            "grew",
-            "knew"
-          ]
-        },
-        {
-          "pattern": "wo",
-          "examples": ["two"]
-        },
-        {
-          "pattern": "eu",
-          "examples": [
-            "deuce",
-            "pseudo",
-            "sleuth",
-            "neuter",
-            "neutral",
-            "neutron"
-          ]
-        },
-        {
-          "pattern": "ui",
-          "examples": ["bruise", "juice", "suit"]
-        },
-        {
-          "pattern": "ieu",
-          "examples": ["lieu", "lieutenant"]
-        },
-        {
-          "pattern": "oe",
-          "examples": ["shoe", "canoe"]
-        }
-      ],
-      "representations": {
-        "respelling": "oo",
-        "phonemic": "/u/",
-        "phonetic": "[u]"
       }
     },
     "FACE": {
@@ -710,6 +721,7 @@
         }
       ],
       "representations": {
+        "gambiarra": "ei",
         "respelling": "ay",
         "phonemic": "/eɪ/",
         "phonetic": "[e̞ɪ̯]"
@@ -726,7 +738,7 @@
           "examples": ["pie", "lie", "die", "tie"]
         },
         {
-          "pattern": "y",
+          "pattern": "y(e)",
           "examples": ["by", "bye", "why", "spy", "my", "cry", "shy"]
         },
         {
@@ -767,6 +779,7 @@
         }
       ],
       "representations": {
+        "gambiarra": "ai",
         "respelling": ["ai", "iCe"],
         "phonemic": "/aɪ/",
         "phonetic": "[ɑ̟ɪ̯]"
@@ -826,6 +839,7 @@
         }
       ],
       "representations": {
+        "gambiarra": "ôi",
         "respelling": "oy",
         "phonemic": "/ɔɪ/",
         "phonetic": "[o̞ɪ̯]"
@@ -974,6 +988,7 @@
         }
       ],
       "representations": {
+        "gambiarra": "au",
         "respelling": ["au", "ow"],
         "phonemic": "/aʊ/",
         "phonetic": "[aʊ̯]"
@@ -1143,14 +1158,14 @@
       "representations": {
         "respelling": "d",
         "phonemic": "/d/",
-        "phonetic": "[d]"
+        "phonetic": ["[d]", "[d̚]", "[ɾ]"]
       }
     },
     "K": {
       "spellings": [
         {
           "pattern": "k",
-          "examples": ["key", "trekking"]
+          "examples": ["key", "sky", "making", "broken", "ask", "oak"]
         },
         {
           "pattern": "kk",
@@ -1158,43 +1173,55 @@
         },
         {
           "pattern": "kh",
-          "examples": ["khaki"]
+          "examples": ["Khan", "ankh", "khaki", "sheikh"]
         },
         {
           "pattern": "ck",
-          "examples": ["back"]
+          "examples": ["back", "pick", "rock"]
         },
         {
           "pattern": "c",
-          "examples": ["can"]
+          "examples": ["can", "act", "Mac", "epic", "basic", "music", "logic"]
         },
         {
           "pattern": "cc",
-          "examples": ["account"]
+          "examples": ["broccoli", "account", "occur"]
         },
         {
           "pattern": "ch",
-          "examples": ["chaos"]
+          "examples": [
+            "tech",
+            "echo",
+            "Bach",
+            "ache",
+            "mach",
+            "chaos",
+            "choir",
+            "chemical",
+            "chronic",
+            "stomach",
+            "scholar"
+          ]
         },
         {
           "pattern": "q",
           "examples": ["Qatar"]
         },
         {
-          "pattern": "qu",
-          "examples": ["quick"]
+          "pattern": "qu (becomes kw)",
+          "examples": ["quick", "queen"]
         },
         {
-          "pattern": "cqu",
-          "examples": ["acquire"]
+          "pattern": "cqu (becomes kw)",
+          "examples": ["acquire", "acquit"]
         },
         {
           "pattern": "que",
-          "examples": ["unique"]
+          "examples": ["antique", "unique", "baroque"]
         },
         {
-          "pattern": "x",
-          "examples": ["excite"]
+          "pattern": "x (can become ks)",
+          "examples": ["excite", "ex-girlfriend"]
         }
       ],
       "representations": {
@@ -1207,29 +1234,129 @@
       "spellings": [
         {
           "pattern": "g",
-          "examples": ["go"]
+          "examples": ["go", "ago", "ag", "bag"]
         },
         {
           "pattern": "gg",
-          "examples": ["beggar"]
+          "examples": ["egg", "beggar", "hugging"]
         },
         {
           "pattern": "gh",
-          "examples": ["ghost"]
+          "examples": ["ghost", "ghoul", "ghetto", "spaghetti"]
         },
         {
           "pattern": "gu",
-          "examples": ["guest"]
+          "examples": ["guest", "guide", "guitar", "guilt", "guess", "guard"]
         },
         {
           "pattern": "gue",
-          "examples": ["league"]
+          "examples": [
+            "league",
+            "fatigue",
+            "intrigue",
+            "colleague",
+            "dialogue",
+            "catalogue",
+            "rogue",
+            "tongue",
+            "plague",
+            "vague"
+          ]
         }
       ],
       "representations": {
         "respelling": "g",
         "phonemic": "/g/",
         "phonetic": ["[g]", "[g̚]"]
+      }
+    },
+    "CH": {
+      "spellings": [
+        {
+          "pattern": "ch",
+          "examples": ["choose", "rich", "which", "ostrich", "sandwich"]
+        },
+        {
+          "pattern": "tch",
+          "examples": ["itch", "scotch", "pitch", "witch"]
+        },
+        {
+          "pattern": "t",
+          "examples": [
+            "try",
+            "trick",
+            "train",
+            "future",
+            "statue",
+            "mutual",
+            "mature"
+          ]
+        },
+        {
+          "pattern": "c",
+          "examples": ["cello", "ciabatta", "ciao"]
+        },
+        {
+          "pattern": "cz",
+          "examples": ["Czech"]
+        },
+        {
+          "pattern": "ti (may become ch or sh)",
+          "examples": ["question", "suggestion"]
+        }
+      ],
+      "representations": {
+        "respelling": "ch",
+        "phonemic": "/t͡ʃ/",
+        "phonetic": "[t͡ʃ]"
+      }
+    },
+    "J": {
+      "spellings": [
+        {
+          "pattern": "j",
+          "examples": ["joy", "major", "enjoy", "eject", "ninja"]
+        },
+        {
+          "pattern": "g",
+          "examples": [
+            "giraffe",
+            "gym",
+            "gentle",
+            "gender",
+            "gene",
+            "gel",
+            "gem",
+            "gin",
+            "germ",
+            "giant"
+          ]
+        },
+        {
+          "pattern": "dj",
+          "examples": ["adjust", "adjective", "adjacent", "Djibouti"]
+        },
+        {
+          "pattern": "ge",
+          "examples": ["rage", "mage", "sage", "huge", "urge", "range", "large"]
+        },
+        {
+          "pattern": "dge",
+          "examples": ["edge", "judge", "lodge", "badge", "bridge"]
+        },
+        {
+          "pattern": "d",
+          "examples": ["soldier", "individual"]
+        },
+        {
+          "pattern": "d y (across word boundary, can be reduced)",
+          "examples": ["did you", "would you"]
+        }
+      ],
+      "representations": {
+        "respelling": "j",
+        "phonemic": "/d͡ʒ/",
+        "phonetic": "[d͡ʒ]"
       }
     },
     "M": {
@@ -1276,7 +1403,7 @@
           "examples": ["no", "on", "never"]
         },
         {
-          "pattern": "nt",
+          "pattern": "nt (sometimes can be reduced to just n)",
           "examples": ["into", "interview", "internet"]
         },
         {
@@ -1311,13 +1438,13 @@
       "representations": {
         "respelling": "n",
         "phonemic": "/n/",
-        "phonetic": "[n]"
+        "phonetic": "[n] but note it can float towards [ŋ] if followed by K or G"
       }
     },
     "NG": {
       "spellings": [
         {
-          "pattern": "ng",
+          "pattern": "ng (may or may not include G sound)",
           "examples": [
             "long",
             "song",
@@ -1334,21 +1461,21 @@
           "examples": ["tongue", "meringue", "harangue"]
         },
         {
-          "pattern": "nc",
+          "pattern": "nc (can become NG + K)",
           "examples": ["uncle", "function"]
         },
         {
-          "pattern": "nk",
+          "pattern": "nk (can become NG + K)",
           "examples": ["bank", "sink", "think"]
         }
       ],
       "representations": {
         "respelling": "ng",
         "phonemic": "/ŋ/",
-        "phonetic": {
-          "default": "[ŋ]",
-          "with_g": "[ŋg]"
-        }
+        "phonetic": [
+          "[ŋ] - treat this as the default, as in \"singer\"",
+          "[ŋg] - in some cases there will be a noticeable G sound afterwards, as in \"finger\""
+        ]
       }
     },
     "F": {
@@ -1476,7 +1603,7 @@
         }
       ],
       "representations": {
-        "respelling": "th",
+        "respelling": ["th", "dh"],
         "phonemic": "/ð/",
         "phonetic": "[ð]"
       }
@@ -1485,46 +1612,15 @@
       "spellings": [
         {
           "pattern": "s",
-          "examples": [
-            "see",
-            "say",
-            "so",
-            "sun",
-            "bus",
-            "house",
-            "mouse",
-            "this",
-            "his",
-            "is"
-          ]
+          "examples": ["sun", "sit", "slow", "soft"]
         },
         {
           "pattern": "ss",
-          "examples": [
-            "pass",
-            "miss",
-            "kiss",
-            "boss",
-            "loss",
-            "press",
-            "stress",
-            "success"
-          ]
+          "examples": ["pass", "miss", "boss", "stress"]
         },
         {
           "pattern": "c",
-          "examples": [
-            "cent",
-            "city",
-            "cycle",
-            "face",
-            "race",
-            "space",
-            "place",
-            "nice",
-            "rice",
-            "voice"
-          ]
+          "examples": ["cent", "city", "cycle", "century"]
         },
         {
           "pattern": "sc",
@@ -1532,27 +1628,31 @@
         },
         {
           "pattern": "ps",
-          "examples": ["psychology", "psychic", "pseudo"]
+          "examples": ["psychology", "psychic", "pseudo", "pseudonym"]
         },
         {
           "pattern": "se",
-          "examples": ["house", "mouse", "this", "his", "is"]
+          "examples": ["house", "mouse"]
         },
         {
           "pattern": "ce",
-          "examples": [
-            "face",
-            "race",
-            "space",
-            "place",
-            "nice",
-            "rice",
-            "voice"
-          ]
+          "examples": ["nice", "rice", "twice", "face", "voice"]
         },
         {
           "pattern": "st",
           "examples": ["listen", "castle", "whistle", "bristle", "rustle"]
+        },
+        {
+          "pattern": "ts",
+          "examples": ["tsunami"]
+        },
+        {
+          "pattern": "ç or c",
+          "examples": ["façade", "facade"]
+        },
+        {
+          "pattern": "zz (can become T+S)",
+          "examples": ["pizza"]
         }
       ],
       "representations": {
@@ -1570,6 +1670,7 @@
             "zero",
             "zone",
             "zebra",
+            "zipper",
             "zombie",
             "zinc",
             "zodiac",
@@ -1578,10 +1679,10 @@
         },
         {
           "pattern": "zz",
-          "examples": ["pizza", "jazz", "buzz", "fizz", "drizzle", "sizzle"]
+          "examples": ["jazz", "puzzle", "buzz", "fizz", "drizzle", "sizzle"]
         },
         {
-          "pattern": "s",
+          "pattern": "se",
           "examples": [
             "rose",
             "nose",
@@ -1594,6 +1695,10 @@
             "choose",
             "use"
           ]
+        },
+        {
+          "pattern": "s",
+          "examples": ["his", "was", "houses", "music"]
         },
         {
           "pattern": "ss",
@@ -1601,95 +1706,35 @@
         },
         {
           "pattern": "x",
-          "examples": ["xylophone", "xenon", "xerox", "xenophobia"]
+          "examples": ["xylophone", "Xerox", "xenophobia"]
         },
         {
           "pattern": "ze",
-          "examples": [
-            "rose",
-            "nose",
-            "close",
-            "please",
-            "these",
-            "those",
-            "whose",
-            "lose",
-            "choose",
-            "use"
-          ]
+          "examples": ["bronze", "seize", "analyze"]
         }
       ],
       "representations": {
         "respelling": "z",
         "phonemic": "/z/",
-        "phonetic": "[z]"
+        "phonetic": [
+          "[z] - most common",
+          "[z̥] or [s] - in some cases, such as \"dogs\" when phrase final or followed by a voiceless consonant it can become [s]"
+        ]
       }
     },
     "SH": {
       "spellings": [
         {
           "pattern": "sh",
-          "examples": [
-            "ship",
-            "fish",
-            "wish",
-            "wash",
-            "push",
-            "rush",
-            "brush",
-            "crush",
-            "fresh",
-            "flash"
-          ]
-        },
-        {
-          "pattern": "ti",
-          "examples": [
-            "nation",
-            "station",
-            "action",
-            "motion",
-            "mention",
-            "question",
-            "direction",
-            "position",
-            "condition",
-            "function"
-          ]
-        },
-        {
-          "pattern": "ci",
-          "examples": [
-            "special",
-            "social",
-            "official",
-            "artificial",
-            "precious",
-            "delicious",
-            "suspicious",
-            "conscious",
-            "precious",
-            "delicious"
-          ]
-        },
-        {
-          "pattern": "si",
-          "examples": [
-            "mission",
-            "session",
-            "passion",
-            "tension",
-            "pension",
-            "version",
-            "division",
-            "vision",
-            "fusion",
-            "explosion"
-          ]
+          "examples": ["shoe", "shot", "shin", "share"]
         },
         {
           "pattern": "ch",
           "examples": [
+            "chef",
+            "machine",
+            "champagne",
+            "chauvinistic",
             "machine",
             "champagne",
             "chandelier",
@@ -1703,38 +1748,52 @@
           ]
         },
         {
-          "pattern": "ss",
-          "examples": [
-            "pressure",
-            "impression",
-            "expression",
-            "depression",
-            "aggression",
-            "profession",
-            "possession",
-            "succession",
-            "commission",
-            "mission"
-          ]
-        },
-        {
           "pattern": "s",
           "examples": ["sugar", "sure"]
         },
         {
-          "pattern": "ce",
-          "examples": [
-            "ocean",
-            "special",
-            "social",
-            "official",
-            "artificial",
-            "precious",
-            "delicious",
-            "suspicious",
-            "conscious",
-            "precious"
-          ]
+          "pattern": "ss",
+          "examples": ["issue", "pressure", "tissue"]
+        },
+        {
+          "pattern": "sci",
+          "examples": ["omniscient"]
+        },
+        {
+          "pattern": "sch",
+          "examples": ["schmooze", "schwa", "schtick", "schmuck"]
+        },
+        {
+          "pattern": "ti",
+          "examples": ["nation", "motion", "action", "cautious"]
+        },
+        {
+          "pattern": "ci",
+          "examples": ["social", "special", "musician"]
+        },
+        {
+          "pattern": "xi (can become K+SH)",
+          "examples": ["anxious", "luxury"]
+        },
+        {
+          "pattern": "tu",
+          "examples": ["actual", "virtual"]
+        },
+        {
+          "pattern": "si",
+          "examples": ["tension", "mansion"]
+        },
+        {
+          "pattern": "ci",
+          "examples": ["suspicion", "special", "social", "official"]
+        },
+        {
+          "pattern": "ssi",
+          "examples": ["mission", "passion"]
+        },
+        {
+          "pattern": "shi",
+          "examples": ["fashion", "cushion"]
         }
       ],
       "representations": {
@@ -1746,10 +1805,18 @@
     "ZH": {
       "spellings": [
         {
-          "pattern": "si",
+          "pattern": "z",
+          "examples": ["azure", "seizure"]
+        },
+        {
+          "pattern": "s",
           "examples": [
             "vision",
             "division",
+            "usual",
+            "casual",
+            "visual",
+            "Asia",
             "fusion",
             "explosion",
             "illusion",
@@ -1757,28 +1824,7 @@
             "decision",
             "precision",
             "television",
-            "occasion"
-          ]
-        },
-        {
-          "pattern": "ti",
-          "examples": [
-            "equation",
-            "equation",
-            "equation",
-            "equation",
-            "equation",
-            "equation",
-            "equation",
-            "equation",
-            "equation",
-            "equation"
-          ]
-        },
-        {
-          "pattern": "z",
-          "examples": [
-            "seizure",
+            "occasion",
             "treasure",
             "measure",
             "pleasure",
@@ -1791,9 +1837,16 @@
           ]
         },
         {
+          "pattern": "ti",
+          "examples": ["equation"]
+        },
+
+        {
           "pattern": "ge",
           "examples": [
             "garage",
+            "triage",
+            "beige",
             "massage",
             "mirage",
             "corsage",
@@ -1806,19 +1859,16 @@
           ]
         },
         {
-          "pattern": "su",
-          "examples": [
-            "usual",
-            "casual",
-            "visual",
-            "visual",
-            "visual",
-            "visual",
-            "visual",
-            "visual",
-            "visual",
-            "visual"
-          ]
+          "pattern": "g",
+          "examples": ["genre"]
+        },
+        {
+          "pattern": "j",
+          "examples": ["Jacques", "Elijah"]
+        },
+        {
+          "pattern": "x (can become G + ZH)",
+          "examples": ["luxury"]
         }
       ],
       "representations": {
@@ -1831,33 +1881,11 @@
       "spellings": [
         {
           "pattern": "h",
-          "examples": [
-            "hat",
-            "house",
-            "home",
-            "here",
-            "how",
-            "who",
-            "what",
-            "when",
-            "where",
-            "why"
-          ]
+          "examples": ["hi", "hello", "hat", "house", "home", "here", "how"]
         },
         {
           "pattern": "wh",
-          "examples": [
-            "who",
-            "what",
-            "when",
-            "where",
-            "why",
-            "which",
-            "while",
-            "white",
-            "whole",
-            "whale"
-          ]
+          "examples": ["who", "whose", "who's", "whole"]
         }
       ],
       "representations": {
@@ -1929,8 +1957,14 @@
         "respelling": "l",
         "phonemic": "/l/",
         "phonetic": {
-          "syllable_initial": "[ɫ]",
-          "syllable_final": "[ɫ]"
+          "Traditionally represented like this": [
+            "[l] - clear/light L, when syllable initial",
+            "[ɫ] - dark L, when syllable final"
+          ],
+          "However, I'd argue it's a dark L in both syllable positions, and what varies is tongue tip contact. IPA is TBD": [
+            "[ɫ] - when syllable initial, tongue tip is required",
+            "[ɫ] - when syllable final, no tongue tip contact required unless followed by a vowel"
+          ]
         }
       }
     },
