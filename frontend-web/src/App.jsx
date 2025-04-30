@@ -16,6 +16,7 @@ import Phonemes from "./pages/phonemes.jsx";
 import SpellingPronunciationPage from "./pages/SpellingPronunciationPage.jsx";
 import WLSDataExplorer from "./pages/WLSDataExplorer.jsx";
 import DictionaryAdmin from "./pages/DictionaryAdmin.jsx";
+import { ModulePage } from "./pages/ModulePage.jsx";
 
 function App() {
   return (
@@ -47,6 +48,12 @@ function App() {
               <Route
                 path="/onboarding/lexical-sets-quiz"
                 element={<LexicalSetsQuiz />}
+              />
+
+              <Route path="/learn/:moduleId" element={<ModulePage />} />
+              <Route
+                path="/learn/:moduleId/:lessonId"
+                element={<ModulePage />}
               />
 
               {/* Protected routes for write access */}

@@ -181,9 +181,6 @@ export default function Links() {
           (Free 7 day trial -&gt; monthly/yearly subscription)
         </li>
       </ul>
-      <div className="prose dark:prose-invert">
-        <Test />
-      </div>
     </div>
   );
 }
