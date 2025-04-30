@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import Layout1 from "./components/layout1.jsx";
+import { allRoutes } from "@/routes/soundRoutes";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Transcript from "./pages/transcript.jsx";
