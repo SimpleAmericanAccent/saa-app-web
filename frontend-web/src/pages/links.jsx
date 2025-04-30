@@ -1,3 +1,5 @@
+import Test from "@/content/test.mdx";
+
 export default function Links() {
   return (
     <div className="p-4">
@@ -6,7 +8,6 @@ export default function Links() {
         So far we have 3 core topics for which we have a Zoom call recording
         available:
       </p>
-
       <ul className="px-8 list-disc">
         <li>
           <a
@@ -36,11 +37,9 @@ export default function Links() {
           </a>
         </li>
       </ul>
-
       <p className="mt-4">
         Here are some of my favorite accent training exercises:
       </p>
-
       <ul className="px-8 list-disc">
         <li>
           <a
@@ -53,9 +52,7 @@ export default function Links() {
           (with demonstrations and explanations)
         </li>
       </ul>
-
       <h1 className="text-2xl font-bold mt-10">External Resources</h1>
-
       <p className="mt-4">Practice phrases & words</p>
       <ul className="px-8 list-disc">
         <li>
@@ -91,7 +88,6 @@ export default function Links() {
           automatically. Try following up with "the this that these those"
         </li>
       </ul>
-
       <p className="mt-4">Search For Native Audio</p>
       <ul className="px-8 list-disc">
         <li>
@@ -113,7 +109,6 @@ export default function Links() {
           </a>
         </li>
       </ul>
-
       <p className="mt-4">Software to help you practice/analyze accents</p>
       <ul className="px-8 list-disc">
         <li>
@@ -173,7 +168,6 @@ export default function Links() {
           really want to dive deep.
         </li>
       </ul>
-
       <p className="mt-4">Accent training apps</p>
       <ul className="px-8 list-disc">
         <li>
@@ -187,6 +181,7 @@ export default function Links() {
           (Free 7 day trial -&gt; monthly/yearly subscription)
         </li>
       </ul>
+      <Test />
     </div>
   );
 }
