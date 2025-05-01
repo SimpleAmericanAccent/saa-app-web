@@ -170,3 +170,19 @@ model ConsonantPhonemeUsage {
 
   @@unique([consonantPhonemeId, usageId])
 }
+
+model OrthoWord {
+  id            Int             @id @default(autoincrement())
+  word          String          @unique
+  freqSubtlexUs Int?
+  pronsCmuDict  PronCmuDict[]
+}
+
+model PronCmuDict {
+  id           Int         @id @default(autoincrement())
+  orthoWordId  Int
+  pronCmuDict  String
+  orthoWord    OrthoWord   @relation(fields: [orthoWordId], references: [id])
+
+  @@unique([orthoWordId, pronCmuDict])
+}
