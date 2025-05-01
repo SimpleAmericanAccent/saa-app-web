@@ -13,7 +13,7 @@ const LEXICAL_SET_MAP = {
   FOOT: "UH",
   STRUT: "AH",
   commA: "AH",
-  LOT: "AA", // or AO
+  LOT: ["AA", "AO"],
   FACE: "EY",
   PRICE: "AY",
   CHOICE: "OY",
@@ -65,14 +65,28 @@ router.get("/word/:word", async (req, res) => {
 });
 
 router.get("/lex/:lex", async (req, res) => {
-  const lex = req.params.lex.toUpperCase();
-  const arpabet = LEXICAL_SET_MAP[lex];
+  const lex = req.params.lex.toLowerCase();
+  const arpabetRaw = LEXICAL_SET_MAP[lex.toUpperCase()];
+  const arpabets = Array.isArray(arpabetRaw) ? arpabetRaw : [arpabetRaw];
+  const limit = parseInt(req.query.limit) || 20;
+  const stressParam = (req.query.stress ?? "1").toString();
+  const allowedStresses = new Set(stressParam.toLowerCase().split(""));
 
-  if (!arpabet) {
+  if (!arpabetRaw) {
     return res
       .status(400)
       .json({ error: `Unknown lexical set or phoneme: ${lex}` });
   }
+
+  const stressSuffixes = ["0", "1", "2"].filter((s) => allowedStresses.has(s));
+  if (stressSuffixes.length === 0) {
+    return res.status(400).json({ error: "Invalid stress filter" });
+  }
+
+  const exactPatterns = arpabets.flatMap((a) =>
+    stressSuffixes.map((s) => `${a}${s}`)
+  );
+  const regex = exactPatterns.join("|");
 
   try {
     const words = await prisma.orthoWord.findMany({
@@ -80,7 +94,7 @@ router.get("/lex/:lex", async (req, res) => {
         pronsCmuDict: {
           some: {
             pronCmuDict: {
-              contains: arpabet,
+              contains: regex,
               mode: "insensitive",
             },
           },
@@ -88,7 +102,7 @@ router.get("/lex/:lex", async (req, res) => {
         freqSubtlexUs: { not: null },
       },
       orderBy: { freqSubtlexUs: "desc" },
-      take: 20,
+      take: limit,
       include: { pronsCmuDict: true },
     });
 
