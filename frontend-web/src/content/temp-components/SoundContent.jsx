@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import PlayableWord from "@/content/temp-components/PlayableWord";
+import { useState, useEffect } from "react";
 
 export function SoundContent({
   data,
@@ -9,6 +10,33 @@ export function SoundContent({
   showNavigation = true,
   children,
 }) {
+  const [frequentWords, setFrequentWords] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hoveredWord, setHoveredWord] = useState(null);
+
+  useEffect(() => {
+    const fetchFrequentWords = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          `/api/ortho/lex/${soundKey}?limit=20&stress=1`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setFrequentWords(data);
+        }
+      } catch (error) {
+        console.error("Error fetching frequent words:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (soundKey) {
+      fetchFrequentWords();
+    }
+  }, [soundKey]);
+
   if (!data) return children;
 
   const { representations, spellings } = data;
@@ -32,6 +60,40 @@ export function SoundContent({
           </Link>
         </div>
       )}
+
+      {/* New section for frequent words with hover effect */}
+      <section className="mb-4">
+        <h2 className="text-xl font-semibold mb-2">Most Frequent Words</h2>
+        {isLoading ? (
+          <div className="text-gray-500">Loading frequent words...</div>
+        ) : frequentWords.length > 0 ? (
+          <div className="flex flex-wrap">
+            {frequentWords.map((word) => (
+              <div
+                key={word.word}
+                className="relative"
+                onMouseEnter={() => setHoveredWord(word.word)}
+                onMouseLeave={() => setHoveredWord(null)}
+              >
+                <div className="bg-gray-800 rounded flex items-center h-8 m-0.5">
+                  <PlayableWord word={word.word} className="text-sm px-2" />
+                </div>
+                {hoveredWord === word.word && (
+                  <div className="absolute z-10 bg-black text-white px-2 py-1 rounded text-xs top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap pointer-events-none">
+                    {word.pronsCmuDict.map((pron, idx) => (
+                      <div key={idx} className="font-mono">
+                        {pron.pronCmuDict}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-gray-500">No frequent words found.</div>
+        )}
+      </section>
 
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Quick Examples</h2>
