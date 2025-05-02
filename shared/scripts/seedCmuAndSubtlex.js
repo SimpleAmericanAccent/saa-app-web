@@ -1,5 +1,8 @@
-import { prisma } from "../shared.js";
+import { PrismaClient } from "../prisma/generated/index.js";
 import readline from "readline";
+
+// ✅ no globalThis here, we don’t want singleton in CLI script
+const prisma = new PrismaClient();
 
 const CMU_URL =
   "https://saa-website-public-files.s3.us-east-2.amazonaws.com/accent-data/cmudict.txt";
@@ -19,7 +22,14 @@ function updateProgress(current, total) {
   process.stdout.write(`🔄 Progress: ${percent}% (${current}/${total})`);
 }
 
-async function main() {
+export async function seedCmuAndSubtlex() {
+  const env = process.env.NODE_ENV?.toLowerCase();
+
+  if (env === "production" || env === "prod") {
+    console.error("🚫 Don't run seeding in production.");
+    process.exit(1);
+  }
+
   console.log("📥 Downloading data from S3...");
 
   const cmuRaw = await fetchTextFile(CMU_URL);
@@ -101,7 +111,7 @@ async function main() {
   console.log("\n🎉 Seeding complete. Total words:", wordRecords.length);
 }
 
-main()
+seedCmuAndSubtlex()
   .catch((e) => {
     console.error("❌ Error:", e);
     process.exit(1);
