@@ -1,0 +1,8 @@
+{
+  "name": "saa-monorepo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed:cmu": "node shared/scripts/seedCmuAndSubtlex.js"
+  }
+}
