@@ -23,7 +23,7 @@ app.use(router);
 // static files
 const staticPath = path.join(
   __dirname,
-  isDev ? "../frontend-web/public" : "../frontend-web/dist"
+  isDev ? "../admin-frontend-web/public" : "../admin-frontend-web/dist"
 );
 const indexPath = path.join(staticPath, "index.html");
 app.use(express.static(staticPath));
