@@ -1,12 +1,13 @@
 {
-  "name": "backend-node",
+  "name": "admin-backend-node",
   "version": "1.0.0",
   "description": "Simple American Accent accent software",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node --watch --env-file=.env server.js",
-    "seed:ortho": "node scripts/seedOrthoWords.js"
+    "seed:ortho": "node scripts/seedOrthoWords.js",
+    "generate": "prisma generate --schema=../prisma/schema.prisma"
   },
   "author": "Will Rosenberg",
   "license": "UNLICENSED",
