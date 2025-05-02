@@ -1,8 +1,5 @@
-// scripts/seedOrthoWords.js
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../shared.js";
 import readline from "readline";
-
-const prisma = new PrismaClient();
 
 const CMU_URL =
   "https://saa-website-public-files.s3.us-east-2.amazonaws.com/accent-data/cmudict.txt";

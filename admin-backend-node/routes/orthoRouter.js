@@ -1,8 +1,7 @@
 import express from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../shared.js";
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 const LEXICAL_SET_MAP = {
   FLEECE: { arpabets: ["IY"], type: "vowel" },
