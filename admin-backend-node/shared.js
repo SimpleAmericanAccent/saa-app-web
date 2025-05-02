@@ -1,4 +1,4 @@
-import { PrismaClient } from "../shared/modules/prisma.js";
+import { PrismaClient } from "../shared/services/prisma.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
