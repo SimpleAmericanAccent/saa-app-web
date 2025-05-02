@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../prisma/client";
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // Get all dictionary entries with their usages
