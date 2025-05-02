@@ -1,13 +1,14 @@
 import { createPrismaClient } from "../shared/services/initPrisma.js";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
+import { logModuleInfo } from "../shared/utils/logModuleInfo.js";
 
-const prisma = await createPrismaClient();
-
-// You can customize service-specific stuff here
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-console.info(`🛠️  Shared modules loaded in ${__dirname}`);
+let prisma;
+try {
+  prisma = await createPrismaClient();
+  logModuleInfo(import.meta.url, "Shared modules loaded"); // ✅ Only log if setup succeeded
+} catch (err) {
+  console.error("❌ Failed to initialize shared modules:", err);
+  process.exit(1);
+}
 
 // Export all shared resources
 export { prisma };
