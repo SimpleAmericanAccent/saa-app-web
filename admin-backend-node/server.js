@@ -32,6 +32,10 @@ app.use(express.static(staticPath));
 app.get("/", (req, res) =>
   isDev ? res.redirect("http://localhost:5173/") : res.sendFile(indexPath)
 );
+
+app.get("/callback", (req, res) =>
+  isDev ? res.redirect("http://localhost:5173/") : res.sendFile(indexPath)
+);
 // catch-all for SPA
 app.get("*", (req, res) =>
   isDev
