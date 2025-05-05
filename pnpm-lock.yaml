@@ -509,7 +509,7 @@ importers:
 
   shared: {}
 
-  shared/backend-node:
+  shared/backend-node-core:
     dependencies:
       '@prisma/client':
         specifier: ^6.7.0

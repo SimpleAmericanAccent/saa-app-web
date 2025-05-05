@@ -9,8 +9,8 @@ import {
   DEFAULT_AUDIO_REC_ID,
   AIRTABLE_KEY_SELECTED,
 } from "./config.js";
-import router from "shared/backend-node/routes/routes.js";
-import { createServer } from "shared/backend-node/server.js";
+import router from "shared/backend-node-core/routes/routes.js";
+import { createServer } from "shared/backend-node-core/server.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +19,7 @@ const isDev = environment_flag === "dev";
 
 const staticPath = path.join(
   __dirname,
-  isDev ? "../admin-frontend-web/public" : "../admin-frontend-web/dist"
+  isDev ? "../admin-frontend-web/" : "../admin-frontend-web/dist"
 );
 const indexPath = path.join(staticPath, "index.html");
 
