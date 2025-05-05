@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import wlsData from "../data/wls-data.json";
+import wlsData from "shared/frontend-web-core/src/data/wls-data.json";
 import { Input } from "@/components/ui/input";
 import {
   Card,

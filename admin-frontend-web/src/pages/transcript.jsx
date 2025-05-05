@@ -2,11 +2,14 @@ import { useEffect, useState, useRef } from "react";
 import useFetchResources from "../hooks/useFetchResources";
 import useFetchAudioV1 from "../hooks/useFetchAudioV1";
 import useFetchAudioV2 from "../hooks/useFetchAudioV2";
-import useAudioSync from "../hooks/useAudioSync";
+import useAudioSync from "shared/frontend-web-core/src/hooks/useAudioSync";
 
 import { findActiveWordIndex } from "shared/frontend-web-core/src/utils/binarySearch";
 import { fetchData } from "shared/frontend-web-core/src/utils/api";
-import { setCookie, getCookie } from "../utils/cookies";
+import {
+  setCookie,
+  getCookie,
+} from "shared/frontend-web-core/src/utils/cookies";
 import { cn } from "@/lib/utils";
 
 import useVersionStore from "@/stores/versionStore";

@@ -6,7 +6,7 @@ import {
   SoundContent,
   SoundGrid,
 } from "@/content/temp-components/SoundContent";
-import wlsData from "@/data/wls-data.json";
+import wlsData from "shared/frontend-web-core/src/data/wls-data.json";
 
 export function ModulePage() {
   const { moduleId, lessonId } = useParams();

@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState, useEffect } from "react";
 import ForceGraph2D from "react-force-graph-2d";
-import wlsData from "../data/wls-data.json";
+import wlsData from "shared/frontend-web-core/src/data/wls-data.json";
 import * as d3 from "d3";
 
 // Custom Panel component
