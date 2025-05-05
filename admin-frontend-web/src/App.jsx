@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router";
 import { ThemeProvider } from "shared/frontend-web-core/src/components/theme-provider";
 import { SidebarProvider } from "shared/frontend-web-core/src/components/ui/sidebar";
-import Layout1 from "./components/layout1.jsx";
+import Layout1 from "shared/frontend-web-core/src/components/layout1.jsx";
 import { allRoutes } from "shared/frontend-web-core/src/routes/soundRoutes";
 
 import ProtectedRoute from "shared/frontend-web-core/src/components/ProtectedRoute.jsx";

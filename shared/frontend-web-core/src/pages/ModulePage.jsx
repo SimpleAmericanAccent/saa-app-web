@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { Suspense } from "react";
 import { Link } from "react-router-dom";
-import ModuleLayout from "@/components/ModuleLayout";
+import ModuleLayout from "shared/frontend-web-core/src/components/ModuleLayout";
 import {
   SoundContent,
   SoundGrid,
