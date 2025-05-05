@@ -27,6 +27,9 @@ importers:
       express-openid-connect:
         specifier: ^2.17.1
         version: 2.18.0(express@4.21.2)
+      shared:
+        specifier: workspace:*
+        version: link:../shared
     devDependencies:
       prisma:
         specifier: ^6.7.0
@@ -145,6 +148,9 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      shared:
+        specifier: workspace:*
+        version: link:../shared
       tailwind-merge:
         specifier: ^3.0.2
         version: 3.2.0
@@ -215,6 +221,9 @@ importers:
       express-openid-connect:
         specifier: ^2.17.1
         version: 2.18.0(express@4.21.2)
+      shared:
+        specifier: workspace:*
+        version: link:../shared
     devDependencies:
       prisma:
         specifier: ^6.7.0
@@ -294,6 +303,9 @@ importers:
       react-native-webview:
         specifier: 13.12.5
         version: 13.12.5(react-native@0.76.5(@babel/core@7.27.1)(@babel/preset-env@7.27.1(@babel/core@7.27.1))(@types/react@18.3.20)(react@18.3.1))(react@18.3.1)
+      shared:
+        specifier: workspace:*
+        version: link:../shared
     devDependencies:
       '@babel/core':
         specifier: ^7.25.2
@@ -433,6 +445,9 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      shared:
+        specifier: workspace:*
+        version: link:../shared
       tailwind-merge:
         specifier: ^3.0.2
         version: 3.2.0
@@ -491,6 +506,8 @@ importers:
       vite:
         specifier: ^6.2.0
         version: 6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.39.0)
+
+  shared: {}
 
 packages:
 
@@ -1436,7 +1453,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.22.26':
     resolution: {integrity: sha512-I689wc8Fn/AX7aUGiwrh3HnssiORMJtR2fpksX+JIe8Cj/EDleblYMSwRPd0025wrwOV9UN1KM/RuEt/QjCS3Q==}
