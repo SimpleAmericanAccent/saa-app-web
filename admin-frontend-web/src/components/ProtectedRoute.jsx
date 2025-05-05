@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router";
-import useAuthStore from "../stores/authStore";
+import useAuthStore from "shared/frontend-web-core/src/stores/authStore";
 import propTypes from "prop-types";
 import { useEffect, useState } from "react";
 

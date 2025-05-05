@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { useQuizStore } from "@/stores/quiz-store";
+import { useQuizStore } from "shared/frontend-web-core/src/stores/quiz-store";
 
 const WORD_SETS = {
   FLEECE: [

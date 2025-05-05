@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import useAuthStore from "../stores/authStore";
+import useAuthStore from "shared/frontend-web-core/src/stores/authStore";
 import { ModeToggle } from "./mode-toggle";
 import {
   NavigationMenu,
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import useVersionStore from "@/stores/versionStore";
+import useVersionStore from "shared/frontend-web-core/src/stores/versionStore";
 import {
   DropdownMenu,
   DropdownMenuContent,

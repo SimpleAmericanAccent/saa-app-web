@@ -1,7 +1,7 @@
 import NavBar from "@/components/NavBar.jsx";
 import { SidebarRight } from "@/components/sidebar-right";
 import { Outlet } from "react-router";
-import useAuthStore from "@/stores/authStore";
+import useAuthStore from "shared/frontend-web-core/src/stores/authStore";
 import { useEffect } from "react";
 
 export default function Layout1({ children }) {

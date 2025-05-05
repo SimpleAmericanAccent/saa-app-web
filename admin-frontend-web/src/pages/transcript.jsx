@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import useFetchResources from "../hooks/useFetchResources";
-import useFetchAudioV1 from "../hooks/useFetchAudioV1";
-import useFetchAudioV2 from "../hooks/useFetchAudioV2";
+import useFetchResources from "shared/frontend-web-core/src/hooks/useFetchResources";
+import useFetchAudioV1 from "shared/frontend-web-core/src/hooks/useFetchAudioV1";
+import useFetchAudioV2 from "shared/frontend-web-core/src/hooks/useFetchAudioV2";
 import useAudioSync from "shared/frontend-web-core/src/hooks/useAudioSync";
 
 import { findActiveWordIndex } from "shared/frontend-web-core/src/utils/binarySearch";
@@ -12,7 +12,7 @@ import {
 } from "shared/frontend-web-core/src/utils/cookies";
 import { cn } from "@/lib/utils";
 
-import useVersionStore from "@/stores/versionStore";
+import useVersionStore from "shared/frontend-web-core/src/stores/versionStore";
 import { HelpCircle } from "lucide-react";
 
 import TranscriptViewerV1 from "../components/transcript-viewer-v1";
