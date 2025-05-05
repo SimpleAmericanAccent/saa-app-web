@@ -24,7 +24,7 @@ import {
   listVowelLayout,
   compactConsonantLayout,
   listConsonantLayout,
-} from "@/config/phonemeLayouts";
+} from "shared/frontend-web-core/src/config/phonemeLayouts";
 import { Edit, Trash, Plus } from "lucide-react";
 
 const DetailedListView = ({ phonemes = [], onEdit, onDelete, onAdd }) => {

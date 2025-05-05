@@ -4,8 +4,8 @@ import useFetchAudioV1 from "../hooks/useFetchAudioV1";
 import useFetchAudioV2 from "../hooks/useFetchAudioV2";
 import useAudioSync from "../hooks/useAudioSync";
 
-import { findActiveWordIndex } from "../utils/binarySearch";
-import { fetchData } from "../utils/api";
+import { findActiveWordIndex } from "shared/frontend-web-core/src/utils/binarySearch";
+import { fetchData } from "shared/frontend-web-core/src/utils/api";
 import { setCookie, getCookie } from "../utils/cookies";
 import { cn } from "@/lib/utils";
 

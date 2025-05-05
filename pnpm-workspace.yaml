@@ -6,3 +6,4 @@ packages:
   - frontend-web
   - shared
   - shared/backend-node-core
+  - shared/frontend-web-core
