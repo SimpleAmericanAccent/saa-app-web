@@ -3,7 +3,7 @@ import url from "url";
 import express from "express";
 import { auth } from "express-openid-connect";
 import { environment_flag, auth0Config } from "./config.js";
-import router from "./routes/routes.js";
+import router from "shared/backend-node/routes/routes.js";
 
 //#region main server setup
 // setup

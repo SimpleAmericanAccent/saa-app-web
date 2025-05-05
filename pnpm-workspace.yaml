@@ -5,3 +5,4 @@ packages:
   - frontend-mobile
   - frontend-web
   - shared
+  - shared/backend-node

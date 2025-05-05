@@ -1,5 +1,5 @@
 import express from "express";
-import * as dictionaryController from "../../shared/backend-node/controllers/dictionaryController.js";
+import * as dictionaryController from "../controllers/dictionaryController.js";
 
 const dictionaryRouter = express.Router();
 

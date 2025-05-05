@@ -509,6 +509,22 @@ importers:
 
   shared: {}
 
+  shared/backend-node:
+    dependencies:
+      '@prisma/client':
+        specifier: ^6.7.0
+        version: 6.7.0(prisma@6.7.0(typescript@5.7.3))(typescript@5.7.3)
+      express:
+        specifier: ^4.19.2
+        version: 4.21.2
+      express-openid-connect:
+        specifier: ^2.17.1
+        version: 2.18.0(express@4.21.2)
+    devDependencies:
+      prisma:
+        specifier: ^6.7.0
+        version: 6.7.0(typescript@5.7.3)
+
 packages:
 
   '@0no-co/graphql.web@1.1.2':
