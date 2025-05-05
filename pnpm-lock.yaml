@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@prisma/client':
-        specifier: ^6.7.0
-        version: 6.7.0(prisma@6.7.0(typescript@5.7.3))(typescript@5.7.3)
     devDependencies:
       prisma:
         specifier: ^6.7.0
