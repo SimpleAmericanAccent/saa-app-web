@@ -5,19 +5,19 @@ import Layout1 from "./components/layout1.jsx";
 import { allRoutes } from "shared/frontend-web-core/src/routes/soundRoutes";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import Transcript from "./pages/transcript.jsx";
-import WLS from "./pages/wls.jsx";
-import VSounds from "./pages/vsounds.jsx";
-import VSynth from "./pages/vsynth.jsx";
-import Home6 from "./pages/stats.jsx";
-import Links from "./pages/links.jsx";
-import LexicalSets from "./pages/onboarding/lexical-sets.jsx";
-import LexicalSetsQuiz from "./pages/onboarding/lexical-sets-quiz.jsx";
-import Phonemes from "./pages/phonemes.jsx";
-import SpellingPronunciationPage from "./pages/SpellingPronunciationPage.jsx";
-import WLSDataExplorer from "./pages/WLSDataExplorer.jsx";
-import DictionaryAdmin from "./pages/DictionaryAdmin.jsx";
-import { ModulePage } from "./pages/ModulePage.jsx";
+import Transcript from "shared/frontend-web-core/src/pages/transcript.jsx";
+import WLS from "shared/frontend-web-core/src/pages/wls.jsx";
+import VSounds from "shared/frontend-web-core/src/pages/vsounds.jsx";
+import VSynth from "shared/frontend-web-core/src/pages/vsynth.jsx";
+import Home6 from "shared/frontend-web-core/src/pages/stats.jsx";
+import Links from "shared/frontend-web-core/src/pages/links.jsx";
+import LexicalSets from "shared/frontend-web-core/src/pages/onboarding/lexical-sets.jsx";
+import LexicalSetsQuiz from "shared/frontend-web-core/src/pages/onboarding/lexical-sets-quiz.jsx";
+import Phonemes from "shared/frontend-web-core/src/pages/phonemes.jsx";
+import SpellingPronunciationPage from "shared/frontend-web-core/src/pages/SpellingPronunciationPage.jsx";
+import WLSDataExplorer from "shared/frontend-web-core/src/pages/WLSDataExplorer.jsx";
+import DictionaryAdmin from "shared/frontend-web-core/src/pages/DictionaryAdmin.jsx";
+import { ModulePage } from "shared/frontend-web-core/src/pages/ModulePage.jsx";
 
 function App() {
   return (
