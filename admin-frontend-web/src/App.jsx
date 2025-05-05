@@ -1,10 +1,10 @@
 import { Routes, Route } from "react-router";
-import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { ThemeProvider } from "shared/frontend-web-core/src/components/theme-provider";
+import { SidebarProvider } from "shared/frontend-web-core/src/components/ui/sidebar";
 import Layout1 from "./components/layout1.jsx";
 import { allRoutes } from "shared/frontend-web-core/src/routes/soundRoutes";
 
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ProtectedRoute from "shared/frontend-web-core/src/components/ProtectedRoute.jsx";
 import Transcript from "shared/frontend-web-core/src/pages/transcript.jsx";
 import WLS from "shared/frontend-web-core/src/pages/wls.jsx";
 import VSounds from "shared/frontend-web-core/src/pages/vsounds.jsx";

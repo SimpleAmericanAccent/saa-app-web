@@ -1,5 +1,3 @@
-import Test from "@/content/test.mdx";
-
 export default function Links() {
   return (
     <div className="p-4">

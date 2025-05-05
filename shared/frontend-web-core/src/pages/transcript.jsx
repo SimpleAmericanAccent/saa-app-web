@@ -15,20 +15,20 @@ import { cn } from "@/lib/utils";
 import useVersionStore from "shared/frontend-web-core/src/stores/versionStore";
 import { HelpCircle } from "lucide-react";
 
-import TranscriptViewerV1 from "../components/transcript-viewer-v1";
-import TranscriptViewerV2 from "@/components/transcript-viewer-v2";
-import TranscriptStatsV1 from "../components/transcript-stats-v1";
-import TranscriptStatsV2 from "@/components/transcript-stats-v2";
-import AudioPlayer from "../components/AudioPlayer";
-import KeyboardShortcutsModal from "../components/KeyboardShortcutsModal";
-import { Button } from "@/components/ui/button";
-import { PersonAudioSelector } from "@/components/person-audio-selector";
+import TranscriptViewerV1 from "shared/frontend-web-core/src/components/transcript-viewer-v1";
+import TranscriptViewerV2 from "shared/frontend-web-core/src/components/transcript-viewer-v2";
+import TranscriptStatsV1 from "shared/frontend-web-core/src/components/transcript-stats-v1";
+import TranscriptStatsV2 from "shared/frontend-web-core/src/components/transcript-stats-v2";
+import AudioPlayer from "shared/frontend-web-core/src/components/AudioPlayer";
+import KeyboardShortcutsModal from "shared/frontend-web-core/src/components/KeyboardShortcutsModal";
+import { Button } from "shared/frontend-web-core/src/components/ui/button";
+import { PersonAudioSelector } from "shared/frontend-web-core/src/components/person-audio-selector";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "shared/frontend-web-core/src/components/ui/resizable";
+import { ScrollArea } from "shared/frontend-web-core/src/components/ui/scroll-area";
 
 export default function Transcript() {
   // #region declarations

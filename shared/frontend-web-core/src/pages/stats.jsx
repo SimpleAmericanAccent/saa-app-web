@@ -1,4 +1,4 @@
-import { useTheme } from "@/components/theme-provider";
+import { useTheme } from "shared/frontend-web-core/src/components/theme-provider";
 
 export default function Stats() {
   const { theme } = useTheme();

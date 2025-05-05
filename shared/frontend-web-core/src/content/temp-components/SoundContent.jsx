@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import PlayableWord from "@/content/temp-components/PlayableWord";
+import PlayableWord from "./PlayableWord";
 import { useState, useEffect } from "react";
 
 export function SoundContent({

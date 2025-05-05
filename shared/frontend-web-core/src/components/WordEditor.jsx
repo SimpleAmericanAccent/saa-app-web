@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "shared/frontend-web-core/src/components/ui/button";
+import { Input } from "shared/frontend-web-core/src/components/ui/input";
+import { Label } from "shared/frontend-web-core/src/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { PronunciationEditor } from "@/components/PronunciationEditor";
+} from "shared/frontend-web-core/src/components/ui/dialog";
+import { PronunciationEditor } from "shared/frontend-web-core/src/components/PronunciationEditor";
 
 export const WordEditor = ({ word, open, onOpenChange, onSave }) => {
   const [editWord, setEditWord] = useState({
