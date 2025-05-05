@@ -1,37 +1,30 @@
 import express from "express";
-import {
-  fetchAirtableRecords,
-  executeAirtableOperation,
-} from "../services/airtable.js";
-import {
-  AIRTABLE_BASE_ID,
-  AIRTABLE_KEY_READ_WRITE_VALUE,
-  AIRTABLE_KEY_READ_ONLY_VALUE,
-  DEFAULT_AUDIO_REC_ID,
-  AIRTABLE_KEY_SELECTED,
-} from "../config.js";
 
 const v2Router = express.Router();
 
 // Get words and annotations for an audio
 v2Router.get("/api/audio/:audioId", async (req, res) => {
+  const airtable = req.app.locals.airtable;
   if (!req.app.locals.currentUserAudioAccess?.includes(req.params.audioId)) {
     return res.status(404).json({ error: "Not found" });
   }
 
   try {
-    const audioData = await fetchAirtableRecords("Audio%20Source", {
+    const audioData = await airtable.fetchAirtableRecords("Audio%20Source", {
       recordId: req.params.audioId,
     });
 
     // Fetch v2 words and annotations
-    const wordsDataV2 = await fetchAirtableRecords("Words%20(v2)", {
+    const wordsDataV2 = await airtable.fetchAirtableRecords("Words%20(v2)", {
       filterByFormula: `{Audio Source}="${audioData.fields.Name}"`,
     });
 
-    const annotationDataV2 = await fetchAirtableRecords("Annotations%20(v2)", {
-      filterByFormula: `{Audio Source}="${audioData.fields.Name}"`,
-    });
+    const annotationDataV2 = await airtable.fetchAirtableRecords(
+      "Annotations%20(v2)",
+      {
+        filterByFormula: `{Audio Source}="${audioData.fields.Name}"`,
+      }
+    );
 
     req.app.locals.wordsDataV2 = wordsDataV2;
 
@@ -54,13 +47,12 @@ v2Router.get("/api/audio/:audioId", async (req, res) => {
 
 // Create/update annotations
 v2Router.post("/api/annotations", async (req, res) => {
+  const airtable = req.app.locals.airtable;
   if (req.app.locals.currentUserRole !== "write") {
     return res.status(403).json({ error: "Not authorized" });
   }
 
   try {
-    AIRTABLE_KEY_SELECTED = AIRTABLE_KEY_READ_WRITE_VALUE;
-
     const {
       wordIndex,
       annotations: annotationsDesired,
@@ -138,7 +130,7 @@ async function executeV2Operations(operations) {
       let result;
       switch (op.type) {
         case "CREATE_WORD":
-          result = await executeAirtableOperation({
+          result = await airtable.executeAirtableOperation({
             method: "POST",
             path: "Words%20(v2)",
             data: {
@@ -153,7 +145,7 @@ async function executeV2Operations(operations) {
           break;
 
         case "UPSERT_ANNOTATION":
-          result = await executeAirtableOperation({
+          result = await airtable.executeAirtableOperation({
             method: "POST",
             path: "Annotations%20(v2)",
             data: {

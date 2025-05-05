@@ -1,14 +1,11 @@
 //#region v1 routes
 // NEW API (v1) - all new endpoints start with /v1/
 import express from "express";
-import {
-  fetchAirtableRecords,
-  executeAirtableOperation,
-} from "../services/airtable.js";
 
 const v1Router = express.Router();
 
 v1Router.post("/api/annotations/update", async (req, res) => {
+  const airtable = req.app.locals.airtable;
   //tbd
 
   if (req.app.locals.currentUserRole !== "write") {
@@ -67,7 +64,7 @@ v1Router.post("/api/annotations/update", async (req, res) => {
         let result;
         switch (operation.type) {
           case "CREATE":
-            result = await executeAirtableOperation({
+            result = await airtable.executeAirtableOperation({
               method: "POST",
               path: "Words%20(instance)",
               data: {
@@ -85,7 +82,7 @@ v1Router.post("/api/annotations/update", async (req, res) => {
             break;
 
           case "UPDATE":
-            result = await executeAirtableOperation({
+            result = await airtable.executeAirtableOperation({
               method: "PATCH",
               path: `Words%20(instance)/${operation.recordId}`,
               data: {
@@ -98,7 +95,7 @@ v1Router.post("/api/annotations/update", async (req, res) => {
             break;
 
           case "DELETE":
-            result = await executeAirtableOperation({
+            result = await airtable.executeAirtableOperation({
               method: "DELETE",
               path: `Words%20(instance)/${operation.recordId}`,
             });

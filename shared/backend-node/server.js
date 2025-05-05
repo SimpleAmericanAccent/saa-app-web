@@ -1,5 +1,6 @@
 import express from "express";
 import { auth } from "express-openid-connect";
+import { createAirtableClient } from "./services/airtable.js";
 
 export function createServer({
   auth0Config,
@@ -8,10 +9,20 @@ export function createServer({
   staticPath,
   indexPath,
   devRedirectUrl,
+  envConfig,
 }) {
   const app = express();
+
   app.use(express.json());
   app.use(auth(auth0Config));
+
+  app.locals.env = envConfig;
+  app.locals.airtable = createAirtableClient({
+    baseId: envConfig.AIRTABLE_BASE_ID,
+    readKey: envConfig.AIRTABLE_KEY_READ_ONLY_VALUE,
+    writeKey: envConfig.AIRTABLE_KEY_READ_WRITE_VALUE,
+  });
+
   app.use(router);
 
   app.use(express.static(staticPath));

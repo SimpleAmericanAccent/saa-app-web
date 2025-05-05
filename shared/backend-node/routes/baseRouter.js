@@ -1,9 +1,10 @@
 import express from "express";
-import { fetchAirtableRecords } from "../services/airtable.js";
 
 const baseRouter = express.Router();
 
 baseRouter.get("/authz", async (req, res) => {
+  const airtable = req.app.locals.airtable;
+
   // Helper function to find a record by user ID
   const findUserById = (peopleRecords, userId) => {
     return peopleRecords.find(
@@ -41,7 +42,9 @@ baseRouter.get("/authz", async (req, res) => {
 
   // Step 1: Look up current user
   const currentUserId = req.oidc.user.sub;
-  const peopleObject = { records: await fetchAirtableRecords("People") };
+  const peopleObject = {
+    records: await airtable.fetchAirtableRecords("People"),
+  };
   const currentUser = findUserById(peopleObject.records, currentUserId);
   if (currentUser) {
     const {
@@ -53,7 +56,7 @@ baseRouter.get("/authz", async (req, res) => {
 
     // Step 2: Look up audio list
     const audioObject = {
-      records: await fetchAirtableRecords("Audio%20Source"),
+      records: await airtable.fetchAirtableRecords("Audio%20Source"),
     };
     const currentUserAudioAccessObject = findAudiosByAccess(
       audioObject.records,
@@ -90,8 +93,10 @@ baseRouter.get("/authz", async (req, res) => {
 });
 
 baseRouter.get("/data/loadIssues", async (req, res) => {
-  const airtableFeatures = await fetchAirtableRecords("Target");
-  const airtableIssues = await fetchAirtableRecords("BR%20issues");
+  const airtable = req.app.locals.airtable;
+
+  const airtableFeatures = await airtable.fetchAirtableRecords("Target");
+  const airtableIssues = await airtable.fetchAirtableRecords("BR%20issues");
 
   // Prepare features with empty issues arrays
   const featuresMap = airtableFeatures.reduce((acc, record) => {
@@ -132,12 +137,14 @@ baseRouter.get("/data/loadIssues", async (req, res) => {
 });
 
 baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
+  const airtable = req.app.locals.airtable;
+
   // Check if the user has access to the audio
   if (!req.app.locals.currentUserAudioAccess?.includes(req.params.AudioRecId)) {
     return res.status(404).json({ error: "Not found" });
   }
 
-  const audioData = await fetchAirtableRecords("Audio%20Source", {
+  const audioData = await airtable.fetchAirtableRecords("Audio%20Source", {
     recordId: req.params.AudioRecId,
   });
 
@@ -145,7 +152,7 @@ baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
     return res.status(404).json({ error: "Audio not found" });
   }
 
-  const wordsData = await fetchAirtableRecords("Words%20(instance)", {
+  const wordsData = await airtable.fetchAirtableRecords("Words%20(instance)", {
     filterByFormula: `{Audio Source} = "${audioData.fields.Name}"`,
   });
 

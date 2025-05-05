@@ -1,6 +1,14 @@
 import path from "path";
 import url from "url";
-import { environment_flag, auth0Config } from "./config.js";
+import {
+  environment_flag,
+  auth0Config,
+  AIRTABLE_BASE_ID,
+  AIRTABLE_KEY_READ_WRITE_VALUE,
+  AIRTABLE_KEY_READ_ONLY_VALUE,
+  DEFAULT_AUDIO_REC_ID,
+  AIRTABLE_KEY_SELECTED,
+} from "./config.js";
 import router from "shared/backend-node/routes/routes.js";
 import { createServer } from "shared/backend-node/server.js";
 
@@ -22,6 +30,13 @@ const app = createServer({
   staticPath,
   indexPath,
   devRedirectUrl: "http://localhost:5173",
+  envConfig: {
+    AIRTABLE_BASE_ID,
+    AIRTABLE_KEY_READ_WRITE_VALUE,
+    AIRTABLE_KEY_READ_ONLY_VALUE,
+    DEFAULT_AUDIO_REC_ID,
+    AIRTABLE_KEY_SELECTED,
+  },
 });
 
 app.listen(port, () => {
