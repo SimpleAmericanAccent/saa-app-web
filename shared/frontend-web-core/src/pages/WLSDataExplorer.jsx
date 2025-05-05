@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import wlsData from "shared/frontend-web-core/src/data/wls-data.json";
-import { Input } from "@/components/ui/input";
+import { Input } from "shared/frontend-web-core/src/components/ui/input";
 import {
   Card,
   CardContent,
@@ -8,20 +8,20 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
+} from "shared/frontend-web-core/src/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "shared/frontend-web-core/src/components/ui/select";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Button } from "@/components/ui/button";
+} from "shared/frontend-web-core/src/components/ui/collapsible";
+import { Button } from "shared/frontend-web-core/src/components/ui/button";
 import {
   ChevronDown,
   ChevronRight,
@@ -54,18 +54,23 @@ import {
   Lightbulb,
   Zap,
 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "shared/frontend-web-core/src/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+} from "shared/frontend-web-core/src/components/ui/tooltip";
+import { ScrollArea } from "shared/frontend-web-core/src/components/ui/scroll-area";
+import { Badge } from "shared/frontend-web-core/src/components/ui/badge";
+import { Separator } from "shared/frontend-web-core/src/components/ui/separator";
+import { Switch } from "shared/frontend-web-core/src/components/ui/switch";
+import { Label } from "shared/frontend-web-core/src/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -74,16 +79,19 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
-import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "shared/frontend-web-core/src/components/ui/dialog";
+import { Progress } from "shared/frontend-web-core/src/components/ui/progress";
+import { Slider } from "shared/frontend-web-core/src/components/ui/slider";
+import { Textarea } from "shared/frontend-web-core/src/components/ui/textarea";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "shared/frontend-web-core/src/components/ui/radio-group";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "shared/frontend-web-core/src/components/ui/popover";
 
 export default function WLSDataExplorer() {
   const [searchTerm, setSearchTerm] = useState("");

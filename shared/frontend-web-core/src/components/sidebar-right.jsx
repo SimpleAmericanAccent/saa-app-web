@@ -15,12 +15,12 @@ import {
   SidebarGroupContent,
   SidebarMenuBadge,
   SidebarSeparator,
-} from "@/components/ui/sidebar";
+} from "shared/frontend-web-core/src/components/ui/sidebar";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "shared/frontend-web-core/src/components/ui/collapsible";
 
 // This is sample data.
 const data = {

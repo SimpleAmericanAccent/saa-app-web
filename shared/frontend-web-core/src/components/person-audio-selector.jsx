@@ -17,7 +17,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command";
+} from "shared/frontend-web-core/src/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -25,9 +25,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+} from "shared/frontend-web-core/src/components/ui/dialog";
+import { Button } from "shared/frontend-web-core/src/components/ui/button";
+import { cn } from "shared/frontend-web-core/src/lib/utils";
 
 export function PersonAudioSelector({
   people,

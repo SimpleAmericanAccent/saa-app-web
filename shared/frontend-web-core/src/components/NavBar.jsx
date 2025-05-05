@@ -10,9 +10,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+} from "shared/frontend-web-core/src/components/ui/navigation-menu";
+import { cn } from "shared/frontend-web-core/src/lib/utils";
+import { SidebarTrigger } from "shared/frontend-web-core/src/components/ui/sidebar";
 import useVersionStore from "shared/frontend-web-core/src/stores/versionStore";
 import {
   DropdownMenu,
@@ -22,7 +22,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+} from "shared/frontend-web-core/src/components/ui/dropdown-menu";
 import { Check } from "lucide-react";
 
 function NavBar({ showSidebarTrigger = false }) {

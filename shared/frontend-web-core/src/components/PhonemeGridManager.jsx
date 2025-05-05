@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Button } from "shared/frontend-web-core/src/components/ui/button";
+import { Card } from "shared/frontend-web-core/src/components/ui/card";
+import { Input } from "shared/frontend-web-core/src/components/ui/input";
 import {
   DndContext,
   closestCenter,

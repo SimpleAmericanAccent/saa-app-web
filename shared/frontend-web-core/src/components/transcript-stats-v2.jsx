@@ -3,10 +3,10 @@ import {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,
-} from "@/components/ui/collapsible";
+} from "shared/frontend-web-core/src/components/ui/collapsible";
 import { ChevronRight } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
+import { Checkbox } from "shared/frontend-web-core/src/components/ui/checkbox";
+import { Button } from "shared/frontend-web-core/src/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
+} from "shared/frontend-web-core/src/components/ui/dropdown-menu";
 import { Settings } from "lucide-react";
 
 const TranscriptStatsV2 = ({

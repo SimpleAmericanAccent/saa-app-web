@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "shared/frontend-web-core/src/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "shared/frontend-web-core/src/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -14,10 +14,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from "shared/frontend-web-core/src/components/ui/dialog";
+import { Input } from "shared/frontend-web-core/src/components/ui/input";
+import { Label } from "shared/frontend-web-core/src/components/ui/label";
+import { Textarea } from "shared/frontend-web-core/src/components/ui/textarea";
 import { PhonemeGridManager } from "./PhonemeGridManager";
 import {
   compactVowelLayout,

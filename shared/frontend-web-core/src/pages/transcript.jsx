@@ -10,7 +10,7 @@ import {
   setCookie,
   getCookie,
 } from "shared/frontend-web-core/src/utils/cookies";
-import { cn } from "@/lib/utils";
+import { cn } from "shared/frontend-web-core/src/lib/utils";
 
 import useVersionStore from "shared/frontend-web-core/src/stores/versionStore";
 import { HelpCircle } from "lucide-react";

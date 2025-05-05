@@ -5,14 +5,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "shared/frontend-web-core/src/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
+} from "shared/frontend-web-core/src/components/ui/tooltip";
+import { Button } from "shared/frontend-web-core/src/components/ui/button";
 import { Play, Volume2 } from "lucide-react";
 
 const VOWEL_SOUNDS_AUDIO_URL =

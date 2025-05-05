@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useCallback } from "react";
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "shared/frontend-web-core/src/lib/utils";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -10,7 +10,7 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+} from "shared/frontend-web-core/src/components/ui/context-menu";
 
 const TranscriptViewerV2 = ({
   annotatedTranscript,
