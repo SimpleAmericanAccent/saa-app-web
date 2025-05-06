@@ -5,7 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node --watch --env-file=.env server.js",
+    "dev": "node --watch --env-file=.env server.js",
+    "start": "node server.js",
     "seed:ortho": "node scripts/seedOrthoWords.js",
     "generate": "prisma generate --schema=../prisma/schema.prisma"
   },
