@@ -1,23 +1,23 @@
 import { Routes, Route } from "react-router";
-import { ThemeProvider } from "frontend-web-core/src/components/theme-provider";
-import { SidebarProvider } from "frontend-web-core/src/components/ui/sidebar";
-import Layout1 from "frontend-web-core/src/components/layout1.jsx";
-import { allRoutes } from "frontend-web-core/src/routes/soundRoutes";
+import { ThemeProvider } from "core-frontend-web/src/components/theme-provider";
+import { SidebarProvider } from "core-frontend-web/src/components/ui/sidebar";
+import Layout1 from "core-frontend-web/src/components/layout1.jsx";
+import { allRoutes } from "core-frontend-web/src/routes/soundRoutes";
 
-import ProtectedRoute from "frontend-web-core/src/components/ProtectedRoute.jsx";
-import Transcript from "frontend-web-core/src/pages/transcript.jsx";
-import WLS from "frontend-web-core/src/pages/wls.jsx";
-import VSounds from "frontend-web-core/src/pages/vsounds.jsx";
-import VSynth from "frontend-web-core/src/pages/vsynth.jsx";
-import Home6 from "frontend-web-core/src/pages/stats.jsx";
-import Links from "frontend-web-core/src/pages/links.jsx";
-import LexicalSets from "frontend-web-core/src/pages/onboarding/lexical-sets.jsx";
-import LexicalSetsQuiz from "frontend-web-core/src/pages/onboarding/lexical-sets-quiz.jsx";
-import Phonemes from "frontend-web-core/src/pages/phonemes.jsx";
-import SpellingPronunciationPage from "frontend-web-core/src/pages/SpellingPronunciationPage.jsx";
-import WLSDataExplorer from "frontend-web-core/src/pages/WLSDataExplorer.jsx";
-import DictionaryAdmin from "frontend-web-core/src/pages/DictionaryAdmin.jsx";
-import { ModulePage } from "frontend-web-core/src/pages/ModulePage.jsx";
+import ProtectedRoute from "core-frontend-web/src/components/ProtectedRoute.jsx";
+import Transcript from "core-frontend-web/src/pages/transcript.jsx";
+import WLS from "core-frontend-web/src/pages/wls.jsx";
+import VSounds from "core-frontend-web/src/pages/vsounds.jsx";
+import VSynth from "core-frontend-web/src/pages/vsynth.jsx";
+import Home6 from "core-frontend-web/src/pages/stats.jsx";
+import Links from "core-frontend-web/src/pages/links.jsx";
+import LexicalSets from "core-frontend-web/src/pages/onboarding/lexical-sets.jsx";
+import LexicalSetsQuiz from "core-frontend-web/src/pages/onboarding/lexical-sets-quiz.jsx";
+import Phonemes from "core-frontend-web/src/pages/phonemes.jsx";
+import SpellingPronunciationPage from "core-frontend-web/src/pages/SpellingPronunciationPage.jsx";
+import WLSDataExplorer from "core-frontend-web/src/pages/WLSDataExplorer.jsx";
+import DictionaryAdmin from "core-frontend-web/src/pages/DictionaryAdmin.jsx";
+import { ModulePage } from "core-frontend-web/src/pages/ModulePage.jsx";
 
 function App() {
   return (

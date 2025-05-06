@@ -12,7 +12,7 @@
   "author": "Will Rosenberg",
   "license": "UNLICENSED",
   "dependencies": {
-    "backend-node-core": "workspace:*",
+    "core-backend-node": "workspace:*",
     "@prisma/client": "^6.7.0",
     "express": "^4.19.2",
     "express-openid-connect": "^2.17.1"

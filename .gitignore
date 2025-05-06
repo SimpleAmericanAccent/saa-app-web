@@ -2,7 +2,7 @@
 /.vscode
 /node_modules
 
-/packages/backend-node-core/prisma/generated
+/packages/core-backend-node/prisma/generated
 
 # Python
 __pycache__/

@@ -9,8 +9,8 @@ import {
   DEFAULT_AUDIO_REC_ID,
   AIRTABLE_KEY_SELECTED,
 } from "./config.js";
-import router from "backend-node-core/routes/routes.js";
-import { createServer } from "backend-node-core/server.js";
+import router from "core-backend-node/routes/routes.js";
+import { createServer } from "core-backend-node/server.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
