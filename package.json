@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "seed:cmu": "node shared/scripts/seedCmuAndSubtlex.js"
+    "seed:cmu": "node shared/scripts/seedCmuAndSubtlex.js",
+    "generate": "pnpm --filter core-backend-node exec prisma generate"
   },
   "devDependencies": {
     "prisma": "^6.7.0",
