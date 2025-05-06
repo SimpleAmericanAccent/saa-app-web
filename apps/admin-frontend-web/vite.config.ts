@@ -20,7 +20,8 @@ const logOnce = (server: ViteDevServer) => {
                 🧪 DEV
                 💻 FRONTEND-WEB
                 🔒 ADMIN app...`
-          )
+          ) +
+          "\n"
       ),
     100
   );
@@ -47,7 +48,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     {
-      name: "suppress-vite-startup-logs",
+      name: "custom-vite-startup-logs",
       configureServer(server) {
         server.httpServer?.once("listening", () => {
           logOnce(server);

@@ -43,7 +43,7 @@ app.listen(port, () => {
   console.log(
     `\nStarted Express server on port ${port} for:
     ${isDev ? "🧪 DEV" : "🚀 PROD"}
-    ⚙️  BACKEND-NODE
+    ${isDev ? "⚙️  BACKEND-NODE" : "⚙️ BACKEND-NODE"}
     🔒 ADMIN app`
   );
 });
