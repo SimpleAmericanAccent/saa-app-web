@@ -40,5 +40,10 @@ const app = createServer({
 });
 
 app.listen(port, () => {
-  console.log(`Admin backend running on port ${port}`);
+  console.log(
+    `\nStarted Express server on port ${port} for:
+    ${isDev ? "🧪 DEV" : "🚀 PROD"}
+    ⚙️  BACKEND-NODE
+    🔒 ADMIN app`
+  );
 });

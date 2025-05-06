@@ -1,11 +1,42 @@
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "vite";
+import { defineConfig, ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react";
 import mdx from "@mdx-js/rollup";
 
+const logOnce = (server: ViteDevServer) => {
+  if ((globalThis as { __VITE_LOGGED_ONCE__?: boolean }).__VITE_LOGGED_ONCE__) {
+    return;
+  }
+  (globalThis as { __VITE_LOGGED_ONCE__?: boolean }).__VITE_LOGGED_ONCE__ =
+    true;
+
+  setTimeout(
+    () =>
+      console.log(
+        "\n" +
+          unindent(
+            `Started VITE server on port ${server.config.server.port} for:
+                🧪 DEV
+                💻 FRONTEND-WEB
+                🙋 USER app...`
+          )
+      ),
+    100
+  );
+};
+
+const unindent = (str: string) =>
+  str
+    .split("\n")
+    .map((line) => line.replace(/^\s+/, "")) // removes leading tabs or spaces
+    .join("\n\t")
+    .trim();
+
 // https://vite.dev/config/
 export default defineConfig({
+  clearScreen: false,
+  logLevel: "warn",
   plugins: [
     {
       enforce: "pre",
@@ -15,6 +46,14 @@ export default defineConfig({
     },
     react(),
     tailwindcss(),
+    {
+      name: "log-on-start",
+      configureServer(server) {
+        server.httpServer?.once("listening", () => {
+          logOnce(server);
+        });
+      },
+    },
   ],
   server: {
     port: 5173,
