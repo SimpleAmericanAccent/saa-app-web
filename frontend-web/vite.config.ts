@@ -33,6 +33,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "frontend-web-core": path.resolve(
+        __dirname,
+        "../packages/frontend-web-core"
+      ),
     },
   },
 });
