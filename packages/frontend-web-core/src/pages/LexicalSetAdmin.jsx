@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
-import { Input } from "shared/frontend-web-core/src/components/ui/input";
-import { Textarea } from "shared/frontend-web-core/src/components/ui/textarea";
+import { Button } from "frontend-web-core/src/components/ui/button";
+import { Input } from "frontend-web-core/src/components/ui/input";
+import { Textarea } from "frontend-web-core/src/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "shared/frontend-web-core/src/components/ui/card";
+} from "frontend-web-core/src/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +17,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "shared/frontend-web-core/src/components/ui/dialog";
+} from "frontend-web-core/src/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -25,8 +25,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "shared/frontend-web-core/src/components/ui/table";
-import { Label } from "shared/frontend-web-core/src/components/ui/label";
+} from "frontend-web-core/src/components/ui/table";
+import { Label } from "frontend-web-core/src/components/ui/label";
 import { Plus, Edit, Trash, X } from "lucide-react";
 
 const LexicalSetAdmin = () => {

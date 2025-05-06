@@ -1,17 +1,16 @@
-// web/src/pages/onboarding/lexical-sets-quiz.jsx
 import { useState, useMemo } from "react";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
-import { Card } from "shared/frontend-web-core/src/components/ui/card";
-import { Progress } from "shared/frontend-web-core/src/components/ui/progress";
-import { cn } from "shared/frontend-web-core/src/lib/utils";
+import { Button } from "frontend-web-core/src/components/ui/button";
+import { Card } from "frontend-web-core/src/components/ui/card";
+import { Progress } from "frontend-web-core/src/components/ui/progress";
+import { cn } from "frontend-web-core/src/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "shared/frontend-web-core/src/components/ui/dropdown-menu";
+} from "frontend-web-core/src/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { useQuizStore } from "shared/frontend-web-core/src/stores/quiz-store";
+import { useQuizStore } from "frontend-web-core/src/stores/quiz-store";
 
 const WORD_SETS = {
   FLEECE: [

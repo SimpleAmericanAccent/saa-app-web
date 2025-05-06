@@ -1,12 +1,12 @@
 import { useParams } from "react-router-dom";
 import { Suspense } from "react";
 import { Link } from "react-router-dom";
-import ModuleLayout from "shared/frontend-web-core/src/components/ModuleLayout";
+import ModuleLayout from "frontend-web-core/src/components/ModuleLayout";
 import {
   SoundContent,
   SoundGrid,
-} from "shared/frontend-web-core/src/content/temp-components/SoundContent";
-import wlsData from "shared/frontend-web-core/src/data/wls-data.json";
+} from "frontend-web-core/src/content/temp-components/SoundContent";
+import wlsData from "frontend-web-core/src/data/wls-data.json";
 
 export function ModulePage() {
   const { moduleId, lessonId } = useParams();

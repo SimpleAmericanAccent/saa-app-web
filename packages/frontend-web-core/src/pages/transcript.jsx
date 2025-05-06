@@ -1,34 +1,31 @@
 import { useEffect, useState, useRef } from "react";
-import useFetchResources from "shared/frontend-web-core/src/hooks/useFetchResources";
-import useFetchAudioV1 from "shared/frontend-web-core/src/hooks/useFetchAudioV1";
-import useFetchAudioV2 from "shared/frontend-web-core/src/hooks/useFetchAudioV2";
-import useAudioSync from "shared/frontend-web-core/src/hooks/useAudioSync";
+import useFetchResources from "frontend-web-core/src/hooks/useFetchResources";
+import useFetchAudioV1 from "frontend-web-core/src/hooks/useFetchAudioV1";
+import useFetchAudioV2 from "frontend-web-core/src/hooks/useFetchAudioV2";
+import useAudioSync from "frontend-web-core/src/hooks/useAudioSync";
 
-import { findActiveWordIndex } from "shared/frontend-web-core/src/utils/binarySearch";
-import { fetchData } from "shared/frontend-web-core/src/utils/api";
-import {
-  setCookie,
-  getCookie,
-} from "shared/frontend-web-core/src/utils/cookies";
-import { cn } from "shared/frontend-web-core/src/lib/utils";
+import { findActiveWordIndex } from "frontend-web-core/src/utils/binarySearch";
+import { fetchData } from "frontend-web-core/src/utils/api";
+import { setCookie, getCookie } from "frontend-web-core/src/utils/cookies";
+import { cn } from "frontend-web-core/src/lib/utils";
 
-import useVersionStore from "shared/frontend-web-core/src/stores/versionStore";
+import useVersionStore from "frontend-web-core/src/stores/versionStore";
 import { HelpCircle } from "lucide-react";
 
-import TranscriptViewerV1 from "shared/frontend-web-core/src/components/transcript-viewer-v1";
-import TranscriptViewerV2 from "shared/frontend-web-core/src/components/transcript-viewer-v2";
-import TranscriptStatsV1 from "shared/frontend-web-core/src/components/transcript-stats-v1";
-import TranscriptStatsV2 from "shared/frontend-web-core/src/components/transcript-stats-v2";
-import AudioPlayer from "shared/frontend-web-core/src/components/AudioPlayer";
-import KeyboardShortcutsModal from "shared/frontend-web-core/src/components/KeyboardShortcutsModal";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
-import { PersonAudioSelector } from "shared/frontend-web-core/src/components/person-audio-selector";
+import TranscriptViewerV1 from "frontend-web-core/src/components/transcript-viewer-v1";
+import TranscriptViewerV2 from "frontend-web-core/src/components/transcript-viewer-v2";
+import TranscriptStatsV1 from "frontend-web-core/src/components/transcript-stats-v1";
+import TranscriptStatsV2 from "frontend-web-core/src/components/transcript-stats-v2";
+import AudioPlayer from "frontend-web-core/src/components/AudioPlayer";
+import KeyboardShortcutsModal from "frontend-web-core/src/components/KeyboardShortcutsModal";
+import { Button } from "frontend-web-core/src/components/ui/button";
+import { PersonAudioSelector } from "frontend-web-core/src/components/person-audio-selector";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "shared/frontend-web-core/src/components/ui/resizable";
-import { ScrollArea } from "shared/frontend-web-core/src/components/ui/scroll-area";
+} from "frontend-web-core/src/components/ui/resizable";
+import { ScrollArea } from "frontend-web-core/src/components/ui/scroll-area";
 
 export default function Transcript() {
   // #region declarations

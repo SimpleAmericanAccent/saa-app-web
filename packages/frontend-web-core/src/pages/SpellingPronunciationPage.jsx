@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ForceGraphNetwork from "../components/ForceGraphNetwork";
-import wlsData from "shared/frontend-web-core/src/data/wls-data.json";
+import wlsData from "frontend-web-core/src/data/wls-data.json";
 
 const SpellingPronunciationPage = () => {
   const [networkData, setNetworkData] = useState({ nodes: [], edges: [] });

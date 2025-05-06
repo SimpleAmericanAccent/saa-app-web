@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
+import { Button } from "frontend-web-core/src/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "shared/frontend-web-core/src/components/ui/card";
+} from "frontend-web-core/src/components/ui/card";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "shared/frontend-web-core/src/components/ui/tabs";
+} from "frontend-web-core/src/components/ui/tabs";
 import { PhonemeCard } from "./PhonemeCard";
 import { X } from "lucide-react";
 

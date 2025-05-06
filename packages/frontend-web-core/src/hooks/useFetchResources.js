@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchData } from "shared/frontend-web-core/src/utils/api";
+import { fetchData } from "frontend-web-core/src/utils/api";
 
 const STORAGE_KEY = "transcript-selection";
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchData } from "shared/frontend-web-core/src/utils/api";
+import { fetchData } from "frontend-web-core/src/utils/api";
 
 const useFetchAudioV2 = () => {
   const [mp3url, setMp3Url] = useState("");

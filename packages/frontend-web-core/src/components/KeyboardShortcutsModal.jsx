@@ -4,7 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "shared/frontend-web-core/src/components/ui/dialog";
+} from "frontend-web-core/src/components/ui/dialog";
 
 const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
   return (

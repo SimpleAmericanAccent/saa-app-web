@@ -1,4 +1,4 @@
-import { PhonemeCard } from "shared/frontend-web-core/src/components/PhonemeCard";
+import { PhonemeCard } from "frontend-web-core/src/components/PhonemeCard";
 
 // Consonant data organized by type
 const consonantData = {

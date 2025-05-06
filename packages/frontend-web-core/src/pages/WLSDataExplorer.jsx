@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
-import wlsData from "shared/frontend-web-core/src/data/wls-data.json";
-import { Input } from "shared/frontend-web-core/src/components/ui/input";
+import wlsData from "frontend-web-core/src/data/wls-data.json";
+import { Input } from "frontend-web-core/src/components/ui/input";
 import {
   Card,
   CardContent,
@@ -8,20 +8,20 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "shared/frontend-web-core/src/components/ui/card";
+} from "frontend-web-core/src/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "shared/frontend-web-core/src/components/ui/select";
+} from "frontend-web-core/src/components/ui/select";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "shared/frontend-web-core/src/components/ui/collapsible";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
+} from "frontend-web-core/src/components/ui/collapsible";
+import { Button } from "frontend-web-core/src/components/ui/button";
 import {
   ChevronDown,
   ChevronRight,
@@ -59,18 +59,18 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "shared/frontend-web-core/src/components/ui/tabs";
+} from "frontend-web-core/src/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "shared/frontend-web-core/src/components/ui/tooltip";
-import { ScrollArea } from "shared/frontend-web-core/src/components/ui/scroll-area";
-import { Badge } from "shared/frontend-web-core/src/components/ui/badge";
-import { Separator } from "shared/frontend-web-core/src/components/ui/separator";
-import { Switch } from "shared/frontend-web-core/src/components/ui/switch";
-import { Label } from "shared/frontend-web-core/src/components/ui/label";
+} from "frontend-web-core/src/components/ui/tooltip";
+import { ScrollArea } from "frontend-web-core/src/components/ui/scroll-area";
+import { Badge } from "frontend-web-core/src/components/ui/badge";
+import { Separator } from "frontend-web-core/src/components/ui/separator";
+import { Switch } from "frontend-web-core/src/components/ui/switch";
+import { Label } from "frontend-web-core/src/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -79,19 +79,19 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from "shared/frontend-web-core/src/components/ui/dialog";
-import { Progress } from "shared/frontend-web-core/src/components/ui/progress";
-import { Slider } from "shared/frontend-web-core/src/components/ui/slider";
-import { Textarea } from "shared/frontend-web-core/src/components/ui/textarea";
+} from "frontend-web-core/src/components/ui/dialog";
+import { Progress } from "frontend-web-core/src/components/ui/progress";
+import { Slider } from "frontend-web-core/src/components/ui/slider";
+import { Textarea } from "frontend-web-core/src/components/ui/textarea";
 import {
   RadioGroup,
   RadioGroupItem,
-} from "shared/frontend-web-core/src/components/ui/radio-group";
+} from "frontend-web-core/src/components/ui/radio-group";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "shared/frontend-web-core/src/components/ui/popover";
+} from "frontend-web-core/src/components/ui/popover";
 
 export default function WLSDataExplorer() {
   const [searchTerm, setSearchTerm] = useState("");

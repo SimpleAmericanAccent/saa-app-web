@@ -11,11 +11,11 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "shared/frontend-web-core/src/components",
-    "utils": "shared/frontend-web-core/src/lib/utils",
-    "ui": "shared/frontend-web-core/src/components/ui",
-    "lib": "shared/frontend-web-core/src/lib",
-    "hooks": "shared/frontend-web-core/src/hooks"
+    "components": "frontend-web-core/src/components",
+    "utils": "frontend-web-core/src/lib/utils",
+    "ui": "frontend-web-core/src/components/ui",
+    "lib": "frontend-web-core/src/lib",
+    "hooks": "frontend-web-core/src/hooks"
   },
   "iconLibrary": "lucide"
 }

@@ -1,4 +1,4 @@
-import { cn } from "shared/frontend-web-core/src/lib/utils";
+import { cn } from "frontend-web-core/src/lib/utils";
 import * as React from "react";
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {

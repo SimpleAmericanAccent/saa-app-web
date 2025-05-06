@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import useAuthStore from "shared/frontend-web-core/src/stores/authStore";
+import useAuthStore from "frontend-web-core/src/stores/authStore";
 import { ModeToggle } from "./mode-toggle";
 import {
   NavigationMenu,
@@ -10,10 +10,10 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "shared/frontend-web-core/src/components/ui/navigation-menu";
-import { cn } from "shared/frontend-web-core/src/lib/utils";
-import { SidebarTrigger } from "shared/frontend-web-core/src/components/ui/sidebar";
-import useVersionStore from "shared/frontend-web-core/src/stores/versionStore";
+} from "frontend-web-core/src/components/ui/navigation-menu";
+import { cn } from "frontend-web-core/src/lib/utils";
+import { SidebarTrigger } from "frontend-web-core/src/components/ui/sidebar";
+import useVersionStore from "frontend-web-core/src/stores/versionStore";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "shared/frontend-web-core/src/components/ui/dropdown-menu";
+} from "frontend-web-core/src/components/ui/dropdown-menu";
 import { Check } from "lucide-react";
 
 function NavBar({ showSidebarTrigger = false }) {

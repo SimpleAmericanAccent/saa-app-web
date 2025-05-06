@@ -1,4 +1,4 @@
-import { PhonemeCard } from "shared/frontend-web-core/src/components/PhonemeCard";
+import { PhonemeCard } from "frontend-web-core/src/components/PhonemeCard";
 
 // Vowel data organized by lexical sets
 const vowelData = {

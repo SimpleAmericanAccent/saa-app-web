@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { ScrollArea } from "shared/frontend-web-core/src/components/ui/scroll-area";
+import { ScrollArea } from "frontend-web-core/src/components/ui/scroll-area";
 import {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,
-} from "shared/frontend-web-core/src/components/ui/collapsible";
+} from "frontend-web-core/src/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "shared/frontend-web-core/src/components/ui/resizable";
+} from "frontend-web-core/src/components/ui/resizable";
 
 export default function WLS() {
   const [headings, setHeadings] = useState([]);

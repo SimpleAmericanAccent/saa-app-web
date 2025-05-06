@@ -1,6 +1,6 @@
 import { forwardRef, useState, useEffect } from "react";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
-import { Slider } from "shared/frontend-web-core/src/components/ui/slider";
+import { Button } from "frontend-web-core/src/components/ui/button";
+import { Slider } from "frontend-web-core/src/components/ui/slider";
 import { Play, Pause, Volume2, Minus, Plus, Gauge } from "lucide-react";
 
 const AudioPlayer = forwardRef(

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { fetchData } from "shared/frontend-web-core/src/utils/api";
+import { fetchData } from "frontend-web-core/src/utils/api";
 
 const useAuthStore = create((set) => ({
   userRole: null,

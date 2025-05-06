@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
-import { Input } from "shared/frontend-web-core/src/components/ui/input";
-import { Textarea } from "shared/frontend-web-core/src/components/ui/textarea";
+import { Button } from "frontend-web-core/src/components/ui/button";
+import { Input } from "frontend-web-core/src/components/ui/input";
+import { Textarea } from "frontend-web-core/src/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "shared/frontend-web-core/src/components/ui/card";
+} from "frontend-web-core/src/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "shared/frontend-web-core/src/components/ui/dialog";
+} from "frontend-web-core/src/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -26,27 +26,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "shared/frontend-web-core/src/components/ui/table";
+} from "frontend-web-core/src/components/ui/table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "shared/frontend-web-core/src/components/ui/select";
-import { Label } from "shared/frontend-web-core/src/components/ui/label";
+} from "frontend-web-core/src/components/ui/select";
+import { Label } from "frontend-web-core/src/components/ui/label";
 import { Plus, Edit, Trash, Link } from "lucide-react";
-import { Switch } from "shared/frontend-web-core/src/components/ui/switch";
+import { Switch } from "frontend-web-core/src/components/ui/switch";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "shared/frontend-web-core/src/components/ui/tabs";
-import { PhonemeCard } from "shared/frontend-web-core/src/components/PhonemeCard";
-import { PhonemeManager } from "shared/frontend-web-core/src/components/PhonemeManager";
-import { PronunciationEditor } from "shared/frontend-web-core/src/components/PronunciationEditor";
-import { WordEditor } from "shared/frontend-web-core/src/components/WordEditor";
+} from "frontend-web-core/src/components/ui/tabs";
+import { PhonemeCard } from "frontend-web-core/src/components/PhonemeCard";
+import { PhonemeManager } from "frontend-web-core/src/components/PhonemeManager";
+import { PronunciationEditor } from "frontend-web-core/src/components/PronunciationEditor";
+import { WordEditor } from "frontend-web-core/src/components/WordEditor";
 
 const DictionaryAdmin = () => {
   const [words, setWords] = useState([]);

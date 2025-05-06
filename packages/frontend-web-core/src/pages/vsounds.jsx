@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "shared/frontend-web-core/src/components/ui/select";
+} from "frontend-web-core/src/components/ui/select";
 
 export default function VSounds() {
   const [selectedColumn, setSelectedColumn] = useState("gambiarra");

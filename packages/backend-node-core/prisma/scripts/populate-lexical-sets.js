@@ -1,4 +1,4 @@
-import { prisma } from "../../backend-node/shared.js";
+import { prisma } from "../../shared.js";
 
 const lexicalSets = [
   {

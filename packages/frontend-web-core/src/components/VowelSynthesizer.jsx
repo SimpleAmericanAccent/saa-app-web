@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
-import { Slider } from "shared/frontend-web-core/src/components/ui/slider";
+import { Button } from "frontend-web-core/src/components/ui/button";
+import { Slider } from "frontend-web-core/src/components/ui/slider";
 
 const VOWEL_SYMBOLS = [
   { symbol: "FLEECE", F1: 350, F2: 2030 },

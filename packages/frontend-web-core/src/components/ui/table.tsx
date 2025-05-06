@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "shared/frontend-web-core/src/lib/utils";
+import { cn } from "frontend-web-core/src/lib/utils";
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (

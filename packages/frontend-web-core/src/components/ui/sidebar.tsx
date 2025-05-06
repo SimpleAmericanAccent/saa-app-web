@@ -3,25 +3,25 @@ import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 
-import { useIsMobile } from "shared/frontend-web-core/src/hooks/use-mobile";
-import { cn } from "shared/frontend-web-core/src/lib/utils";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
-import { Input } from "shared/frontend-web-core/src/components/ui/input";
-import { Separator } from "shared/frontend-web-core/src/components/ui/separator";
+import { useIsMobile } from "frontend-web-core/src/hooks/use-mobile";
+import { cn } from "frontend-web-core/src/lib/utils";
+import { Button } from "frontend-web-core/src/components/ui/button";
+import { Input } from "frontend-web-core/src/components/ui/input";
+import { Separator } from "frontend-web-core/src/components/ui/separator";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "shared/frontend-web-core/src/components/ui/sheet";
+} from "frontend-web-core/src/components/ui/sheet";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "shared/frontend-web-core/src/components/ui/tooltip";
-import { Skeleton } from "shared/frontend-web-core/src/components/ui/skeleton";
+} from "frontend-web-core/src/components/ui/tooltip";
+import { Skeleton } from "frontend-web-core/src/components/ui/skeleton";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

@@ -1,4 +1,4 @@
-import wlsData from "shared/frontend-web-core/src/data/wls-data.json";
+import wlsData from "frontend-web-core/src/data/wls-data.json";
 
 // Helper function to create URL-friendly slugs
 const createSlug = (str) => str.toLowerCase().replace(/[^a-z0-9]/g, "-");

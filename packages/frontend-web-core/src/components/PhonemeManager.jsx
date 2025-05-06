@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Button } from "shared/frontend-web-core/src/components/ui/button";
+import { Button } from "frontend-web-core/src/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "shared/frontend-web-core/src/components/ui/card";
+} from "frontend-web-core/src/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -14,17 +14,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "shared/frontend-web-core/src/components/ui/dialog";
-import { Input } from "shared/frontend-web-core/src/components/ui/input";
-import { Label } from "shared/frontend-web-core/src/components/ui/label";
-import { Textarea } from "shared/frontend-web-core/src/components/ui/textarea";
+} from "frontend-web-core/src/components/ui/dialog";
+import { Input } from "frontend-web-core/src/components/ui/input";
+import { Label } from "frontend-web-core/src/components/ui/label";
+import { Textarea } from "frontend-web-core/src/components/ui/textarea";
 import { PhonemeGridManager } from "./PhonemeGridManager";
 import {
   compactVowelLayout,
   listVowelLayout,
   compactConsonantLayout,
   listConsonantLayout,
-} from "shared/frontend-web-core/src/config/phonemeLayouts";
+} from "frontend-web-core/src/config/phonemeLayouts";
 import { Edit, Trash, Plus } from "lucide-react";
 
 const DetailedListView = ({ phonemes = [], onEdit, onDelete, onAdd }) => {
