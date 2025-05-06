@@ -11,10 +11,16 @@
     "dev:admin": "concurrently \"pnpm --filter admin-backend-node run dev\" \"pnpm --filter admin-frontend-web run dev\"",
     "build:admin": "pnpm run setup && pnpm --filter admin-frontend-web run build",
     "start:admin": "pnpm --filter admin-backend-node run start",
+    "dev:a": "pnpm run dev:admin",
+    "build:a": "pnpm run build:admin",
+    "start:a": "pnpm run start:admin",
     "// User App": "",
     "dev:user": "concurrently \"pnpm --filter user-backend-node run dev\" \"pnpm --filter user-frontend-web run dev\"",
     "build:user": "pnpm run setup && pnpm --filter user-frontend-web run build",
-    "start:user": "pnpm --filter user-backend-node run start"
+    "start:user": "pnpm --filter user-backend-node run start",
+    "dev:u": "pnpm run dev:user",
+    "build:u": "pnpm run build:user",
+    "start:u": "pnpm run start:user"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
