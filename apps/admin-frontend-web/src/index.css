@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@source "../../packages/frontend-web-core";
+@source "../../../packages/frontend-web-core";
 
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";

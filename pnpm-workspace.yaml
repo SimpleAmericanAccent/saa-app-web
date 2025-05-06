@@ -1,7 +1,3 @@
 packages:
-  - "admin-backend-node"
-  - "admin-frontend-web"
-  - "backend-node"
-  - "frontend-mobile"
-  - "frontend-web"
+  - "apps/*"
   - "packages/*"

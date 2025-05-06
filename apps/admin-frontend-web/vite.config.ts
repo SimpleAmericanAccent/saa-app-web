@@ -35,7 +35,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "frontend-web-core": path.resolve(
         __dirname,
-        "../packages/frontend-web-core"
+        "../../packages/frontend-web-core"
       ),
     },
   },
