@@ -5,7 +5,7 @@
   "scripts": {
     "// Setup": "",
     "seed:cmu": "node shared/scripts/seedCmuAndSubtlex.js",
-    "generate": "pnpm --filter core-backend-node exec prisma generate --no-install",
+    "generate": "pnpm --filter core-backend-node exec prisma generate",
     "setup": "pnpm install --frozen-lockfile && pnpm run generate",
     "// Admin App": "",
     "dev:admin": "concurrently \"pnpm --filter admin-backend-node run dev\" \"pnpm --filter admin-frontend-web run dev\"",
