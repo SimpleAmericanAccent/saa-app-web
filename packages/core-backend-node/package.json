@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node --watch --env-file=.env server.js",
     "seed:ortho": "node scripts/seedOrthoWords.js",
-    "generate": "prisma generate --schema=../prisma/schema.prisma"
+    "generate": "prisma generate"
   },
   "author": "Will Rosenberg",
   "license": "UNLICENSED",
