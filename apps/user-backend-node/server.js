@@ -19,7 +19,7 @@ const isDev = environment_flag === "dev";
 
 const staticPath = path.join(
   __dirname,
-  isDev ? "../frontend-web/" : "../frontend-web/dist"
+  isDev ? "../user-frontend-web/" : "../user-frontend-web/dist"
 );
 const indexPath = path.join(staticPath, "index.html");
 
