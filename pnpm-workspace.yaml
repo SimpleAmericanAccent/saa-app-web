@@ -1,9 +1,7 @@
 packages:
-  - admin-backend-node
-  - admin-frontend-web
-  - backend-node
-  - frontend-mobile
-  - frontend-web
-  - shared
-  - shared/backend-node-core
-  - shared/frontend-web-core
+  - "admin-backend-node"
+  - "admin-frontend-web"
+  - "backend-node"
+  - "frontend-mobile"
+  - "frontend-web"
+  - "packages/*"
