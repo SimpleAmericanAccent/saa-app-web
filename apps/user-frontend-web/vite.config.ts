@@ -1,8 +1,37 @@
 import path from "path";
+import fs from "fs";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react";
 import mdx from "@mdx-js/rollup";
+
+const isDev = process.env.NODE_ENV === "development";
+const backendTarget = "https://localhost:5000";
+
+// Reusable proxy config generator
+const makeProxyEntry = (path: string) => ({
+  [path]: {
+    target: backendTarget,
+    changeOrigin: true,
+    secure: false, // only needed for self-signed certs in dev
+  },
+});
+
+// List all your paths here
+const proxyPaths = [
+  "/logout",
+  "/callback",
+  "/api",
+  "/authz",
+  "/data",
+  "/authnew",
+  "/v1",
+  "/prisma",
+  "/v2",
+];
+
+// Merge all entries into one object
+const proxy = Object.assign({}, ...proxyPaths.map(makeProxyEntry));
 
 const logOnce = (server: ViteDevServer) => {
   if ((globalThis as { __VITE_LOGGED_ONCE__?: boolean }).__VITE_LOGGED_ONCE__) {
@@ -16,7 +45,9 @@ const logOnce = (server: ViteDevServer) => {
       console.log(
         "\n" +
           unindent(
-            `Started VITE server on port ${server.config.server.port} for:
+            `Started VITE server at ${
+              isDev ? "https://localhost" : "http://localhost"
+            }:${server.config.server.port} for:
                 🧪 DEV
                 💻 FRONTEND-WEB
                 🙋 USER app...`
@@ -57,18 +88,12 @@ export default defineConfig({
     },
   ],
   server: {
-    port: 5173,
-    proxy: {
-      "/logout": "http://localhost:5000",
-      "/callback": "http://localhost:5000",
-      "/api": "http://localhost:5000",
-      "/authz": "http://localhost:5000",
-      "/data": "http://localhost:5000",
-      "/authnew": "http://localhost:5000",
-      "/v1": "http://localhost:5000",
-      "/prisma": "http://localhost:5000",
-      "/v2": "http://localhost:5000",
+    https: process.env.NODE_ENV === "development" && {
+      key: fs.readFileSync(path.resolve(__dirname, "../../localhost-key.pem")),
+      cert: fs.readFileSync(path.resolve(__dirname, "../../localhost.pem")),
     },
+    port: 5173,
+    proxy,
   },
   resolve: {
     alias: {

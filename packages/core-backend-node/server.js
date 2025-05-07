@@ -8,7 +8,7 @@ export function createServer({
   isDev,
   staticPath,
   indexPath,
-  devRedirectUrl,
+  devRedirectUrl = "https://localhost:5173",
   envConfig,
 }) {
   const app = express();

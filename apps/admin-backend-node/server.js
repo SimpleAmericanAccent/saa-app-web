@@ -1,5 +1,7 @@
 import path from "path";
 import url from "url";
+import fs from "fs";
+import https from "https";
 import {
   environment_flag,
   auth0Config,
@@ -29,7 +31,7 @@ const app = createServer({
   isDev,
   staticPath,
   indexPath,
-  devRedirectUrl: "http://localhost:5173",
+  devRedirectUrl: "https://localhost:5173",
   envConfig: {
     AIRTABLE_BASE_ID,
     AIRTABLE_KEY_READ_WRITE_VALUE,
@@ -39,11 +41,25 @@ const app = createServer({
   },
 });
 
-app.listen(port, () => {
-  console.log(
-    `\nStarted Express server on port ${port} for:
+if (isDev) {
+  const cert = fs.readFileSync("../../localhost.pem");
+  const key = fs.readFileSync("../../localhost-key.pem");
+
+  https.createServer({ key, cert }, app).listen(port, () => {
+    console.log(
+      `\nStarted HTTPS Express server on port ${port} for:
     ${isDev ? "🧪 DEV" : "🚀 PROD"}
     ${isDev ? "⚙️  BACKEND-NODE" : "⚙️ BACKEND-NODE"}
     🔒 ADMIN app`
-  );
-});
+    );
+  });
+} else {
+  app.listen(port, () => {
+    console.log(
+      `\nStarted Express server on port${port} for:
+    ${isDev ? "🧪 DEV" : "🚀 PROD"}
+    ${isDev ? "⚙️  BACKEND-NODE" : "⚙️ BACKEND-NODE"}
+    🔒 ADMIN app`
+    );
+  });
+}
