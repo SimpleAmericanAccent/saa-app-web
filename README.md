@@ -17,3 +17,5 @@ Emoji shorthand conventions for console.log decoration:
 🔒 Admin
 🧪 Dev
 🚀 Prod
+
+Localhost over https via mkcert

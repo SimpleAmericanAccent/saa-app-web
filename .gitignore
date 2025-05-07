@@ -9,3 +9,5 @@ __pycache__/
 
 # Project specific
 /backend-python/output
+
+*.pem
