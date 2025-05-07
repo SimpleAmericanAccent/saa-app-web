@@ -88,10 +88,14 @@ export default defineConfig({
     },
   ],
   server: {
-    https: process.env.NODE_ENV === "development" && {
-      key: fs.readFileSync(path.resolve(__dirname, "../../localhost-key.pem")),
-      cert: fs.readFileSync(path.resolve(__dirname, "../../localhost.pem")),
-    },
+    https: isDev
+      ? {
+          key: fs.readFileSync(
+            path.resolve(__dirname, "../../localhost-key.pem")
+          ),
+          cert: fs.readFileSync(path.resolve(__dirname, "../../localhost.pem")),
+        }
+      : false,
     port: 5173,
     proxy,
   },
