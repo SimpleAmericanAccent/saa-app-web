@@ -50,7 +50,7 @@ export function bootApp({
     app.listen(port, () => {
       console.log(
         `\nStarted Express server on port ${port} for:\n` +
-          `  🚀 PROD\n  ⚙️  BACKEND-NODE\n  ${appLabel}`
+          `  🚀 PROD\n  ⚙️ BACKEND-NODE\n  ${appLabel}`
       );
     });
   }

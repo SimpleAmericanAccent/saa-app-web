@@ -19,8 +19,8 @@ bootApp({
   environment_flag,
   auth0Config,
   router,
-  frontendDir: "admin-frontend-web",
-  appLabel: "🔒 ADMIN app",
+  frontendDir: "user-frontend-web",
+  appLabel: "🙋 USER app",
   envConfig: {
     AIRTABLE_BASE_ID,
     AIRTABLE_KEY_READ_WRITE_VALUE,
