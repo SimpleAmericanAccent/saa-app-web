@@ -86,6 +86,12 @@ importers:
       d3:
         specifier: ^7.9.0
         version: 7.9.0
+      express:
+        specifier: ^4.19.2
+        version: 4.21.2
+      express-openid-connect:
+        specifier: ^2.17.1
+        version: 2.18.0(express@4.21.2)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -204,18 +210,9 @@ importers:
 
   apps/admin-backend-node:
     dependencies:
-      '@prisma/client':
-        specifier: ^6.7.0
-        version: 6.7.0(prisma@6.7.0(typescript@5.7.3))(typescript@5.7.3)
       core-backend-node:
         specifier: workspace:*
         version: link:../../packages/core-backend-node
-      express:
-        specifier: ^4.19.2
-        version: 4.21.2
-      express-openid-connect:
-        specifier: ^2.17.1
-        version: 2.18.0(express@4.21.2)
 
   apps/admin-frontend-web:
     dependencies:
@@ -300,18 +297,9 @@ importers:
 
   apps/user-backend-node:
     dependencies:
-      '@prisma/client':
-        specifier: ^6.7.0
-        version: 6.7.0(prisma@6.7.0(typescript@5.7.3))(typescript@5.7.3)
       core-backend-node:
         specifier: workspace:*
         version: link:../../packages/core-backend-node
-      express:
-        specifier: ^4.19.2
-        version: 4.21.2
-      express-openid-connect:
-        specifier: ^2.17.1
-        version: 2.18.0(express@4.21.2)
 
   apps/user-frontend-web:
     dependencies:
@@ -324,16 +312,6 @@ importers:
       '@prisma/client':
         specifier: ^6.7.0
         version: 6.7.0(prisma@6.7.0(typescript@5.7.3))(typescript@5.7.3)
-      express:
-        specifier: ^4.19.2
-        version: 4.21.2
-      express-openid-connect:
-        specifier: ^2.17.1
-        version: 2.18.0(express@4.21.2)
-    devDependencies:
-      prisma:
-        specifier: ^6.7.0
-        version: 6.7.0(typescript@5.7.3)
 
   packages/core-frontend-web: {}
 
