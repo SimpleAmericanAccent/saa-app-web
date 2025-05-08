@@ -31,7 +31,6 @@ const app = createServer({
   isDev,
   staticPath,
   indexPath,
-  devRedirectUrl: "https://localhost:5173",
   envConfig: {
     AIRTABLE_BASE_ID,
     AIRTABLE_KEY_READ_WRITE_VALUE,

@@ -18,7 +18,6 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const port = process.env.PORT || 5000;
 const isDev = environment_flag === "dev";
-const devRedirectUrl = "https://localhost:5173";
 
 const staticPath = path.join(
   __dirname,
