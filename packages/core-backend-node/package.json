@@ -12,6 +12,7 @@
   "author": "Will Rosenberg",
   "license": "UNLICENSED",
   "dependencies": {
+    "prisma": "^6.7.0",
     "@prisma/client": "^6.7.0"
   }
 }
