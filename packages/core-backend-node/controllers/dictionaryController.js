@@ -1,4 +1,4 @@
-import { prisma } from "../shared.js";
+import { prisma } from "../prisma/services/prismaClient.js";
 
 // Get all dictionary entries with their usages
 export const getAllEntries = async (req, res) => {

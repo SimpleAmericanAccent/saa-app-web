@@ -1,4 +1,4 @@
-import { prisma } from "../../shared.js";
+import { prisma } from "../services/prismaClient.js";
 
 const consonantPhonemes = [
   {

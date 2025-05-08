@@ -79,9 +79,11 @@ export const getBaseConfig = () => ({
     https: isDev
       ? {
           key: fs.readFileSync(
-            path.resolve(__dirname, "../../localhost-key.pem")
+            path.resolve(__dirname, "../../../../localhost-key.pem")
           ),
-          cert: fs.readFileSync(path.resolve(__dirname, "../../localhost.pem")),
+          cert: fs.readFileSync(
+            path.resolve(__dirname, "../../../../localhost.pem")
+          ),
         }
       : undefined,
     port: 5173,
