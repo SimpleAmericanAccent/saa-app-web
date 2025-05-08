@@ -7,24 +7,26 @@
     "apps/*"
   ],
   "scripts": {
-    "// Setup": "",
+    "// ============= Setup ============= ": "",
     "seed:cmu": "node shared/scripts/seedCmuAndSubtlex.js",
     "generate": "pnpm --filter core-backend-node run generate",
     "setup": "pnpm install --frozen-lockfile && pnpm run generate",
-    "// Admin App": "",
+    "// ============= Admin App ============= ": "",
     "dev:admin": "concurrently \"pnpm --filter admin-backend-node run dev\" \"pnpm --filter admin-frontend-web run dev\"",
     "build:admin": "pnpm run setup && pnpm --filter admin-frontend-web run build",
     "start:admin": "pnpm --filter admin-backend-node run start",
     "dev:a": "pnpm run dev:admin",
     "build:a": "pnpm run build:admin",
     "start:a": "pnpm run start:admin",
-    "// User App": "",
+    "// ============= User App ============= ": "",
     "dev:user": "concurrently \"pnpm --filter user-backend-node run dev\" \"pnpm --filter user-frontend-web run dev\"",
     "build:user": "pnpm run setup && pnpm --filter user-frontend-web run build",
     "start:user": "pnpm --filter user-backend-node run start",
     "dev:u": "pnpm run dev:user",
     "build:u": "pnpm run build:user",
-    "start:u": "pnpm run start:user"
+    "start:u": "pnpm run start:user",
+    "// ============= Shared ============= ": "",
+    "lint": "eslint ."
   },
   "dependencies": {
     "express": "^4.19.2",
