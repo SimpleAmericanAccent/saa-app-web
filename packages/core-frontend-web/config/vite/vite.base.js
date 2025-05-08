@@ -89,8 +89,8 @@ export const getBaseConfig = () => ({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "core-frontend-web": path.resolve(__dirname),
+      "@": path.resolve(__dirname, "../../src"),
+      "core-frontend-web": path.resolve(__dirname, "../../"),
     },
   },
 });

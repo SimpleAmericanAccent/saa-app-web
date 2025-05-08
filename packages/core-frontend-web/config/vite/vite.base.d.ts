@@ -1,4 +1,4 @@
-declare module "core-frontend-web/vite.base" {
+declare module "core-frontend-web/config/vite/vite.base" {
   import type { UserConfig, ViteDevServer } from "vite";
 
   export function getBaseConfig(): UserConfig;
