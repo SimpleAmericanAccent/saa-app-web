@@ -23,10 +23,6 @@ export function createServer({
     writeKey: envConfig.AIRTABLE_KEY_READ_WRITE_VALUE,
   });
 
-  app.use(router);
-
-  app.use(express.static(staticPath));
-
   app.get("/", (req, res) =>
     isDev ? res.redirect(devRedirectUrl) : res.sendFile(indexPath)
   );
@@ -34,6 +30,11 @@ export function createServer({
   app.get("/callback", (req, res) =>
     isDev ? res.redirect(devRedirectUrl) : res.sendFile(indexPath)
   );
+
+  app.use(router);
+
+  app.use(express.static(staticPath));
+
   // catch-all for SPA
   app.get("*", (req, res) =>
     isDev
