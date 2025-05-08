@@ -55,7 +55,7 @@ if (isDev) {
 } else {
   app.listen(port, () => {
     console.log(
-      `\nStarted Express server on port${port} for:
+      `\nStarted Express server on port ${port} for:
     ${isDev ? "🧪 DEV" : "🚀 PROD"}
     ${isDev ? "⚙️  BACKEND-NODE" : "⚙️ BACKEND-NODE"}
     🔒 ADMIN app`
