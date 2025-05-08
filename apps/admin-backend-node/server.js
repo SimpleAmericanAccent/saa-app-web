@@ -1,7 +1,5 @@
-import path from "path";
 import url from "url";
-import fs from "fs";
-import https from "https";
+import path from "path";
 import {
   environment_flag,
   auth0Config,
@@ -12,25 +10,17 @@ import {
   AIRTABLE_KEY_SELECTED,
 } from "./config.js";
 import router from "core-backend-node/routes/routes.js";
-import { createServer } from "core-backend-node/server.js";
+import { bootApp } from "core-backend-node/entry.js";
 
-const __filename = url.fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const port = process.env.PORT || 5000;
-const isDev = environment_flag === "dev";
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-const staticPath = path.join(
-  __dirname,
-  isDev ? "../admin-frontend-web/" : "../admin-frontend-web/dist"
-);
-const indexPath = path.join(staticPath, "index.html");
-
-const app = createServer({
+bootApp({
+  dirname: __dirname,
+  environment_flag,
   auth0Config,
   router,
-  isDev,
-  staticPath,
-  indexPath,
+  frontendDir: "user-frontend-web",
+  appLabel: "🙋 USER app",
   envConfig: {
     AIRTABLE_BASE_ID,
     AIRTABLE_KEY_READ_WRITE_VALUE,
@@ -39,26 +29,3 @@ const app = createServer({
     AIRTABLE_KEY_SELECTED,
   },
 });
-
-if (isDev) {
-  const cert = fs.readFileSync("../../localhost.pem");
-  const key = fs.readFileSync("../../localhost-key.pem");
-
-  https.createServer({ key, cert }, app).listen(port, () => {
-    console.log(
-      `\nStarted HTTPS Express server on port ${port} for:
-    ${isDev ? "🧪 DEV" : "🚀 PROD"}
-    ${isDev ? "⚙️  BACKEND-NODE" : "⚙️ BACKEND-NODE"}
-    🔒 ADMIN app`
-    );
-  });
-} else {
-  app.listen(port, () => {
-    console.log(
-      `\nStarted Express server on port ${port} for:
-    ${isDev ? "🧪 DEV" : "🚀 PROD"}
-    ${isDev ? "⚙️  BACKEND-NODE" : "⚙️ BACKEND-NODE"}
-    🔒 ADMIN app`
-    );
-  });
-}
