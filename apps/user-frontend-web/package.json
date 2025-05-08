@@ -11,6 +11,5 @@
   },
   "dependencies": {
     "core-frontend-web": "workspace:*"
-  },
-  "devDependencies": {}
+  }
 }
