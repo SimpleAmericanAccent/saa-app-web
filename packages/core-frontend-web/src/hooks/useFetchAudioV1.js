@@ -19,9 +19,14 @@ const useFetchAudioV1 = () => {
         transcriptResponse.speech.transcripts
       );
 
-      createAnnotatedTranscript(transcriptWithIndices, airtableWords);
+      const result = createAnnotatedTranscript(
+        transcriptWithIndices,
+        airtableWords
+      );
+      return result; // ✅ NEW: return result
     } catch (error) {
       console.error("Error fetching audio or transcript:", error);
+      return [];
     }
   };
 
@@ -41,14 +46,13 @@ const useFetchAudioV1 = () => {
   const createAnnotatedTranscript = (transcriptData, airtableWords) => {
     if (!transcriptData?.length || !airtableWords) {
       setAnnotatedTranscript([]);
-      return;
+      return [];
     }
 
     const airtableMap = createAirtableMap(airtableWords);
     const annotated = annotateTranscript(transcriptData, airtableMap);
-    // console.log("airtableMap", airtableMap);
-    // console.log("annotated", annotated);
-    setAnnotatedTranscript(annotated);
+    setAnnotatedTranscript(annotated); // ✅ preserve existing state behavior
+    return annotated; // ✅ return for new usage
   };
 
   const createAirtableMap = (airtableWords) => {
