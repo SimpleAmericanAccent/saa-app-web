@@ -3,6 +3,7 @@ import useFetchResources from "core-frontend-web/src/hooks/useFetchResources";
 import useFetchAudioV1 from "core-frontend-web/src/hooks/useFetchAudioV1";
 import useFetchAudioV2 from "core-frontend-web/src/hooks/useFetchAudioV2";
 import useAudioSync from "core-frontend-web/src/hooks/useAudioSync";
+import { useParams } from "react-router-dom";
 
 import { findActiveWordIndex } from "core-frontend-web/src/utils/binarySearch";
 import { fetchData } from "core-frontend-web/src/utils/api";
@@ -29,9 +30,12 @@ import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
 
 export default function Transcript() {
   // #region declarations
+  const { audioId } = useParams(); // Get audioId from route params
+
   // Fetch People and Audio Resources
   const {
     people,
+    audio,
     filteredAudio,
     selectedPerson,
     setSelectedPerson,
@@ -69,6 +73,21 @@ export default function Transcript() {
   // #endregion
 
   // #region do stuff
+
+  // Add effect to handle route audio ID
+  useEffect(() => {
+    if (audioId && audioId !== selectedAudio) {
+      // Find the audio file in the list
+      const audioFile = audio.find((a) => a.id === audioId);
+      if (audioFile) {
+        // Set the person first (required for filtered audio)
+        setSelectedPerson(audioFile.SpeakerName);
+        // Then set the audio
+        setSelectedAudio(audioId);
+      }
+    }
+  }, [audioId, audio, selectedAudio, setSelectedPerson, setSelectedAudio]);
+
   // Fetch issues data on component mount
   useEffect(() => {
     const fetchIssues = async () => {

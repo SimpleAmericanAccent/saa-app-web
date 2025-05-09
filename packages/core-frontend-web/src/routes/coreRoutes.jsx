@@ -14,6 +14,8 @@ import UserDashboard from "core-frontend-web/src/pages/UserDashboard.jsx";
 
 const coreRoutes = (
   <>
+    {/* Add new route with audioId parameter */}
+    <Route path="/transcript/:audioId" element={<Transcript />} />
     <Route path="/transcript" element={<Transcript />} />
     <Route path="/dashboard" element={<UserDashboard />} />
     <Route path="/wls" element={<WLS />} />

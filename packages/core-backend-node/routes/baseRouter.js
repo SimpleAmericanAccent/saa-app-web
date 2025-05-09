@@ -22,6 +22,7 @@ baseRouter.get("/authz", async (req, res) => {
               id: audio.id,
               Name: audio.fields.Name,
               SpeakerName: audio.fields.Speaker[0],
+              date: audio.fields.Date,
             }
           : null;
       })
