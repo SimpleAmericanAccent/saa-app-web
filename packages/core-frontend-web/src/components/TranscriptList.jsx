@@ -148,7 +148,7 @@ export default function TranscriptList({
       </Collapsible>
 
       {/* Other People's Transcripts Collapsible */}
-      <Collapsible>
+      <Collapsible defaultOpen>
         <div className="flex items-center gap-2">
           <CollapsibleTrigger asChild>
             <button className="flex items-center gap-2 cursor-pointer text-lg font-semibold mb-2">
