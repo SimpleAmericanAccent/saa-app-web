@@ -53,7 +53,7 @@ export function requiresAdmin(req, res, next) {
           <h1>Admins Only</h1>
           <p>This area is restricted to users with admin access.</p>
           <a href="/logout">Change User</a>
-          <a href="${userAppUrl}" target="_blank">Access User App</a>
+          <a href="${userAppUrl}">Access User App</a>
         </body>
       </html>
     `);
