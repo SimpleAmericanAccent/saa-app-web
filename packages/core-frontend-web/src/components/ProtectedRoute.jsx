@@ -3,18 +3,18 @@ import useAuthStore from "core-frontend-web/src/stores/authStore";
 import propTypes from "prop-types";
 import { useEffect, useState } from "react";
 
-function ProtectedRoute({ children, requiredRole }) {
-  const { userRole, isLoading, fetchUserRole } = useAuthStore();
+function ProtectedRoute({ children, requireAdmin = false }) {
+  const { isAdmin, isLoading, fetchAdminStatus } = useAuthStore();
   const location = useLocation();
   const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
   // Fetch user role on component mount if not already loaded
   useEffect(() => {
-    if (userRole === null && !isLoading && !hasAttemptedFetch) {
+    if (!isAdmin && !isLoading && !hasAttemptedFetch) {
       setHasAttemptedFetch(true);
-      fetchUserRole();
+      fetchAdminStatus();
     }
-  }, [userRole, isLoading, fetchUserRole, hasAttemptedFetch]);
+  }, [isAdmin, isLoading, fetchAdminStatus, hasAttemptedFetch]);
 
   // Show loading state while fetching user role
   if (isLoading) {
@@ -26,7 +26,7 @@ function ProtectedRoute({ children, requiredRole }) {
   }
 
   // Only redirect if we've attempted to fetch and the user doesn't have the required role
-  if (hasAttemptedFetch && !isLoading && userRole !== requiredRole) {
+  if (hasAttemptedFetch && !isLoading && requireAdmin && !isAdmin) {
     // Store the current location to redirect back after login
     return <Navigate to="/Home1" state={{ from: location }} replace />;
   }
@@ -36,7 +36,7 @@ function ProtectedRoute({ children, requiredRole }) {
 
 ProtectedRoute.propTypes = {
   children: propTypes.node.isRequired,
-  requiredRole: propTypes.string.isRequired,
+  requireAdmin: propTypes.bool.isRequired,
 };
 
 export default ProtectedRoute;

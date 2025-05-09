@@ -8,7 +8,7 @@ v1Router.post("/api/annotations/update", async (req, res) => {
   const airtable = req.app.locals.airtable;
   //tbd
 
-  if (req.app.locals.currentUserRole !== "write") {
+  if (!req.isAdmin) {
     return res.status(403).json({ error: "Not authorized" });
   }
 

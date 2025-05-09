@@ -57,11 +57,11 @@ function App() {
                 element={<ModulePage />}
               />
 
-              {/* Protected routes for write access */}
+              {/* Protected routes for admin access */}
               <Route
                 path="/wls-data"
                 element={
-                  <ProtectedRoute requiredRole="write">
+                  <ProtectedRoute requireAdmin={true}>
                     <WLSDataExplorer />
                   </ProtectedRoute>
                 }
@@ -69,7 +69,7 @@ function App() {
               <Route
                 path="/dictionary-admin"
                 element={
-                  <ProtectedRoute requiredRole="write">
+                  <ProtectedRoute requireAdmin={true}>
                     <DictionaryAdmin />
                   </ProtectedRoute>
                 }
@@ -77,7 +77,7 @@ function App() {
               <Route
                 path="/path"
                 element={
-                  <ProtectedRoute requiredRole="write">
+                  <ProtectedRoute requireAdmin={true}>
                     {/* <SuccessPath /> */}
                   </ProtectedRoute>
                 }
@@ -85,7 +85,7 @@ function App() {
               <Route
                 path="/quiz"
                 element={
-                  <ProtectedRoute requiredRole="write">
+                  <ProtectedRoute requireAdmin={true}>
                     {/* <Quiz /> */}
                   </ProtectedRoute>
                 }

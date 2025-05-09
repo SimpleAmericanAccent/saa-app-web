@@ -1,15 +1,13 @@
 /**
- * Middleware to require admin role
+ * Middleware to require admin access.
+ * Uses the isAdmin flag set by setAdminFlag middleware.
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
  */
 export function requiresAdmin(req, res, next) {
   const isAuthenticated = req.oidc?.isAuthenticated?.();
-  const roles =
-    req.oidc?.user?.["https://simpleamericanaccent.com/claims/roles"] || [];
-
-  if (!isAuthenticated || roles.includes("admin")) {
+  if (isAuthenticated && req.isAdmin) {
     return next(); // ✅ Allow access if authenticated and admin
   }
 

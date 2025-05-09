@@ -47,11 +47,7 @@ baseRouter.get("/authz", async (req, res) => {
   };
   const currentUser = findUserById(peopleObject.records, currentUserId);
   if (currentUser) {
-    const {
-      "Access to audios": currentUserAudioAccess,
-      Role: currentUserRole,
-    } = currentUser.fields;
-    req.app.locals.currentUserRole = currentUserRole;
+    const { "Access to audios": currentUserAudioAccess } = currentUser.fields;
     req.app.locals.currentUserAudioAccess = currentUserAudioAccess;
 
     // Step 2: Look up audio list
@@ -85,7 +81,7 @@ baseRouter.get("/authz", async (req, res) => {
     res.json({
       people: uniqueSpeakers,
       audios: uniqueAudios,
-      userRole: currentUserRole,
+      isAdmin: req.isAdmin,
     });
   } else {
     res.status(404).json({ error: "User not found" });

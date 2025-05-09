@@ -48,7 +48,7 @@ v2Router.get("/api/audio/:audioId", async (req, res) => {
 // Create/update annotations
 v2Router.post("/api/annotations", async (req, res) => {
   const airtable = req.app.locals.airtable;
-  if (req.app.locals.currentUserRole !== "write") {
+  if (!req.isAdmin) {
     return res.status(403).json({ error: "Not authorized" });
   }
 

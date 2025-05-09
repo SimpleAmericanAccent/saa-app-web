@@ -2,17 +2,17 @@ import { create } from "zustand";
 import { fetchData } from "core-frontend-web/src/utils/api";
 
 const useAuthStore = create((set) => ({
-  userRole: null,
+  isAdmin: false,
   isLoading: false, // Initialize as false instead of true
   isLoggedOut: null, // Add new state
   error: null,
 
   // Fetch user role
-  fetchUserRole: async () => {
+  fetchAdminStatus: async () => {
     try {
       set({ isLoading: true });
-      const { userRole } = await fetchData("/authz");
-      set({ userRole, isLoading: false, isLoggedOut: false });
+      const { isAdmin } = await fetchData("/authz");
+      set({ isAdmin, isLoading: false, isLoggedOut: false });
     } catch (error) {
       set({ error: error.message, isLoading: false });
     }
@@ -32,7 +32,7 @@ const useAuthStore = create((set) => ({
           .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
       });
 
-      set({ userRole: null, isLoading: false, isLoggedOut: true, error: null });
+      set({ isAdmin: false, isLoading: false, isLoggedOut: true, error: null });
 
       // Add a small delay to ensure state updates complete
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -47,7 +47,7 @@ const useAuthStore = create((set) => ({
 
   // Reset state
   reset: () => {
-    set({ userRole: null, isLoading: false, isLoggedOut: null, error: null });
+    set({ isAdmin: false, isLoading: false, isLoggedOut: null, error: null });
   },
 }));
 

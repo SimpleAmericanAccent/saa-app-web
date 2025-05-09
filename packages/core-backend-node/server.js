@@ -2,6 +2,7 @@ import express from "express";
 import { auth } from "express-openid-connect";
 import { requiresAdmin } from "./middleware/requiresAdmin.js";
 import { createAirtableClient } from "./services/airtable.js";
+import { setAdminFlag } from "./middleware/setAdminFlag.js";
 
 export function createServer({
   auth0Config,
@@ -17,6 +18,7 @@ export function createServer({
 
   app.use(express.json());
   app.use(auth(auth0Config));
+  app.use(setAdminFlag);
   if (requireAdminGlobally) app.use(requiresAdmin);
 
   app.locals.env = envConfig;

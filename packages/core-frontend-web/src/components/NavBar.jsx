@@ -26,12 +26,12 @@ import {
 import { Check } from "lucide-react";
 
 function NavBar({ showSidebarTrigger = false }) {
-  const { userRole, isLoading, fetchUserRole, logout } = useAuthStore();
+  const { isAdmin, isLoading, fetchAdminStatus, logout } = useAuthStore();
   const { version, setVersion } = useVersionStore();
 
   useEffect(() => {
-    fetchUserRole();
-  }, [fetchUserRole]);
+    fetchAdminStatus();
+  }, [fetchAdminStatus]);
 
   if (isLoading) {
     return (
@@ -252,7 +252,7 @@ function NavBar({ showSidebarTrigger = false }) {
             </NavigationMenuContent>
           </NavigationMenuItem>
 
-          {userRole === "write" && (
+          {isAdmin && (
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
@@ -290,7 +290,7 @@ function NavBar({ showSidebarTrigger = false }) {
 
       <div className="flex items-center gap-4">
         {showSidebarTrigger && <SidebarTrigger />}
-        {userRole === "write" && (
+        {isAdmin && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className={cn(navigationMenuTriggerStyle(), "gap-2")}>

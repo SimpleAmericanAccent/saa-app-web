@@ -5,10 +5,7 @@ import useAuthStore from "core-frontend-web/src/stores/authStore";
 import { useEffect } from "react";
 
 export default function Layout1({ children }) {
-  const { userRole, isLoading, isLoggedOut } = useAuthStore();
-
-  // if (isLoading) return <div>Loading...</div>;
-  // if (!userRole) return null;
+  const { isLoggedOut } = useAuthStore();
 
   if (isLoggedOut == true) {
     window.location.replace("/logout");
