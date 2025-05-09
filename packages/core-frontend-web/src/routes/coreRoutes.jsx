@@ -33,8 +33,8 @@ const coreRoutes = (
 
     <Route path="/learn/:moduleId" element={<ModulePage />} />
     <Route path="/learn/:moduleId/:lessonId" element={<ModulePage />} />
-    <Route path="/" element={<Transcript />} />
-    <Route path="*" element={<Transcript />} />
+    <Route path="/" element={<UserDashboard />} />
+    <Route path="*" element={<UserDashboard />} />
   </>
 );
 

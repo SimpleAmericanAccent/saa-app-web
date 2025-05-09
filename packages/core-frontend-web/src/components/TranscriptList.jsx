@@ -61,6 +61,13 @@ export default function TranscriptList({
     return speaker ? speaker.Name : speakerId;
   };
 
+  const allTranscripts = (audio || []).sort((a, b) => {
+    if (!a.date && !b.date) return 0;
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return new Date(b.date) - new Date(a.date);
+  });
+
   // Your transcripts
   const yourTranscripts = (audio || [])
     .filter((t) => t.SpeakerName === currentPersonId)
@@ -118,8 +125,36 @@ export default function TranscriptList({
 
   return (
     <div className="space-y-4">
-      {/* Your Transcripts Collapsible */}
+      {/* All Transcripts Collapsible */}
       <Collapsible defaultOpen>
+        <div className="flex items-center gap-2">
+          <CollapsibleTrigger asChild>
+            <button className="flex items-center gap-2 cursor-pointer text-lg font-semibold mb-2">
+              <ChevronRight className="h-4 w-4" />
+              Transcripts
+            </button>
+          </CollapsibleTrigger>
+        </div>
+        <CollapsibleContent>
+          <ScrollArea>
+            {allTranscripts.length > 0 ? (
+              <ul className="space-y-1">
+                {allTranscripts.map((transcript) => (
+                  <TranscriptItem
+                    key={transcript.id}
+                    transcript={transcript}
+                    showSpeaker={true}
+                  />
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted-foreground">No transcripts found</p>
+            )}
+          </ScrollArea>
+        </CollapsibleContent>
+      </Collapsible>
+      {/* Your Transcripts Collapsible */}
+      {/* <Collapsible defaultOpen>
         <div className="flex items-center gap-2">
           <CollapsibleTrigger asChild>
             <button className="flex items-center gap-2 cursor-pointer text-lg font-semibold mb-2">
@@ -145,10 +180,9 @@ export default function TranscriptList({
             )}
           </ScrollArea>
         </CollapsibleContent>
-      </Collapsible>
-
+      </Collapsible> */}
       {/* Other People's Transcripts Collapsible */}
-      <Collapsible defaultOpen>
+      {/* <Collapsible defaultOpen>
         <div className="flex items-center gap-2">
           <CollapsibleTrigger asChild>
             <button className="flex items-center gap-2 cursor-pointer text-lg font-semibold mb-2">
@@ -174,7 +208,7 @@ export default function TranscriptList({
             )}
           </ScrollArea>
         </CollapsibleContent>
-      </Collapsible>
+      </Collapsible> */}
     </div>
   );
 }

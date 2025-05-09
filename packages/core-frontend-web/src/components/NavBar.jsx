@@ -47,6 +47,14 @@ function NavBar({ showSidebarTrigger = false }) {
         <NavigationMenuList>
           <NavigationMenuItem>
             <Link
+              to="/dashboard"
+              className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
+            >
+              Dashboard
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link
               to="/transcript"
               className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
             >
