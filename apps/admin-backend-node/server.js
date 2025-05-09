@@ -31,4 +31,5 @@ bootApp({
     DEFAULT_AUDIO_REC_ID: process.env.DEFAULT_AUDIO_REC_ID,
     AIRTABLE_KEY_SELECTED: process.env.AIRTABLE_KEY_READ_ONLY_VALUE,
   },
+  requireAdminGlobally: true,
 });

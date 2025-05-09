@@ -16,6 +16,7 @@ export function bootApp({
   envConfig,
   frontendDir,
   appLabel,
+  requireAdminGlobally = false,
 }) {
   const __dirname = dirname;
   const isDev = environment_flag === "dev";
@@ -34,6 +35,7 @@ export function bootApp({
     staticPath,
     indexPath,
     envConfig,
+    requireAdminGlobally,
   });
 
   if (isDev) {

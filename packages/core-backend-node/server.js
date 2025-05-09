@@ -1,5 +1,6 @@
 import express from "express";
 import { auth } from "express-openid-connect";
+import { requiresAdmin } from "./middleware/requiresAdmin.js";
 import { createAirtableClient } from "./services/airtable.js";
 
 export function createServer({
@@ -10,11 +11,13 @@ export function createServer({
   indexPath,
   devRedirectUrl = "https://localhost:5173",
   envConfig,
+  requireAdminGlobally = false,
 }) {
   const app = express();
 
   app.use(express.json());
   app.use(auth(auth0Config));
+  if (requireAdminGlobally) app.use(requiresAdmin);
 
   app.locals.env = envConfig;
   app.locals.airtable = createAirtableClient({
