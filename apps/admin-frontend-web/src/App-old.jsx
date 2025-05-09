@@ -1,5 +1,5 @@
 import AppBase from "core-frontend-web/src/app.base";
-import AdminRoutes from "./AdminRoutes";
+import AdminRoutes from "./routes/AdminRoutes-old";
 import AdminLayout from "./components/AdminLayout";
 
 export default function App() {

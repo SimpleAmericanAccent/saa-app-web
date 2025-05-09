@@ -6,8 +6,19 @@ const useAuthStore = create((set) => ({
   isLoading: false, // Initialize as false instead of true
   isLoggedOut: null, // Add new state
   error: null,
+  user: null,
 
-  // Fetch user role
+  fetchUserProfile: async () => {
+    try {
+      const res = await fetch("/api/me");
+      if (!res.ok) throw new Error("Failed to fetch user profile");
+      const user = await res.json();
+      set({ user });
+    } catch (error) {
+      set({ error: error.message });
+    }
+  },
+
   fetchAdminStatus: async () => {
     try {
       set({ isLoading: true });

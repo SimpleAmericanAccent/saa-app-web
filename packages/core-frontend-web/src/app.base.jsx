@@ -16,10 +16,7 @@ export default function AppBase({
         }}
       >
         <LayoutWrapper>
-          <Routes>
-            {children}
-            <Route path="*" element={<Transcript />} />
-          </Routes>
+          <Routes>{children}</Routes>
         </LayoutWrapper>
       </SidebarProvider>
     </ThemeProvider>

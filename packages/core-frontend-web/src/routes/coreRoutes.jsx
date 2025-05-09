@@ -10,10 +10,12 @@ import SpellingPronunciationPage from "core-frontend-web/src/pages/SpellingPronu
 import LexicalSets from "core-frontend-web/src/pages/onboarding/lexical-sets.jsx";
 import LexicalSetsQuiz from "core-frontend-web/src/pages/onboarding/lexical-sets-quiz.jsx";
 import ModulePage from "core-frontend-web/src/pages/ModulePage.jsx";
+import UserDashboard from "core-frontend-web/src/pages/UserDashboard.jsx";
 
 const coreRoutes = (
   <>
     <Route path="/transcript" element={<Transcript />} />
+    <Route path="/dashboard" element={<UserDashboard />} />
     <Route path="/wls" element={<WLS />} />
     <Route path="/vsounds" element={<VSounds />} />
     <Route path="/vsynth" element={<VSynth />} />
@@ -30,6 +32,7 @@ const coreRoutes = (
     <Route path="/learn/:moduleId" element={<ModulePage />} />
     <Route path="/learn/:moduleId/:lessonId" element={<ModulePage />} />
     <Route path="/" element={<Transcript />} />
+    <Route path="*" element={<Transcript />} />
   </>
 );
 

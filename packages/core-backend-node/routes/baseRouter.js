@@ -164,4 +164,19 @@ baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
   });
 });
 
+baseRouter.get("/api/me", (req, res) => {
+  const user = req.oidc.user;
+
+  if (!user) {
+    return res.status(401).json({ error: "User not authenticated" });
+  }
+
+  res.json({
+    name: user.name,
+    email: user.email,
+    sub: user.sub,
+    picture: user.picture, // optional
+  });
+});
+
 export default baseRouter;

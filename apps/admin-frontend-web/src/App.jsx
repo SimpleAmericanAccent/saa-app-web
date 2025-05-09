@@ -11,6 +11,7 @@ const adminRoutes = (
     <Route path="/user/*" element={<UserAppView />} />
     <Route path="/coaching/*" element={<CoachingView />} />
     <Route path="/ops/*" element={<OpsView />} />
+    <Route path="*" element={<UserAppView />} />
   </>
 );
 
