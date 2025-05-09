@@ -9,7 +9,11 @@ export default function AppBase({
   layout: LayoutWrapper = React.Fragment,
 }) {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      storageKey="vite-ui-theme"
+    >
       <SidebarProvider
         style={{
           "--sidebar-width": "var(--rsidebar-width)",

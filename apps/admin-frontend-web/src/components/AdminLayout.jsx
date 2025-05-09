@@ -16,7 +16,7 @@ export default function AdminLayout({ children }) {
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="sticky top-0 z-50"></div>
 
-        <main className="flex-1 overflow-auto p-4">{children}</main>
+        <main>{children}</main>
       </div>
     </div>
   );
