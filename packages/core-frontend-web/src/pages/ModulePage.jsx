@@ -8,7 +8,7 @@ import {
 } from "core-frontend-web/src/content/temp-components/SoundContent";
 import wlsData from "core-frontend-web/src/data/wls-data.json";
 
-export function ModulePage() {
+export default function ModulePage() {
   const { moduleId, lessonId } = useParams();
   console.log("ModulePage params:", { moduleId, lessonId });
 
