@@ -14,6 +14,7 @@ import {
 } from "core-frontend-web/src/components/ui/tooltip";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import { Play, Volume2 } from "lucide-react";
+import timestampsData from "core-frontend-web/src/data/timestamps.json";
 
 const VOWEL_SOUNDS_AUDIO_URL =
   "https://native-scga-audio.s3.us-east-2.amazonaws.com/2025+01+04+will+rosenberg+vowels+96+hz+h_d+b_d+b_t+frames.mp3";
@@ -60,19 +61,8 @@ export function PhonemeCard({
   onClick, // Add onClick prop
 }) {
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [timestampsData, setTimestampsData] = useState(null);
   const [audioCache, setAudioCache] = useState({});
   const [timeoutId, setTimeoutId] = useState(null);
-
-  useEffect(() => {
-    if (type === "vowel") {
-      // Load timestamps data for vowels
-      fetch("/JSON/timestamps.json")
-        .then((response) => response.json())
-        .then((data) => setTimestampsData(data))
-        .catch((error) => console.error("Error loading timestamps:", error));
-    }
-  }, [type]);
 
   // Group examples by spelling using direct index mapping
   const spellingExamples = spellings.reduce((acc, spelling, index) => {

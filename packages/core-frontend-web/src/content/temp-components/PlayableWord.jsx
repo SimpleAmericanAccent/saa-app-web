@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import timestampsData from "core-frontend-web/src/data/timestamps.json";
 
 const audioUrl =
   "https://native-scga-audio.s3.us-east-2.amazonaws.com/2025+01+04+will+rosenberg+vowels+96+hz+h_d+b_d+b_t+frames.mp3";
@@ -9,17 +10,10 @@ const dictionaryAudioCache = new Map();
 export const PlayableWord = ({ word, isInline = false, onClick }) => {
   const [audioCache, setAudioCache] = useState({});
   const [timeoutId, setTimeoutId] = useState(null);
-  const [timestampsData, setTimestampsData] = useState(null);
   const [voices, setVoices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Load timestamps data
-    fetch("/JSON/timestamps.json")
-      .then((response) => response.json())
-      .then((data) => setTimestampsData(data))
-      .catch((error) => console.error("Error loading timestamps:", error));
-
     // Initialize voices for fallback
     const loadVoices = () => {
       const availableVoices = window.speechSynthesis.getVoices();

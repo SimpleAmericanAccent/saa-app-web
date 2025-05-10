@@ -7,23 +7,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "core-frontend-web/src/components/ui/select";
+import timestampsData from "core-frontend-web/src/data/timestamps.json";
 
 export default function VSounds() {
   const [selectedColumn, setSelectedColumn] = useState("gambiarra");
   const [selectedSpeed, setSelectedSpeed] = useState("1.0");
   const [audioCache, setAudioCache] = useState({});
-  const [timestampsData, setTimestampsData] = useState(null);
   const [timeoutId, setTimeoutId] = useState(null);
   const audioUrl =
     "https://native-scga-audio.s3.us-east-2.amazonaws.com/2025+01+04+will+rosenberg+vowels+96+hz+h_d+b_d+b_t+frames.mp3";
-
-  useEffect(() => {
-    // Load timestamps data
-    fetch("/JSON/timestamps.json")
-      .then((response) => response.json())
-      .then((data) => setTimestampsData(data))
-      .catch((error) => console.error("Error loading timestamps:", error));
-  }, []);
 
   const handlePlayAudio = (word) => {
     if (!timestampsData || !timestampsData[word]) {
