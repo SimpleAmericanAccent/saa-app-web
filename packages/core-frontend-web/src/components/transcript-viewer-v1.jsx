@@ -18,6 +18,7 @@ const TranscriptViewerV1 = ({
   handleWordClick,
   onAnnotationHover,
   onAnnotationUpdate,
+  onPronunciationHover,
   issuesData,
   activeFilters = [],
 }) => {
@@ -70,6 +71,44 @@ const TranscriptViewerV1 = ({
     }
   };
 
+  const handlePronunciationHover = async (word) => {
+    const pronunciations = await getPronunciations(word);
+    if (onPronunciationHover) {
+      onPronunciationHover(pronunciations);
+    }
+  };
+
+  const getPronunciations = async (word) => {
+    // Helper function to clean word for CMU Dict lookup
+    const cleanWordForLookup = (word) => {
+      if (!word) return "";
+      // Remove punctuation and convert to lowercase
+      return word.replace(/[.,!?;:"()\[\]{}]/g, "").toLowerCase();
+    };
+
+    const cleanWord = cleanWordForLookup(word);
+    if (!cleanWord) return;
+
+    try {
+      const response = await fetch(`/api/ortho/word/${cleanWord}`);
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.error) {
+          return ["no pronunciation found"];
+        }
+
+        // console.log("data", data);
+        return data.pronsCmuDict.map((p) => p.pronCmuDict);
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error("Error fetching pronunciation:", error);
+      return [];
+    }
+  };
+
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -96,9 +135,10 @@ const TranscriptViewerV1 = ({
                         "hover:bg-[hsl(var(--hover))]"
                       )}
                       onClick={() => handleWordClick(wordObj.start_time)}
-                      onMouseOver={() =>
-                        handleAnnotationHover(wordObj.wordIndex)
-                      }
+                      onMouseOver={() => {
+                        handleAnnotationHover(wordObj.wordIndex);
+                        handlePronunciationHover(wordObj.word);
+                      }}
                       onContextMenu={(e) =>
                         handleContextMenu(e, wordObj.wordIndex)
                       }

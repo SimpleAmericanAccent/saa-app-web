@@ -55,7 +55,7 @@ router.get("/word/:word", async (req, res) => {
       include: { pronsCmuDict: true },
     });
 
-    if (!ortho) return res.status(404).json({ error: "Not found" });
+    if (!ortho) return res.json({ error: "Not found" });
 
     res.json(ortho);
   } catch (err) {

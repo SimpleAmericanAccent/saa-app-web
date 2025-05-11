@@ -64,6 +64,7 @@ export default function Transcript() {
   const currentTime = useAudioSync(audioRef);
   const [activeWordIndex, setActiveWordIndex] = useState(null);
   const [annotations, setAnnotations] = useState([]);
+  const [pronunciations, setPronunciations] = useState([]);
 
   // State for Airtable Issues
   const [issuesData, setIssuesData] = useState([]);
@@ -237,11 +238,15 @@ export default function Transcript() {
       setAnnotations(friendlyIssueNames);
     } else if (version === "v2") {
       const friendlyTargetNames = getTargetNames(annotations);
-      console.log("friendlyTargetNames", friendlyTargetNames);
-      console.log("annotations", annotations);
-      console.log("issuesData", issuesData);
+      // console.log("friendlyTargetNames", friendlyTargetNames);
+      // console.log("annotations", annotations);
+      // console.log("issuesData", issuesData);
       setAnnotations(friendlyTargetNames);
     }
+  };
+
+  const handlePronunciationHover = (pronunciations) => {
+    setPronunciations(pronunciations);
   };
 
   const handleAnnotationUpdate = async (wordIndex, annotations) => {
@@ -342,6 +347,10 @@ export default function Transcript() {
                     />
                   </div>
                   <div className="border border-border rounded-md p-2  ">
+                    {pronunciations.join(", ") || "\u00A0"}{" "}
+                    {/* Added non-breaking space as fallback */}
+                  </div>
+                  <div className="border border-border rounded-md p-2  ">
                     {annotations.join(", ") || "\u00A0"}{" "}
                     {/* Added non-breaking space as fallback */}
                   </div>
@@ -360,6 +369,7 @@ export default function Transcript() {
                       audioRef.current.play();
                     }}
                     onAnnotationHover={handleAnnotationHover}
+                    onPronunciationHover={handlePronunciationHover}
                     issuesData={issuesData}
                     onAnnotationUpdate={handleAnnotationUpdate}
                     activeFilters={activeFilters}
