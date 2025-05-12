@@ -1,10 +1,4 @@
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "core-frontend-web/src/components/ui/collapsible";
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
-import { ChevronRight } from "lucide-react";
 import { Checkbox } from "core-frontend-web/src/components/ui/checkbox";
 import { useState, useEffect, useRef } from "react";
 import useFetchAudioV1 from "core-frontend-web/src/hooks/useFetchAudioV1";
@@ -126,33 +120,23 @@ export default function TranscriptList({
   return (
     <div className="space-y-4">
       {/* All Transcripts Collapsible */}
-      <Collapsible defaultOpen>
-        <div className="flex items-center gap-2">
-          <CollapsibleTrigger asChild>
-            <button className="flex items-center gap-2 cursor-pointer text-lg font-semibold mb-2">
-              <ChevronRight className="h-4 w-4" />
-              Transcripts
-            </button>
-          </CollapsibleTrigger>
-        </div>
-        <CollapsibleContent>
-          <ScrollArea>
-            {allTranscripts.length > 0 ? (
-              <ul className="space-y-1">
-                {allTranscripts.map((transcript) => (
-                  <TranscriptItem
-                    key={transcript.id}
-                    transcript={transcript}
-                    showSpeaker={true}
-                  />
-                ))}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground">No transcripts found</p>
-            )}
-          </ScrollArea>
-        </CollapsibleContent>
-      </Collapsible>
+
+      <ScrollArea>
+        {allTranscripts.length > 0 ? (
+          <ul className="space-y-1">
+            {allTranscripts.map((transcript) => (
+              <TranscriptItem
+                key={transcript.id}
+                transcript={transcript}
+                showSpeaker={true}
+              />
+            ))}
+          </ul>
+        ) : (
+          <p className="text-muted-foreground">No transcripts found</p>
+        )}
+      </ScrollArea>
+
       {/* Your Transcripts Collapsible */}
       {/* <Collapsible defaultOpen>
         <div className="flex items-center gap-2">
