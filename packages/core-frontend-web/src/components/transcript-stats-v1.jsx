@@ -17,6 +17,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from "core-frontend-web/src/components/ui/dropdown-menu";
+import PhonemeGridSummary from "core-frontend-web/src/components/PhonemeGridSummary";
+import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
 
 const TranscriptStatsV1 = ({
   annotatedTranscript,
@@ -27,7 +29,7 @@ const TranscriptStatsV1 = ({
   const [selectedIssues, setSelectedIssues] = useState({});
   const [targetSortOrder, setTargetSortOrder] = useState("instances"); // Changed from "standard"
   const [issueSortOrder, setIssueSortOrder] = useState("instances"); // Changed from "standard"
-  const [wordSortOrder, setWordSortOrder] = useState("time"); // "time", "alphabetical", or "count"
+  const [wordSortOrder, setWordSortOrder] = useState("instances"); // "time", "alphabetical", or "instances"
   const [hideEmptyTargets, setHideEmptyTargets] = useState(true); // Changed from false
   const [hideEmptyIssues, setHideEmptyIssues] = useState(true); // Changed from false
 
@@ -239,18 +241,29 @@ const TranscriptStatsV1 = ({
 
   return (
     <div>
-      <h2 className="text-2xl">Transcript Statistics</h2>
-      <p>Total Words: {stats.totalWords}</p>
-      <p>Annotated Words: {stats.annotatedWords}</p>
-      <p>
-        % Words Annotated:{" "}
-        {Math.round((stats.annotatedWords / stats.totalWords) * 100)}%
-      </p>
-      {/* <p>Accent Issues In Database: {stats.totalIssues}</p>
-      <p>Accent Issues In Database Used: {stats.accentIssues}</p>
-      <p>Accent Issue Instances: {stats.accentIssueInstances}</p> */}
+      <div className="fixed top-[calc(var(--navbar-height))] bg-background">
+        <div className="flex items-start justify-between gap-4">
+          {/* Left column: existing header content */}
+          <div>
+            <h2 className="text-2xl">Transcript Statistics</h2>
+            <p>Total Words: {stats.totalWords}</p>
+            <p>Annotated Words: {stats.annotatedWords}</p>
+            <p>
+              % Words Annotated:{" "}
+              {Math.round((stats.annotatedWords / stats.totalWords) * 100)}%
+            </p>
+          </div>
+          {/* Right column: PhonemeGridSummary */}
+          <div>
+            <PhonemeGridSummary
+              issueWordMap={stats.issueWordMap}
+              issues={stats.flattenedIssues}
+            />
+          </div>
+        </div>
+      </div>
 
-      <div className="mt-4">
+      <div className="fixed top-[calc(var(--navbar-height)+158px)] bg-background">
         <h3 className="text-xl">Targets, Issues, & Associated Words</h3>
         <div className="flex items-center gap-2 mt-4 mb-2">
           <Checkbox
@@ -302,7 +315,7 @@ const TranscriptStatsV1 = ({
                         prev === "time"
                           ? "alphabetical"
                           : prev === "alphabetical"
-                          ? "count"
+                          ? "instances"
                           : "time"
                       )
                     }
@@ -311,7 +324,7 @@ const TranscriptStatsV1 = ({
                     {wordSortOrder === "time"
                       ? "Alphabetical"
                       : wordSortOrder === "alphabetical"
-                      ? "Count"
+                      ? "instances"
                       : "Time"}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -335,12 +348,14 @@ const TranscriptStatsV1 = ({
             </DropdownMenu>
           </div>
         </div>
+      </div>
+
+      <div className="mt-[calc(var(--navbar-height)+200px)]">
         {sortedIssuesData &&
           sortedIssuesData.map((target, targetIndex) => {
             const targetInstances = target.issues.reduce((total, issue) => {
               return total + (stats.issueWordMap[issue.id]?.length || 0);
             }, 0);
-
             return (
               <Collapsible key={`${target.id}-${targetIndex}`} className="mt-4">
                 <div className="flex items-center gap-2 w-full text-left">
