@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -12,30 +12,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "core-frontend-web/src/components/ui/tooltip";
-import { Button } from "core-frontend-web/src/components/ui/button";
-import { Play, Volume2 } from "lucide-react";
-import timestampsData from "core-frontend-web/src/data/timestamps.json";
-
-const VOWEL_SOUNDS_AUDIO_URL =
-  "https://native-scga-audio.s3.us-east-2.amazonaws.com/2025+01+04+will+rosenberg+vowels+96+hz+h_d+b_d+b_t+frames.mp3";
-
-// Map of vowel names to their example words in the audio file
-const VOWEL_AUDIO_MAP = {
-  FLEECE: "heed",
-  KIT: "hid",
-  DRESS: "head",
-  TRAP: "had",
-  STRUT: "HUD",
-  LOT: "hawed",
-  FOOT: "hood",
-  GOOSE: "hooed",
-  FACE: "hayed",
-  PRICE: "hide",
-  CHOICE: "hoyed",
-  GOAT: "hoed",
-  MOUTH: "how'd",
-  TRAM: "ham", // TRAM uses "ham" for its audio
-};
+import { PlayableWord } from "core-frontend-web/src/content/temp-components/PlayableWord";
+import { useWordAudio } from "core-frontend-web/src/hooks/useWordAudio";
 
 export const PhonemeCardCompact = ({ name, description, className = "" }) => {
   return (
@@ -58,11 +36,9 @@ export function PhonemeCard({
   spellings = [],
   examples = [],
   type = "vowel", // or "consonant"
-  onClick, // Add onClick prop
+  onClick,
 }) {
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [audioCache, setAudioCache] = useState({});
-  const [timeoutId, setTimeoutId] = useState(null);
+  const { playWord } = useWordAudio();
 
   // Group examples by spelling using direct index mapping
   const spellingExamples = spellings.reduce((acc, spelling, index) => {
@@ -73,70 +49,10 @@ export function PhonemeCard({
     return acc;
   }, {});
 
-  const playVowelSound = (word) => {
-    if (!timestampsData || !timestampsData[word]) {
-      console.error("No data for word:", word);
-      return;
-    }
-
-    const audio = audioCache[0] || new Audio(VOWEL_SOUNDS_AUDIO_URL);
-    if (!audioCache[0]) {
-      setAudioCache({ 0: audio });
-    }
-
-    const wordData = timestampsData[word];
-    console.log("Playing vowel sound for word:", word, "with data:", wordData);
-    const duration = wordData.full.end - wordData.full.start;
-
-    // Clear any existing timeout
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    // Update audio position and play
-    audio.currentTime = wordData.full.start;
-    audio.play().catch((error) => {
-      console.error("Error playing audio:", error);
-    });
-
-    // Set new timeout and store its ID
-    const newTimeoutId = setTimeout(() => {
-      audio.pause();
-    }, duration * 1000);
-
-    setTimeoutId(newTimeoutId);
-  };
-
-  const speakWord = (word) => {
-    if (isSpeaking) {
-      window.speechSynthesis.cancel();
-    }
-
-    const utterance = new SpeechSynthesisUtterance(word);
-    utterance.rate = 0.8; // Slightly slower for clarity
-    utterance.pitch = 1;
-
-    utterance.onend = () => {
-      setIsSpeaking(false);
-    };
-
-    setIsSpeaking(true);
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const hasAudio = type === "vowel" && VOWEL_AUDIO_MAP[name];
-
   const handleClick = (e) => {
-    // Only stop propagation if we're handling audio
-    if (hasAudio || examples.length > 0) {
-      e.stopPropagation();
-      if (hasAudio) {
-        playVowelSound(VOWEL_AUDIO_MAP[name]);
-      } else if (examples.length > 0) {
-        speakWord(examples[0]);
-      }
+    if (examples.length > 0) {
+      playWord(examples[0]);
     }
-    // Call the onClick prop if provided
     onClick?.(e);
   };
 
@@ -151,19 +67,6 @@ export function PhonemeCard({
             <CardHeader className="p-0.5 flex items-center justify-center min-h-[32px]">
               <CardTitle className="text-sm leading-none py-0 flex items-center gap-0.5">
                 {name}
-                {hasAudio && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-4 w-4 cursor-pointer hover:bg-accent shrink-0 p-0 -mr-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      playVowelSound(VOWEL_AUDIO_MAP[name]);
-                    }}
-                  >
-                    <Volume2 className="h-3 w-3" />
-                  </Button>
-                )}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -173,18 +76,9 @@ export function PhonemeCard({
             {Object.entries(spellingExamples).map(([spelling, exs]) => (
               <div key={spelling} className="text-sm flex items-center gap-2">
                 <span className="font-semibold">{spelling}:</span>
-                <span className="flex-1">{exs[0]}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    speakWord(exs[0]);
-                  }}
-                >
-                  <Play className="h-3 w-3" />
-                </Button>
+                <span className="flex-1">
+                  <PlayableWord word={exs[0]} isInline={true} />
+                </span>
               </div>
             ))}
           </div>
