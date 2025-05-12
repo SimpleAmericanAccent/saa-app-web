@@ -11,6 +11,7 @@ import {
 } from "core-frontend-web/src/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { useQuizStore } from "core-frontend-web/src/stores/quiz-store";
+import { PlayableWord } from "core-frontend-web/src/content/temp-components/PlayableWord";
 
 const WORD_SETS = {
   FLEECE: [
@@ -600,7 +601,8 @@ export default function LexicalSetsQuiz() {
 
       <Card className="p-6 mb-8">
         <h2 className="text-xl mb-6 text-center">
-          Which lexical set does the word "{question.word}" belong to?
+          Which lexical set does the word "<PlayableWord word={question.word} />
+          " belong to?
         </h2>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
