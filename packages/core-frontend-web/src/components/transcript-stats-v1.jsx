@@ -271,27 +271,61 @@ const TranscriptStatsV1 = ({
             )
           ),
         ].filter((word) => word.length > 0); // Remove empty strings after cleaning
+
+        // Count instances for each unique word
+        const wordCounts = uniqueWords.map((word) => {
+          const count = words.filter(
+            (w) =>
+              w.word
+                .replace(/[.,!?;:"()\[\]{}]/g, "")
+                .trim()
+                .toLowerCase() === word
+          ).length;
+          return { word, count };
+        });
+
+        // Sort words by count (highest first)
+        const sortedWords = wordCounts
+          .sort((a, b) => b.count - a.count)
+          .map(({ word }) => word);
+
         return {
           issue: issue?.name || "Unknown Issue",
-          words: uniqueWords,
+          words: sortedWords,
+          totalInstances: words.length,
         };
       })
       // Filter out issues with no words
-      .filter(({ words }) => words.length > 0);
+      .filter(({ words }) => words.length > 0)
+      // Sort issues by total instances (highest first)
+      .sort((a, b) => b.totalInstances - a.totalInstances);
 
     // If no issues with words are selected, return early
     if (selectedIssuesList.length === 0) {
       return;
     }
 
-    // Construct the prompt
-    const prompt = selectedIssuesList
-      .map(({ issue, words }) => {
-        return `For the issue "${issue}", I need practice phrases for these words: ${words.join(
-          ", "
-        )}`;
-      })
-      .join("\n\n");
+    // Construct the prompt with clear instructions and organized content
+    const prompt = `I need practice phrases for the following pronunciation issues. 
+For each issue, please provide 3-5 practice phrases that naturally incorporate the target words. 
+The phrases should be:
+- Natural and conversational
+- Varied in length and complexity
+- Suitable for pronunciation practice
+- Include the target words in different positions
+
+${selectedIssuesList
+  .map(({ issue, words }) => {
+    return `Issue: ${issue}
+Target Words: ${words.join(", ")}`;
+  })
+  .join("\n\n")}
+
+Please provide the practice phrases for each issue separately. 
+Please provide in the chat, not in code or canvas.
+Please maintain the order of issues as they are provided.
+Please make each target word bold and italicized, with a single 🌟 emoji immediately before the target word.
+Before each response, please double-check each included issue, target word list, and practice phrase to make sure you have not added any words that are not in the provided target words for that issue.`;
 
     // Encode the prompt for URL
     const encodedPrompt = encodeURIComponent(prompt);
