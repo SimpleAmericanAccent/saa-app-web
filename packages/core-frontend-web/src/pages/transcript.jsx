@@ -65,6 +65,7 @@ export default function Transcript() {
   const [activeWordIndex, setActiveWordIndex] = useState(null);
   const [annotations, setAnnotations] = useState([]);
   const [pronunciations, setPronunciations] = useState([]);
+  const [pronunciations2, setPronunciations2] = useState([]);
 
   // State for Airtable Issues
   const [issuesData, setIssuesData] = useState([]);
@@ -249,6 +250,10 @@ export default function Transcript() {
     setPronunciations(pronunciations);
   };
 
+  const handlePronunciation2Hover = (pronunciations2) => {
+    setPronunciations2(pronunciations2);
+  };
+
   const handleAnnotationUpdate = async (wordIndex, annotations) => {
     // Flatten the annotatedTranscript structure and find the word ID
 
@@ -351,6 +356,10 @@ export default function Transcript() {
                     {/* Added non-breaking space as fallback */}
                   </div>
                   <div className="border border-border rounded-md p-2  ">
+                    {pronunciations2.join(", ") || "\u00A0"}{" "}
+                    {/* Added non-breaking space as fallback */}
+                  </div>
+                  <div className="border border-border rounded-md p-2  ">
                     {annotations.join(", ") || "\u00A0"}{" "}
                     {/* Added non-breaking space as fallback */}
                   </div>
@@ -370,6 +379,7 @@ export default function Transcript() {
                     }}
                     onAnnotationHover={handleAnnotationHover}
                     onPronunciationHover={handlePronunciationHover}
+                    onPronunciation2Hover={handlePronunciation2Hover}
                     issuesData={issuesData}
                     onAnnotationUpdate={handleAnnotationUpdate}
                     activeFilters={activeFilters}

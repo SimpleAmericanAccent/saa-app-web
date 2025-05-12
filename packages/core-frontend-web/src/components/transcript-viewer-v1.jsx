@@ -19,6 +19,7 @@ const TranscriptViewerV1 = ({
   onAnnotationHover,
   onAnnotationUpdate,
   onPronunciationHover,
+  onPronunciation2Hover,
   issuesData,
   activeFilters = [],
 }) => {
@@ -76,6 +77,10 @@ const TranscriptViewerV1 = ({
     if (onPronunciationHover) {
       onPronunciationHover(pronunciations);
     }
+    const pronunciations2 = await getPronunciations2(pronunciations);
+    if (onPronunciation2Hover) {
+      onPronunciation2Hover(pronunciations2);
+    }
   };
 
   const getPronunciations = async (word) => {
@@ -107,6 +112,47 @@ const TranscriptViewerV1 = ({
       console.error("Error fetching pronunciation:", error);
       return [];
     }
+  };
+
+  const getPronunciations2 = async (pronunciations) => {
+    const LexicalSetMap2 = {
+      FLEECE: { arpabets: ["IY"], type: "vowel" },
+      KIT: { arpabets: ["IH"], type: "vowel" },
+      DRESS: { arpabets: ["EH"], type: "vowel" },
+      TRAP: { arpabets: ["AE"], type: "vowel" },
+      GOOSE: { arpabets: ["UW"], type: "vowel" },
+      FOOT: { arpabets: ["UH"], type: "vowel" },
+      STRUT: { arpabets: ["AH"], type: "vowel" },
+      LOT: { arpabets: ["AA", "AO"], type: "vowel" },
+      FACE: { arpabets: ["EY"], type: "vowel" },
+      PRICE: { arpabets: ["AY"], type: "vowel" },
+      CHOICE: { arpabets: ["OY"], type: "vowel" },
+      GOAT: { arpabets: ["OW"], type: "vowel" },
+      MOUTH: { arpabets: ["AW"], type: "vowel" },
+      NURSE: { arpabets: ["ER"], type: "vowel" },
+      H: { arpabets: ["HH"], type: "consonant" },
+      J: { arpabets: ["JH"], type: "consonant" },
+    };
+
+    const pronunciations2 = pronunciations.map((pronunciation) => {
+      const phonemes = pronunciation.split(" ");
+
+      const convertedPhonemes = phonemes.map((phoneme) => {
+        // Extract the base phoneme and stress marker
+        const basePhoneme = phoneme.replace(/[0-2]$/, "");
+        const stressMarker = phoneme.match(/[0-2]$/)?.[0] || "";
+
+        const lexicalSet = Object.entries(LexicalSetMap2).find(([_, data]) =>
+          data.arpabets.includes(basePhoneme)
+        );
+
+        return lexicalSet ? lexicalSet[0] + stressMarker : phoneme;
+      });
+
+      return convertedPhonemes.join(" ");
+    });
+
+    return pronunciations2;
   };
 
   return (
