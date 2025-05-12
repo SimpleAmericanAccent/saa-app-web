@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Settings } from "lucide-react";
 import {
   DropdownMenu,
@@ -25,7 +25,7 @@ const CONSONANT_GROUPS = [
   ["F", "TH", "S", "SH", "H"],
   ["V", "DH", "Z", "ZH"],
   ["L", "R", "W", "Y"],
-  ["M", "N", "NG"],
+  ["M", "N", "NG", null, "misc"],
 ];
 
 const cellStyle = {
@@ -86,6 +86,7 @@ const PHONEME_TO_TARGET = {
   M: "M",
   N: "N",
   NG: "NG",
+  misc: "misc",
   // If your target names are different, map accordingly:
   // "CH": "Affricate_CH",
   // "TH": "Theta",
@@ -105,9 +106,26 @@ export default function PhonemeGridSummary({
   const [highlightTop, setHighlightTop] = useState(0); // 0 = none, 3 = top 3, 5 = top 5
   const [hideZero, setHideZero] = useState(false);
   const [activeFilter, setActiveFilter] = useState(null); // for click-to-filter
+  const [includeMisc, setIncludeMisc] = useState(false); // Add this new state
 
-  // Calculate groupCounts as before
-  const totalAnnotations = stats.annotatedWords;
+  // Calculate adjusted counts and max count excluding misc if needed
+  const { adjustedCounts, maxCount } = useMemo(() => {
+    const counts = { ...targetCounts };
+    if (!includeMisc) {
+      delete counts.misc;
+    }
+    const max = Math.max(...Object.values(counts), 1);
+    return { adjustedCounts: counts, maxCount: max };
+  }, [targetCounts, includeMisc]);
+
+  // Calculate totalAnnotations excluding misc if needed
+  const totalAnnotations = useMemo(() => {
+    if (includeMisc) return stats.annotatedWords;
+
+    // Calculate total excluding misc
+    const miscCount = targetCounts["misc"] || 0;
+    return stats.annotatedWords - miscCount;
+  }, [stats.annotatedWords, targetCounts, includeMisc]);
 
   // For sorting/highlighting
   const sortedGroups = Object.entries(targetCounts)
@@ -156,6 +174,9 @@ export default function PhonemeGridSummary({
       );
     const targetName = PHONEME_TO_TARGET[label];
     const count = targetName ? targetCounts[targetName] || 0 : 0;
+    // Calculate color factor - treat misc as zero when includeMisc is false
+    const colorCount = label === "misc" && !includeMisc ? 0 : count;
+    const factor = colorCount / maxCount;
     const percent = totalAnnotations
       ? Math.round((count / totalAnnotations) * 100)
       : 0;
@@ -197,8 +218,6 @@ export default function PhonemeGridSummary({
 
     const minColor = [255, 255, 200]; // light yellow
     const maxColor = [255, 80, 0]; // strong orange/red
-    const maxCount = Math.max(...Object.values(targetCounts), 1);
-    const factor = count / maxCount;
     const background = interpolateColor(minColor, maxColor, factor);
     const textColor = factor > 0.5 ? "#fff" : "#222";
 
@@ -292,6 +311,12 @@ export default function PhonemeGridSummary({
               onCheckedChange={setHideZero}
             >
               Hide Zero-Annotation Cells
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={includeMisc}
+              onCheckedChange={setIncludeMisc}
+            >
+              Include Misc in Totals
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
