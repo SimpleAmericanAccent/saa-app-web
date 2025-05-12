@@ -468,7 +468,7 @@ Before each response, please double-check each included issue, target word list,
         </div>
       </div>
 
-      <div className="mt-[calc(var(--navbar-height)+200px)]">
+      <div className="mt-[calc(var(--navbar-height)+235px)]">
         {sortedIssuesData &&
           sortedIssuesData.map((target, targetIndex) => {
             const targetInstances = target.issues.reduce((total, issue) => {
