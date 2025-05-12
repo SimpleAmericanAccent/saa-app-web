@@ -243,7 +243,6 @@ const TranscriptStatsV1 = ({
     if (!issuesData) return {};
     const counts = {};
     issuesData.forEach((target) => {
-      console.log("target", target);
       const count = target.issues.reduce(
         (sum, issue) => sum + (stats.issueWordMap[issue.id]?.length || 0),
         0

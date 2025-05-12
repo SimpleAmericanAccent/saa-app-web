@@ -4,23 +4,20 @@ const useAudioSync = (audioRef) => {
   const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {
-    let animationFrameId;
+    const audio = audioRef.current;
+    if (!audio) return;
 
-    const updateTime = () => {
-      if (audioRef.current) {
-        setCurrentTime(audioRef.current.currentTime);
-        animationFrameId = requestAnimationFrame(updateTime);
-      }
-    };
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
 
-    if (audioRef.current) {
-      animationFrameId = requestAnimationFrame(updateTime);
-    }
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+
+    // Set initial time in case audio is already playing
+    setCurrentTime(audio.currentTime);
 
     return () => {
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
     };
-  }, [audioRef]);
+  }, [audioRef.current]);
 
   return currentTime;
 };

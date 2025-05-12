@@ -124,8 +124,6 @@ export default function Transcript() {
   const getTargetNames = (targetIds) => {
     if (!targetIds || !issuesData.length) return [];
 
-    console.log("issuesData", issuesData);
-
     return targetIds.map((array) =>
       array.map((id) => {
         // Find the category that contains this issue
@@ -146,10 +144,9 @@ export default function Transcript() {
   // Sync Active Word with Current Time
   useEffect(() => {
     let transcriptFlattened = flattenTranscript(annotatedTranscript);
-    // console.log("transcriptFlattened", transcriptFlattened);
-
     if (!transcriptFlattened.length) return;
-    setActiveWordIndex(findActiveWordIndex(transcriptFlattened, currentTime));
+    const idx = findActiveWordIndex(transcriptFlattened, currentTime);
+    setActiveWordIndex(idx);
   }, [currentTime, annotatedTranscript]);
 
   // Handle Audio Selection and Fetch
@@ -157,7 +154,6 @@ export default function Transcript() {
     setIsAudioLoading(true);
     try {
       await fetchAudio(selectedAudio);
-      // console.log("annotatedTranscript", annotatedTranscript);
       if (audioRef.current) {
         audioRef.current.load();
       }
@@ -300,7 +296,7 @@ export default function Transcript() {
 
   return (
     <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel>
+      <ResizablePanel id="transcript-main" order={0}>
         <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
           <div className="px-4 bg-background">
             <header className="flex flex-col sticky top-0 z-0 bg-background">
@@ -412,7 +408,11 @@ export default function Transcript() {
       <ResizableHandle withHandle />
       {/* Only show right panel when audio is loaded */}
       {hasAudioLoaded && (
-        <ResizablePanel className="h-[calc(100vh-var(--navbar-height))]">
+        <ResizablePanel
+          id="transcript-stats"
+          order={1}
+          className="h-[calc(100vh-var(--navbar-height))]"
+        >
           <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
             <div className="px-4 bg-background">
               {version === "v1" ? (

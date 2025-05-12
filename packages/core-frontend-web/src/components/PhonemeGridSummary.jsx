@@ -108,7 +108,6 @@ export default function PhonemeGridSummary({
 
   // Calculate groupCounts as before
   const totalAnnotations = stats.annotatedWords;
-  console.log("totalAnnotations", totalAnnotations);
 
   // For sorting/highlighting
   const sortedGroups = Object.entries(targetCounts)
@@ -147,20 +146,30 @@ export default function PhonemeGridSummary({
   };
 
   // Helper to render a cell
-  const renderCell = (label) => {
-    if (!label) return <div style={{ visibility: "hidden", ...cellStyle }} />;
+  const renderCell = (label, idx) => {
+    if (!label)
+      return (
+        <div
+          key={`empty-${idx}`}
+          style={{ visibility: "hidden", ...cellStyle }}
+        />
+      );
     const targetName = PHONEME_TO_TARGET[label];
     const count = targetName ? targetCounts[targetName] || 0 : 0;
     const percent = totalAnnotations
       ? Math.round((count / totalAnnotations) * 100)
       : 0;
     if (hideZero && count === 0) {
-      return <div style={{ visibility: "hidden", ...cellStyle }} />;
+      return (
+        <div
+          key={`empty-${idx}`}
+          style={{ visibility: "hidden", ...cellStyle }}
+        />
+      );
     }
 
     // Display value
     let displayValue = "";
-    console.log("count", count);
     if (displayMode === "count") displayValue = count;
     else if (displayMode === "percent")
       displayValue = totalAnnotations
@@ -198,6 +207,7 @@ export default function PhonemeGridSummary({
 
     return (
       <div
+        key={label || `empty-${idx}`}
         style={{
           ...cellStyle,
           background,
@@ -295,7 +305,7 @@ export default function PhonemeGridSummary({
             gap: 2,
           }}
         >
-          {VOWEL_GROUPS.flat().map((label, idx) => renderCell(label))}
+          {VOWEL_GROUPS.flat().map((label, idx) => renderCell(label, idx))}
         </div>
         {/* Consonant grid */}
         <div>

@@ -103,7 +103,6 @@ const TranscriptViewerV1 = ({
           return ["no pronunciation found"];
         }
 
-        // console.log("data", data);
         return data.pronsCmuDict.map((p) => p.pronCmuDict);
       } else {
         return [];
