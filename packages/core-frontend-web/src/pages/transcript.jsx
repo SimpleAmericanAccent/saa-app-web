@@ -347,17 +347,20 @@ export default function Transcript() {
                       onPlaybackSpeedChange={setPlaybackSpeed}
                     />
                   </div>
-                  <div className="border border-border rounded-md p-2  ">
-                    {pronunciations.join(", ") || "\u00A0"}{" "}
-                    {/* Added non-breaking space as fallback */}
+                  <div className="relative min-h-[40px]">
+                    <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
+                      {pronunciations.join(", ") || "\u00A0"}
+                    </div>
                   </div>
-                  <div className="border border-border rounded-md p-2  ">
-                    {pronunciations2.join(", ") || "\u00A0"}{" "}
-                    {/* Added non-breaking space as fallback */}
+                  <div className="relative min-h-[40px]">
+                    <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
+                      {pronunciations2.join(", ") || "\u00A0"}
+                    </div>
                   </div>
-                  <div className="border border-border rounded-md p-2  ">
-                    {annotations.join(", ") || "\u00A0"}{" "}
-                    {/* Added non-breaking space as fallback */}
+                  <div className="relative min-h-[40px]">
+                    <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
+                      {annotations.join(", ") || "\u00A0"}
+                    </div>
                   </div>
                 </>
               )}
