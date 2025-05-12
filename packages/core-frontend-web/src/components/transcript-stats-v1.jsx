@@ -366,7 +366,7 @@ Before each response, please double-check each included issue, target word list,
         </div>
       </div>
 
-      <div className="fixed top-[calc(var(--navbar-height)+158px)] bg-background">
+      <div className="fixed top-[calc(var(--navbar-height)+192px)] bg-background">
         <h3 className="text-xl">Targets, Issues, & Associated Words</h3>
         <div className="flex items-center gap-2 mt-4 mb-2">
           <Checkbox
