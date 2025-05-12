@@ -1,8 +1,4 @@
 import { useState, useEffect } from "react";
-import timestampsData from "core-frontend-web/src/data/timestamps.json";
-
-const audioUrl =
-  "https://native-scga-audio.s3.us-east-2.amazonaws.com/2025+01+04+will+rosenberg+vowels+96+hz+h_d+b_d+b_t+frames.mp3";
 
 // Cache for dictionary API audio URLs
 const dictionaryAudioCache = new Map();
@@ -109,31 +105,8 @@ export const PlayableWord = ({ word, isInline = false, onClick }) => {
   const handlePlayAudio = async (word) => {
     setIsLoading(true);
     try {
-      // First try: timestamp data (original audio)
-      if (timestampsData && timestampsData[word]) {
-        const audio = audioCache[0] || new Audio(audioUrl);
-        if (!audioCache[0]) {
-          setAudioCache({ 0: audio });
-        }
-
-        const wordData = timestampsData[word];
-        const duration = wordData.full.end - wordData.full.start;
-
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-
-        audio.currentTime = wordData.full.start;
-        audio.play();
-
-        const newTimeoutId = setTimeout(() => {
-          audio.pause();
-        }, duration * 1000);
-
-        setTimeoutId(newTimeoutId);
-      }
       // Second try: dictionary API
-      else if (await playDictionaryAudio(word)) {
+      if (await playDictionaryAudio(word)) {
         // Audio played successfully from dictionary
       }
       // Last resort: speech synthesis
