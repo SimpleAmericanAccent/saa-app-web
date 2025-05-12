@@ -36,7 +36,7 @@ const TranscriptViewerV1 = ({
   };
 
   const shouldHighlightWord = (word) => {
-    if (!activeFilters.length) return true; // Show all if no filters
+    if (!activeFilters.length) return false; // Show all if no filters
     return word["BR issues"]?.some((issueId) =>
       activeFilters.includes(issueId)
     );
@@ -172,13 +172,13 @@ const TranscriptViewerV1 = ({
                       className={cn(
                         "cursor-pointer rounded-[5px]",
                         {
-                          "text-annotation-foreground bg-[hsl(var(--annotation))]":
+                          "text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))]":
                             shouldHighlightWord(wordObj) &&
                             hasAnnotations &&
                             !isActive,
                           "!bg-[#aa00aa80]": isActive,
                         },
-                        "hover:bg-[hsl(var(--hover))]"
+                        "hover:bg-[hsl(var(--hover))] hover:text-[hsl(var(--hover-foreground))]"
                       )}
                       onClick={() => handleWordClick(wordObj.start_time)}
                       onMouseOver={() => {

@@ -1,4 +1,14 @@
-import React from "react";
+import { useState } from "react";
+import { Settings } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "core-frontend-web/src/components/ui/dropdown-menu";
 
 // Define the grid structure and groupings
 const VOWEL_GROUPS = [
@@ -18,7 +28,7 @@ const CONSONANT_GROUPS = [
   ["M", "N", "NG"],
 ];
 
-const vowelCellStyle = {
+const cellStyle = {
   minWidth: 60,
   maxWidth: 60,
   width: 60,
@@ -34,84 +44,271 @@ const vowelCellStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  position: "relative",
 };
 
-// Example: mapping issue names to groups (you'll want to refine this)
-const ISSUE_TO_GROUP = {
-  // "issueName": "FLEECE", etc.
+// Example: grid label => target name in your data
+const PHONEME_TO_TARGET = {
+  FLEECE: "FLEECE",
+  GOOSE: "GOOSE",
+  FACE: "FACE",
+  KIT: "KIT",
+  FOOT: "FOOT",
+  PRICE: "PRICE",
+  DRESS: "DRESS",
+  STRUT: "STRUT",
+  CHOICE: "CHOICE",
+  TRAP: "TRAP",
+  LOT: "LOT",
+  GOAT: "GOAT",
+  MOUTH: "MOUTH",
+  P: "P",
+  T: "T",
+  K: "K",
+  CH: "CH",
+  B: "B",
+  D: "D",
+  G: "G",
+  J: "J",
+  F: "F",
+  TH: "THu",
+  S: "S",
+  SH: "SH",
+  H: "H",
+  V: "V",
+  DH: "THv",
+  Z: "Z",
+  ZH: "ZH",
+  L: "L",
+  R: "R",
+  W: "W",
+  Y: "Y",
+  M: "M",
+  N: "N",
+  NG: "NG",
+  // If your target names are different, map accordingly:
+  // "CH": "Affricate_CH",
+  // "TH": "Theta",
+  // etc.
 };
 
-export default function PhonemeGridSummary({ issueWordMap, issues }) {
-  // Count annotations per group
-  const groupCounts = {};
-  issues.forEach((issue) => {
-    const group = ISSUE_TO_GROUP[issue.name];
-    if (!group) return;
-    groupCounts[group] =
-      (groupCounts[group] || 0) + (issueWordMap[issue.id]?.length || 0);
-  });
+export default function PhonemeGridSummary({
+  issueWordMap,
+  issues,
+  targetCounts,
+  stats,
+  selectedIssues,
+  setSelectedIssues,
+  issuesData,
+}) {
+  const [displayMode, setDisplayMode] = useState("heatmap"); // "count" | "percent" | "heatmap"
+  const [highlightTop, setHighlightTop] = useState(0); // 0 = none, 3 = top 3, 5 = top 5
+  const [hideZero, setHideZero] = useState(false);
+  const [activeFilter, setActiveFilter] = useState(null); // for click-to-filter
+
+  // Calculate groupCounts as before
+  const totalAnnotations = stats.annotatedWords;
+  console.log("totalAnnotations", totalAnnotations);
+
+  // For sorting/highlighting
+  const sortedGroups = Object.entries(targetCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([group]) => group);
+
+  const topGroups = highlightTop > 0 ? sortedGroups.slice(0, highlightTop) : [];
+
+  const isTargetSelected = (label) => {
+    const targetName = PHONEME_TO_TARGET[label] || label;
+    const target = issuesData.find((t) => t.name === targetName);
+    if (!target) return false;
+    return target.issues.every((issue) => selectedIssues[issue.id]);
+  };
+
+  const isTargetPartiallySelected = (label) => {
+    const targetName = PHONEME_TO_TARGET[label] || label;
+    const target = issuesData.find((t) => t.name === targetName);
+    if (!target) return false;
+    const selectedCount = target.issues.filter(
+      (issue) => selectedIssues[issue.id]
+    ).length;
+    return selectedCount > 0 && selectedCount < target.issues.length;
+  };
+
+  const handlePhonemeClick = (label) => {
+    const targetName = PHONEME_TO_TARGET[label] || label;
+    const target = issuesData.find((t) => t.name === targetName);
+    if (!target) return;
+    const allSelected = isTargetSelected(label);
+    const updated = { ...selectedIssues };
+    target.issues.forEach((issue) => {
+      updated[issue.id] = !allSelected;
+    });
+    setSelectedIssues(updated);
+  };
 
   // Helper to render a cell
-  const renderCell = (label) =>
-    label ? (
+  const renderCell = (label) => {
+    if (!label) return <div style={{ visibility: "hidden", ...cellStyle }} />;
+    const targetName = PHONEME_TO_TARGET[label];
+    const count = targetName ? targetCounts[targetName] || 0 : 0;
+    const percent = totalAnnotations
+      ? Math.round((count / totalAnnotations) * 100)
+      : 0;
+    if (hideZero && count === 0) {
+      return <div style={{ visibility: "hidden", ...cellStyle }} />;
+    }
+
+    // Display value
+    let displayValue = "";
+    console.log("count", count);
+    if (displayMode === "count") displayValue = count;
+    else if (displayMode === "percent")
+      displayValue = totalAnnotations
+        ? Math.round((count / totalAnnotations) * 100) + "%"
+        : "0%";
+    else displayValue = ""; // For heatmap, you may want to use color only
+
+    // Heatmap color
+    // let background = "#222";
+    // if (displayMode === "heatmap" && totalAnnotations) {
+    //   const intensity = Math.round(
+    //     (count / Math.max(...Object.values(targetCounts), 1)) * 200
+    //   );
+    //   background = `rgb(${255 - intensity},${255 - intensity},255)`; // blueish heatmap
+    // }
+
+    // Helper: interpolate between two colors
+    function interpolateColor(color1, color2, factor) {
+      const result = color1.slice();
+      for (let i = 0; i < 3; i++) {
+        result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+      }
+      return `rgb(${result.join(",")})`;
+    }
+
+    const minColor = [255, 255, 200]; // light yellow
+    const maxColor = [255, 80, 0]; // strong orange/red
+    const maxCount = Math.max(...Object.values(targetCounts), 1);
+    const factor = count / maxCount;
+    const background = interpolateColor(minColor, maxColor, factor);
+    const textColor = factor > 0.5 ? "#fff" : "#222";
+
+    // Highlight
+    const isHighlighted = topGroups.includes(targetName);
+
+    return (
       <div
         style={{
-          minWidth: 40,
-          minHeight: 24,
-          textAlign: "center",
-          background: groupCounts[label] ? "#ffd700" : "#222",
-          color: "#fff",
-          border: "1px solid #444",
-          borderRadius: 4,
-          fontWeight: "bold",
-          fontSize: 12,
+          ...cellStyle,
+          background,
+          color: textColor,
+          border: isTargetSelected(label)
+            ? "2px solid gold"
+            : isTargetPartiallySelected(label)
+            ? "2px dashed orange"
+            : "1px solid #444",
+          cursor: "pointer",
+          opacity:
+            !isTargetSelected(label) && !isTargetPartiallySelected(label)
+              ? 0.3
+              : 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          paddingTop: 0, // Add some top padding for the label
         }}
-        title={groupCounts[label] ? `${groupCounts[label]} annotations` : ""}
+        title={`${label}: ${count} (${percent}%)`}
+        onClick={() => handlePhonemeClick(label)}
       >
-        {label}
-        {groupCounts[label] ? (
-          <span style={{ fontSize: 10 }}> ({groupCounts[label]})</span>
-        ) : (
-          ""
-        )}
+        {/* Centered label */}
+        <div
+          style={{
+            minHeight: 20, // <-- adjust as needed (try 20-24px)
+            marginBottom: "auto",
+            fontSize: 14,
+            lineHeight: 1.1,
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          {label}
+        </div>
+        {/* Lower left: count */}
+        <div
+          style={{
+            position: "absolute",
+            left: 4,
+            bottom: 2,
+            fontSize: 10,
+            fontWeight: "normal",
+            opacity: 0.85,
+          }}
+        >
+          {count}
+        </div>
+        {/* Lower right: percent */}
+        <div
+          style={{
+            position: "absolute",
+            right: 4,
+            bottom: 2,
+            fontSize: 10,
+            fontWeight: "normal",
+            opacity: 0.85,
+          }}
+        >
+          {percent}%
+        </div>
       </div>
-    ) : (
-      <div />
     );
+  };
 
   return (
-    <div style={{ display: "flex", gap: 8 }}>
-      {/* Vowel grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 2,
-        }}
-      >
-        {VOWEL_GROUPS.flat().map((label, idx) => (
-          <div
-            key={idx}
-            style={{
-              ...vowelCellStyle,
-              visibility: label ? "visible" : "hidden", // Hide null cells but keep their space
-            }}
-          >
-            {label || ""}
-          </div>
-        ))}
+    <div style={{ position: "relative" }}>
+      {/* Options dropdown in top-right */}
+      <div style={{ position: "absolute", top: 0, right: 0, zIndex: 1 }}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button>
+              <Settings size={18} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuCheckboxItem
+              checked={hideZero}
+              onCheckedChange={setHideZero}
+            >
+              Hide Zero-Annotation Cells
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-      {/* Consonant grid */}
-      <div>
-        {CONSONANT_GROUPS.map((row, i) => (
-          <div key={i} style={{ display: "flex" }}>
-            {row.map((cell, j) => (
-              <div key={j} style={{ margin: 1 }}>
-                {renderCell(cell)}
-              </div>
-            ))}
-          </div>
-        ))}
+      <div style={{ display: "flex", gap: 8 }}>
+        {/* Vowel grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 2,
+          }}
+        >
+          {VOWEL_GROUPS.flat().map((label, idx) => renderCell(label))}
+        </div>
+        {/* Consonant grid */}
+        <div>
+          {CONSONANT_GROUPS.map((row, i) => (
+            <div key={i} style={{ display: "flex" }}>
+              {row.map((cell, j) => (
+                <div key={j} style={{ margin: 1 }}>
+                  {renderCell(cell)}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

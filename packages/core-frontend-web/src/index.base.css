@@ -87,12 +87,13 @@ a:hover {
 
 .dark {
   --background: oklch(0.145 0 0);
-  --annotation: 210 40% 25%; /* Dark blue-gray background */
-  --annotation-foreground: 210 40% 98%; /* Light blue-gray text */
+  --foreground: oklch(0.985 0 0);
+  --annotation: 48, 100%, 60%; /* Dark blue-gray background */
+  --annotation-foreground: 0 0% 0%; /* Light blue-gray text */
   --activeword: 300 70% 25%; /* Dark purple background */
   --activeword-foreground: 300 40% 98%; /* Light purple text */
-  --hover: 220 20% 20%; /* Dark gray with slight blue tint */
-  --foreground: oklch(0.985 0 0);
+  --hover: 48, 100%, 80%; /* Dark gray with slight blue tint */
+  --hover-foreground: 0 0% 0%; /* Light blue-gray text */
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);

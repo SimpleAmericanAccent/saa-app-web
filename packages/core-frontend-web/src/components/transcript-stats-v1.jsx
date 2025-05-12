@@ -239,6 +239,20 @@ const TranscriptStatsV1 = ({
     stats.issueWordMap,
   ]);
 
+  const targetCounts = useMemo(() => {
+    if (!issuesData) return {};
+    const counts = {};
+    issuesData.forEach((target) => {
+      console.log("target", target);
+      const count = target.issues.reduce(
+        (sum, issue) => sum + (stats.issueWordMap[issue.id]?.length || 0),
+        0
+      );
+      counts[target.name] = count;
+    });
+    return counts;
+  }, [issuesData, stats.issueWordMap]);
+
   return (
     <div>
       <div className="fixed top-[calc(var(--navbar-height))] bg-background">
@@ -258,6 +272,11 @@ const TranscriptStatsV1 = ({
             <PhonemeGridSummary
               issueWordMap={stats.issueWordMap}
               issues={stats.flattenedIssues}
+              targetCounts={targetCounts}
+              stats={stats}
+              selectedIssues={selectedIssues}
+              setSelectedIssues={setSelectedIssues}
+              issuesData={issuesData}
             />
           </div>
         </div>
@@ -380,7 +399,7 @@ const TranscriptStatsV1 = ({
                     >
                       {target.name}
                       {targetInstances > 0 && (
-                        <span className="text-annotation-foreground bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
+                        <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
                           {targetInstances}
                         </span>
                       )}
@@ -416,7 +435,7 @@ const TranscriptStatsV1 = ({
                             {issue.name}
                             {(stats.issueWordMap[issue.id]?.length || 0) >
                               0 && (
-                              <span className="text-annotation-foreground bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
+                              <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
                                 {stats.issueWordMap[issue.id]?.length}
                               </span>
                             )}
@@ -466,7 +485,7 @@ const TranscriptStatsV1 = ({
                                 <div className="flex items-center gap-2 flex-1">
                                   <label className="font-medium flex items-center gap-2 cursor-pointer">
                                     {word}
-                                    <span className="text-annotation-foreground bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
+                                    <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
                                       {instances.length}
                                     </span>
                                   </label>
