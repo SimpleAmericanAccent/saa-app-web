@@ -252,6 +252,57 @@ const TranscriptStatsV1 = ({
     return counts;
   }, [issuesData, stats.issueWordMap]);
 
+  // Add this new function to generate the ChatGPT URL
+  const generateChatGPTUrl = () => {
+    const selectedIssuesList = Object.entries(selectedIssues)
+      .filter(([_, checked]) => checked)
+      .map(([issueId]) => {
+        const issue = stats.flattenedIssues.find((i) => i.id === issueId);
+        const words = stats.issueWordMap[issueId] || [];
+        // Clean up punctuation, convert to lowercase, and remove duplicates
+        const uniqueWords = [
+          ...new Set(
+            words.map(
+              (w) =>
+                w.word
+                  .replace(/[.,!?;:"()\[\]{}]/g, "") // Remove punctuation
+                  .trim() // Remove whitespace
+                  .toLowerCase() // Convert to lowercase
+            )
+          ),
+        ].filter((word) => word.length > 0); // Remove empty strings after cleaning
+        return {
+          issue: issue?.name || "Unknown Issue",
+          words: uniqueWords,
+        };
+      })
+      // Filter out issues with no words
+      .filter(({ words }) => words.length > 0);
+
+    // If no issues with words are selected, return early
+    if (selectedIssuesList.length === 0) {
+      return;
+    }
+
+    // Construct the prompt
+    const prompt = selectedIssuesList
+      .map(({ issue, words }) => {
+        return `For the issue "${issue}", I need practice phrases for these words: ${words.join(
+          ", "
+        )}`;
+      })
+      .join("\n\n");
+
+    // Encode the prompt for URL
+    const encodedPrompt = encodeURIComponent(prompt);
+
+    // Construct the ChatGPT URL
+    const chatGPTUrl = `https://chat.openai.com/?prompt=${encodedPrompt}`;
+
+    // Open in new tab
+    window.open(chatGPTUrl, "_blank");
+  };
+
   return (
     <div>
       <div className="fixed top-[calc(var(--navbar-height))] bg-background">
@@ -365,6 +416,15 @@ const TranscriptStatsV1 = ({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+          {/* Add the new ChatGPT button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={generateChatGPTUrl}
+            disabled={Object.values(selectedIssues).every((v) => !v)}
+          >
+            Get Practice Phrases for Selected Issues & Words
+          </Button>
         </div>
       </div>
 
