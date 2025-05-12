@@ -384,7 +384,7 @@ Before each response, please double-check each included issue, target word list,
           <div className="flex gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   View Options
                 </Button>
@@ -393,6 +393,7 @@ Before each response, please double-check each included issue, target word list,
                 <DropdownMenuLabel>Sorting</DropdownMenuLabel>
                 <DropdownMenuGroup>
                   <DropdownMenuItem
+                    className="cursor-pointer"
                     onClick={() =>
                       setTargetSortOrder((prev) =>
                         prev === "standard" ? "instances" : "standard"
@@ -403,6 +404,7 @@ Before each response, please double-check each included issue, target word list,
                     {targetSortOrder === "standard" ? "Instances" : "Standard"}
                   </DropdownMenuItem>
                   <DropdownMenuItem
+                    className="cursor-pointer"
                     onClick={() =>
                       setIssueSortOrder((prev) =>
                         prev === "standard" ? "instances" : "standard"
@@ -413,6 +415,7 @@ Before each response, please double-check each included issue, target word list,
                     {issueSortOrder === "standard" ? "Instances" : "Standard"}
                   </DropdownMenuItem>
                   <DropdownMenuItem
+                    className="cursor-pointer"
                     onClick={() =>
                       setWordSortOrder((prev) =>
                         prev === "time"
@@ -435,12 +438,14 @@ Before each response, please double-check each included issue, target word list,
                 <DropdownMenuLabel>Visibility</DropdownMenuLabel>
                 <DropdownMenuGroup>
                   <DropdownMenuCheckboxItem
+                    className="cursor-pointer"
                     checked={hideEmptyTargets}
                     onCheckedChange={setHideEmptyTargets}
                   >
                     Hide Empty Targets
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
+                    className="cursor-pointer"
                     checked={hideEmptyIssues}
                     onCheckedChange={setHideEmptyIssues}
                   >
@@ -452,6 +457,7 @@ Before each response, please double-check each included issue, target word list,
           </div>
           {/* Add the new ChatGPT button */}
           <Button
+            className="cursor-pointer"
             variant="outline"
             size="sm"
             onClick={generateChatGPTUrl}
