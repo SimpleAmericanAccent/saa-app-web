@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
+import { ChevronRight, Settings } from "lucide-react";
 import {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,
 } from "core-frontend-web/src/components/ui/collapsible";
-import { ChevronRight } from "lucide-react";
 import { Checkbox } from "core-frontend-web/src/components/ui/checkbox";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import {
@@ -17,7 +17,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from "core-frontend-web/src/components/ui/dropdown-menu";
-import { Settings } from "lucide-react";
 
 const TranscriptStatsV1 = ({
   annotatedTranscript,
@@ -28,6 +27,7 @@ const TranscriptStatsV1 = ({
   const [selectedIssues, setSelectedIssues] = useState({});
   const [targetSortOrder, setTargetSortOrder] = useState("instances"); // Changed from "standard"
   const [issueSortOrder, setIssueSortOrder] = useState("instances"); // Changed from "standard"
+  const [wordSortOrder, setWordSortOrder] = useState("time"); // "time" or "alphabetical"
   const [hideEmptyTargets, setHideEmptyTargets] = useState(true); // Changed from false
   const [hideEmptyIssues, setHideEmptyIssues] = useState(true); // Changed from false
 
@@ -296,6 +296,16 @@ const TranscriptStatsV1 = ({
                     Sort Issues by{" "}
                     {issueSortOrder === "standard" ? "Instances" : "Standard"}
                   </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      setWordSortOrder((prev) =>
+                        prev === "time" ? "alphabetical" : "time"
+                      )
+                    }
+                  >
+                    Sort Words by{" "}
+                    {wordSortOrder === "time" ? "Alphabetical" : "Time"}
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Visibility</DropdownMenuLabel>
@@ -391,16 +401,24 @@ const TranscriptStatsV1 = ({
                         </div>
                       </div>
                       <CollapsibleContent className="pl-5">
-                        {stats.issueWordMap[issue.id]?.map(
-                          (word, wordIndex) => (
+                        {stats.issueWordMap[issue.id]
+                          ?.slice()
+                          .sort((a, b) => {
+                            if (wordSortOrder === "time") {
+                              return a.timestamp - b.timestamp;
+                            } else {
+                              return a.word.localeCompare(b.word);
+                            }
+                          })
+                          .map((word, wordIndex) => (
                             <div
                               key={`${word.id}-${wordIndex}`}
                               className="pl-4 py-1"
                             >
-                              {word.word} ({word.timestamp}s)
+                              {word.word.replace(/[.,!?;:"()\[\]{}]/g, "")} (
+                              {word.timestamp.toFixed(1)}s)
                             </div>
-                          )
-                        )}{" "}
+                          ))}{" "}
                       </CollapsibleContent>
                     </Collapsible>
                   ))}
