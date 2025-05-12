@@ -27,7 +27,7 @@ const TranscriptStatsV1 = ({
   const [selectedIssues, setSelectedIssues] = useState({});
   const [targetSortOrder, setTargetSortOrder] = useState("instances"); // Changed from "standard"
   const [issueSortOrder, setIssueSortOrder] = useState("instances"); // Changed from "standard"
-  const [wordSortOrder, setWordSortOrder] = useState("time"); // "time" or "alphabetical"
+  const [wordSortOrder, setWordSortOrder] = useState("time"); // "time", "alphabetical", or "count"
   const [hideEmptyTargets, setHideEmptyTargets] = useState(true); // Changed from false
   const [hideEmptyIssues, setHideEmptyIssues] = useState(true); // Changed from false
 
@@ -299,12 +299,20 @@ const TranscriptStatsV1 = ({
                   <DropdownMenuItem
                     onClick={() =>
                       setWordSortOrder((prev) =>
-                        prev === "time" ? "alphabetical" : "time"
+                        prev === "time"
+                          ? "alphabetical"
+                          : prev === "alphabetical"
+                          ? "count"
+                          : "time"
                       )
                     }
                   >
                     Sort Words by{" "}
-                    {wordSortOrder === "time" ? "Alphabetical" : "Time"}
+                    {wordSortOrder === "time"
+                      ? "Alphabetical"
+                      : wordSortOrder === "alphabetical"
+                      ? "Count"
+                      : "Time"}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
@@ -401,24 +409,66 @@ const TranscriptStatsV1 = ({
                         </div>
                       </div>
                       <CollapsibleContent className="pl-5">
-                        {stats.issueWordMap[issue.id]
-                          ?.slice()
-                          .sort((a, b) => {
+                        {Object.entries(
+                          // Group words by their cleaned text
+                          stats.issueWordMap[issue.id]?.reduce(
+                            (groups, word) => {
+                              const cleanWord = word.word.replace(
+                                /[.,!?;:"()\[\]{}]/g,
+                                ""
+                              );
+                              if (!groups[cleanWord]) {
+                                groups[cleanWord] = [];
+                              }
+                              groups[cleanWord].push(word);
+                              return groups;
+                            },
+                            {}
+                          ) || {}
+                        )
+                          .sort(([wordA, instancesA], [wordB, instancesB]) => {
                             if (wordSortOrder === "time") {
-                              return a.timestamp - b.timestamp;
+                              // Sort by earliest instance
+                              return (
+                                instancesA[0].timestamp -
+                                instancesB[0].timestamp
+                              );
+                            } else if (wordSortOrder === "alphabetical") {
+                              return wordA.localeCompare(wordB);
                             } else {
-                              return a.word.localeCompare(b.word);
+                              // Sort by count (most frequent first)
+                              return instancesB.length - instancesA.length;
                             }
                           })
-                          .map((word, wordIndex) => (
-                            <div
-                              key={`${word.id}-${wordIndex}`}
-                              className="pl-4 py-1"
-                            >
-                              {word.word.replace(/[.,!?;:"()\[\]{}]/g, "")} (
-                              {word.timestamp.toFixed(1)}s)
-                            </div>
-                          ))}{" "}
+                          .map(([word, instances]) => (
+                            <Collapsible key={word} className="mt-1">
+                              <div className="flex items-center gap-2 w-full text-left">
+                                <CollapsibleTrigger asChild>
+                                  <div className="flex items-center gap-2 cursor-pointer">
+                                    <ChevronRight className="h-3 w-3" />
+                                  </div>
+                                </CollapsibleTrigger>
+                                <div className="flex items-center gap-2 flex-1">
+                                  <label className="font-medium flex items-center gap-2 cursor-pointer">
+                                    {word}
+                                    <span className="text-annotation-foreground bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
+                                      {instances.length}
+                                    </span>
+                                  </label>
+                                </div>
+                              </div>
+                              <CollapsibleContent className="pl-4">
+                                {instances
+                                  .sort((a, b) => a.timestamp - b.timestamp)
+                                  .map((instance, index) => (
+                                    <div key={index} className="pl-4 py-1">
+                                      {instance.word} (
+                                      {instance.timestamp.toFixed(1)}s)
+                                    </div>
+                                  ))}
+                              </CollapsibleContent>
+                            </Collapsible>
+                          ))}
                       </CollapsibleContent>
                     </Collapsible>
                   ))}
