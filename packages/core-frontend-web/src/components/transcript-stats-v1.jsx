@@ -19,6 +19,7 @@ import {
 } from "core-frontend-web/src/components/ui/dropdown-menu";
 import PhonemeGridSummary from "core-frontend-web/src/components/PhonemeGridSummary";
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
+import { useWordAudio } from "core-frontend-web/src/hooks/useWordAudio";
 
 const TranscriptStatsV1 = ({
   annotatedTranscript,
@@ -32,6 +33,7 @@ const TranscriptStatsV1 = ({
   const [wordSortOrder, setWordSortOrder] = useState("instances"); // "time", "alphabetical", or "instances"
   const [hideEmptyTargets, setHideEmptyTargets] = useState(true); // Changed from false
   const [hideEmptyIssues, setHideEmptyIssues] = useState(true); // Changed from false
+  const { playWord, isLoading } = useWordAudio();
 
   // Initialize issues once when issuesData is first available
   useEffect(() => {
@@ -587,6 +589,27 @@ Before each response, please double-check each included issue, target word list,
                                     <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
                                       {instances.length}
                                     </span>
+                                    <button
+                                      onClick={() => playWord(word)}
+                                      disabled={isLoading}
+                                      className="cursor-pointer hover:bg-accent/50 inline-flex items-center"
+                                      title="Play reference audio"
+                                    >
+                                      <span className="text-muted-foreground">
+                                        {isLoading ? "⏳" : "🔊"}
+                                      </span>
+                                    </button>
+                                    <a
+                                      href={`https://youglish.com/pronounce/${encodeURIComponent(
+                                        word
+                                      )}/english/us`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-muted-foreground hover:text-foreground text-xs font-medium"
+                                      title="Listen on YouGlish"
+                                    >
+                                      YG
+                                    </a>
                                   </label>
                                 </div>
                               </div>
