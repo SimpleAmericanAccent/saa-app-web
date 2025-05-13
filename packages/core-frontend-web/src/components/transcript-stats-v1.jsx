@@ -21,6 +21,125 @@ import PhonemeGridSummary from "core-frontend-web/src/components/PhonemeGridSumm
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
 import { useWordAudio } from "core-frontend-web/src/hooks/useWordAudio";
 
+// Define WordFrequencyList component first
+const WordFrequencyList = ({ words }) => {
+  const [sortColumn, setSortColumn] = useState("priority"); // Add "priority" as default sort
+  const [sortDirection, setSortDirection] = useState("desc");
+
+  const sortedWords = useMemo(() => {
+    const wordArray = Object.entries(words).map(([word, data]) => {
+      const percentage = Math.round((data.annotated / data.total) * 100);
+      // New priority formula:
+      // If no annotations, priority is 0
+      // Otherwise: (total * percentage) / 100
+      // This means:
+      // - 0% annotated = 0 priority
+      // - Same annotation rate: higher total = higher priority
+      // - Same total: higher annotation rate = higher priority
+      const priorityScore =
+        data.annotated === 0 ? 0 : (data.total * percentage) / 100;
+
+      return {
+        word,
+        total: data.total,
+        annotated: data.annotated,
+        percentage,
+        priorityScore,
+      };
+    });
+
+    return wordArray.sort((a, b) => {
+      let comparison = 0;
+      switch (sortColumn) {
+        case "word":
+          comparison = a.word.localeCompare(b.word);
+          break;
+        case "total":
+          comparison = a.total - b.total;
+          break;
+        case "annotated":
+          comparison = a.annotated - b.annotated;
+          break;
+        case "percentage":
+          comparison = a.percentage - b.percentage;
+          break;
+        case "priority":
+          comparison = a.priorityScore - b.priorityScore;
+          break;
+      }
+      return sortDirection === "desc" ? -comparison : comparison;
+    });
+  }, [words, sortColumn, sortDirection]);
+
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
+    } else {
+      setSortColumn(column);
+      setSortDirection("desc");
+    }
+  };
+
+  const SortButton = ({ column, label }) => (
+    <button
+      onClick={() => handleSort(column)}
+      className="flex items-center justify-center gap-1 hover:text-accent-foreground w-full cursor-pointer"
+    >
+      {label}
+      {sortColumn === column && (
+        <span className="text-xs">{sortDirection === "desc" ? "↓" : "↑"}</span>
+      )}
+    </button>
+  );
+
+  return (
+    <div className="">
+      <div className="flex items-center justify-between mb-2 sticky top-0 bg-background z-10">
+        <h3 className="text-lg font-semibold">Word Frequency</h3>
+      </div>
+      <div className="space-y-1">
+        {/* Header row */}
+        <div className="grid grid-cols-5 gap-2 px-2 py-1 text-sm font-medium text-muted-foreground border-b">
+          <SortButton column="word" label="Word" />
+          <SortButton column="total" label="Total" />
+          <SortButton column="annotated" label="Annotated" />
+          <SortButton column="percentage" label="%" />
+          <SortButton column="priority" label="Priority" />
+        </div>
+        {/* Data rows */}
+        {sortedWords.map(
+          ({ word, total, annotated, percentage, priorityScore }) => (
+            <div
+              key={word}
+              className="grid grid-cols-5 gap-2 px-2 py-1 hover:bg-accent/50 rounded"
+            >
+              <span className="truncate">{word}</span>
+              <span className="text-right">{total}</span>
+              <span className="text-right">{annotated}</span>
+              <span
+                className={`text-right ${
+                  percentage <= 25
+                    ? "text-green-500"
+                    : percentage <= 50
+                    ? "text-yellow-500"
+                    : percentage <= 75
+                    ? "text-orange-500"
+                    : "text-red-500"
+                }`}
+              >
+                {percentage}%
+              </span>
+              <span className="text-right text-muted-foreground">
+                {Math.round(priorityScore)}
+              </span>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+};
+
 const TranscriptStatsV1 = ({
   annotatedTranscript,
   issuesData,
@@ -94,6 +213,7 @@ const TranscriptStatsV1 = ({
         accentIssueInstances: 0,
         issueWordMap: {},
         flattenedIssues: [],
+        wordFrequency: {},
       };
     }
 
@@ -101,6 +221,27 @@ const TranscriptStatsV1 = ({
       (segment) => segment.alignment
     );
     const flattenedIssues = issuesData.flatMap((category) => category.issues);
+
+    // Modify word frequency calculation to include annotation info
+    const wordFrequency = flattenedWords.reduce((acc, word) => {
+      const cleanWord = word.word
+        .replace(/[.,!?;:"()\[\]{}]/g, "")
+        .toLowerCase()
+        .trim();
+      if (cleanWord) {
+        if (!acc[cleanWord]) {
+          acc[cleanWord] = {
+            total: 0,
+            annotated: 0,
+          };
+        }
+        acc[cleanWord].total += 1;
+        if (word["BR issues"] && word["BR issues"].length > 0) {
+          acc[cleanWord].annotated += 1;
+        }
+      }
+      return acc;
+    }, {});
 
     // Create a mapping of issues to words
     const issueWordMap = flattenedIssues.reduce((acc, issue) => {
@@ -144,6 +285,7 @@ const TranscriptStatsV1 = ({
       accentIssueInstances,
       issueWordMap,
       flattenedIssues,
+      wordFrequency,
     };
   }, [annotatedTranscript, issuesData]);
 
@@ -470,168 +612,185 @@ Before each response, please double-check each included issue, target word list,
         </div>
       </div>
 
-      <div className="mt-[calc(var(--navbar-height)+235px)]">
-        {sortedIssuesData &&
-          sortedIssuesData.map((target, targetIndex) => {
-            const targetInstances = target.issues.reduce((total, issue) => {
-              return total + (stats.issueWordMap[issue.id]?.length || 0);
-            }, 0);
-            return (
-              <Collapsible key={`${target.id}-${targetIndex}`} className="mt-4">
-                <div className="flex items-center gap-2 w-full text-left">
-                  <CollapsibleTrigger asChild>
-                    <div className="flex items-center gap-2 cursor-pointer">
-                      <ChevronRight className="h-4 w-4" />
-                    </div>
-                  </CollapsibleTrigger>
-                  <div className="flex items-center gap-2 flex-1">
-                    <Checkbox
-                      id={`target-${target.id}`}
-                      checked={getTargetCheckState(target.id)}
-                      onCheckedChange={(checked) =>
-                        handleTargetChange(target.id, checked)
-                      }
-                      onClick={(e) => e.stopPropagation()}
-                      aria-label={`Select ${target.name} target`}
-                    />
-                    <label
-                      htmlFor={`target-${target.id}`}
-                      className="text-lg font-bold flex items-center gap-2 cursor-pointer"
-                    >
-                      {target.name}
-                      {targetInstances > 0 && (
-                        <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
-                          {targetInstances}
-                        </span>
-                      )}
-                    </label>
-                  </div>
-                </div>
-                <CollapsibleContent className="pl-6">
-                  {target.issues.map((issue, issueIndex) => (
-                    <Collapsible
-                      key={`${issue.id}-${issueIndex}`}
-                      className="mt-2"
-                    >
-                      <div className="flex items-center gap-2 w-full text-left">
-                        <CollapsibleTrigger asChild>
-                          <div className="flex items-center gap-2 cursor-pointer">
-                            <ChevronRight className="h-3 w-3" />
-                          </div>
-                        </CollapsibleTrigger>
-                        <div className="flex items-center gap-2 flex-1">
-                          <Checkbox
-                            id={`issue-${issue.id}`}
-                            checked={selectedIssues[issue.id] || false}
-                            onCheckedChange={(checked) =>
-                              handleIssueChange(issue.id, checked)
-                            }
-                            onClick={(e) => e.stopPropagation()}
-                            aria-label={`Select ${issue.name} issue`}
-                          />
-                          <label
-                            htmlFor={`issue-${issue.id}`}
-                            className="font-medium flex items-center gap-2 cursor-pointer"
-                          >
-                            {issue.name}
-                            {(stats.issueWordMap[issue.id]?.length || 0) >
-                              0 && (
-                              <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
-                                {stats.issueWordMap[issue.id]?.length}
-                              </span>
-                            )}
-                          </label>
+      <div className="mt-[calc(var(--navbar-height)+235px)] flex gap-4">
+        <div className="flex-1">
+          <ScrollArea className="h-[calc(100vh-var(--navbar-height)-235px)]">
+            {sortedIssuesData &&
+              sortedIssuesData.map((target, targetIndex) => {
+                const targetInstances = target.issues.reduce((total, issue) => {
+                  return total + (stats.issueWordMap[issue.id]?.length || 0);
+                }, 0);
+                return (
+                  <Collapsible
+                    key={`${target.id}-${targetIndex}`}
+                    className="mt-4"
+                  >
+                    <div className="flex items-center gap-2 w-full text-left">
+                      <CollapsibleTrigger asChild>
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <ChevronRight className="h-4 w-4" />
                         </div>
+                      </CollapsibleTrigger>
+                      <div className="flex items-center gap-2 flex-1">
+                        <Checkbox
+                          id={`target-${target.id}`}
+                          checked={getTargetCheckState(target.id)}
+                          onCheckedChange={(checked) =>
+                            handleTargetChange(target.id, checked)
+                          }
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label={`Select ${target.name} target`}
+                        />
+                        <label
+                          htmlFor={`target-${target.id}`}
+                          className="text-lg font-bold flex items-center gap-2 cursor-pointer"
+                        >
+                          {target.name}
+                          {targetInstances > 0 && (
+                            <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
+                              {targetInstances}
+                            </span>
+                          )}
+                        </label>
                       </div>
-                      <CollapsibleContent className="pl-5">
-                        {Object.entries(
-                          // Group words by their cleaned text
-                          stats.issueWordMap[issue.id]?.reduce(
-                            (groups, word) => {
-                              const cleanWord = word.word.replace(
-                                /[.,!?;:"()\[\]{}]/g,
-                                ""
-                              );
-                              if (!groups[cleanWord]) {
-                                groups[cleanWord] = [];
-                              }
-                              groups[cleanWord].push(word);
-                              return groups;
-                            },
-                            {}
-                          ) || {}
-                        )
-                          .sort(([wordA, instancesA], [wordB, instancesB]) => {
-                            if (wordSortOrder === "time") {
-                              // Sort by earliest instance
-                              return (
-                                instancesA[0].timestamp -
-                                instancesB[0].timestamp
-                              );
-                            } else if (wordSortOrder === "alphabetical") {
-                              return wordA.localeCompare(wordB);
-                            } else {
-                              // Sort by count (most frequent first)
-                              return instancesB.length - instancesA.length;
-                            }
-                          })
-                          .map(([word, instances]) => (
-                            <Collapsible key={word} className="mt-1">
-                              <div className="flex items-center gap-2 w-full text-left">
-                                <CollapsibleTrigger asChild>
-                                  <div className="flex items-center gap-2 cursor-pointer">
-                                    <ChevronRight className="h-3 w-3" />
-                                  </div>
-                                </CollapsibleTrigger>
-                                <div className="flex items-center gap-2 flex-1">
-                                  <label className="font-medium flex items-center gap-2 cursor-pointer">
-                                    {word}
-                                    <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
-                                      {instances.length}
-                                    </span>
-                                    <button
-                                      onClick={() => playWord(word)}
-                                      disabled={isLoading}
-                                      className="cursor-pointer hover:bg-accent/50 inline-flex items-center"
-                                      title="Play reference audio"
-                                    >
-                                      <span className="text-muted-foreground">
-                                        {isLoading ? "⏳" : "🔊"}
-                                      </span>
-                                    </button>
-                                    <a
-                                      href={`https://youglish.com/pronounce/${encodeURIComponent(
-                                        word
-                                      )}/english/us`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-muted-foreground hover:text-foreground text-xs font-medium"
-                                      title="Listen on YouGlish"
-                                    >
-                                      YG
-                                    </a>
-                                  </label>
-                                </div>
+                    </div>
+                    <CollapsibleContent className="pl-6">
+                      {target.issues.map((issue, issueIndex) => (
+                        <Collapsible
+                          key={`${issue.id}-${issueIndex}`}
+                          className="mt-2"
+                        >
+                          <div className="flex items-center gap-2 w-full text-left">
+                            <CollapsibleTrigger asChild>
+                              <div className="flex items-center gap-2 cursor-pointer">
+                                <ChevronRight className="h-3 w-3" />
                               </div>
-                              <CollapsibleContent className="pl-4">
-                                {instances
-                                  .sort((a, b) => a.timestamp - b.timestamp)
-                                  .map((instance, index) => (
-                                    <div key={index} className="pl-4 py-1">
-                                      {instance.word} (
-                                      {instance.timestamp.toFixed(1)}s)
+                            </CollapsibleTrigger>
+                            <div className="flex items-center gap-2 flex-1">
+                              <Checkbox
+                                id={`issue-${issue.id}`}
+                                checked={selectedIssues[issue.id] || false}
+                                onCheckedChange={(checked) =>
+                                  handleIssueChange(issue.id, checked)
+                                }
+                                onClick={(e) => e.stopPropagation()}
+                                aria-label={`Select ${issue.name} issue`}
+                              />
+                              <label
+                                htmlFor={`issue-${issue.id}`}
+                                className="font-medium flex items-center gap-2 cursor-pointer"
+                              >
+                                {issue.name}
+                                {(stats.issueWordMap[issue.id]?.length || 0) >
+                                  0 && (
+                                  <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
+                                    {stats.issueWordMap[issue.id]?.length}
+                                  </span>
+                                )}
+                              </label>
+                            </div>
+                          </div>
+                          <CollapsibleContent className="pl-5">
+                            {Object.entries(
+                              // Group words by their cleaned text
+                              stats.issueWordMap[issue.id]?.reduce(
+                                (groups, word) => {
+                                  const cleanWord = word.word.replace(
+                                    /[.,!?;:"()\[\]{}]/g,
+                                    ""
+                                  );
+                                  if (!groups[cleanWord]) {
+                                    groups[cleanWord] = [];
+                                  }
+                                  groups[cleanWord].push(word);
+                                  return groups;
+                                },
+                                {}
+                              ) || {}
+                            )
+                              .sort(
+                                ([wordA, instancesA], [wordB, instancesB]) => {
+                                  if (wordSortOrder === "time") {
+                                    // Sort by earliest instance
+                                    return (
+                                      instancesA[0].timestamp -
+                                      instancesB[0].timestamp
+                                    );
+                                  } else if (wordSortOrder === "alphabetical") {
+                                    return wordA.localeCompare(wordB);
+                                  } else {
+                                    // Sort by count (most frequent first)
+                                    return (
+                                      instancesB.length - instancesA.length
+                                    );
+                                  }
+                                }
+                              )
+                              .map(([word, instances]) => (
+                                <Collapsible key={word} className="mt-1">
+                                  <div className="flex items-center gap-2 w-full text-left">
+                                    <CollapsibleTrigger asChild>
+                                      <div className="flex items-center gap-2 cursor-pointer">
+                                        <ChevronRight className="h-3 w-3" />
+                                      </div>
+                                    </CollapsibleTrigger>
+                                    <div className="flex items-center gap-2 flex-1">
+                                      <label className="font-medium flex items-center gap-2 cursor-pointer">
+                                        {word}
+                                        <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
+                                          {instances.length}
+                                        </span>
+                                        <button
+                                          onClick={() => playWord(word)}
+                                          disabled={isLoading}
+                                          className="cursor-pointer hover:bg-accent/50 inline-flex items-center"
+                                          title="Play reference audio"
+                                        >
+                                          <span className="text-muted-foreground">
+                                            {isLoading ? "⏳" : "🔊"}
+                                          </span>
+                                        </button>
+                                        <a
+                                          href={`https://youglish.com/pronounce/${encodeURIComponent(
+                                            word
+                                          )}/english/us`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-muted-foreground hover:text-foreground text-xs font-medium"
+                                          title="Listen on YouGlish"
+                                        >
+                                          YG
+                                        </a>
+                                      </label>
                                     </div>
-                                  ))}
-                              </CollapsibleContent>
-                            </Collapsible>
-                          ))}
-                      </CollapsibleContent>
-                    </Collapsible>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-            );
-          })}
+                                  </div>
+                                  <CollapsibleContent className="pl-4">
+                                    {instances
+                                      .sort((a, b) => a.timestamp - b.timestamp)
+                                      .map((instance, index) => (
+                                        <div key={index} className="pl-4 py-1">
+                                          {instance.word} (
+                                          {instance.timestamp.toFixed(1)}s)
+                                        </div>
+                                      ))}
+                                  </CollapsibleContent>
+                                </Collapsible>
+                              ))}
+                          </CollapsibleContent>
+                        </Collapsible>
+                      ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              })}
+          </ScrollArea>
+        </div>
+        {/* Right column: Word Frequency List */}
+        <div className="flex-1">
+          <ScrollArea className="h-[calc(100vh-var(--navbar-height)-235px)]">
+            <WordFrequencyList words={stats.wordFrequency} />
+          </ScrollArea>
+        </div>
       </div>
     </div>
   );
