@@ -101,6 +101,7 @@ export default function PhonemeGridSummary({
   selectedIssues,
   setSelectedIssues,
   issuesData,
+  onHover,
 }) {
   const [displayMode, setDisplayMode] = useState("heatmap"); // "count" | "percent" | "heatmap"
   const [highlightTop, setHighlightTop] = useState(0); // 0 = none, 3 = top 3, 5 = top 5
@@ -249,6 +250,19 @@ export default function PhonemeGridSummary({
         }}
         title={`${label}: ${count} (${percent}%)`}
         onClick={() => handlePhonemeClick(label)}
+        onMouseEnter={() => {
+          // Get all word indices for this target
+          const target = issuesData.find((t) => t.name === targetName);
+          if (target) {
+            const wordIndices = target.issues.flatMap(
+              (issue) =>
+                stats.issueWordMap[issue.id]?.map((word) => word.wordIndex) ||
+                []
+            );
+            onHover?.(wordIndices);
+          }
+        }}
+        onMouseLeave={() => onHover?.([])}
       >
         {/* Centered label */}
         <div

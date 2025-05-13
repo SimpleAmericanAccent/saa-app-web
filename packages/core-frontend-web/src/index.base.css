@@ -47,11 +47,14 @@ a:hover {
   --navbar-height: 3rem;
   --rsidebar-width: 38vw;
   --radius: 0.625rem;
-  --annotation: 210 40% 85%; /* Light blue-gray background */
-  --annotation-foreground: 210 50% 20%; /* Dark blue-gray text */
-  --activeword: 300 80% 80%; /* Light purple background */
-  --activeword-foreground: 300 60% 25%; /* Dark purple text */
-  --hover: 220 20% 92%; /* Light gray with slight blue tint */
+  --annotation: 210 40% 85%;
+  --annotation-foreground: 210 50% 20%;
+  --activeword: 300 80% 80%;
+  --activeword-foreground: 300 60% 25%;
+  --hover: 220 20% 92%;
+  --hover-foreground: 0 0% 0%;
+  --hover2: 210 100% 50%;
+  --hover2-foreground: 0 0% 100%;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -88,12 +91,14 @@ a:hover {
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --annotation: 48, 100%, 60%; /* Dark blue-gray background */
-  --annotation-foreground: 0 0% 0%; /* Light blue-gray text */
-  --activeword: 300 70% 25%; /* Dark purple background */
-  --activeword-foreground: 300 40% 98%; /* Light purple text */
-  --hover: 48, 100%, 80%; /* Dark gray with slight blue tint */
-  --hover-foreground: 0 0% 0%; /* Light blue-gray text */
+  --annotation: 48, 100%, 60%;
+  --annotation-foreground: 0 0% 0%;
+  --activeword: 300 70% 25%;
+  --activeword-foreground: 300 40% 98%;
+  --hover: 48, 100%, 80%;
+  --hover-foreground: 0 0% 0%;
+  --hover2: 210 100% 50%;
+  --hover2-foreground: 0 0% 100%;
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);

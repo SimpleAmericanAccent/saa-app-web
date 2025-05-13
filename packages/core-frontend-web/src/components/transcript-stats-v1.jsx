@@ -148,6 +148,7 @@ const TranscriptStatsV1 = ({
   annotatedTranscript,
   issuesData,
   onFilterChange,
+  setHoveredWordIndices,
 }) => {
   // Initialize selectedIssues only when issuesData changes, not on every render
   const [selectedIssues, setSelectedIssues] = useState({});
@@ -257,6 +258,7 @@ const TranscriptStatsV1 = ({
           word: word.word,
           id: word.id,
           timestamp: word.start_time,
+          wordIndex: word.wordIndex,
         }));
       return acc;
     }, {});
@@ -509,6 +511,7 @@ Before each response, please double-check each included issue, target word list,
               selectedIssues={selectedIssues}
               setSelectedIssues={setSelectedIssues}
               issuesData={issuesData}
+              onHover={setHoveredWordIndices}
             />
           </div>
         </div>
@@ -629,7 +632,22 @@ Before each response, please double-check each included issue, target word list,
                     key={`${target.id}-${targetIndex}`}
                     className="mt-4"
                   >
-                    <div className="flex items-center gap-2 w-full text-left">
+                    <div
+                      className="flex items-center gap-2 w-full text-left"
+                      onMouseEnter={() => {
+                        // Get all word indices from this target's issues
+                        const indices = target.issues.flatMap(
+                          (issue) =>
+                            stats.issueWordMap[issue.id]?.map(
+                              (word) => word.wordIndex
+                            ) || []
+                        );
+                        setHoveredWordIndices(indices);
+                      }}
+                      onMouseLeave={() => {
+                        setHoveredWordIndices([]);
+                      }}
+                    >
                       <CollapsibleTrigger asChild>
                         <div className="flex items-center gap-2 cursor-pointer">
                           <ChevronRight className="h-4 w-4" />
@@ -664,7 +682,20 @@ Before each response, please double-check each included issue, target word list,
                           key={`${issue.id}-${issueIndex}`}
                           className="mt-2"
                         >
-                          <div className="flex items-center gap-2 w-full text-left">
+                          <div
+                            className="flex items-center gap-2 w-full text-left"
+                            onMouseEnter={() => {
+                              // Get all word indices from this issue
+                              const indices =
+                                stats.issueWordMap[issue.id]?.map(
+                                  (word) => word.wordIndex
+                                ) || [];
+                              setHoveredWordIndices(indices);
+                            }}
+                            onMouseLeave={() => {
+                              setHoveredWordIndices([]);
+                            }}
+                          >
                             <CollapsibleTrigger asChild>
                               <div className="flex items-center gap-2 cursor-pointer">
                                 <ChevronRight className="h-3 w-3" />
@@ -746,7 +777,19 @@ Before each response, please double-check each included issue, target word list,
                               )
                               .map(([word, instances]) => (
                                 <Collapsible key={word} className="mt-1">
-                                  <div className="flex items-center gap-2 w-full text-left">
+                                  <div
+                                    className="flex items-center gap-2 w-full text-left"
+                                    onMouseEnter={() => {
+                                      // Get all word indices from the instances
+                                      const indices = instances.map(
+                                        (instance) => instance.wordIndex
+                                      );
+                                      setHoveredWordIndices(indices);
+                                    }}
+                                    onMouseLeave={() => {
+                                      setHoveredWordIndices([]);
+                                    }}
+                                  >
                                     <CollapsibleTrigger asChild>
                                       <div className="flex items-center gap-2 cursor-pointer">
                                         <ChevronRight className="h-3 w-3" />
@@ -786,7 +829,19 @@ Before each response, please double-check each included issue, target word list,
                                     {instances
                                       .sort((a, b) => a.timestamp - b.timestamp)
                                       .map((instance, index) => (
-                                        <div key={index} className="pl-4 py-1">
+                                        <div
+                                          key={index}
+                                          className="pl-4 py-1"
+                                          onMouseEnter={() => {
+                                            // Just highlight this specific instance
+                                            setHoveredWordIndices([
+                                              instance.wordIndex,
+                                            ]);
+                                          }}
+                                          onMouseLeave={() => {
+                                            setHoveredWordIndices([]);
+                                          }}
+                                        >
                                           {instance.word} (
                                           {instance.timestamp.toFixed(1)}s)
                                         </div>

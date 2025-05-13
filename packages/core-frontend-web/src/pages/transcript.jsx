@@ -72,6 +72,8 @@ export default function Transcript() {
 
   // Add state for modal visibility
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+
+  const [hoveredWordIndices, setHoveredWordIndices] = useState([]);
   // #endregion
 
   // #region do stuff
@@ -382,6 +384,7 @@ export default function Transcript() {
                     issuesData={issuesData}
                     onAnnotationUpdate={handleAnnotationUpdate}
                     activeFilters={activeFilters}
+                    hoveredWordIndices={hoveredWordIndices}
                   />
                 ) : (
                   <TranscriptViewerV2
@@ -423,6 +426,7 @@ export default function Transcript() {
                   annotatedTranscript={annotatedTranscript}
                   issuesData={issuesData}
                   onFilterChange={handleFilterChange}
+                  setHoveredWordIndices={setHoveredWordIndices}
                 />
               ) : (
                 <TranscriptStatsV2

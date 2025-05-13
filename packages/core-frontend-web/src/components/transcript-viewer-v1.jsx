@@ -24,6 +24,7 @@ const TranscriptViewerV1 = ({
   onPronunciation2Hover,
   issuesData,
   activeFilters = [],
+  hoveredWordIndices = [],
 }) => {
   const [contextMenu, setContextMenu] = useState({
     wordIndex: null,
@@ -39,11 +40,22 @@ const TranscriptViewerV1 = ({
     // return record ? record.fields["BR issues"] : [];
   };
 
-  const shouldHighlightWord = (word) => {
-    if (!activeFilters.length) return false; // Show all if no filters
-    return word["BR issues"]?.some((issueId) =>
-      activeFilters.includes(issueId)
-    );
+  const shouldHighlightWord = (wordObj) => {
+    // Check for hover highlighting first
+    // console.log(hoveredWordIndices);
+    // console.log(wordObj.wordIndex);
+    if (hoveredWordIndices.includes(wordObj.wordIndex)) {
+      return "hover2"; // Return a string to indicate hover state
+    }
+
+    // Check for filter highlighting
+    if (activeFilters.length) {
+      return wordObj["BR issues"]?.some((issueId) =>
+        activeFilters.includes(issueId)
+      );
+    }
+
+    return false;
   };
 
   // Admin handler - sets context menu state
@@ -201,6 +213,7 @@ const TranscriptViewerV1 = ({
             const annotations = getAnnotations(wordObj.wordIndex);
             const hasAnnotations = annotations.length > 0;
             const isActive = activeWordIndex === wordObj.wordIndex;
+            const highlightState = shouldHighlightWord(wordObj);
 
             return (
               <React.Fragment key={wordObj.wordIndex}>
@@ -209,9 +222,9 @@ const TranscriptViewerV1 = ({
                     "cursor-pointer rounded-[5px]",
                     {
                       "text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))]":
-                        shouldHighlightWord(wordObj) &&
-                        hasAnnotations &&
-                        !isActive,
+                        highlightState === true && hasAnnotations && !isActive,
+                      "text-[hsl(var(--hover2-foreground))] bg-[hsl(var(--hover2))]":
+                        highlightState === "hover2" && !isActive,
                       "!bg-[#aa00aa80]": isActive,
                     },
                     "hover:bg-[hsl(var(--hover))] hover:text-[hsl(var(--hover-foreground))]"
