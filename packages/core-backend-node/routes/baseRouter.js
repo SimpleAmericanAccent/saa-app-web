@@ -109,10 +109,19 @@ baseRouter.get("/data/loadIssues", async (req, res) => {
 
   // Link issues to features
   airtableIssues.forEach((record) => {
+    // Parse the resources text field into an array of URLs
+    const resourcesText = record.fields.resources || "";
+    const resources = resourcesText
+      .split(/[\n\r]+/) // Split by newlines
+      .map((url) => url.trim()) // Remove whitespace
+      .filter((url) => url.length > 0) // Remove empty lines
+      .map((url) => url.replace(/[<>]/g, "")); // Remove angle brackets
+
     const issueData = {
       id: record.id,
       name: record.fields.Name || "",
       po: record.fields["Presentation order"] || Infinity,
+      resources: resources,
     };
 
     (record.fields["target"] || []).forEach((featureId) => {

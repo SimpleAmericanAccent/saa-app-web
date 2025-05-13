@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { ChevronRight, Settings } from "lucide-react";
+import { ChevronRight, Settings, Link } from "lucide-react";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -691,6 +691,20 @@ Before each response, please double-check each included issue, target word list,
                                     {stats.issueWordMap[issue.id]?.length}
                                   </span>
                                 )}
+                                {/* Add individual link icons for each resource */}
+                                {issue.resources &&
+                                  issue.resources.map((resource, idx) => (
+                                    <a
+                                      key={idx}
+                                      href={resource}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-muted-foreground hover:text-foreground"
+                                      title={resource}
+                                    >
+                                      <Link className="h-4 w-4" />
+                                    </a>
+                                  ))}
                               </label>
                             </div>
                           </div>
