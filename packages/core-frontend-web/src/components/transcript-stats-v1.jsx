@@ -37,7 +37,11 @@ const WordFrequencyList = ({ words }) => {
       // - Same annotation rate: higher total = higher priority
       // - Same total: higher annotation rate = higher priority
       const priorityScore =
-        data.annotated === 0 ? 0 : (data.total * percentage) / 100;
+        data.annotated === 0
+          ? 0
+          : percentage === 100
+          ? data.total * 2 // Double weight for fully annotated words
+          : (data.total * percentage) / 100;
 
       return {
         word,
