@@ -44,6 +44,7 @@ export default function VowelSynthesizer() {
   const [volume, setVolume] = useState(100);
   const [pitch, setPitch] = useState(100); // Fundamental frequency
   const [isDragging, setIsDragging] = useState(false);
+  const [soundStartedByButton, setSoundStartedByButton] = useState(false);
 
   const audioContextRef = useRef(null);
   const oscillatorRef = useRef(null);
@@ -135,12 +136,105 @@ export default function VowelSynthesizer() {
     }
   }, [isPlaying]); // Add isPlaying dependency
 
+  const toggleSound = useCallback(
+    (shouldPlay, source = "button") => {
+      if (shouldPlay === isPlaying) return; // No change needed
+
+      if (shouldPlay) {
+        setSoundStartedByButton(source === "button");
+
+        try {
+          if (!audioContextRef.current) {
+            audioContextRef.current = new (window.AudioContext ||
+              window.webkitAudioContext)();
+          }
+
+          const audioContext = audioContextRef.current;
+
+          // Create source oscillator with rich harmonics
+          const oscillator = audioContext.createOscillator();
+          oscillator.type = "sawtooth";
+          oscillator.frequency.setValueAtTime(pitch, audioContext.currentTime);
+
+          const filterF1 = audioContext.createBiquadFilter();
+          filterF1.type = "bandpass";
+          filterF1.frequency.setValueAtTime(
+            formants.F1,
+            audioContext.currentTime
+          );
+          filterF1.Q.setValueAtTime(10, audioContext.currentTime);
+
+          const filterF2 = audioContext.createBiquadFilter();
+          filterF2.type = "bandpass";
+          filterF2.frequency.setValueAtTime(
+            formants.F2,
+            audioContext.currentTime
+          );
+          filterF2.Q.setValueAtTime(10, audioContext.currentTime);
+
+          const filterF3 = audioContext.createBiquadFilter();
+          filterF3.type = "bandpass";
+          filterF3.frequency.setValueAtTime(
+            formants.F3,
+            audioContext.currentTime
+          );
+          filterF3.Q.setValueAtTime(10, audioContext.currentTime);
+
+          const gainNode = audioContext.createGain();
+          gainNode.gain.setValueAtTime(volume * 0.8, audioContext.currentTime);
+
+          oscillator.connect(filterF1);
+          filterF1.connect(filterF2);
+          filterF2.connect(filterF3);
+          filterF3.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+
+          oscillatorRef.current = oscillator;
+          filterF1Ref.current = filterF1;
+          filterF2Ref.current = filterF2;
+          filterF3Ref.current = filterF3;
+          gainNodeRef.current = gainNode;
+
+          oscillator.start();
+          setIsPlaying(true);
+        } catch (error) {
+          console.error("Error starting audio synthesis:", error);
+        }
+      } else {
+        if (!soundStartedByButton || source === "button") {
+          try {
+            if (oscillatorRef.current) {
+              oscillatorRef.current.stop();
+              oscillatorRef.current.disconnect();
+              oscillatorRef.current = null;
+            }
+
+            [filterF1Ref, filterF2Ref, filterF3Ref, gainNodeRef].forEach(
+              (ref) => {
+                if (ref.current) {
+                  ref.current.disconnect();
+                  ref.current = null;
+                }
+              }
+            );
+
+            setIsPlaying(false);
+          } catch (error) {
+            console.error("Error stopping audio synthesis:", error);
+          }
+          setSoundStartedByButton(false);
+        }
+      }
+    },
+    [isPlaying, formants, pitch, volume, soundStartedByButton]
+  );
+
   const handleMouseDownOnDiagram = (e) => {
     if (!diagramRef.current) return;
 
     setIsDragging(true);
     updateFormantsByPosition(e);
-    startSound();
+    toggleSound(true, "mouse");
   };
 
   const handleMouseMoveOnDiagram = (e) => {
@@ -151,8 +245,8 @@ export default function VowelSynthesizer() {
   const handleMouseUpOnDiagram = useCallback(() => {
     if (!isDragging) return;
     setIsDragging(false);
-    stopSound();
-  }, [isDragging, stopSound]);
+    toggleSound(false, "mouse");
+  }, [isDragging, toggleSound]);
 
   // Shared logic for updating formants based on mouse position
   const updateFormantsByPosition = (e) => {
@@ -464,7 +558,7 @@ export default function VowelSynthesizer() {
             </div>
 
             <Button
-              onClick={isPlaying ? stopSound : startSound}
+              onClick={() => toggleSound(!isPlaying, "button")}
               variant={isPlaying ? "destructive" : "default"}
               className="w-full"
             >
