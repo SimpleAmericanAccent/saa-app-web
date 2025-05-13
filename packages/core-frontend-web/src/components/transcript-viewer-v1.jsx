@@ -2,6 +2,8 @@
 import { useState, useEffect, useCallback } from "react";
 import React from "react";
 import { cn } from "core-frontend-web/src/lib/utils";
+import useAuthStore from "core-frontend-web/src/stores/authStore";
+import { useWordAudio } from "core-frontend-web/src/hooks/useWordAudio";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -26,6 +28,8 @@ const TranscriptViewerV1 = ({
   const [contextMenu, setContextMenu] = useState({
     wordIndex: null,
   });
+  const { isAdmin } = useAuthStore();
+  const { playWord, isLoading } = useWordAudio();
 
   const getAnnotations = (wordIndex) => {
     const word = annotatedTranscript
@@ -42,11 +46,38 @@ const TranscriptViewerV1 = ({
     );
   };
 
-  const handleContextMenu = (e, wordIndex) => {
+  // Admin handler - sets context menu state
+  const handleAdminContextMenu = useCallback((e, wordIndex) => {
     setContextMenu({
       wordIndex,
     });
-  };
+  }, []);
+
+  // Non-admin handler - just plays audio
+  const handleNonAdminContextMenu = useCallback(
+    (e, word) => {
+      e.preventDefault();
+      playWord(word);
+    },
+    [playWord]
+  );
+
+  // Choose the appropriate handler once based on admin status
+  const handleContextMenu = useCallback(
+    (e, wordIndex, word) => {
+      if (!word) {
+        e.preventDefault();
+        return;
+      }
+
+      if (isAdmin) {
+        handleAdminContextMenu(e, wordIndex);
+      } else {
+        handleNonAdminContextMenu(e, word);
+      }
+    },
+    [isAdmin, handleAdminContextMenu, handleNonAdminContextMenu]
+  );
 
   const handleIssueSelect = (wordIndex, issueId) => {
     const annotations = getAnnotations(wordIndex);
@@ -154,49 +185,63 @@ const TranscriptViewerV1 = ({
     return pronunciations2;
   };
 
+  const content = (
+    <div
+      className="py-4 space-y-4"
+      onContextMenu={(e) => {
+        // Only allow context menu on word spans
+        if (e.target.tagName !== "SPAN") {
+          e.preventDefault();
+        }
+      }}
+    >
+      {annotatedTranscript.map((paragraph, index) => (
+        <p key={index} className="leading-relaxed">
+          {paragraph.alignment.map((wordObj) => {
+            const annotations = getAnnotations(wordObj.wordIndex);
+            const hasAnnotations = annotations.length > 0;
+            const isActive = activeWordIndex === wordObj.wordIndex;
+
+            return (
+              <React.Fragment key={wordObj.wordIndex}>
+                <span
+                  className={cn(
+                    "cursor-pointer rounded-[5px]",
+                    {
+                      "text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))]":
+                        shouldHighlightWord(wordObj) &&
+                        hasAnnotations &&
+                        !isActive,
+                      "!bg-[#aa00aa80]": isActive,
+                    },
+                    "hover:bg-[hsl(var(--hover))] hover:text-[hsl(var(--hover-foreground))]"
+                  )}
+                  onClick={() => handleWordClick(wordObj.start_time)}
+                  onMouseOver={() => {
+                    handleAnnotationHover(wordObj.wordIndex);
+                    handlePronunciationHover(wordObj.word);
+                  }}
+                  onContextMenu={(e) =>
+                    handleContextMenu(e, wordObj.wordIndex, wordObj.word)
+                  }
+                >
+                  {wordObj.word}
+                </span>{" "}
+              </React.Fragment>
+            );
+          })}
+        </p>
+      ))}
+    </div>
+  );
+
+  if (!isAdmin) {
+    return content;
+  }
+
   return (
     <ContextMenu>
-      <ContextMenuTrigger>
-        <div className="py-4 space-y-4">
-          {annotatedTranscript.map((paragraph, index) => (
-            <p key={index} className="leading-relaxed">
-              {paragraph.alignment.map((wordObj) => {
-                const annotations = getAnnotations(wordObj.wordIndex);
-                const hasAnnotations = annotations.length > 0;
-                const isActive = activeWordIndex === wordObj.wordIndex;
-
-                return (
-                  <React.Fragment key={wordObj.wordIndex}>
-                    <span
-                      className={cn(
-                        "cursor-pointer rounded-[5px]",
-                        {
-                          "text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))]":
-                            shouldHighlightWord(wordObj) &&
-                            hasAnnotations &&
-                            !isActive,
-                          "!bg-[#aa00aa80]": isActive,
-                        },
-                        "hover:bg-[hsl(var(--hover))] hover:text-[hsl(var(--hover-foreground))]"
-                      )}
-                      onClick={() => handleWordClick(wordObj.start_time)}
-                      onMouseOver={() => {
-                        handleAnnotationHover(wordObj.wordIndex);
-                        handlePronunciationHover(wordObj.word);
-                      }}
-                      onContextMenu={(e) =>
-                        handleContextMenu(e, wordObj.wordIndex)
-                      }
-                    >
-                      {wordObj.word}
-                    </span>{" "}
-                  </React.Fragment>
-                );
-              })}
-            </p>
-          ))}
-        </div>
-      </ContextMenuTrigger>
+      <ContextMenuTrigger>{content}</ContextMenuTrigger>
       <ContextMenuContent className="w-auto">
         {issuesData.map((target) => (
           <ContextMenuSub key={target.id}>

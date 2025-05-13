@@ -20,7 +20,9 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
         <div className="grid grid-cols-2 gap-8 py-4">
           {/* Left Column - Keyboard Shortcuts */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Playback Controls</h3>
+            <h3 className="text-sm font-semibold">
+              Keyboard Playback Controls
+            </h3>
             <div className="grid gap-4">
               <div className="flex items-center justify-between">
                 <kbd className="px-2 py-1.5 text-xs font-semibold bg-white text-black border rounded-md">
@@ -69,6 +71,60 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
                 <span className="text-sm text-muted-foreground">
                   Show/Hide this menu
                 </span>
+              </div>
+            </div>
+
+            <h3 className="text-sm font-semibold mt-6">Left/Right Click</h3>
+            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center justify-between">
+                <span title="Left Click">
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <rect
+                      x="7"
+                      y="2"
+                      width="10"
+                      height="20"
+                      rx="5"
+                      fill="#fff"
+                      stroke="#000"
+                    />
+                    <rect
+                      x="7"
+                      y="2"
+                      width="5"
+                      height="10"
+                      rx="5"
+                      fill="#4f46e5"
+                    />{" "}
+                    {/* Highlight left */}
+                  </svg>
+                </span>
+                <span>Play transcript audio</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span title="Right Click">
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <rect
+                      x="7"
+                      y="2"
+                      width="10"
+                      height="20"
+                      rx="5"
+                      fill="#fff"
+                      stroke="#000"
+                    />
+                    <rect
+                      x="12"
+                      y="2"
+                      width="5"
+                      height="10"
+                      rx="5"
+                      fill="#4f46e5"
+                    />{" "}
+                    {/* Highlight right */}
+                  </svg>
+                </span>
+                <span>Play reference audio</span>
               </div>
             </div>
           </div>
