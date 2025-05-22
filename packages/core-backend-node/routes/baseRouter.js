@@ -14,6 +14,9 @@ baseRouter.get("/authz", async (req, res) => {
 
   // Helper function to find audio records the user has access to
   const findAudiosByAccess = (audioRecords, accessList) => {
+    if (!accessList) {
+      return [];
+    }
     return accessList
       .map((audioId) => {
         const audio = audioRecords.find((record) => record.id === audioId);
@@ -48,7 +51,7 @@ baseRouter.get("/authz", async (req, res) => {
   };
   const currentUser = findUserById(peopleObject.records, currentUserId);
   if (currentUser) {
-    const { "Access to audios": currentUserAudioAccess } = currentUser.fields;
+    const currentUserAudioAccess = currentUser.fields["Access to audios"] || [];
     req.app.locals.currentUserAudioAccess = currentUserAudioAccess;
 
     // Step 2: Look up audio list
