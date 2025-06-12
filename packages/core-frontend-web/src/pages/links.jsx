@@ -2,36 +2,44 @@ export default function Links() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold">SAA Resources</h1>
-      <p>
-        So far we have 3 core topics for which we have a Zoom call recording
-        available:
-      </p>
+      <p>Here are some Zoom call recordings from our Fundamentals trainings:</p>
       <ul className="px-8 list-disc">
         <li>
+          Vowels:{" "}
+          <a
+            href="https://youtu.be/oIL9WEaEUeI"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            2025 06 11
+          </a>
+          ,{" "}
           <a
             href="https://youtu.be/9mWuumukRXY"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Vowels
+            2025 01 08
           </a>
         </li>
         <li>
+          Consonants:{" "}
           <a
             href="https://youtu.be/lWbWnhOhVj0"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Consonants
+            2025 01 22
           </a>
         </li>
         <li>
+          Flow:{" "}
           <a
             href="https://youtu.be/CUBYOPIDDCs"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Stress, Rhythm, & Connected Speech
+            2025 03 19
           </a>
         </li>
       </ul>
