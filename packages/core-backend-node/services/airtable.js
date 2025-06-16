@@ -50,7 +50,9 @@ export function createAirtableClient({ baseId, readKey, writeKey }) {
         });
 
         if (!response.ok) {
-          throw new Error(`Airtable API request failed: ${response.status}`);
+          throw new Error(
+            `Airtable API request failed: ${response.status} at path ${path}`
+          );
         }
 
         const data = await response.json();
