@@ -7,8 +7,16 @@ import path from "path";
 import url from "url";
 import { bootApp } from "core-backend-node/entry.js";
 import router from "core-backend-node/routes/routes.js";
+import express from "express";
+import internalStatsRouter from "./routes/internalStatsRouter.js";
+import { createAirtableClient } from "core-backend-node/services/airtable.js";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+
+const adminRouter = express
+  .Router()
+  .use(router)
+  .use("/api/internalstats", internalStatsRouter);
 
 bootApp({
   dirname: __dirname,
@@ -21,7 +29,7 @@ bootApp({
     clientID: process.env.AUTH0_CLIENT_ID,
     issuerBaseURL: process.env.AUTH0_ISSUER_BASE_ID,
   },
-  router,
+  router: adminRouter,
   frontendDir: "admin-frontend-web",
   appLabel: "🔒 ADMIN app",
   envConfig: {
@@ -32,4 +40,11 @@ bootApp({
     AIRTABLE_KEY_SELECTED: process.env.AIRTABLE_KEY_READ_ONLY_VALUE,
   },
   requireAdminGlobally: true,
+  preSetup: (app) => {
+    app.locals.airtableOps = createAirtableClient({
+      baseId: process.env.AIRTABLE_OPS_BASE_ID,
+      readKey: process.env.AIRTABLE_OPS_KEY_READ_WRITE_VALUE,
+      writeKey: process.env.AIRTABLE_OPS_KEY_READ_WRITE_VALUE,
+    });
+  },
 });
