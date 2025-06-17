@@ -17,6 +17,7 @@ export function bootApp({
   frontendDir,
   appLabel,
   requireAdminGlobally = false,
+  preSetup = null,
 }) {
   const __dirname = dirname;
   const isDev = environment_flag === "dev";
@@ -37,6 +38,10 @@ export function bootApp({
     envConfig,
     requireAdminGlobally,
   });
+
+  if (preSetup) {
+    preSetup(app);
+  }
 
   if (isDev) {
     const cert = fs.readFileSync("../../localhost.pem");
