@@ -1,9 +1,9 @@
 import { Route } from "react-router-dom";
-import Internal from "../pages/Internal.jsx";
+import Dashboard from "../pages/internal.jsx";
 
 const opsRoutes = (
   <>
-    <Route path="/" element={<Internal />} />
+    <Route path="/" element={<Dashboard />} />
     <Route path="*" element={<div>Ops</div>} />
   </>
 );
