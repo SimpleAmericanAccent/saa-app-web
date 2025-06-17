@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const StatTable = ({ title, stats }) => {
+const StatTable = ({ title, format, stats }) => {
   return (
     <div className="inline-block border rounded-lg">
       <div className="p-3 border-b bg-muted/50">
@@ -16,8 +16,10 @@ const StatTable = ({ title, stats }) => {
             <React.Fragment key={key}>
               <div className="text-muted-foreground text-sm">{key}</div>
               <div className="font-bold text-right">
-                {typeof value === "number" && value.toString().includes(".")
-                  ? `$${value.toFixed(2)}`
+                {typeof value === "number"
+                  ? format === "currency"
+                    ? `$${value.toFixed(2)}`
+                    : value.toFixed(2)
                   : value}
               </div>
             </React.Fragment>
@@ -72,57 +74,84 @@ const Dashboard = () => {
 
   const dashboardConfig = {
     "Time Tracking": {
-      Total: stats.total,
-      Content: stats.content,
-      Convos: stats.conversations,
-      "Client Help": stats.clientHelp,
-      Other: stats.other,
+      format: "number",
+      stats: {
+        Total: stats?.total || 0,
+        Content: stats?.content || 0,
+        Convos: stats?.conversations || 0,
+        "Client Help": stats?.clientHelp || 0,
+        Other: stats?.other || 0,
+      },
     },
     "Content Posted": {
-      Total: stats.posts,
-      Reels: stats.reels,
-      Images: stats.images,
-      Carousels: stats.carousels,
-      "N-R Vids": stats.nonReelVideos,
+      format: "number",
+      stats: {
+        Total: stats?.posts || 0,
+        Reels: stats?.reels || 0,
+        Images: stats?.images || 0,
+        Carousels: stats?.carousels || 0,
+        "N-R Vids": stats?.nonReelVideos || 0,
+      },
     },
     Engagement: {
-      Impressions: stats.totalImpressions,
-      Reach: stats.totalReach,
-      "Profile Visits": stats.profileViews,
-      "Bio Link Clicks": stats.profileBioLinkClicks,
+      format: "number",
+      stats: {
+        Impressions: stats?.totalImpressions || 0,
+        Reach: stats?.totalReach || 0,
+        "Profile Visits": stats?.profileViews || 0,
+        "Bio Link Clicks": stats?.profileBioLinkClicks || 0,
+      },
     },
     "App Start Origins": {
-      "Bio Link": stats.viaIGBioLink,
-      Manychat: stats.viaIGManychat,
-      Stories: stats.viaIGStories,
-      Email: stats.viaEmail,
+      format: "number",
+      stats: {
+        "Bio Link": stats?.viaIGBioLink || 0,
+        Manychat: stats?.viaIGManychat || 0,
+        Stories: stats?.viaIGStories || 0,
+        Email: stats?.viaEmail || 0,
+      },
     },
     "App Stats": {
-      Starts: stats.appStarts,
-      "W/ Email": stats.wEmail,
-      Completed: stats.completed,
-      "MG $ Y": stats.mgDollarY,
+      format: "number",
+      stats: {
+        Starts: stats?.appStarts || 0,
+        "W/ Email": stats?.wEmail || 0,
+        Completed: stats?.completed || 0,
+        "MG $ Y": stats?.mgDollarY || 0,
+      },
     },
     "MG App Outcomes": {
-      TBD: stats.tbd,
-      Rejected: stats.rejected,
-      "Yes (Not Paid)": stats.acceptedButNotPaid,
-      Paid: stats.mgPaid,
+      format: "number",
+      stats: {
+        TBD: stats?.tbd || 0,
+        Rejected: stats?.rejected || 0,
+        "Yes (Not Paid)": stats?.acceptedButNotPaid || 0,
+        Paid: stats?.mgPaid || 0,
+      },
     },
     "MG Sales (App Attribution)": {
-      Pmts: stats.mg_pmts_app,
-      Refunds: stats.mg_refunds_app,
-      Net: stats.mg_netpay_app,
+      format: "currency",
+      stats: {
+        Pmts: stats?.mg_pmts_app || 0,
+        Refunds: stats?.mg_refunds_app || 0,
+        Net: stats?.mg_netpay_app || 0,
+      },
     },
     "MG Cashflow (Day Attribution)": {
-      Pmts: stats.mg_pmts_day,
-      Refunds: stats.mg_refunds_day,
-      Net: stats.mg_netpay_day,
+      format: "currency",
+      stats: {
+        Pmts: stats?.mg_pmts_day || 0,
+        Refunds: stats?.mg_refunds_day || 0,
+        Net: stats?.mg_netpay_day || 0,
+      },
     },
     "All Cashflow (Day Attribution)": {
-      Pmts: stats.all_pmts_day,
-      Refunds: stats.all_refunds_day,
-      Net: stats.all_netpay_day,
+      format: "currency",
+      stats: {
+        Pmts: stats?.all_pmts_day || 0,
+        Refunds: stats?.all_refunds_day || 0,
+        Net: stats?.all_netpay_day || 0,
+      },
     },
   };
 
@@ -155,7 +184,7 @@ const Dashboard = () => {
         return recordDate >= new Date(start) && recordDate <= new Date(end);
       });
 
-      const totals = filteredData.reduce(
+      const stats = filteredData.reduce(
         (acc, record) => {
           const fields = record.fields;
 
@@ -233,18 +262,54 @@ const Dashboard = () => {
 
           return acc;
         },
-        { ...stats }
+        {
+          content: 0,
+          conversations: 0,
+          clientHelp: 0,
+          other: 0,
+          total: 0,
+          posts: 0,
+          reels: 0,
+          images: 0,
+          carousels: 0,
+          nonReelVideos: 0,
+          totalImpressions: 0,
+          totalReach: 0,
+          profileViews: 0,
+          profileBioLinkClicks: 0,
+          appStarts: 0,
+          wEmail: 0,
+          completed: 0,
+          mgDollarY: 0,
+          viaIGBioLink: 0,
+          viaIGManychat: 0,
+          viaIGStories: 0,
+          viaEmail: 0,
+          mgPaid: 0,
+          acceptedButNotPaid: 0,
+          tbd: 0,
+          rejected: 0,
+          mg_pmts_app: 0,
+          mg_refunds_app: 0,
+          mg_netpay_app: 0,
+          mg_pmts_day: 0,
+          mg_refunds_day: 0,
+          mg_netpay_day: 0,
+          all_pmts_day: 0,
+          all_refunds_day: 0,
+          all_netpay_day: 0,
+        }
       );
 
       // Convert time values to hours
-      totals.content = Math.floor((totals.content / 3600) * 100) / 100;
-      totals.conversations =
-        Math.floor((totals.conversations / 3600) * 100) / 100;
-      totals.clientHelp = Math.floor((totals.clientHelp / 3600) * 100) / 100;
-      totals.other = Math.floor((totals.other / 3600) * 100) / 100;
-      totals.total = Math.floor((totals.total / 3600) * 100) / 100;
+      stats.content = Math.floor((stats.content / 3600) * 100) / 100;
+      stats.conversations =
+        Math.floor((stats.conversations / 3600) * 100) / 100;
+      stats.clientHelp = Math.floor((stats.clientHelp / 3600) * 100) / 100;
+      stats.other = Math.floor((stats.other / 3600) * 100) / 100;
+      stats.total = Math.floor((stats.total / 3600) * 100) / 100;
 
-      setStats(totals);
+      setStats(stats);
     } catch (error) {
       console.log(error);
       console.error("Error loading data:", error);
@@ -376,8 +441,13 @@ const Dashboard = () => {
       <ScrollArea className="h-full">
         <div className="container mx-auto p-2">
           <div className="flex flex-wrap gap-4">
-            {Object.entries(dashboardConfig).map(([title, stats]) => (
-              <StatTable key={title} title={title} stats={stats} />
+            {Object.entries(dashboardConfig).map(([title, config]) => (
+              <StatTable
+                key={title}
+                title={title}
+                format={config.format}
+                stats={config.stats}
+              />
             ))}
           </div>
         </div>
