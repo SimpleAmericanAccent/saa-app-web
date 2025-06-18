@@ -25,6 +25,9 @@
     "dev:u": "pnpm run dev:user",
     "build:u": "pnpm run build:user",
     "start:u": "pnpm run start:user",
+    "// ============= Mobile App ============= ": "",
+    "dev:mobile": "pnpm --filter frontend-mobile run start",
+    "dev:m": "pnpm run dev:mobile",
     "// ============= Shared ============= ": "",
     "lint": "eslint ."
   },
