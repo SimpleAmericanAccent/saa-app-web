@@ -859,11 +859,11 @@ Before each response, please double-check each included issue, target word list,
           </ScrollArea>
         </div>
         {/* Right column: Word Frequency List */}
-        <div className="flex-1">
+        {/* <div className="flex-1">
           <ScrollArea className="h-[calc(100vh-var(--navbar-height)-235px)]">
             <WordFrequencyList words={stats.wordFrequency} />
           </ScrollArea>
-        </div>
+        </div> */}
       </div>
     </div>
   );
