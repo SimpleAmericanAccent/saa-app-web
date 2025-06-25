@@ -20,11 +20,11 @@ const VOWEL_GROUPS = [
 ];
 
 const CONSONANT_GROUPS = [
-  ["P", "T", "K", "CH"],
-  ["B", "D", "G", "J"],
+  ["P", "T", "CH", "K"],
+  ["B", "D", "J", "G"],
   ["F", "TH", "S", "SH", "H"],
   ["V", "DH", "Z", "ZH"],
-  ["L", "R", "W", "Y"],
+  ["Y", "R", "W", "L"],
   ["M", "N", "NG", null, "misc"],
 ];
 
