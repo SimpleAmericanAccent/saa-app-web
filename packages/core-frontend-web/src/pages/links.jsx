@@ -9,6 +9,23 @@ export default function Links() {
         Call Replays & External Resource Links
       </h1>
 
+      <div className="text-center mb-8">
+        <a
+          href="https://simpleamericanaccent.com/mgcalendar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-lg font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+        >
+          📅 Upcoming Call Calendar
+        </a>
+      </div>
+
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-semibold text-muted-foreground">
+          Selected Replays of Past Calls
+        </h2>
+      </div>
+
       <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
         <div className="w-full max-w-[500px]">
           <h2 className="text-xl font-semibold mb-3 text-center">
