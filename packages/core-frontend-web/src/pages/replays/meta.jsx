@@ -2,66 +2,17 @@ import React from "react";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 
-export default function Links() {
+export default function MetaReplays() {
   return (
     <div className="p-4">
-      <h1 className="text-4xl font-bold text-center mb-8">
-        Call Replays & External Resource Links
-      </h1>
+      <h1 className="text-4xl font-bold text-center mb-8">Meta Call Replays</h1>
 
-      <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
-        <div className="w-full max-w-[500px]">
-          <h2 className="text-xl font-semibold mb-3 text-center">
-            Vowels Training - June 11, 2025
-          </h2>
-          <LiteYouTubeEmbed
-            id="oIL9WEaEUeI"
-            title="Vowels Training - June 11, 2025"
-          />
-        </div>
-
-        <div className="w-full max-w-[500px]">
-          <h2 className="text-xl font-semibold mb-3 text-center">
-            Vowels Training - January 8, 2025
-          </h2>
-          <LiteYouTubeEmbed
-            id="9mWuumukRXY"
-            title="Vowels Training - January 8, 2025"
-          />
-        </div>
-
-        <div className="w-full max-w-[500px]">
-          <h2 className="text-xl font-semibold mb-3 text-center">
-            Consonants Training - January 22, 2025
-          </h2>
-          <LiteYouTubeEmbed
-            id="lWbWnhOhVj0"
-            title="Consonants Training - January 22, 2025"
-          />
-        </div>
-
-        <div className="w-full max-w-[500px]">
-          <h2 className="text-xl font-semibold mb-3 text-center">
-            Flow Training - March 19, 2025
-          </h2>
-          <LiteYouTubeEmbed
-            id="CUBYOPIDDCs"
-            title="Flow Training - March 19, 2025"
-          />
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto mt-12">
-        <h2 className="text-2xl font-bold text-center mb-6">
-          Accent Training Exercises
-        </h2>
-        <div className="w-full aspect-video">
-          <iframe
-            src="https://www.loom.com/embed/4331ad9391924c219659dbbea578d9cd?sid=b5bd5864-0d86-4571-b88d-ce95b68c80e6"
-            title="Some of My Favorite Accent Training Exercises"
-            className="w-full h-full"
-          ></iframe>
-        </div>
+      <div className="w-[800px] aspect-video mx-auto">
+        <iframe
+          src="https://www.loom.com/embed/4331ad9391924c219659dbbea578d9cd?sid=b5bd5864-0d86-4571-b88d-ce95b68c80e6"
+          title="Some of My Favorite Accent Training Exercises"
+          className="w-full h-full"
+        ></iframe>
       </div>
 
       <div className="max-w-4xl mx-auto mt-8">
@@ -133,42 +84,8 @@ export default function Links() {
           </ul>
         </div>
       </div>
+
       <h1 className="text-2xl font-bold mt-10">External Resources</h1>
-      <p className="mt-4">Practice phrases & words</p>
-      <ul className="px-8 list-disc">
-        <li>
-          <a
-            href="https://ecampusontario.pressbooks.pub/lexicalsets/chapter/1-kit-lexical-set/#phrases"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Lexical Sets for Actors
-          </a>{" "}
-          - Practice phrases & words for <i>vowels</i>.
-        </li>
-        <li>
-          <a
-            href="https://www.home-speech-home.com/speech-therapy-word-lists.html#:~:text=Client%20Centered%20Products-,Articulation,-Each%20list%20of"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Home Speech Home
-          </a>{" "}
-          - Practice phrases & words for <i>consonants</i>.
-        </li>
-        <li>
-          <a
-            href="https://chatgpt.com/?q=Can%20you%20please%20generate%205%20to%2010%20practice%20phrases%20for%20me%20to%20help%20me%20train%20my%20American%20accent%3F%20I%27ll%20supply%20you%20some%20words%20that%20I%20want%20you%20to%20make%20sure%20to%20include%20in%20the%20phrases."
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ChatGPT
-          </a>{" "}
-          - Use ChatGPT to generate your own practice phrases. I've included a
-          sample prompt for you to get started - click to try it out
-          automatically. Try following up with "the this that these those"
-        </li>
-      </ul>
       <p className="mt-4">Search For Native Audio</p>
       <ul className="px-8 list-disc">
         <li>

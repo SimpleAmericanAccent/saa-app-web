@@ -2,11 +2,11 @@ import React from "react";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 
-export default function Links() {
+export default function VowelReplays() {
   return (
     <div className="p-4">
       <h1 className="text-4xl font-bold text-center mb-8">
-        Call Replays & External Resource Links
+        Vowel Call Replays
       </h1>
 
       <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
@@ -29,110 +29,8 @@ export default function Links() {
             title="Vowels Training - January 8, 2025"
           />
         </div>
-
-        <div className="w-full max-w-[500px]">
-          <h2 className="text-xl font-semibold mb-3 text-center">
-            Consonants Training - January 22, 2025
-          </h2>
-          <LiteYouTubeEmbed
-            id="lWbWnhOhVj0"
-            title="Consonants Training - January 22, 2025"
-          />
-        </div>
-
-        <div className="w-full max-w-[500px]">
-          <h2 className="text-xl font-semibold mb-3 text-center">
-            Flow Training - March 19, 2025
-          </h2>
-          <LiteYouTubeEmbed
-            id="CUBYOPIDDCs"
-            title="Flow Training - March 19, 2025"
-          />
-        </div>
       </div>
 
-      <div className="max-w-4xl mx-auto mt-12">
-        <h2 className="text-2xl font-bold text-center mb-6">
-          Accent Training Exercises
-        </h2>
-        <div className="w-full aspect-video">
-          <iframe
-            src="https://www.loom.com/embed/4331ad9391924c219659dbbea578d9cd?sid=b5bd5864-0d86-4571-b88d-ce95b68c80e6"
-            title="Some of My Favorite Accent Training Exercises"
-            className="w-full h-full"
-          ></iframe>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto mt-8">
-        <h3 className="text-xl font-semibold mb-4 text-center">
-          Video Chapters
-        </h3>
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-          <ul className="space-y-3">
-            <li className="flex items-start">
-              <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded mr-3 mt-0.5">
-                00:00
-              </span>
-              <span>Side-by-side comparison / contrastive listening</span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded mr-3 mt-0.5">
-                05:26
-              </span>
-              <span>Sort words into 2 columns / 2 categories</span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded mr-3 mt-0.5">
-                12:40
-              </span>
-              <span>
-                Go slow to go fast. (Slow it down, break it down, & rebuild it)
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded mr-3 mt-0.5">
-                19:06
-              </span>
-              <span>
-                Narrow focus to 1 phrase / 1 word / 1 sound and try to sound
-                100% like native / like original audio
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded mr-3 mt-0.5">
-                23:47
-              </span>
-              <span>
-                Do multiple passes through same audio, focusing on different
-                aspects/layers (including "mumbling to the music" of their
-                speech)
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded mr-3 mt-0.5">
-                31:52
-              </span>
-              <span>Improvise, situate, simulate</span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded mr-3 mt-0.5">
-                39:06
-              </span>
-              <span>Imitate random speech sounds / accents / languages</span>
-            </li>
-            <li className="flex items-start">
-              <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded mr-3 mt-0.5">
-                46:36
-              </span>
-              <span>
-                Record yourself & listen... & compare vs target accent (repeat
-                until you can't hear any differences)
-              </span>
-            </li>
-          </ul>
-        </div>
-      </div>
       <h1 className="text-2xl font-bold mt-10">External Resources</h1>
       <p className="mt-4">Practice phrases & words</p>
       <ul className="px-8 list-disc">
@@ -145,16 +43,6 @@ export default function Links() {
             Lexical Sets for Actors
           </a>{" "}
           - Practice phrases & words for <i>vowels</i>.
-        </li>
-        <li>
-          <a
-            href="https://www.home-speech-home.com/speech-therapy-word-lists.html#:~:text=Client%20Centered%20Products-,Articulation,-Each%20list%20of"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Home Speech Home
-          </a>{" "}
-          - Practice phrases & words for <i>consonants</i>.
         </li>
         <li>
           <a

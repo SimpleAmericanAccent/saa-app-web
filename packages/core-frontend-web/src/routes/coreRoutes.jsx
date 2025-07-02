@@ -11,6 +11,10 @@ import LexicalSets from "core-frontend-web/src/pages/onboarding/lexical-sets.jsx
 import LexicalSetsQuiz from "core-frontend-web/src/pages/onboarding/lexical-sets-quiz.jsx";
 import ModulePage from "core-frontend-web/src/pages/ModulePage.jsx";
 import UserDashboard from "core-frontend-web/src/pages/UserDashboard.jsx";
+import VowelReplays from "core-frontend-web/src/pages/replays/vowels.jsx";
+import ConsonantReplays from "core-frontend-web/src/pages/replays/consonants.jsx";
+import FlowReplays from "core-frontend-web/src/pages/replays/flow.jsx";
+import MetaReplays from "core-frontend-web/src/pages/replays/meta.jsx";
 
 const coreRoutes = (
   <>
@@ -28,6 +32,11 @@ const coreRoutes = (
       path="/spelling-pronunciation"
       element={<SpellingPronunciationPage />}
     />
+    <Route path="/replays/vowels" element={<VowelReplays />} />
+    <Route path="/replays/consonants" element={<ConsonantReplays />} />
+    <Route path="/replays/flow" element={<FlowReplays />} />
+    <Route path="/replays/meta" element={<MetaReplays />} />
+
     <Route path="/onboarding/lexical-sets" element={<LexicalSets />} />
     <Route path="/onboarding/lexical-sets-quiz" element={<LexicalSetsQuiz />} />
 

@@ -85,6 +85,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-force-graph-2d": "^1.27.1",
+    "react-lite-youtube-embed": "^2.5.1",
     "react-markdown": "^10.1.0",
     "react-native": "0.79.3",
     "react-native-gesture-handler": "~2.24.0",

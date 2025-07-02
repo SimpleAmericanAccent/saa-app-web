@@ -167,6 +167,9 @@ importers:
       react-force-graph-2d:
         specifier: ^1.27.1
         version: 1.27.1(react@19.0.0)
+      react-lite-youtube-embed:
+        specifier: ^2.5.1
+        version: 2.5.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.0.14)(react@19.0.0)
@@ -5829,6 +5832,12 @@ packages:
     engines: {node: '>=12'}
     peerDependencies:
       react: '>=16.13.1'
+
+  react-lite-youtube-embed@2.5.1:
+    resolution: {integrity: sha512-qH/0RumywPtzSx5SmWX/cUGvB3mSB7zMx3VrDe1UwyCEQ0SX785xnjRAodEel1pu3A3EhZyzSjwmLpfcaUN6KQ==}
+    peerDependencies:
+      react: '>=18.2.0'
+      react-dom: '>=18.2.0'
 
   react-markdown@10.1.0:
     resolution: {integrity: sha512-qKxVopLT/TyA6BX3Ue5NwabOsAzm0Q7kAPwq6L+wWDwisYs7R8vZ0nRXqq6rkueboxpkjvLGU9fWifiX/ZZFxQ==}
@@ -13970,6 +13979,11 @@ snapshots:
     dependencies:
       jerrypick: 1.1.2
       react: 19.0.0
+
+  react-lite-youtube-embed@2.5.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   react-markdown@10.1.0(@types/react@19.0.14)(react@19.0.0):
     dependencies:

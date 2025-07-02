@@ -43,7 +43,7 @@ function NavBar({ showSidebarTrigger = false }) {
 
   return (
     <nav className="min-h-[var(--navbar-height)] max-h-[var(--navbar-height)] sticky bg-background top-0 border-b z-50 px-4 flex items-center justify-between">
-      <NavigationMenu viewport={true}>
+      <NavigationMenu viewport={false}>
         <NavigationMenuList>
           <NavigationMenuItem>
             <Link
@@ -62,9 +62,8 @@ function NavBar({ showSidebarTrigger = false }) {
             </Link>
           </NavigationMenuItem>
 
-          {/* New Onboarding Dropdown */}
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Onboarding</NavigationMenuTrigger>
+            <NavigationMenuTrigger>Vowels</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-3 p-4 w-[400px] md:w-[500px] md:grid-cols-2">
                 <li>
@@ -99,72 +98,38 @@ function NavBar({ showSidebarTrigger = false }) {
                     </Link>
                   </NavigationMenuLink>
                 </li>
-                {/* More onboarding topics can be added here later */}
-                <li className="row-span-3 rounded-md border p-4">
-                  <div className="mb-2 mt-4 text-sm font-medium">
-                    Getting Started
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    These lessons will help you understand the fundamentals of
-                    English pronunciation. Start with Lexical Sets and progress
-                    through new topics as they become available.
-                  </p>
-                </li>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Learn</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[200px] gap-3 p-4">
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/learn/vowels"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          Vowels
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/learn/consonants"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          Consonants
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid gap-3 p-4 w-[400px] md:w-[500px] md:grid-cols-2">
                 <li>
                   <NavigationMenuLink asChild>
                     <Link
-                      to="/wls"
+                      to="/spelling-pronunciation"
                       className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                     >
                       <div className="text-sm font-medium leading-none">
-                        Word Lists & Spelling
+                        Spelling-Pronunciation Network
                       </div>
                       <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Browse phonetic spellings and word examples
+                        Interactive visualization of spelling-pronunciation
+                        relationships
                       </p>
                     </Link>
                   </NavigationMenuLink>
                 </li>
+                {/* <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/learn/vowels"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Vowels
+                      </div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Exploration of vowels
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li> */}
+
                 <li>
                   <NavigationMenuLink asChild>
                     <Link
@@ -176,6 +141,144 @@ function NavBar({ showSidebarTrigger = false }) {
                       </div>
                       <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                         Interactive vowel sound examples
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/vsynth"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Vowel Synthesizer
+                      </div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Generate and explore vowel sounds
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/replays/vowels"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Vowel Call Replays
+                      </div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Selected call recordings from our Fundamentals trainings
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Consonants</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-4 w-[400px] md:w-[500px] md:grid-cols-2">
+                {/* <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/learn/consonants"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Consonants
+                      </div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Exploration of consonants
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li> */}
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/replays/consonants"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Consonant Call Replays
+                      </div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Selected call recordings from our Fundamentals trainings
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Flow</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-4 w-[400px] md:w-[500px] md:grid-cols-2">
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/replays/flow"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Flow Call Replays
+                      </div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Selected call recordings from our Fundamentals trainings
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Meta</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-4 w-[400px] md:w-[500px] md:grid-cols-2">
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/replays/meta"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Meta Call Replays
+                      </div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Selected call recordings from our Fundamentals trainings
+                      </p>
+                    </Link>
+                  </NavigationMenuLink>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid gap-3 p-4 w-[400px] md:w-[500px] md:grid-cols-2">
+                <li>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/phonemes"
+                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    >
+                      <div className="text-sm font-medium leading-none">
+                        Phonemes
+                      </div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Interactive guide to English vowels and consonants
                       </p>
                     </Link>
                   </NavigationMenuLink>
@@ -195,69 +298,32 @@ function NavBar({ showSidebarTrigger = false }) {
                     </Link>
                   </NavigationMenuLink>
                 </li>
+
                 <li>
                   <NavigationMenuLink asChild>
                     <Link
-                      to="/vsynth"
+                      to="/wls"
                       className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                     >
                       <div className="text-sm font-medium leading-none">
-                        Vowel Synthesizer
+                        Word Lists & Spelling
                       </div>
                       <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Generate and explore vowel sounds
-                      </p>
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      to="/links"
-                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    >
-                      <div className="text-sm font-medium leading-none">
-                        Links
-                      </div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Selected call recordings and training materials
-                      </p>
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      to="/phonemes"
-                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    >
-                      <div className="text-sm font-medium leading-none">
-                        Phonemes
-                      </div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Interactive guide to English vowels and consonants
-                      </p>
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      to="/spelling-pronunciation"
-                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    >
-                      <div className="text-sm font-medium leading-none">
-                        Spelling-Pronunciation Network
-                      </div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Interactive visualization of spelling-pronunciation
-                        relationships
+                        Browse phonetic spellings and word examples
                       </p>
                     </Link>
                   </NavigationMenuLink>
                 </li>
               </ul>
             </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link
+              to="/links"
+              className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
+            >
+              Links
+            </Link>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
