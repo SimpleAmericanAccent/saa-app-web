@@ -2,10 +2,12 @@ import React from "react";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 
-export default function MetaReplays() {
+export default function SmartPracticeReplays() {
   return (
     <div className="p-4">
-      <h1 className="text-4xl font-bold text-center mb-8">Meta Call Replays</h1>
+      <h1 className="text-4xl font-bold text-center mb-8">
+        Smart Practice Call Replays
+      </h1>
 
       <div className="w-[800px] aspect-video mx-auto">
         <iframe

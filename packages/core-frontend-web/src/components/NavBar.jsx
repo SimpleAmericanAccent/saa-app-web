@@ -242,17 +242,17 @@ function NavBar({ showSidebarTrigger = false }) {
           </NavigationMenuItem>
 
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Meta</NavigationMenuTrigger>
+            <NavigationMenuTrigger>Smart Practice</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-3 p-4 w-[400px] md:w-[500px] md:grid-cols-2">
                 <li>
                   <NavigationMenuLink asChild>
                     <Link
-                      to="/replays/meta"
+                      to="/replays/smart-practice"
                       className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                     >
                       <div className="text-sm font-medium leading-none">
-                        Meta Call Replays
+                        Smart Practice Call Replays
                       </div>
                       <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                         Selected call recordings from our Fundamentals trainings
