@@ -45,14 +45,14 @@ function NavBar({ showSidebarTrigger = false }) {
     <nav className="min-h-[var(--navbar-height)] max-h-[var(--navbar-height)] sticky bg-background top-0 border-b z-50 px-4 flex items-center justify-between">
       <NavigationMenu viewport={false}>
         <NavigationMenuList>
-          <NavigationMenuItem>
+          {/* <NavigationMenuItem>
             <Link
               to="/dashboard"
               className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
             >
               Dashboard
             </Link>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
           <NavigationMenuItem>
             <Link
               to="/transcript"
