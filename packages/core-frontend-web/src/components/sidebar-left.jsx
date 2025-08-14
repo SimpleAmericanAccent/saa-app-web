@@ -45,6 +45,23 @@ import {
 import { ModeToggle } from "./mode-toggle";
 import useAuthStore from "core-frontend-web/src/stores/authStore";
 
+// Custom Link component that closes mobile sidebar on click
+function SidebarLink({ to, children, ...props }) {
+  const { setOpenMobile, isMobile } = useSidebar();
+
+  const handleClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
+  return (
+    <Link to={to} onClick={handleClick} {...props}>
+      {children}
+    </Link>
+  );
+}
+
 export function SidebarLeft() {
   const { logout } = useAuthStore();
   const { state } = useSidebar();
@@ -81,52 +98,52 @@ export function SidebarLeft() {
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/onboarding/lexical-sets">
+                          <SidebarLink to="/onboarding/lexical-sets">
                             <Brain className="h-4 w-4" />
                             {!isCollapsed && <span>Lexical Sets</span>}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/onboarding/lexical-sets-quiz">
+                          <SidebarLink to="/onboarding/lexical-sets-quiz">
                             <Target className="h-4 w-4" />
                             {!isCollapsed && <span>Lexical Sets Quiz</span>}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/spelling-pronunciation">
+                          <SidebarLink to="/spelling-pronunciation">
                             <Settings className="h-4 w-4" />
                             {!isCollapsed && (
                               <span>Spelling-Pronunciation Network</span>
                             )}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/vsounds">
+                          <SidebarLink to="/vsounds">
                             <Volume2 className="h-4 w-4" />
                             {!isCollapsed && <span>Vowel Sounds</span>}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/vsynth">
+                          <SidebarLink to="/vsynth">
                             <Play className="h-4 w-4" />
                             {!isCollapsed && <span>Vowel Synthesizer</span>}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/replays/vowels">
+                          <SidebarLink to="/replays/vowels">
                             <List className="h-4 w-4" />
                             {!isCollapsed && <span>Vowel Call Replays</span>}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>
@@ -153,12 +170,12 @@ export function SidebarLeft() {
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/replays/consonants">
+                          <SidebarLink to="/replays/consonants">
                             <List className="h-4 w-4" />
                             {!isCollapsed && (
                               <span>Consonant Call Replays</span>
                             )}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>
@@ -185,10 +202,10 @@ export function SidebarLeft() {
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/replays/flow">
+                          <SidebarLink to="/replays/flow">
                             <List className="h-4 w-4" />
                             {!isCollapsed && <span>Flow Call Replays</span>}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>
@@ -215,12 +232,12 @@ export function SidebarLeft() {
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/replays/smart-practice">
+                          <SidebarLink to="/replays/smart-practice">
                             <List className="h-4 w-4" />
                             {!isCollapsed && (
                               <span>Smart Practice Call Replays</span>
                             )}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>
@@ -237,30 +254,33 @@ export function SidebarLeft() {
               {/* Transcript Viewer */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/transcript" className="flex items-center gap-2">
+                  <SidebarLink
+                    to="/transcript"
+                    className="flex items-center gap-2"
+                  >
                     <FileText className="h-4 w-4" />
                     {!isCollapsed && <span>Transcript Viewer</span>}
-                  </Link>
+                  </SidebarLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
               {/* Links */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/links" className="flex items-center gap-2">
+                  <SidebarLink to="/links" className="flex items-center gap-2">
                     <LinkIcon className="h-4 w-4" />
                     {!isCollapsed && <span>Links</span>}
-                  </Link>
+                  </SidebarLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
               {/* Quiz */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/quiz" className="flex items-center gap-2">
+                  <SidebarLink to="/quiz" className="flex items-center gap-2">
                     <HelpCircle className="h-4 w-4" />
                     {!isCollapsed && <span>Quiz</span>}
-                  </Link>
+                  </SidebarLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
@@ -283,26 +303,26 @@ export function SidebarLeft() {
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/phonemes">
+                          <SidebarLink to="/phonemes">
                             <BookOpen className="h-4 w-4" />
                             {!isCollapsed && <span>Phonemes</span>}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/stats">
+                          <SidebarLink to="/stats">
                             <BarChart3 className="h-4 w-4" />
                             {!isCollapsed && <span>Group Accent Stats</span>}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link to="/wls">
+                          <SidebarLink to="/wls">
                             <List className="h-4 w-4" />
                             {!isCollapsed && <span>Word Lists & Spelling</span>}
-                          </Link>
+                          </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>
