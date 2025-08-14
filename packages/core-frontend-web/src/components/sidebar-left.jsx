@@ -18,6 +18,17 @@ import {
   Target,
   Library,
   HelpCircle,
+  Circle,
+  Disc,
+  Shield,
+  Grid,
+  CornerDownRight,
+  Waves,
+  Wind,
+  Repeat,
+  Sparkles,
+  Music,
+  Construction,
 } from "lucide-react";
 
 import {
@@ -87,7 +98,7 @@ export function SidebarLeft() {
                       tooltip="Vowels"
                       className="cursor-pointer"
                     >
-                      <Mic className="h-4 w-4" />
+                      <Waves className="h-4 w-4" />
                       {!isCollapsed && <span>Vowels</span>}
                       {!isCollapsed && (
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -159,7 +170,7 @@ export function SidebarLeft() {
                       tooltip="Consonants"
                       className="cursor-pointer"
                     >
-                      <Mic className="h-4 w-4" />
+                      <Construction className="h-4 w-4" />
                       {!isCollapsed && <span>Consonants</span>}
                       {!isCollapsed && (
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -191,7 +202,7 @@ export function SidebarLeft() {
                       tooltip="Flow"
                       className="cursor-pointer"
                     >
-                      <Zap className="h-4 w-4" />
+                      <Music className="h-4 w-4" />
                       {!isCollapsed && <span>Flow</span>}
                       {!isCollapsed && (
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -221,7 +232,7 @@ export function SidebarLeft() {
                       tooltip="Smart Practice"
                       className="cursor-pointer"
                     >
-                      <Target className="h-4 w-4" />
+                      <Brain className="h-4 w-4" />
                       {!isCollapsed && <span>Smart Practice</span>}
                       {!isCollapsed && (
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
