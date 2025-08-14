@@ -48,24 +48,32 @@ export function MobileNav() {
           <Menu className="h-5 w-5" />
         </SidebarTrigger>
         <button
-          onClick={handleBack}
-          disabled={!canGoBack}
+          onClick={canGoBack ? handleBack : undefined}
           className={`flex items-center justify-center h-8 w-8 p-1 rounded-md transition-colors ${
             canGoBack
-              ? "text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
-              : "text-muted-foreground cursor-not-allowed opacity-50"
+              ? "text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer active:bg-accent/80"
+              : "text-muted-foreground opacity-40 pointer-events-none"
           }`}
+          style={{
+            WebkitTapHighlightColor: canGoBack
+              ? "rgba(0,0,0,0.1)"
+              : "transparent",
+          }}
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <button
-          onClick={handleForward}
-          disabled={!canGoForward}
+          onClick={canGoForward ? handleForward : undefined}
           className={`flex items-center justify-center h-8 w-8 p-1 rounded-md transition-colors ${
             canGoForward
-              ? "text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
-              : "text-muted-foreground cursor-not-allowed opacity-50"
+              ? "text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer active:bg-accent/80"
+              : "text-muted-foreground opacity-40 pointer-events-none"
           }`}
+          style={{
+            WebkitTapHighlightColor: canGoForward
+              ? "rgba(0,0,0,0.1)"
+              : "transparent",
+          }}
         >
           <ArrowRight className="h-5 w-5" />
         </button>
