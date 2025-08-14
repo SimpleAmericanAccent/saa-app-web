@@ -34,7 +34,7 @@ const minimalPairsData = [
   ],
   [
     { word: "cease", alternates: [] },
-    { word: "sis", alternates: [] },
+    { word: "sis", alternates: ["cis"] },
   ],
   [
     { word: "cheap", alternates: [] },
@@ -660,8 +660,8 @@ export default function Quiz() {
         <CardContent className="space-y-6 relative">
           {/* Audio Player */}
           <div className="space-y-4">
-            <p className="text-sm font-medium text-center">
-              Listen to the word:
+            <p className="text-lg font-medium text-center">
+              Listen to the audio for the word:
             </p>
 
             {/* Hidden audio element */}
@@ -672,13 +672,13 @@ export default function Quiz() {
               className="hidden"
             />
 
-            <div className="flex gap-3 justify-center">
+            <div className="flex flex-col gap-2 justify-center">
               {/* US Native Audio */}
               <Button
                 onClick={() => playAudio("dictionary")}
                 disabled={isPlaying || isLoading || !audioUrls.dictionary}
                 variant="outline"
-                className={`flex items-center gap-2 px-4 py-2 ${
+                className={`flex items-center gap-2 px-4 py-2 cursor-pointer ${
                   !audioUrls.dictionary && !isLoading ? "opacity-50" : ""
                 }`}
                 title="Press '1' to play US Native audio"
@@ -694,7 +694,7 @@ export default function Quiz() {
                   ? "Loading..."
                   : isPlaying
                   ? "Playing..."
-                  : "US Native (1)"}
+                  : "US Native"}
               </Button>
 
               {/* Browser TTS */}
@@ -702,7 +702,7 @@ export default function Quiz() {
                 onClick={() => playAudio("browserTTS")}
                 disabled={isPlaying || isLoading || !audioUrls.browserTTS}
                 variant="outline"
-                className={`flex items-center gap-2 px-4 py-2 ${
+                className={`flex items-center gap-2 px-4 py-2 cursor-pointer ${
                   !audioUrls.browserTTS && !isLoading ? "opacity-50" : ""
                 }`}
                 title="Press '2' to play Browser TTS"
@@ -718,7 +718,7 @@ export default function Quiz() {
                   ? "Loading..."
                   : isPlaying
                   ? "Playing..."
-                  : "Browser TTS (2)"}
+                  : "Browser TTS"}
               </Button>
             </div>
 
@@ -741,13 +741,13 @@ export default function Quiz() {
           {/* Question */}
           <div className="text-center">
             <p className="text-lg font-medium">Which word did you hear?</p>
-            <p className="text-sm text-muted-foreground">
+            {/* <p className="text-sm text-muted-foreground">
               (FLEECE vowel: /iː/ vs KIT vowel: /ɪ/)
-            </p>
+            </p> */}
           </div>
 
           {/* Answer Options */}
-          <div className="space-y-3">
+          <div className="flex gap-3">
             {currentQuestion.options.map((option) => {
               // Get all possible correct answers (main word + alternates)
               const correctAnswers = [
@@ -786,7 +786,7 @@ export default function Quiz() {
                         : "destructive"
                       : "outline"
                   }
-                  className="w-full h-12 text-lg relative"
+                  className="flex-1 h-12 text-lg relative cursor-pointer"
                   disabled={isAnswered}
                 >
                   <div className="flex flex-col items-center">
