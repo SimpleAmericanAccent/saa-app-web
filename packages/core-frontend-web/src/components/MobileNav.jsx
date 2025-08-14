@@ -14,31 +14,30 @@ export function MobileNav() {
   const canGoBack =
     location.pathname !== "/" && location.pathname !== "/dashboard";
 
-  // Check if we can go forward (if there's forward history)
+  // Simple forward/back tracking
   const [canGoForward, setCanGoForward] = React.useState(false);
+  const [hasNavigatedBack, setHasNavigatedBack] = React.useState(false);
 
   React.useEffect(() => {
-    // Check if there's forward history available
-    const checkForwardHistory = () => {
-      // This is a simple check - in a real app you might want to track history more precisely
-      setCanGoForward(window.history.length > 1);
-    };
-
-    checkForwardHistory();
-    // Listen for popstate events to update forward availability
-    window.addEventListener("popstate", checkForwardHistory);
-    return () => window.removeEventListener("popstate", checkForwardHistory);
-  }, [location]);
+    // Reset forward availability when navigating to a new page
+    if (!hasNavigatedBack) {
+      setCanGoForward(false);
+    }
+  }, [location.pathname, hasNavigatedBack]);
 
   const handleBack = () => {
     if (canGoBack) {
       navigate(-1);
+      setHasNavigatedBack(true);
+      setCanGoForward(true);
     }
   };
 
   const handleForward = () => {
     if (canGoForward) {
       navigate(1);
+      setHasNavigatedBack(false);
+      setCanGoForward(false);
     }
   };
 
@@ -48,30 +47,27 @@ export function MobileNav() {
         <SidebarTrigger className="h-8 w-8 p-1">
           <Menu className="h-5 w-5" />
         </SidebarTrigger>
-        {canGoBack && (
-          <button
-            onClick={handleBack}
-            className="flex items-center justify-center h-8 w-8 p-1 text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-        )}
-        {canGoForward && (
-          <button
-            onClick={handleForward}
-            className="flex items-center justify-center h-8 w-8 p-1 text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors cursor-pointer"
-          >
-            <ArrowRight className="h-5 w-5" />
-          </button>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2">
         <button
-          onClick={logout}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition-colors cursor-pointer"
+          onClick={handleBack}
+          disabled={!canGoBack}
+          className={`flex items-center justify-center h-8 w-8 p-1 rounded-md transition-colors ${
+            canGoBack
+              ? "text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              : "text-muted-foreground cursor-not-allowed opacity-50"
+          }`}
         >
-          Log Out
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <button
+          onClick={handleForward}
+          disabled={!canGoForward}
+          className={`flex items-center justify-center h-8 w-8 p-1 rounded-md transition-colors ${
+            canGoForward
+              ? "text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              : "text-muted-foreground cursor-not-allowed opacity-50"
+          }`}
+        >
+          <ArrowRight className="h-5 w-5" />
         </button>
       </div>
     </nav>
