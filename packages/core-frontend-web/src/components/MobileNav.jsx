@@ -2,7 +2,7 @@ import * as React from "react";
 import { SidebarTrigger } from "core-frontend-web/src/components/ui/sidebar";
 import { ModeToggle } from "./mode-toggle";
 import useAuthStore from "core-frontend-web/src/stores/authStore";
-import { Menu, ArrowLeft, ArrowRight } from "lucide-react";
+import { Menu, ArrowLeft, ArrowRight, RefreshCw } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export function MobileNav() {
@@ -41,6 +41,10 @@ export function MobileNav() {
     }
   };
 
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <nav className="md:hidden min-h-[var(--navbar-height)] max-h-[var(--navbar-height)] fixed bg-background top-0 left-0 right-0 border-b z-50 px-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
@@ -76,6 +80,17 @@ export function MobileNav() {
           }}
         >
           <ArrowRight className="h-5 w-5" />
+        </button>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={handleRefresh}
+          className="flex items-center justify-center h-8 w-8 p-1 rounded-md transition-colors text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer active:bg-accent/80"
+          style={{
+            WebkitTapHighlightColor: "rgba(0,0,0,0.1)",
+          }}
+        >
+          <RefreshCw className="h-5 w-5" />
         </button>
       </div>
     </nav>
