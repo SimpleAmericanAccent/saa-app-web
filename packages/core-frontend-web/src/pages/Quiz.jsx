@@ -173,7 +173,7 @@ const minimalPairsData = [
     { word: "rich", alternates: [] },
   ],
   [
-    { word: "read", alternates: ["rid"] },
+    { word: "read", alternates: ["reed"] },
     { word: "rid", alternates: [] },
   ],
   [
@@ -357,13 +357,14 @@ export default function Quiz() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [playingSource, setPlayingSource] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [audioUrls, setAudioUrls] = useState({
     dictionary: null,
     browserTTS: null,
   });
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const audioRef = useRef(null);
 
@@ -457,7 +458,7 @@ export default function Quiz() {
         audioRef.current.currentTime = 0;
       }
       speechSynthesis.cancel();
-      setIsPlaying(false);
+      setPlayingSource(null);
       setHasAutoPlayed(false); // Reset auto-play flag
 
       setAudioUrls({ dictionary: null, browserTTS: null });
@@ -469,9 +470,10 @@ export default function Quiz() {
   useEffect(() => {
     if (
       (audioUrls.dictionary || audioUrls.browserTTS) &&
-      !isPlaying &&
+      !playingSource &&
       !isLoading &&
-      !hasAutoPlayed
+      !hasAutoPlayed &&
+      hasUserInteracted // Only autoplay after user has interacted
     ) {
       const timer = setTimeout(() => {
         if (audioUrls.dictionary) {
@@ -490,12 +492,21 @@ export default function Quiz() {
   }, [
     audioUrls.dictionary,
     audioUrls.browserTTS,
-    isPlaying,
+    playingSource,
     isLoading,
     hasAutoPlayed,
+    hasUserInteracted,
   ]);
 
+  // Handle begin quiz
+  const handleBeginQuiz = () => {
+    setHasUserInteracted(true);
+  };
+
   const playAudio = (source) => {
+    // Mark that user has interacted
+    setHasUserInteracted(true);
+
     // Stop any currently playing audio first
     if (audioRef.current) {
       audioRef.current.pause();
@@ -508,10 +519,10 @@ export default function Quiz() {
       const utterance = new SpeechSynthesisUtterance(currentQuestion.word);
       utterance.lang = "en-US";
       utterance.rate = 0.8; // Slightly slower for clarity
-      utterance.onend = () => setIsPlaying(false);
-      utterance.onerror = () => setIsPlaying(false);
+      utterance.onend = () => setPlayingSource(null);
+      utterance.onerror = () => setPlayingSource(null);
       speechSynthesis.speak(utterance);
-      setIsPlaying(true);
+      setPlayingSource(source);
     } else {
       // Use audio element for dictionary audio
       const url = audioUrls[source];
@@ -519,9 +530,9 @@ export default function Quiz() {
         audioRef.current.src = url;
         audioRef.current.play().catch((error) => {
           console.error("Error playing audio:", error);
-          setIsPlaying(false);
+          setPlayingSource(null);
         });
-        setIsPlaying(true);
+        setPlayingSource(source);
       }
     }
   };
@@ -533,12 +544,12 @@ export default function Quiz() {
 
       switch (event.key) {
         case "1":
-          if (audioUrls.dictionary && !isPlaying && !isLoading) {
+          if (audioUrls.dictionary && !playingSource && !isLoading) {
             playAudio("dictionary");
           }
           break;
         case "2":
-          if (audioUrls.browserTTS && !isPlaying && !isLoading) {
+          if (audioUrls.browserTTS && !playingSource && !isLoading) {
             playAudio("browserTTS");
           }
           break;
@@ -566,19 +577,22 @@ export default function Quiz() {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [isAnswered, audioUrls, isPlaying, isLoading, currentQuestion]);
+  }, [isAnswered, audioUrls, playingSource, isLoading, currentQuestion]);
 
   const handleAudioEnded = () => {
-    setIsPlaying(false);
+    setPlayingSource(null);
   };
 
   const handleAudioError = () => {
     console.error("Audio playback error");
-    setIsPlaying(false);
+    setPlayingSource(null);
   };
 
   const handleAnswerSelect = (answer) => {
     if (isAnswered) return;
+
+    // Mark that user has interacted
+    setHasUserInteracted(true);
 
     setSelectedAnswer(answer);
     setIsAnswered(true);
@@ -619,6 +633,8 @@ export default function Quiz() {
     setScore(0);
     setShowResults(false);
     setHasAutoPlayed(false);
+    setPlayingSource(null);
+    setHasUserInteracted(false); // Reset user interaction on restart
     setShuffledQuestions(shuffleArray(minimalPairsData));
   };
 
@@ -667,7 +683,20 @@ export default function Quiz() {
   }
 
   return (
-    <div className="h-[calc(100vh-var(--navbar-height))] bg-background flex items-center justify-center p-4 overflow-hidden">
+    <div className="h-[calc(100vh-var(--navbar-height))] bg-background flex items-center justify-center p-4 overflow-hidden relative">
+      {/* Begin Quiz Overlay */}
+      {!hasUserInteracted && (
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+          <Button
+            onClick={handleBeginQuiz}
+            className="text-lg py-6 px-8 cursor-pointer"
+            size="lg"
+          >
+            Begin Quiz
+          </Button>
+        </div>
+      )}
+
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-center">
@@ -709,7 +738,7 @@ export default function Quiz() {
               {/* US Native Audio */}
               <Button
                 onClick={() => playAudio("dictionary")}
-                disabled={isPlaying || isLoading || !audioUrls.dictionary}
+                disabled={playingSource || isLoading || !audioUrls.dictionary}
                 variant="outline"
                 className={`flex items-center gap-2 px-4 py-2 cursor-pointer ${
                   !audioUrls.dictionary && !isLoading ? "opacity-50" : ""
@@ -718,14 +747,14 @@ export default function Quiz() {
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
-                ) : isPlaying ? (
+                ) : playingSource === "dictionary" ? (
                   <Volume2 className="h-4 w-4 animate-pulse" />
                 ) : (
                   <Play className="h-4 w-4" />
                 )}
                 {isLoading
                   ? "Loading..."
-                  : isPlaying
+                  : playingSource === "dictionary"
                   ? "Playing..."
                   : "US Native"}
               </Button>
@@ -733,7 +762,7 @@ export default function Quiz() {
               {/* Browser TTS */}
               <Button
                 onClick={() => playAudio("browserTTS")}
-                disabled={isPlaying || isLoading || !audioUrls.browserTTS}
+                disabled={playingSource || isLoading || !audioUrls.browserTTS}
                 variant="outline"
                 className={`flex items-center gap-2 px-4 py-2 cursor-pointer ${
                   !audioUrls.browserTTS && !isLoading ? "opacity-50" : ""
@@ -742,14 +771,14 @@ export default function Quiz() {
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
-                ) : isPlaying ? (
+                ) : playingSource === "browserTTS" ? (
                   <Volume2 className="h-4 w-4 animate-pulse" />
                 ) : (
                   <Play className="h-4 w-4" />
                 )}
                 {isLoading
                   ? "Loading..."
-                  : isPlaying
+                  : playingSource === "browserTTS"
                   ? "Playing..."
                   : "Browser TTS"}
               </Button>
