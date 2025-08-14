@@ -322,7 +322,7 @@ export function SidebarLeft() {
                 className="flex items-center gap-2 px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md transition-colors cursor-pointer"
               >
                 <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Log Out</span>
+                <span className="">Log Out</span>
               </button>
             )}
           </div>
