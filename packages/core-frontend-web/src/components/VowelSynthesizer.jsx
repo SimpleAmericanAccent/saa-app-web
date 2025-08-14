@@ -341,15 +341,15 @@ export default function VowelSynthesizer() {
   }, [formants.F1, formants.F2]);
 
   return (
-    <div className="flex flex-col items-center max-w-[] mx-auto p-5">
-      <p className="text-muted-foreground text-sm mt-4 mb-6 text-center">
+    <div className="flex flex-col items-center max-w-[] mx-auto">
+      <p className="text-muted-foreground text-xs md:text-sm mt-2 md:mt-4 md:mb-4 mb-2 text-center hidden md:block">
         Click and drag anywhere on the vowel diagram below to explore different
         vowel sounds. The position of your cursor controls the first two formant
         frequencies (F1 and F2).
       </p>
-      <div className="flex flex-row gap-8 items-center">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
         <div
-          className="relative w-[600px] h-[400px] border-2 border-gray-800 cursor-crosshair"
+          className="relative w-[300px] h-[200px] md:w-[600px] md:h-[400px] border-2 border-gray-800 cursor-crosshair"
           ref={diagramRef}
         >
           {/* Add tick marks and values */}
@@ -373,7 +373,7 @@ export default function VowelSynthesizer() {
             onMouseMove={handleMouseMoveOnDiagram}
           >
             <div
-              className="absolute w-[700px] h-0 pointer-events-none border-solid border-transparent"
+              className="absolute w-[350px] md:w-[700px] h-0 pointer-events-none border-solid border-transparent"
               style={{
                 borderLeftWidth: "150px",
                 borderRightWidth: "250px",
@@ -417,14 +417,17 @@ export default function VowelSynthesizer() {
           </div>
         </div>
 
-        <div className="w-[600px] grid gap-6 p-4">
+        <div className="w-[300px] md:w-[600px] grid gap-6 md:p-4">
           <div className="space-y-4">
-            <div className="grid items-center gap-2">
-              <label htmlFor="pitch" className="text-sm font-medium">
+            <div className="md:grid flex items-center gap-2">
+              <label
+                htmlFor="pitch"
+                className="text-sm font-medium w-20 md:w-auto"
+              >
                 Pitch (Hz):
               </label>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-1 md:flex-none">
                 <Slider
                   id="pitch"
                   min={80}
@@ -454,16 +457,19 @@ export default function VowelSynthesizer() {
                       );
                     }
                   }}
-                  className="w-20"
+                  className="w-20 hidden md:block"
                 />
               </div>
             </div>
 
-            <div className="grid items-center gap-2">
-              <label htmlFor="volume" className="text-sm font-medium">
+            <div className="md:grid flex items-center gap-2">
+              <label
+                htmlFor="volume"
+                className="text-sm font-medium w-20 md:w-auto"
+              >
                 Volume:
               </label>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-1 md:flex-none">
                 <Slider
                   id="volume"
                   min={0}
@@ -484,16 +490,19 @@ export default function VowelSynthesizer() {
                   type="number"
                   value={volume}
                   onChange={(e) => setVolume(Number(e.target.value))}
-                  className="w-20"
+                  className="w-20 hidden md:block"
                 />
               </div>
             </div>
 
-            <div className="grid items-center gap-2">
-              <label htmlFor="F1" className="text-sm font-medium">
+            <div className="md:grid flex items-center gap-2">
+              <label
+                htmlFor="F1"
+                className="text-sm font-medium w-20 md:w-auto"
+              >
                 F1 (Hz):
               </label>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-1 md:flex-none">
                 <Slider
                   id="F1"
                   min={200}
@@ -507,16 +516,19 @@ export default function VowelSynthesizer() {
                   type="number"
                   value={formants.F1}
                   onChange={(e) => handleFormantChange("F1", e.target.value)}
-                  className="w-20"
+                  className="w-20 hidden md:block"
                 />
               </div>
             </div>
 
-            <div className="grid items-center gap-2">
-              <label htmlFor="F2" className="text-sm font-medium">
+            <div className="md:grid flex items-center gap-2">
+              <label
+                htmlFor="F2"
+                className="text-sm font-medium w-20 md:w-auto"
+              >
                 F2 (Hz):
               </label>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-1 md:flex-none">
                 <Slider
                   id="F2"
                   min={500}
@@ -530,16 +542,19 @@ export default function VowelSynthesizer() {
                   type="number"
                   value={formants.F2}
                   onChange={(e) => handleFormantChange("F2", e.target.value)}
-                  className="w-20"
+                  className="w-20 hidden md:block"
                 />
               </div>
             </div>
 
-            <div className="grid items-center gap-2">
-              <label htmlFor="F3" className="text-sm font-medium">
+            <div className="md:grid flex items-center gap-2">
+              <label
+                htmlFor="F3"
+                className="text-sm font-medium w-20 md:w-auto"
+              >
                 F3 (Hz):
               </label>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-1 md:flex-none">
                 <Slider
                   id="F3"
                   min={2000}
@@ -552,7 +567,7 @@ export default function VowelSynthesizer() {
                   type="number"
                   value={formants.F3}
                   onChange={(e) => handleFormantChange("F3", e.target.value)}
-                  className="w-20"
+                  className="w-20 hidden md:block"
                 />
               </div>
             </div>

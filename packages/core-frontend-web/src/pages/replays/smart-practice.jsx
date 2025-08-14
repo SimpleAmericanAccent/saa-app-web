@@ -9,7 +9,7 @@ export default function SmartPracticeReplays() {
         Smart Practice Call Replays
       </h1>
 
-      <div className="w-[800px] aspect-video mx-auto">
+      <div className="max-w-[800px] aspect-video mx-auto">
         <iframe
           src="https://www.loom.com/embed/4331ad9391924c219659dbbea578d9cd?sid=b5bd5864-0d86-4571-b88d-ce95b68c80e6"
           title="Some of My Favorite Accent Training Exercises"
