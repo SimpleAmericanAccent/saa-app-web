@@ -38,6 +38,11 @@ import {
   useSidebar,
 } from "core-frontend-web/src/components/ui/sidebar";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "core-frontend-web/src/components/ui/tooltip";
+import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -69,9 +74,6 @@ export function SidebarLeft() {
   const [openSubmenus, setOpenSubmenus] = React.useState(new Set());
   const [isInitialized, setIsInitialized] = React.useState(false);
 
-  // Debug current state
-  console.log("Current openSubmenus:", [...openSubmenus]);
-
   // Persist sidebar state in localStorage
   React.useEffect(() => {
     const savedState = localStorage.getItem("sidebar-state");
@@ -88,11 +90,9 @@ export function SidebarLeft() {
   // Load submenu states from localStorage on mount
   React.useEffect(() => {
     const savedSubmenus = localStorage.getItem("sidebar-submenus");
-    console.log("Loading saved submenus:", savedSubmenus);
     if (savedSubmenus) {
       try {
         const submenuArray = JSON.parse(savedSubmenus);
-        console.log("Parsed submenu array:", submenuArray);
         setOpenSubmenus(new Set(submenuArray));
       } catch (error) {
         console.warn("Failed to parse saved submenu states:", error);
@@ -104,7 +104,6 @@ export function SidebarLeft() {
   // Save submenu states to localStorage when they change (but not on initial load)
   React.useEffect(() => {
     if (isInitialized) {
-      console.log("Saving submenu states:", [...openSubmenus]);
       localStorage.setItem(
         "sidebar-submenus",
         JSON.stringify([...openSubmenus])
@@ -114,7 +113,6 @@ export function SidebarLeft() {
 
   // Handle submenu toggle
   const handleSubmenuToggle = (submenuId, isOpen) => {
-    console.log("Submenu toggle:", submenuId, isOpen);
     setOpenSubmenus((prev) => {
       const newSet = new Set(prev);
       if (isOpen) {
@@ -122,7 +120,6 @@ export function SidebarLeft() {
       } else {
         newSet.delete(submenuId);
       }
-      console.log("New submenu set:", [...newSet]);
       return newSet;
     });
   };
@@ -150,7 +147,14 @@ export function SidebarLeft() {
     <aside>
       <Sidebar side="left" collapsible="icon">
         <SidebarHeader className="h-8 border-b border-sidebar-border flex items-center justify-end p-0">
-          <SidebarTrigger className="h-8 w-full cursor-pointer" />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SidebarTrigger className="h-8 w-full cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent side="right" align="center">
+              {isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            </TooltipContent>
+          </Tooltip>
         </SidebarHeader>
 
         <SidebarContent>
