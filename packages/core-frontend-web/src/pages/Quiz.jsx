@@ -363,6 +363,7 @@ export default function Quiz() {
     dictionary: null,
     browserTTS: null,
   });
+  const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const audioRef = useRef(null);
 
@@ -457,11 +458,42 @@ export default function Quiz() {
       }
       speechSynthesis.cancel();
       setIsPlaying(false);
+      setHasAutoPlayed(false); // Reset auto-play flag
 
       setAudioUrls({ dictionary: null, browserTTS: null });
       getAudioForWord(currentQuestion.word);
     }
   }, [currentQuestionIndex, currentQuestion]);
+
+  // Auto-play audio when URLs are loaded
+  useEffect(() => {
+    if (
+      (audioUrls.dictionary || audioUrls.browserTTS) &&
+      !isPlaying &&
+      !isLoading &&
+      !hasAutoPlayed
+    ) {
+      const timer = setTimeout(() => {
+        if (audioUrls.dictionary) {
+          // Play US Native audio if available
+          setHasAutoPlayed(true); // Mark as auto-played
+          playAudio("dictionary");
+        } else if (audioUrls.browserTTS) {
+          // Fallback to Browser TTS if US Native not available
+          setHasAutoPlayed(true); // Mark as auto-played
+          playAudio("browserTTS");
+        }
+      }, 800); // Slight delay to ensure audio is ready
+
+      return () => clearTimeout(timer);
+    }
+  }, [
+    audioUrls.dictionary,
+    audioUrls.browserTTS,
+    isPlaying,
+    isLoading,
+    hasAutoPlayed,
+  ]);
 
   const playAudio = (source) => {
     // Stop any currently playing audio first
@@ -586,6 +618,7 @@ export default function Quiz() {
     setIsAnswered(false);
     setScore(0);
     setShowResults(false);
+    setHasAutoPlayed(false);
     setShuffledQuestions(shuffleArray(minimalPairsData));
   };
 
