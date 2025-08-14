@@ -1338,9 +1338,6 @@ export default function Quiz() {
                   <div className="text-xs text-muted-foreground">
                     {quizData.description}
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    {quizData.vowel1Symbol} vs {quizData.vowel2Symbol}
-                  </div>
                 </Button>
               ))}
               <Button
@@ -1463,18 +1460,12 @@ export default function Quiz() {
             {/* Question */}
             <div className="text-center">
               <p className="text-lg font-medium">Which word did you hear?</p>
-              {quizSettings.showVowelSymbols && (
-                <p className="text-sm text-muted-foreground">
-                  ({currentQuizData.vowel1Name} vowel:{" "}
-                  {currentQuizData.vowel1Symbol} vs {currentQuizData.vowel2Name}{" "}
-                  vowel: {currentQuizData.vowel2Symbol})
-                </p>
-              )}
+              {quizSettings.showVowelSymbols}
             </div>
 
             {/* Answer Options */}
             <div className="flex gap-3">
-              {currentQuestion.options.map((option) => {
+              {currentQuestion.options.map((option, index) => {
                 // Get all possible correct answers (main word + alternates)
                 const correctAnswers = [
                   currentQuestion.word,
@@ -1501,39 +1492,54 @@ export default function Quiz() {
                     : [];
                 }
 
+                // Determine which vowel symbol to show for this option
+                const vowelSymbol =
+                  index === 0
+                    ? `${currentQuizData.vowel1Name} ${currentQuizData.vowel1Symbol}`
+                    : `${currentQuizData.vowel2Name} ${currentQuizData.vowel2Symbol}`;
+
                 return (
-                  <Button
+                  <div
                     key={option}
-                    onClick={() => handleAnswerSelect(option)}
-                    variant={
-                      selectedAnswer === option
-                        ? isCorrect
-                          ? "default"
-                          : "destructive"
-                        : "outline"
-                    }
-                    className="flex-1 h-12 text-lg relative cursor-pointer"
-                    disabled={isAnswered}
+                    className="flex-1 flex flex-col items-center space-y-1"
                   >
-                    <div className="flex flex-col items-center">
-                      {optionAlternates.length > 0 ? (
-                        <span>
-                          {option} / {optionAlternates.join(" / ")}
-                        </span>
-                      ) : (
-                        <span>{option}</span>
-                      )}
-                    </div>
-                    {/* Reserve space for checkmarks to prevent layout shift */}
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 flex items-center justify-center">
-                      {isAnswered && selectedAnswer === option && (
-                        <span>{isCorrect ? "✅" : "❌"}</span>
-                      )}
-                      {isAnswered && isCorrect && selectedAnswer !== option && (
-                        <span>✅</span>
-                      )}
-                    </div>
-                  </Button>
+                    <Button
+                      onClick={() => handleAnswerSelect(option)}
+                      variant={
+                        selectedAnswer === option
+                          ? isCorrect
+                            ? "default"
+                            : "destructive"
+                          : "outline"
+                      }
+                      className="w-full h-12 text-lg relative cursor-pointer"
+                      disabled={isAnswered}
+                    >
+                      <div className="flex flex-col items-center">
+                        {optionAlternates.length > 0 ? (
+                          <span>
+                            {option} / {optionAlternates.join(" / ")}
+                          </span>
+                        ) : (
+                          <span>{option}</span>
+                        )}
+                      </div>
+                      {/* Reserve space for checkmarks to prevent layout shift */}
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 flex items-center justify-center">
+                        {isAnswered && selectedAnswer === option && (
+                          <span>{isCorrect ? "✅" : "❌"}</span>
+                        )}
+                        {isAnswered &&
+                          isCorrect &&
+                          selectedAnswer !== option && <span>✅</span>}
+                      </div>
+                    </Button>
+                    {quizSettings.showVowelSymbols && (
+                      <div className="text-xs text-muted-foreground">
+                        {vowelSymbol}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
