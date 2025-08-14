@@ -428,7 +428,7 @@ export default function Quiz() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="h-[calc(100vh-var(--navbar-height))] bg-background flex items-center justify-center p-4 overflow-hidden">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-center">
@@ -441,7 +441,7 @@ export default function Quiz() {
             </p>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6 relative min-h-[300px]">
+        <CardContent className="space-y-6 relative">
           {/* Audio Player */}
           <div className="space-y-4">
             <p className="text-sm font-medium text-center">
@@ -595,17 +595,6 @@ export default function Quiz() {
               );
             })}
           </div>
-
-          {/* Next Button - Positioned absolutely to prevent layout shift */}
-          {isAnswered && (
-            <div className="absolute bottom-[-10] left-0 right-0">
-              <Button onClick={handleNext} className="w-full">
-                {currentQuestionIndex < shuffledQuestions.length - 1
-                  ? "Next Question"
-                  : "See Results"}
-              </Button>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>
