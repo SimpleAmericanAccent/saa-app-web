@@ -9,116 +9,248 @@ import {
 import { Progress } from "core-frontend-web/src/components/ui/progress";
 import { Play, Volume2, Loader2 } from "lucide-react";
 
-// Minimal pairs data for FLEECE vs KIT vowels
+// Minimal pairs data for FLEECE vs KIT vowels (alphabetical by FLEECE word)
 const minimalPairsData = [
   // Basic minimal pairs with alternates
   [
-    { word: "beat", alternates: ["beet"] },
-    { word: "bit", alternates: [] },
+    { word: "beach", alternates: ["beech"] },
+    { word: "bitch", alternates: [] },
   ],
   [
-    { word: "seat", alternates: [] },
-    { word: "sit", alternates: [] },
-  ],
-  [
-    { word: "feel", alternates: [] },
-    { word: "fill", alternates: [] },
-  ],
-  [
-    { word: "meet", alternates: ["meat"] },
-    { word: "mitt", alternates: [] },
-  ],
-  [
-    { word: "deep", alternates: [] },
-    { word: "dip", alternates: [] },
-  ],
-  [
-    { word: "sleep", alternates: [] },
-    { word: "slip", alternates: [] },
-  ],
-  [
-    { word: "keep", alternates: [] },
-    { word: "kip", alternates: [] },
-  ],
-  [
-    { word: "sheep", alternates: [] },
-    { word: "ship", alternates: [] },
-  ],
-  [
-    { word: "cheap", alternates: [] },
-    { word: "chip", alternates: [] },
-  ],
-  [
-    { word: "leap", alternates: [] },
-    { word: "lip", alternates: [] },
-  ],
-  [
-    { word: "peek", alternates: ["peak", "pique"] },
-    { word: "pick", alternates: ["pic"] },
-  ],
-  [
-    { word: "seek", alternates: [] },
-    { word: "sick", alternates: [] },
-  ],
-  [
-    { word: "week", alternates: ["weak"] },
-    { word: "wick", alternates: [] },
-  ],
-  [
-    { word: "green", alternates: [] },
-    { word: "grin", alternates: [] },
-  ],
-  [
-    { word: "seen", alternates: ["scene"] },
-    { word: "sin", alternates: [] },
-  ],
-  [
-    { word: "teen", alternates: [] },
-    { word: "tin", alternates: [] },
+    { word: "bead", alternates: [] },
+    { word: "bid", alternates: [] },
   ],
   [
     { word: "bean", alternates: [] },
     { word: "bin", alternates: ["been"] },
   ],
   [
-    { word: "mean", alternates: [] },
-    { word: "min", alternates: [] },
+    { word: "bees", alternates: [] },
+    { word: "biz", alternates: [] },
   ],
   [
-    { word: "steal", alternates: ["steel"] },
-    { word: "still", alternates: [] },
+    { word: "beat", alternates: ["beet"] },
+    { word: "bit", alternates: [] },
   ],
   [
-    { word: "meal", alternates: [] },
-    { word: "mill", alternates: ["mil"] },
+    { word: "cease", alternates: [] },
+    { word: "sis", alternates: [] },
   ],
   [
-    { word: "heel", alternates: ["heal"] },
-    { word: "hill", alternates: [] },
+    { word: "cheap", alternates: [] },
+    { word: "chip", alternates: [] },
+  ],
+  [
+    { word: "cheek", alternates: [] },
+    { word: "chick", alternates: [] },
   ],
   [
     { word: "deal", alternates: [] },
     { word: "dill", alternates: [] },
   ],
   [
+    { word: "deep", alternates: [] },
+    { word: "dip", alternates: [] },
+  ],
+  [
+    { word: "deed", alternates: [] },
+    { word: "did", alternates: [] },
+  ],
+  [
+    { word: "each", alternates: [] },
+    { word: "itch", alternates: [] },
+  ],
+  [
+    { word: "eat", alternates: [] },
+    { word: "it", alternates: [] },
+  ],
+  [
+    { word: "ease", alternates: [] },
+    { word: "is", alternates: [] },
+  ],
+  [
+    { word: "eel", alternates: [] },
+    { word: "ill", alternates: [] },
+  ],
+  [
+    { word: "feet", alternates: ["feat"] },
+    { word: "fit", alternates: [] },
+  ],
+  [
+    { word: "feel", alternates: [] },
+    { word: "fill", alternates: ["Phil"] },
+  ],
+  [
+    { word: "fees", alternates: [] },
+    { word: "fizz", alternates: [] },
+  ],
+  [
+    { word: "green", alternates: [] },
+    { word: "grin", alternates: [] },
+  ],
+  [
+    { word: "heap", alternates: [] },
+    { word: "hip", alternates: [] },
+  ],
+  [
+    { word: "heat", alternates: [] },
+    { word: "hit", alternates: [] },
+  ],
+  [
+    { word: "heel", alternates: ["heal"] },
+    { word: "hill", alternates: [] },
+  ],
+  [
+    { word: "he's", alternates: [] },
+    { word: "his", alternates: [] },
+  ],
+  [
+    { word: "Jeep", alternates: [] },
+    { word: "gyp", alternates: [] },
+  ],
+  [
+    { word: "keep", alternates: [] },
+    { word: "kip", alternates: [] },
+  ],
+  [
+    { word: "keyed", alternates: [] },
+    { word: "kid", alternates: [] },
+  ],
+  [
+    { word: "leak", alternates: ["leek"] },
+    { word: "lick", alternates: [] },
+  ],
+  [
+    { word: "lead", alternates: [] },
+    { word: "lid", alternates: [] },
+  ],
+  [
+    { word: "leap", alternates: [] },
+    { word: "lip", alternates: [] },
+  ],
+  [
+    { word: "leave", alternates: [] },
+    { word: "live", alternates: [] },
+  ],
+  [
+    { word: "Lee's", alternates: [] },
+    { word: "Liz", alternates: [] },
+  ],
+  [
+    { word: "meal", alternates: [] },
+    { word: "mill", alternates: ["mil"] },
+  ],
+  [
+    { word: "mean", alternates: [] },
+    { word: "min", alternates: [] },
+  ],
+  [
+    { word: "meet", alternates: ["meat"] },
+    { word: "mitt", alternates: [] },
+  ],
+  [
+    { word: "peach", alternates: [] },
+    { word: "pitch", alternates: [] },
+  ],
+  [
+    { word: "peek", alternates: ["peak", "pique"] },
+    { word: "pick", alternates: ["pic"] },
+  ],
+  [
     { word: "peel", alternates: [] },
     { word: "pill", alternates: [] },
+  ],
+  [
+    { word: "Pete", alternates: ["peat"] },
+    { word: "pit", alternates: [] },
+  ],
+  [
+    { word: "piece", alternates: ["peace"] },
+    { word: "piss", alternates: [] },
+  ],
+  [
+    { word: "reach", alternates: [] },
+    { word: "rich", alternates: [] },
+  ],
+  [
+    { word: "read", alternates: ["rid"] },
+    { word: "rid", alternates: [] },
+  ],
+  [
+    { word: "reef", alternates: [] },
+    { word: "riff", alternates: [] },
+  ],
+  [
+    { word: "seal", alternates: [] },
+    { word: "sill", alternates: [] },
+  ],
+  [
+    { word: "seat", alternates: [] },
+    { word: "sit", alternates: [] },
+  ],
+  [
+    { word: "seek", alternates: [] },
+    { word: "sick", alternates: [] },
+  ],
+  [
+    { word: "seen", alternates: ["scene"] },
+    { word: "sin", alternates: [] },
+  ],
+  [
+    { word: "seem", alternates: ["seam"] },
+    { word: "sim", alternates: [] },
+  ],
+  [
+    { word: "sheet", alternates: [] },
+    { word: "shit", alternates: [] },
+  ],
+  [
+    { word: "sheen", alternates: [] },
+    { word: "shin", alternates: [] },
+  ],
+  [
+    { word: "sheep", alternates: [] },
+    { word: "ship", alternates: [] },
+  ],
+  [
+    { word: "sleep", alternates: [] },
+    { word: "slip", alternates: [] },
+  ],
+  [
+    { word: "steal", alternates: ["steel"] },
+    { word: "still", alternates: [] },
+  ],
+  [
+    { word: "team", alternates: [] },
+    { word: "Tim", alternates: [] },
+  ],
+  [
+    { word: "teen", alternates: [] },
+    { word: "tin", alternates: [] },
+  ],
+  [
+    { word: "wean", alternates: [] },
+    { word: "win", alternates: [] },
+  ],
+  [
+    { word: "week", alternates: ["weak"] },
+    { word: "wick", alternates: [] },
+  ],
+  [
+    { word: "weep", alternates: [] },
+    { word: "whip", alternates: [] },
+  ],
+  [
+    { word: "wheat", alternates: [] },
+    { word: "wit", alternates: [] },
   ],
   [
     { word: "wheel", alternates: [] },
     { word: "will", alternates: [] },
   ],
   [
-    { word: "steel", alternates: [] },
-    { word: "still", alternates: [] },
-  ],
-  [
-    { word: "beach", alternates: ["beech"] },
-    { word: "bitch", alternates: [] },
-  ],
-  [
-    { word: "reach", alternates: [] },
-    { word: "rich", alternates: [] },
+    { word: "wheeze", alternates: [] },
+    { word: "wiz", alternates: [] },
   ],
 ]
   .map(([fleeceData, kitData]) => [
@@ -137,6 +269,77 @@ const minimalPairsData = [
   ])
   .flat();
 
+// Word metadata dictionary
+const wordMetadata = {
+  // FLEECE words
+  beat: {
+    frequency: 0.0001, // Relative frequency (0-1)
+    syllables: 1,
+    offensive: false,
+    phonemes: ["b", "iː", "t"],
+    neighboringPhonemes: ["b", "t"],
+    difficulty: "easy",
+  },
+  meet: {
+    frequency: 0.0002,
+    syllables: 1,
+    offensive: false,
+    phonemes: ["m", "iː", "t"],
+    neighboringPhonemes: ["m", "t"],
+    difficulty: "easy",
+  },
+  feel: {
+    frequency: 0.0003,
+    syllables: 1,
+    offensive: false,
+    phonemes: ["f", "iː", "l"],
+    neighboringPhonemes: ["f", "l"],
+    difficulty: "easy",
+  },
+
+  // KIT words
+  bit: {
+    frequency: 0.0001,
+    syllables: 1,
+    offensive: false,
+    phonemes: ["b", "ɪ", "t"],
+    neighboringPhonemes: ["b", "t"],
+    difficulty: "easy",
+  },
+  mitt: {
+    frequency: 0.00005,
+    syllables: 1,
+    offensive: false,
+    phonemes: ["m", "ɪ", "t"],
+    neighboringPhonemes: ["m", "t"],
+    difficulty: "medium",
+  },
+  fill: {
+    frequency: 0.0002,
+    syllables: 1,
+    offensive: false,
+    phonemes: ["f", "ɪ", "l"],
+    neighboringPhonemes: ["f", "l"],
+    difficulty: "easy",
+  },
+
+  // Add more words as needed...
+};
+
+// Helper function to get word metadata
+const getWordMetadata = (word) => {
+  return (
+    wordMetadata[word] || {
+      frequency: 0,
+      syllables: 1,
+      offensive: false,
+      phonemes: [],
+      neighboringPhonemes: [],
+      difficulty: "unknown",
+    }
+  );
+};
+
 // Fisher-Yates shuffle algorithm
 const shuffleArray = (array) => {
   const shuffled = [...array];
@@ -149,6 +352,7 @@ const shuffleArray = (array) => {
 
 export default function Quiz() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
@@ -346,6 +550,7 @@ export default function Quiz() {
 
     setSelectedAnswer(answer);
     setIsAnswered(true);
+    setQuestionsAnswered(questionsAnswered + 1);
 
     // Check if answer matches the word or any of its alternates
     const isCorrect =
@@ -376,6 +581,7 @@ export default function Quiz() {
 
   const handleRestart = () => {
     setCurrentQuestionIndex(0);
+    setQuestionsAnswered(0);
     setSelectedAnswer(null);
     setIsAnswered(false);
     setScore(0);
@@ -436,9 +642,19 @@ export default function Quiz() {
           </CardTitle>
           <div className="space-y-2">
             <Progress value={progress} className="w-full" />
-            <p className="text-sm text-muted-foreground text-center">
-              Question {currentQuestionIndex + 1} of {shuffledQuestions.length}
-            </p>
+            <div className="flex justify-between items-center text-sm text-muted-foreground">
+              <span>
+                Question {currentQuestionIndex + 1} of{" "}
+                {shuffledQuestions.length}
+              </span>
+              <span className="text-right">
+                {score}/{questionsAnswered} (
+                {questionsAnswered > 0
+                  ? Math.round((score / questionsAnswered) * 100)
+                  : 0}
+                %)
+              </span>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6 relative">
