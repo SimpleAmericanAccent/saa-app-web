@@ -4,7 +4,6 @@ import {
   ChevronRight,
   LogOut,
   FileText,
-  Mic,
   Volume2,
   Play,
   Settings,
@@ -12,21 +11,11 @@ import {
   BarChart3,
   List,
   Link as LinkIcon,
-  GraduationCap,
   Brain,
-  Zap,
   Target,
   Library,
   HelpCircle,
-  Circle,
-  Disc,
-  Shield,
-  Grid,
-  CornerDownRight,
   Waves,
-  Wind,
-  Repeat,
-  Sparkles,
   Music,
   Construction,
 } from "lucide-react";
@@ -75,8 +64,87 @@ function SidebarLink({ to, children, ...props }) {
 
 export function SidebarLeft() {
   const { logout } = useAuthStore();
-  const { state } = useSidebar();
+  const { state, setOpen } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const [openSubmenus, setOpenSubmenus] = React.useState(new Set());
+  const [isInitialized, setIsInitialized] = React.useState(false);
+
+  // Debug current state
+  console.log("Current openSubmenus:", [...openSubmenus]);
+
+  // Persist sidebar state in localStorage
+  React.useEffect(() => {
+    const savedState = localStorage.getItem("sidebar-state");
+    if (savedState && savedState !== state) {
+      setOpen(savedState === "open");
+    }
+  }, []); // Only run on mount
+
+  // Save sidebar state to localStorage when it changes
+  React.useEffect(() => {
+    localStorage.setItem("sidebar-state", state);
+  }, [state]);
+
+  // Load submenu states from localStorage on mount
+  React.useEffect(() => {
+    const savedSubmenus = localStorage.getItem("sidebar-submenus");
+    console.log("Loading saved submenus:", savedSubmenus);
+    if (savedSubmenus) {
+      try {
+        const submenuArray = JSON.parse(savedSubmenus);
+        console.log("Parsed submenu array:", submenuArray);
+        setOpenSubmenus(new Set(submenuArray));
+      } catch (error) {
+        console.warn("Failed to parse saved submenu states:", error);
+      }
+    }
+    setIsInitialized(true);
+  }, []);
+
+  // Save submenu states to localStorage when they change (but not on initial load)
+  React.useEffect(() => {
+    if (isInitialized) {
+      console.log("Saving submenu states:", [...openSubmenus]);
+      localStorage.setItem(
+        "sidebar-submenus",
+        JSON.stringify([...openSubmenus])
+      );
+    }
+  }, [openSubmenus, isInitialized]);
+
+  // Handle submenu toggle
+  const handleSubmenuToggle = (submenuId, isOpen) => {
+    console.log("Submenu toggle:", submenuId, isOpen);
+    setOpenSubmenus((prev) => {
+      const newSet = new Set(prev);
+      if (isOpen) {
+        newSet.add(submenuId);
+      } else {
+        newSet.delete(submenuId);
+      }
+      console.log("New submenu set:", [...newSet]);
+      return newSet;
+    });
+  };
+
+  // Handle collapsed state interactions
+  const handleCollapsedIconClick = (
+    e,
+    hasSubmenu = false,
+    submenuId = null
+  ) => {
+    if (isCollapsed && hasSubmenu) {
+      // Prevent the default collapsible behavior
+      e.preventDefault();
+      e.stopPropagation();
+
+      setOpen(true);
+      // Open the submenu when expanding from collapsed state
+      if (submenuId) {
+        setOpenSubmenus((prev) => new Set([...prev, submenuId]));
+      }
+    }
+  };
 
   return (
     <aside>
@@ -91,12 +159,20 @@ export function SidebarLeft() {
             <SidebarGroupLabel>Fundamentals</SidebarGroupLabel>
             <SidebarMenu>
               {/* Vowels */}
-              <Collapsible asChild className="group/collapsible">
+              <Collapsible
+                asChild
+                className="group/collapsible"
+                open={openSubmenus.has("vowels")}
+                onOpenChange={(isOpen) => handleSubmenuToggle("vowels", isOpen)}
+              >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                       tooltip="Vowels"
                       className="cursor-pointer"
+                      onClick={(e) =>
+                        handleCollapsedIconClick(e, true, "vowels")
+                      }
                     >
                       <Waves className="h-4 w-4" />
                       {!isCollapsed && <span>Vowels</span>}
@@ -163,12 +239,22 @@ export function SidebarLeft() {
               </Collapsible>
 
               {/* Consonants */}
-              <Collapsible asChild className="group/collapsible">
+              <Collapsible
+                asChild
+                className="group/collapsible"
+                open={openSubmenus.has("consonants")}
+                onOpenChange={(isOpen) =>
+                  handleSubmenuToggle("consonants", isOpen)
+                }
+              >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                       tooltip="Consonants"
                       className="cursor-pointer"
+                      onClick={(e) =>
+                        handleCollapsedIconClick(e, true, "consonants")
+                      }
                     >
                       <Construction className="h-4 w-4" />
                       {!isCollapsed && <span>Consonants</span>}
@@ -195,12 +281,18 @@ export function SidebarLeft() {
               </Collapsible>
 
               {/* Flow */}
-              <Collapsible asChild className="group/collapsible">
+              <Collapsible
+                asChild
+                className="group/collapsible"
+                open={openSubmenus.has("flow")}
+                onOpenChange={(isOpen) => handleSubmenuToggle("flow", isOpen)}
+              >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                       tooltip="Flow"
                       className="cursor-pointer"
+                      onClick={(e) => handleCollapsedIconClick(e, true, "flow")}
                     >
                       <Music className="h-4 w-4" />
                       {!isCollapsed && <span>Flow</span>}
@@ -225,12 +317,22 @@ export function SidebarLeft() {
               </Collapsible>
 
               {/* Smart Practice */}
-              <Collapsible asChild className="group/collapsible">
+              <Collapsible
+                asChild
+                className="group/collapsible"
+                open={openSubmenus.has("smart-practice")}
+                onOpenChange={(isOpen) =>
+                  handleSubmenuToggle("smart-practice", isOpen)
+                }
+              >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                       tooltip="Smart Practice"
                       className="cursor-pointer"
+                      onClick={(e) =>
+                        handleCollapsedIconClick(e, true, "smart-practice")
+                      }
                     >
                       <Brain className="h-4 w-4" />
                       {!isCollapsed && <span>Smart Practice</span>}
@@ -262,46 +364,23 @@ export function SidebarLeft() {
           <SidebarGroup>
             <SidebarGroupLabel>Other</SidebarGroupLabel>
             <SidebarMenu>
-              {/* Transcript Viewer */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <SidebarLink
-                    to="/transcript"
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    {!isCollapsed && <span>Transcript Viewer</span>}
-                  </SidebarLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Links */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <SidebarLink to="/links" className="flex items-center gap-2">
-                    <LinkIcon className="h-4 w-4" />
-                    {!isCollapsed && <span>Links</span>}
-                  </SidebarLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Quiz */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <SidebarLink to="/quiz" className="flex items-center gap-2">
-                    <HelpCircle className="h-4 w-4" />
-                    {!isCollapsed && <span>Quiz</span>}
-                  </SidebarLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
               {/* Other Resources */}
-              <Collapsible asChild className="group/collapsible">
+              <Collapsible
+                asChild
+                className="group/collapsible"
+                open={openSubmenus.has("more-resources")}
+                onOpenChange={(isOpen) =>
+                  handleSubmenuToggle("more-resources", isOpen)
+                }
+              >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                       tooltip="More Resources"
                       className="cursor-pointer"
+                      onClick={(e) =>
+                        handleCollapsedIconClick(e, true, "more-resources")
+                      }
                     >
                       <Library className="h-4 w-4" />
                       {!isCollapsed && <span>More Resources</span>}
@@ -340,6 +419,39 @@ export function SidebarLeft() {
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
+
+              {/* Transcript Viewer */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Transcript Viewer">
+                  <SidebarLink
+                    to="/transcript"
+                    className="flex items-center gap-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    {!isCollapsed && <span>Transcript Viewer</span>}
+                  </SidebarLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Links */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Links">
+                  <SidebarLink to="/links" className="flex items-center gap-2">
+                    <LinkIcon className="h-4 w-4" />
+                    {!isCollapsed && <span>Links</span>}
+                  </SidebarLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Quiz */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Quiz">
+                  <SidebarLink to="/quiz" className="flex items-center gap-2">
+                    <HelpCircle className="h-4 w-4" />
+                    {!isCollapsed && <span>Quiz</span>}
+                  </SidebarLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
