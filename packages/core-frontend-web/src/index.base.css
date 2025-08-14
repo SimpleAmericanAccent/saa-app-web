@@ -45,7 +45,7 @@ a:hover {
 /* #endregion */
 :root {
   --navbar-height: 3rem;
-  --rsidebar-width: 38vw;
+  --lsidebar-width: 17.5rem;
   --radius: 0.625rem;
   --annotation: 210 40% 85%;
   --annotation-foreground: 210 50% 20%;

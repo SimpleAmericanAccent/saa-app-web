@@ -1,6 +1,6 @@
-import NavBar from "core-frontend-web/src/components/NavBar";
 import useAuthStore from "core-frontend-web/src/stores/authStore";
 import { useEffect } from "react";
+import { SidebarLeft } from "core-frontend-web/src/components/sidebar-left";
 
 export default function UserLayout({ children }) {
   const { isLoggedOut } = useAuthStore();
@@ -13,8 +13,10 @@ export default function UserLayout({ children }) {
 
   return (
     <div className="w-screen h-screen flex flex-col">
-      <NavBar />
-      <main className="w-full flex-1">{children}</main>
+      <div className="flex flex-1">
+        <SidebarLeft />
+        <main className="flex-1 transition-all duration-200">{children}</main>
+      </div>
     </div>
   );
 }

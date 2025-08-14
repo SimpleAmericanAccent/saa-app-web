@@ -300,7 +300,7 @@ export default function Transcript() {
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel id="transcript-main" order={0}>
         <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
-          <div className="px-4 bg-background">
+          <div className="p-2 bg-background">
             <header className="flex flex-col sticky top-0 z-0 bg-background">
               <div
                 className={cn(

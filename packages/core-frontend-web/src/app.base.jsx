@@ -1,8 +1,6 @@
 import { ThemeProvider } from "core-frontend-web/src/components/theme-provider";
 import { SidebarProvider } from "core-frontend-web/src/components/ui/sidebar";
-// import Layout1 from "core-frontend-web/src/components/layout1.jsx";
-import { Routes, Route } from "react-router-dom";
-import Transcript from "core-frontend-web/src/pages/transcript.jsx";
+import { Routes } from "react-router-dom";
 
 export default function AppBase({
   children,
@@ -12,7 +10,7 @@ export default function AppBase({
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <SidebarProvider
         style={{
-          "--sidebar-width": "var(--rsidebar-width)",
+          "--sidebar-width": "var(--lsidebar-width)",
         }}
       >
         <LayoutWrapper>
