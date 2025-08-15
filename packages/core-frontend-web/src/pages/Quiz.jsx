@@ -797,6 +797,17 @@ export default function Quiz() {
     try {
       // Check if browser supports speech synthesis
       if ("speechSynthesis" in window) {
+        // iOS Safari specific check
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari =
+          /Safari/.test(navigator.userAgent) &&
+          !/Chrome/.test(navigator.userAgent);
+
+        if (isIOS && isSafari) {
+          // For iOS Safari, we'll still return browserTTS but handle it differently
+          return "browserTTS";
+        }
+
         return "browserTTS"; // Special identifier for browser TTS
       }
       return null;
@@ -857,13 +868,19 @@ export default function Quiz() {
       quizSettings.autoPlayAudio // Only autoplay if setting is enabled
     ) {
       const timer = setTimeout(() => {
+        // Check if we're on iOS Safari
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari =
+          /Safari/.test(navigator.userAgent) &&
+          !/Chrome/.test(navigator.userAgent);
+
         if (audioUrls.dictionary) {
-          // Play US Native audio if available
-          setHasAutoPlayed(true); // Mark as auto-played
+          // Always prefer dictionary audio if available
+          setHasAutoPlayed(true);
           playAudio("dictionary");
-        } else if (audioUrls.browserTTS) {
-          // Fallback to Browser TTS if US Native not available
-          setHasAutoPlayed(true); // Mark as auto-played
+        } else if (audioUrls.browserTTS && !(isIOS && isSafari)) {
+          // Only auto-play browser TTS on non-iOS Safari
+          setHasAutoPlayed(true);
           playAudio("browserTTS");
         }
       }, 800); // Slight delay to ensure audio is ready
@@ -917,14 +934,64 @@ export default function Quiz() {
     speechSynthesis.cancel(); // Stop any TTS
 
     if (source === "browserTTS") {
-      // Use browser's built-in speech synthesis
-      const utterance = new SpeechSynthesisUtterance(currentQuestion.word);
-      utterance.lang = "en-US";
-      utterance.rate = 0.8; // Slightly slower for clarity
-      utterance.onend = () => setPlayingSource(null);
-      utterance.onerror = () => setPlayingSource(null);
-      speechSynthesis.speak(utterance);
-      setPlayingSource(source);
+      // iOS Safari specific handling
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari =
+        /Safari/.test(navigator.userAgent) &&
+        !/Chrome/.test(navigator.userAgent);
+
+      if (isIOS && isSafari) {
+        // iOS Safari requires special handling
+        try {
+          // Cancel any existing speech
+          speechSynthesis.cancel();
+
+          // Create utterance with iOS-friendly settings
+          const utterance = new SpeechSynthesisUtterance(currentQuestion.word);
+          utterance.lang = "en-US";
+          utterance.rate = 0.7; // Slightly slower for iOS
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0;
+
+          // iOS Safari specific event handlers
+          utterance.onstart = () => {
+            setPlayingSource(source);
+          };
+
+          utterance.onend = () => {
+            setPlayingSource(null);
+          };
+
+          utterance.onerror = (event) => {
+            console.error("iOS Safari TTS error:", event);
+            setPlayingSource(null);
+
+            // If it's a not-allowed error, show user-friendly message
+            if (event.error === "not-allowed") {
+              alert(
+                "Please enable speech synthesis in your iOS settings or try the US Native audio option."
+              );
+            }
+          };
+
+          // Add a small delay for iOS Safari
+          setTimeout(() => {
+            speechSynthesis.speak(utterance);
+          }, 100);
+        } catch (error) {
+          console.error("iOS Safari TTS setup error:", error);
+          setPlayingSource(null);
+        }
+      } else {
+        // Standard browser TTS for other browsers
+        const utterance = new SpeechSynthesisUtterance(currentQuestion.word);
+        utterance.lang = "en-US";
+        utterance.rate = 0.8; // Slightly slower for clarity
+        utterance.onend = () => setPlayingSource(null);
+        utterance.onerror = () => setPlayingSource(null);
+        speechSynthesis.speak(utterance);
+        setPlayingSource(source);
+      }
     } else {
       // Use audio element for dictionary audio
       const url = audioUrls[source];
@@ -1424,7 +1491,13 @@ export default function Quiz() {
                   className={`flex items-center gap-2 px-4 py-2 cursor-pointer ${
                     !audioUrls.browserTTS && !isLoading ? "opacity-50" : ""
                   }`}
-                  title="Press '2' to play Browser TTS"
+                  title={
+                    /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+                    /Safari/.test(navigator.userAgent) &&
+                    !/Chrome/.test(navigator.userAgent)
+                      ? "iOS Safari: May require settings permission"
+                      : "Press '2' to play Browser TTS"
+                  }
                 >
                   {isLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -1437,6 +1510,10 @@ export default function Quiz() {
                     ? "Loading..."
                     : playingSource === "browserTTS"
                     ? "Playing..."
+                    : /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+                      /Safari/.test(navigator.userAgent) &&
+                      !/Chrome/.test(navigator.userAgent)
+                    ? "iOS TTS"
                     : "Browser TTS"}
                 </Button>
               </div>
