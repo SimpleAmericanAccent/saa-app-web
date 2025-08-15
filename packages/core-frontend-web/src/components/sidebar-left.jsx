@@ -215,16 +215,7 @@ export function SidebarLeft() {
                           </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
-                      {!isMobile && (
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton asChild>
-                            <SidebarLink to="/onboarding/lexical-sets-quiz">
-                              <Target className="h-4 w-4" />
-                              {!isCollapsed && <span>Lexical Sets Quiz</span>}
-                            </SidebarLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      )}
+
                       {!isMobile && (
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton asChild>
@@ -237,16 +228,7 @@ export function SidebarLeft() {
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       )}
-                      {!isMobile && (
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton asChild>
-                            <SidebarLink to="/vsounds">
-                              <Volume2 className="h-4 w-4" />
-                              {!isCollapsed && <span>Vowel Sounds</span>}
-                            </SidebarLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      )}
+
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
                           <SidebarLink to="/vsynth">

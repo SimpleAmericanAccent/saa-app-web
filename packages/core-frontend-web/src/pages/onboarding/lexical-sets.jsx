@@ -16,8 +16,7 @@ Vowels in English are confusing and inconsistent.
 - "Sick" has the vowel letter i.
 - "Women" has o and e.
 - But they all share the same vowel sound.
-
-**Nossa! 😱**  
+ 
 This kind of thing happens a little in Portuguese (like ela vs ele, or ovo vs ovos), but it's way more consistent and predictable.
 In English? Things get messy fast.
 
@@ -25,31 +24,35 @@ In English? Things get messy fast.
 Lexical sets help us start to organize this chaos.
 
 Instead of focusing on how a word is spelled, we focus on how it sounds.
-Lexical sets group together words that share the same vowel sound — no matter how they're spelled.
+Lexical sets group together words that share the same vowel sound - no matter how they're spelled.
 
-> This is how babies learn language — they start with the sounds, not the spelling.
-> But adult learners often do the opposite — they rely too much on letters.
+This is how babies learn language - they start with the sounds, not the spelling.
+But adult learners often do the opposite - they rely too much on letters.
 
 Let's flip that. Let's learn more like babies.
 Try to "forget" the spelling for a moment, and really listen to the sounds.
 Spelling might give you clues… but learning to identify vowels by sound is a key skill in mastering an American accent.
 
 ## 🗂️ How Lexical Sets Work
-Let's take a word like sick.
+Let's take a word like "sick."
 We can group all the other words with the same vowel sound into the same category:
 
-### 🟠 Group 1:
-\`sick, women, it, did, if, this, myth, business, fish, build, building…\`
+### 🟠 Group 1 (KIT)
+\`\`\`js
+sick, women, it, did, if, this, myth, business, fish, build, building…
+\`\`\`
 
-Then we take a word like seek, and build another group:
+Then we take a word like "seek," and build another group:
 
-### 🔵 Group 2:
-\`seek, he, me, she, we, sea, see, seize, ski, piece…\`
+### 🔵 Group 2 (FLEECE)
+\`\`\`js
+seek, he, me, she, we, sea, see, seize, ski, piece…
+\`\`\`
 
-Each of these groups is a lexical set — a collection of words that share the same vowel sound, regardless of how they're spelled.
+Each of these groups is a lexical set - a collection of words that share the same vowel sound, regardless of how they're spelled.
 
 ## 🏷️ Naming the Sets: Keywords
-To make these vowel categories easier to talk about, linguists assign each one a keyword — a single word that clearly contains the vowel sound of that group.
+To make these vowel categories easier to talk about, linguists assign each one a keyword - a single word that clearly contains the vowel sound of that group.
 
 This system was created by the British phonetician John C. Wells, and his list of keywords is still widely used in linguistics and pronunciation teaching today.
 
@@ -61,14 +64,23 @@ So:
 Each keyword represents the vowel sound in its set.
 So the word kit contains the KIT vowel sound, and fleece contains the FLEECE vowel sound.
 
-> 👉 Why use "KIT" and "FLEECE" instead of simpler words? It's actually a clever choice. Consider if we had used "bit" and "beat" instead. These words are too similar — many English learners have trouble telling them apart! (For instance, a Brazilian student might think they're saying "bit" when they're actually saying "beat".) This can lead to lots of confusion if we're trying to verbally tell someone which lexical set we're referring to. That's why we use keywords like "KIT" and "FLEECE" that sound completely different from each other. 
+> 👉 Why use "KIT" and "FLEECE" instead of simpler words? 
+>
+> Consider if we had used "bit" and "beat" instead. 
+> These words are similar enough that it can be confusing if we're trying to verbally tell someone which lexical set we're referring to...
+> ... especially if we're talking with someone with a different accent where the vowel sounds are different.
+>
+> That's why we use keywords like "KIT" and "FLEECE" that sound completely different from each other.
+> Even when communicating with people with different accents, the keywords are different enough that it's clear which lexical set we're referring to. 
 
 ## ✅ Why This Matters
 If you want to master the American accent, you can't trust spelling alone.
 
 You need to train your ear to recognize the actual sounds — and lexical sets (with their helpful keywords) give you a reliable, consistent way to do that.
 
-Check out the other pages in the Resources section to see lexical sets in action.
+Speaking of which, I created a quiz to help you test & train your ability to hear the differences between lexical sets.
+
+Check it out [here.](/quiz)
 `;
 
 export default function LexicalSets() {
