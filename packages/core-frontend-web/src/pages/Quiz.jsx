@@ -1315,7 +1315,7 @@ export default function Quiz() {
     <div className="h-[calc(100vh-var(--navbar-height))] bg-background flex items-center justify-center p-4 overflow-hidden relative">
       {/* Settings Step */}
       {currentStep === "settings" && (
-        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle className="text-lg text-center">
