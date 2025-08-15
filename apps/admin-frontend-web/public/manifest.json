@@ -1,6 +1,7 @@
 {
-  "name": "Simple American Accent App",
-  "short_name": "SAA",
+  "name": "Simple American Accent App - Admin",
+  "short_name": "SAA Admin",
+  "description": "Admin panel for Simple American Accent App",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

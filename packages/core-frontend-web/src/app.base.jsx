@@ -1,6 +1,7 @@
 import { ThemeProvider } from "core-frontend-web/src/components/theme-provider";
 import { SidebarProvider } from "core-frontend-web/src/components/ui/sidebar";
 import { Routes } from "react-router-dom";
+import { PWAInstallPrompt } from "core-frontend-web/src/components/PWAInstallPrompt";
 
 export default function AppBase({
   children,
@@ -16,6 +17,7 @@ export default function AppBase({
         <LayoutWrapper>
           <Routes>{children}</Routes>
         </LayoutWrapper>
+        <PWAInstallPrompt />
       </SidebarProvider>
     </ThemeProvider>
   );

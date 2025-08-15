@@ -1,6 +1,7 @@
 {
   "name": "Simple American Accent App",
   "short_name": "SAA",
+  "description": "American accent training for Brazilians with advanced English",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
