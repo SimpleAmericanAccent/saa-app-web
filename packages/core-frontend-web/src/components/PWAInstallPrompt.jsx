@@ -39,6 +39,11 @@ export function PWAInstallPrompt() {
     setIsStandalone(standalone);
     setIsIOS(ios);
 
+    // Check if we've already shown the prompt recently
+    const lastShown = localStorage.getItem("pwa-prompt-last-shown");
+    const hasShownRecently =
+      lastShown && Date.now() - parseInt(lastShown) < 7 * 24 * 60 * 60 * 1000; // 7 days
+
     // Debug logging
     console.log("PWA Install Prompt Debug:", {
       userAgent: navigator.userAgent,
@@ -47,11 +52,6 @@ export function PWAInstallPrompt() {
       hasShownRecently,
       showPrompt: false,
     });
-
-    // Check if we've already shown the prompt recently
-    const lastShown = localStorage.getItem("pwa-prompt-last-shown");
-    const hasShownRecently =
-      lastShown && Date.now() - parseInt(lastShown) < 7 * 24 * 60 * 60 * 1000; // 7 days
 
     if (hasShownRecently) {
       setHasShownPrompt(true);
