@@ -1578,7 +1578,7 @@ export default function Quiz() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-center">
-              {currentQuizData.title}
+              Quiz: {currentQuizData.name}
             </CardTitle>
             <div className="space-y-2">
               <Progress value={progress} className="w-full" />
