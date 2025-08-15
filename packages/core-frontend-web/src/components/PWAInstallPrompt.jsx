@@ -10,6 +10,8 @@ import { X, Download, Share, Square } from "lucide-react";
 
 export function PWAInstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
@@ -98,12 +100,22 @@ export function PWAInstallPrompt() {
       setDeferredPrompt(null);
     }
 
-    setShowPrompt(false);
+    setIsClosing(true);
+    setIsOpening(false);
+    setTimeout(() => {
+      setShowPrompt(false);
+      setIsClosing(false);
+    }, 500);
     localStorage.setItem("pwa-prompt-last-shown", Date.now().toString());
   };
 
   const handleDismiss = () => {
-    setShowPrompt(false);
+    setIsClosing(true);
+    setIsOpening(false);
+    setTimeout(() => {
+      setShowPrompt(false);
+      setIsClosing(false);
+    }, 500);
     localStorage.setItem("pwa-prompt-last-shown", Date.now().toString());
   };
 
@@ -115,7 +127,12 @@ export function PWAInstallPrompt() {
 
   const handleIOSInstall = () => {
     // For iOS, we show instructions
-    setShowPrompt(false);
+    setIsClosing(true);
+    setIsOpening(false);
+    setTimeout(() => {
+      setShowPrompt(false);
+      setIsClosing(false);
+    }, 500);
     localStorage.setItem("pwa-prompt-last-shown", Date.now().toString());
   };
 
@@ -132,8 +149,14 @@ export function PWAInstallPrompt() {
     return (
       <div className="fixed bottom-4 right-4 z-50">
         <Button
-          onClick={() => setShowPrompt(true)}
-          className="w-8 h-8 rounded-full shadow-lg bg-blue-500 hover:bg-blue-600 text-white opacity-70"
+          onClick={() => {
+            setShowPrompt(true);
+            // Delay the opening animation to allow initial render
+            setTimeout(() => setIsOpening(true), 10);
+          }}
+          className={`w-8 h-8 rounded-full shadow-lg bg-blue-500 hover:bg-blue-600 text-white transition-all duration-500 ease-in-out hover:scale-110 ${
+            isClosing ? "opacity-0 scale-0" : "opacity-70 scale-100"
+          }`}
           size="sm"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -150,7 +173,15 @@ export function PWAInstallPrompt() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
-      <Card className="shadow-lg border-2 gap-2 py-4">
+      <Card
+        className={`shadow-lg border-2 gap-2 py-4 transition-all duration-500 ease-in-out ${
+          isClosing
+            ? "opacity-0 scale-0 origin-bottom-right"
+            : isOpening
+            ? "opacity-100 scale-100 origin-bottom-right"
+            : "opacity-0 scale-0 origin-bottom-right"
+        }`}
+      >
         <CardHeader className="pb-0">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-semibold">Install App</CardTitle>
