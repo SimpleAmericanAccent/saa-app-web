@@ -762,6 +762,7 @@ export default function Quiz() {
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const [currentStep, setCurrentStep] = useState("quizType"); // "quizType", "settings", "quiz"
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const audioRef = useRef(null);
 
   // Save result when quiz is completed
@@ -1579,8 +1580,58 @@ export default function Quiz() {
                     <span className="text-muted-foreground">&lt;60%</span>
                   </div>
                 </div>
+                <div className="flex justify-center">
+                  <Button
+                    onClick={() => setShowClearConfirm(true)}
+                    variant="outline"
+                    className="w-50 text-xs text-muted-foreground hover:text-destructive cursor-pointer"
+                    size="sm"
+                  >
+                    Clear All Results
+                  </Button>
+                </div>
               </div>
             )}
+          </Card>
+        </div>
+      )}
+
+      {/* Clear Results Confirmation Dialog */}
+      {showClearConfirm && (
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20 p-4">
+          <Card className="w-full max-w-sm">
+            <CardHeader>
+              <CardTitle className="text-center text-base">
+                Clear All Results?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground text-center">
+                This will delete your quiz results and cannot be undone.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setShowClearConfirm(false)}
+                  variant="outline"
+                  className="flex-1 cursor-pointer"
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    setPreviousResults({});
+                    localStorage.removeItem("quizResults");
+                    setShowClearConfirm(false);
+                  }}
+                  variant="destructive"
+                  className="flex-1 cursor-pointer"
+                  size="sm"
+                >
+                  Clear All
+                </Button>
+              </div>
+            </CardContent>
           </Card>
         </div>
       )}
