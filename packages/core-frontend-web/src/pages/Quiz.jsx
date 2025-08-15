@@ -899,7 +899,8 @@ export default function Quiz() {
       !isLoading &&
       !hasAutoPlayed &&
       hasUserInteracted && // Only autoplay after user has interacted
-      quizSettings.autoPlayAudio // Only autoplay if setting is enabled
+      quizSettings.autoPlayAudio && // Only autoplay if setting is enabled
+      currentQuestion // Only autoplay if we have a current question
     ) {
       const timer = setTimeout(() => {
         // Check if we're on iOS Safari
@@ -956,6 +957,12 @@ export default function Quiz() {
   };
 
   const playAudio = (source) => {
+    // Safety check - don't play audio if no current question
+    if (!currentQuestion) {
+      console.warn("Cannot play audio: no current question");
+      return;
+    }
+
     // Mark that user has interacted
     setHasUserInteracted(true);
 
@@ -1131,7 +1138,6 @@ export default function Quiz() {
   };
 
   const handleRestart = () => {
-    setSelectedQuizType(null);
     setCurrentQuestionIndex(0);
     setQuestionsAnswered(0);
     setSelectedAnswer(null);
@@ -1294,8 +1300,12 @@ export default function Quiz() {
     );
   }
 
-  // Don't render until questions are shuffled
-  if (hasUserInteracted && shuffledQuestions.length === 0) {
+  // Don't render until questions are shuffled (only for quiz step)
+  if (
+    currentStep === "quiz" &&
+    hasUserInteracted &&
+    shuffledQuestions.length === 0
+  ) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -1389,6 +1399,12 @@ export default function Quiz() {
               {/* Start Quiz Button */}
               <Button
                 onClick={() => {
+                  // Force regenerate questions by temporarily clearing and resetting selectedQuizType
+                  const currentQuizType = selectedQuizType;
+                  setSelectedQuizType(null);
+                  setTimeout(() => {
+                    setSelectedQuizType(currentQuizType);
+                  }, 0);
                   handleSettingsComplete();
                   setHasUserInteracted(true);
                 }}
@@ -1739,7 +1755,11 @@ export default function Quiz() {
                             : "destructive"
                           : "outline"
                       }
-                      className="w-full h-12 text-lg relative cursor-pointer"
+                      className={`w-full h-12 text-lg relative cursor-pointer ${
+                        selectedAnswer === option && isCorrect
+                          ? "bg-green-600 hover:bg-green-700 text-white border-green-600"
+                          : ""
+                      }`}
                       disabled={isAnswered}
                     >
                       <div className="flex flex-col items-center">
@@ -1750,15 +1770,6 @@ export default function Quiz() {
                         ) : (
                           <span>{option}</span>
                         )}
-                      </div>
-                      {/* Reserve space for checkmarks to prevent layout shift */}
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 flex items-center justify-center">
-                        {isAnswered && selectedAnswer === option && (
-                          <span>{isCorrect ? "✅" : "❌"}</span>
-                        )}
-                        {isAnswered &&
-                          isCorrect &&
-                          selectedAnswer !== option && <span>✅</span>}
                       </div>
                     </Button>
                     {quizSettings.showVowelSymbols && (
