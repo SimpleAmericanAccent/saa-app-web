@@ -2,11 +2,9 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import {
   ChevronRight,
-  LogOut,
   FileText,
   Volume2,
   Play,
-  Settings,
   BookOpen,
   BarChart3,
   List,
@@ -47,9 +45,18 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "core-frontend-web/src/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "core-frontend-web/src/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
 import useAuthStore from "core-frontend-web/src/stores/authStore";
 import { useIsMobile } from "core-frontend-web/src/hooks/use-mobile";
+import { User, LogOut, Settings } from "lucide-react";
 
 // Custom Link component that closes mobile sidebar on click
 function SidebarLink({ to, children, ...props }) {
@@ -69,12 +76,19 @@ function SidebarLink({ to, children, ...props }) {
 }
 
 export function SidebarLeft() {
-  const { logout } = useAuthStore();
+  const { logout, user, fetchUserProfile } = useAuthStore();
   const { state, setOpen } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [openSubmenus, setOpenSubmenus] = React.useState(new Set());
   const [isInitialized, setIsInitialized] = React.useState(false);
   const isMobile = useIsMobile();
+
+  // Fetch user profile if not already loaded
+  React.useEffect(() => {
+    if (!user) {
+      fetchUserProfile();
+    }
+  }, [user, fetchUserProfile]);
 
   // Persist sidebar state in localStorage
   React.useEffect(() => {
@@ -149,14 +163,18 @@ export function SidebarLeft() {
     <aside>
       <Sidebar side="left" collapsible="icon">
         <SidebarHeader className="h-8 border-b border-sidebar-border flex items-center justify-end p-0">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <SidebarTrigger className="h-8 w-full cursor-pointer" />
-            </TooltipTrigger>
-            <TooltipContent side="right" align="center">
-              {isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            </TooltipContent>
-          </Tooltip>
+          {!isMobile ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarTrigger className="h-8 w-full cursor-pointer" />
+              </TooltipTrigger>
+              <TooltipContent side="right" align="center">
+                {isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <SidebarTrigger className="h-8 w-full cursor-pointer" />
+          )}
         </SidebarHeader>
 
         <SidebarContent>
@@ -475,16 +493,58 @@ export function SidebarLeft() {
         </SidebarContent>
 
         <SidebarFooter className="border-t border-sidebar-border p-1">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <ModeToggle />
             {!isCollapsed && (
-              <button
-                onClick={logout}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md transition-colors cursor-pointer"
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="">Log Out</span>
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md transition-colors cursor-pointer flex-1">
+                    {user?.picture ? (
+                      <img
+                        src={user.picture}
+                        alt={user.name || "User"}
+                        className="h-6 w-6 rounded-full flex-shrink-0"
+                      />
+                    ) : (
+                      <User className="h-4 w-4 flex-shrink-0" />
+                    )}
+                    <span className="truncate">
+                      {user?.name || user?.email || "User"}
+                    </span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 p-2">
+                  <DropdownMenuLabel className="font-normal p-3">
+                    <div className="flex flex-col items-center space-y-3">
+                      {user?.picture && (
+                        <img
+                          src={user.picture}
+                          alt={user.name || "User"}
+                          className="h-12 w-12 rounded-full border-2 border-border"
+                        />
+                      )}
+                      <div className="text-center space-y-1">
+                        <p className="text-sm font-semibold leading-none">
+                          {user?.name || "User"}
+                        </p>
+                        {user?.email && (
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {user.email}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="my-2" />
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className="px-4 py-3 justify-center items-center gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="font-medium">Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </SidebarFooter>

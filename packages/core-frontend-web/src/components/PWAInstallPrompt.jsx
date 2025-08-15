@@ -7,8 +7,10 @@ import {
   CardTitle,
 } from "core-frontend-web/src/components/ui/card";
 import { X, Download, Share, Square } from "lucide-react";
+import { useIsMobile } from "core-frontend-web/src/hooks/use-mobile";
 
 export function PWAInstallPrompt() {
+  const isMobile = useIsMobile();
   const [showPrompt, setShowPrompt] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
@@ -18,6 +20,10 @@ export function PWAInstallPrompt() {
   const [hasShownPrompt, setHasShownPrompt] = useState(false);
 
   useEffect(() => {
+    // Only run the effect if we're on mobile
+    if (!isMobile) {
+      return;
+    }
     // Check if already installed as PWA
     const checkStandalone = () => {
       return (
@@ -140,6 +146,11 @@ export function PWAInstallPrompt() {
 
   // For development/testing - show a test button
   const isDev = import.meta.env.DEV;
+
+  // Don't render anything if not on mobile
+  if (!isMobile) {
+    return null;
+  }
 
   // Show persistent install icon when prompt is not shown
   if (!showPrompt) {
