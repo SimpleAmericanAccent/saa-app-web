@@ -131,10 +131,6 @@ const fleeceKitMinimalPairs = [
     { word: "lick", alternates: [] },
   ],
   [
-    { word: "lead", alternates: [] },
-    { word: "lid", alternates: [] },
-  ],
-  [
     { word: "leap", alternates: [] },
     { word: "lip", alternates: [] },
   ],
