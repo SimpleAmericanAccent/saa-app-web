@@ -68,6 +68,7 @@ export function PWAInstallPrompt() {
       if (!hasShownRecently && !standalone) {
         setTimeout(() => {
           setShowPrompt(true);
+          setTimeout(() => setIsOpening(true), 10);
         }, 3000); // 3 second delay
       }
     };
@@ -76,6 +77,7 @@ export function PWAInstallPrompt() {
     if (ios && !standalone && !hasShownRecently) {
       setTimeout(() => {
         setShowPrompt(true);
+        setTimeout(() => setIsOpening(true), 10);
       }, 3000); // 3 second delay
     }
 
