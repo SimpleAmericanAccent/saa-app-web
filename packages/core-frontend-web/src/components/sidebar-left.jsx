@@ -49,6 +49,7 @@ import {
 } from "core-frontend-web/src/components/ui/collapsible";
 import { ModeToggle } from "./mode-toggle";
 import useAuthStore from "core-frontend-web/src/stores/authStore";
+import { useIsMobile } from "core-frontend-web/src/hooks/use-mobile";
 
 // Custom Link component that closes mobile sidebar on click
 function SidebarLink({ to, children, ...props }) {
@@ -73,6 +74,7 @@ export function SidebarLeft() {
   const isCollapsed = state === "collapsed";
   const [openSubmenus, setOpenSubmenus] = React.useState(new Set());
   const [isInitialized, setIsInitialized] = React.useState(false);
+  const isMobile = useIsMobile();
 
   // Persist sidebar state in localStorage
   React.useEffect(() => {
@@ -195,32 +197,38 @@ export function SidebarLeft() {
                           </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/onboarding/lexical-sets-quiz">
-                            <Target className="h-4 w-4" />
-                            {!isCollapsed && <span>Lexical Sets Quiz</span>}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/spelling-pronunciation">
-                            <Settings className="h-4 w-4" />
-                            {!isCollapsed && (
-                              <span>Spelling-Pronunciation Network</span>
-                            )}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/vsounds">
-                            <Volume2 className="h-4 w-4" />
-                            {!isCollapsed && <span>Vowel Sounds</span>}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
+                      {!isMobile && (
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild>
+                            <SidebarLink to="/onboarding/lexical-sets-quiz">
+                              <Target className="h-4 w-4" />
+                              {!isCollapsed && <span>Lexical Sets Quiz</span>}
+                            </SidebarLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      )}
+                      {!isMobile && (
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild>
+                            <SidebarLink to="/spelling-pronunciation">
+                              <Settings className="h-4 w-4" />
+                              {!isCollapsed && (
+                                <span>Spelling-Pronunciation Network</span>
+                              )}
+                            </SidebarLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      )}
+                      {!isMobile && (
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild>
+                            <SidebarLink to="/vsounds">
+                              <Volume2 className="h-4 w-4" />
+                              {!isCollapsed && <span>Vowel Sounds</span>}
+                            </SidebarLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      )}
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
                           <SidebarLink to="/vsynth">
@@ -368,74 +376,80 @@ export function SidebarLeft() {
           <SidebarGroup>
             <SidebarGroupLabel>Other</SidebarGroupLabel>
             <SidebarMenu>
-              {/* Other Resources */}
-              <Collapsible
-                asChild
-                className="group/collapsible"
-                open={openSubmenus.has("more-resources")}
-                onOpenChange={(isOpen) =>
-                  handleSubmenuToggle("more-resources", isOpen)
-                }
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton
-                      tooltip="More Resources"
-                      className="cursor-pointer"
-                      onClick={(e) =>
-                        handleCollapsedIconClick(e, true, "more-resources")
-                      }
-                    >
-                      <Library className="h-4 w-4" />
-                      {!isCollapsed && <span>More Resources</span>}
-                      {!isCollapsed && (
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      )}
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/phonemes">
-                            <BookOpen className="h-4 w-4" />
-                            {!isCollapsed && <span>Phonemes</span>}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/stats">
-                            <BarChart3 className="h-4 w-4" />
-                            {!isCollapsed && <span>Group Accent Stats</span>}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/wls">
-                            <List className="h-4 w-4" />
-                            {!isCollapsed && <span>Word Lists & Spelling</span>}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
+              {/* Other Resources - Hidden on Mobile */}
+              {!isMobile && (
+                <Collapsible
+                  asChild
+                  className="group/collapsible"
+                  open={openSubmenus.has("more-resources")}
+                  onOpenChange={(isOpen) =>
+                    handleSubmenuToggle("more-resources", isOpen)
+                  }
+                >
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton
+                        tooltip="More Resources"
+                        className="cursor-pointer"
+                        onClick={(e) =>
+                          handleCollapsedIconClick(e, true, "more-resources")
+                        }
+                      >
+                        <Library className="h-4 w-4" />
+                        {!isCollapsed && <span>More Resources</span>}
+                        {!isCollapsed && (
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        )}
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild>
+                            <SidebarLink to="/phonemes">
+                              <BookOpen className="h-4 w-4" />
+                              {!isCollapsed && <span>Phonemes</span>}
+                            </SidebarLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild>
+                            <SidebarLink to="/stats">
+                              <BarChart3 className="h-4 w-4" />
+                              {!isCollapsed && <span>Group Accent Stats</span>}
+                            </SidebarLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild>
+                            <SidebarLink to="/wls">
+                              <List className="h-4 w-4" />
+                              {!isCollapsed && (
+                                <span>Word Lists & Spelling</span>
+                              )}
+                            </SidebarLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  </SidebarMenuItem>
+                </Collapsible>
+              )}
 
-              {/* Transcript Viewer */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Transcript Viewer">
-                  <SidebarLink
-                    to="/transcript"
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="h-4 w-4" />
-                    {!isCollapsed && <span>Transcript Viewer</span>}
-                  </SidebarLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {/* Transcript Viewer - Hidden on Mobile */}
+              {!isMobile && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Transcript Viewer">
+                    <SidebarLink
+                      to="/transcript"
+                      className="flex items-center gap-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      {!isCollapsed && <span>Transcript Viewer</span>}
+                    </SidebarLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
 
               {/* Links */}
               <SidebarMenuItem>
