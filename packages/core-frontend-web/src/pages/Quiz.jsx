@@ -714,7 +714,7 @@ const shuffleArray = (array) => {
 
 export default function Quiz() {
   const [quizSettings, setQuizSettings] = useState({
-    numberOfQuestions: 20,
+    numberOfQuestions: 10,
     autoPlayAudio: true,
     showVowelSymbols: true,
   });
