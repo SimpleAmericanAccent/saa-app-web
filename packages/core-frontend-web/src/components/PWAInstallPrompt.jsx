@@ -24,8 +24,6 @@ export function PWAInstallPrompt() {
       );
     };
 
-    setIsStandalone(checkStandalone());
-
     // Check if iOS Safari
     const checkIOS = () => {
       return (
@@ -35,7 +33,20 @@ export function PWAInstallPrompt() {
       );
     };
 
-    setIsIOS(checkIOS());
+    const standalone = checkStandalone();
+    const ios = checkIOS();
+
+    setIsStandalone(standalone);
+    setIsIOS(ios);
+
+    // Debug logging
+    console.log("PWA Install Prompt Debug:", {
+      userAgent: navigator.userAgent,
+      isIOS: ios,
+      isStandalone: standalone,
+      hasShownRecently,
+      showPrompt: false,
+    });
 
     // Check if we've already shown the prompt recently
     const lastShown = localStorage.getItem("pwa-prompt-last-shown");
@@ -52,7 +63,7 @@ export function PWAInstallPrompt() {
       setDeferredPrompt(e);
 
       // Show prompt after a delay if not already shown
-      if (!hasShownPrompt && !isStandalone) {
+      if (!hasShownRecently && !standalone) {
         setTimeout(() => {
           setShowPrompt(true);
         }, 3000); // 3 second delay
@@ -60,7 +71,7 @@ export function PWAInstallPrompt() {
     };
 
     // Show iOS prompt after delay if not already shown
-    if (isIOS && !isStandalone && !hasShownPrompt) {
+    if (ios && !standalone && !hasShownRecently) {
       setTimeout(() => {
         setShowPrompt(true);
       }, 3000); // 3 second delay
@@ -74,7 +85,7 @@ export function PWAInstallPrompt() {
         handleBeforeInstallPrompt
       );
     };
-  }, [hasShownPrompt, isStandalone]);
+  }, []); // Empty dependency array - only run once on mount
 
   const handleInstall = async () => {
     if (deferredPrompt) {
@@ -96,13 +107,54 @@ export function PWAInstallPrompt() {
     localStorage.setItem("pwa-prompt-last-shown", Date.now().toString());
   };
 
+  // For development - clear localStorage to test prompt
+  const clearPromptHistory = () => {
+    localStorage.removeItem("pwa-prompt-last-shown");
+    console.log("PWA prompt history cleared");
+  };
+
   const handleIOSInstall = () => {
     // For iOS, we show instructions
     setShowPrompt(false);
     localStorage.setItem("pwa-prompt-last-shown", Date.now().toString());
   };
 
-  if (!showPrompt || isStandalone) {
+  // For development/testing - show a test button
+  const isDev = import.meta.env.DEV;
+
+  if (!showPrompt && !isDev) {
+    return null;
+  }
+
+  // Show test button in development
+  if (isDev && !showPrompt) {
+    return (
+      <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
+        <Card className="shadow-lg border-2 border-blue-500">
+          <CardContent className="p-3 space-y-2">
+            <Button
+              onClick={() => setShowPrompt(true)}
+              className="w-full text-xs h-8"
+              size="sm"
+              variant="outline"
+            >
+              🧪 Test PWA Prompt
+            </Button>
+            <Button
+              onClick={clearPromptHistory}
+              className="w-full text-xs h-6"
+              size="sm"
+              variant="ghost"
+            >
+              Clear History
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isStandalone) {
     return null;
   }
 
