@@ -718,6 +718,37 @@ export default function Quiz() {
     autoPlayAudio: true,
     showVowelSymbols: true,
   });
+
+  // Load previous quiz results from localStorage
+  const [previousResults, setPreviousResults] = useState({});
+
+  useEffect(() => {
+    const stored = localStorage.getItem("quizResults");
+    if (stored) {
+      try {
+        setPreviousResults(JSON.parse(stored));
+      } catch (error) {
+        console.error("Error loading quiz results:", error);
+      }
+    }
+  }, []);
+
+  // Save quiz result to localStorage
+  const saveQuizResult = (quizTypeId, score, totalQuestions) => {
+    const percentage = Math.round((score / totalQuestions) * 100);
+    const newResults = {
+      ...previousResults,
+      [quizTypeId]: {
+        score,
+        totalQuestions,
+        percentage,
+        timestamp: Date.now(),
+      },
+    };
+    setPreviousResults(newResults);
+    localStorage.setItem("quizResults", JSON.stringify(newResults));
+  };
+
   const [selectedQuizType, setSelectedQuizType] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
@@ -734,8 +765,15 @@ export default function Quiz() {
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
-  const [currentStep, setCurrentStep] = useState("settings"); // "settings", "quizType", "quiz"
+  const [currentStep, setCurrentStep] = useState("quizType"); // "quizType", "settings", "quiz"
   const audioRef = useRef(null);
+
+  // Save result when quiz is completed
+  useEffect(() => {
+    if (showResults && selectedQuizType && shuffledQuestions.length > 0) {
+      saveQuizResult(selectedQuizType, score, shuffledQuestions.length);
+    }
+  }, [showResults, selectedQuizType, score, shuffledQuestions.length]);
 
   // Get current quiz data
   const currentQuizData = selectedQuizType ? QUIZ_DATA[selectedQuizType] : null;
@@ -907,14 +945,13 @@ export default function Quiz() {
 
   // Handle settings completion
   const handleSettingsComplete = () => {
-    setCurrentStep("quizType");
+    setCurrentStep("quiz");
   };
 
   // Handle quiz type selection
   const handleQuizTypeSelect = (quizTypeId) => {
     setSelectedQuizType(quizTypeId);
-    setCurrentStep("quiz");
-    setHasUserInteracted(true);
+    setCurrentStep("settings");
   };
 
   // Handle begin quiz (for backward compatibility)
@@ -1124,11 +1161,11 @@ export default function Quiz() {
     } else if (percentage >= 80) {
       performanceLevel = "Good";
       message = "Good work! You have a solid grasp of this distinction.";
-      colorClass = "text-blue-600 dark:text-blue-400";
+      colorClass = "text-blue-500";
     } else if (percentage >= 60) {
       performanceLevel = "Fair";
       message = "Fair performance. More practice will help you improve.";
-      colorClass = "text-yellow-600 dark:text-yellow-400";
+      colorClass = "text-yellow-500";
     } else {
       performanceLevel = "Needs Practice";
       message = "This distinction needs more practice. Don't give up!";
@@ -1136,7 +1173,7 @@ export default function Quiz() {
     }
 
     return (
-      <div className="h-[100vh] bg-background flex items-center justify-center p-2 sm:p-4 max-h-screen">
+      <div className="h-[calc(100vh-var(--navbar-height))] sm:h-screen bg-background flex items-center justify-center p-2 sm:p-4 overflow-hidden">
         <Card className="w-full max-w-lg ">
           <CardHeader className="text-center pb-0">
             <CardTitle className="text-base sm:text-xl">
@@ -1282,7 +1319,9 @@ export default function Quiz() {
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle className="text-lg text-center">
-                Quiz Settings
+                {currentQuizData
+                  ? `${currentQuizData.name} Settings`
+                  : "Quiz Settings"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -1351,13 +1390,25 @@ export default function Quiz() {
                 </div>
               </div> */}
 
-              {/* Continue Button */}
+              {/* Start Quiz Button */}
               <Button
-                onClick={handleSettingsComplete}
+                onClick={() => {
+                  handleSettingsComplete();
+                  setHasUserInteracted(true);
+                }}
                 className="w-full cursor-pointer"
                 size="lg"
               >
-                Continue
+                Start Quiz
+              </Button>
+
+              {/* Back to Quiz Types Button */}
+              <Button
+                onClick={() => setCurrentStep("quizType")}
+                variant="ghost"
+                className="w-full cursor-pointer text-sm"
+              >
+                ← Back to Quiz Types
               </Button>
             </CardContent>
           </Card>
@@ -1366,35 +1417,158 @@ export default function Quiz() {
 
       {/* Quiz Type Selection Step */}
       {currentStep === "quizType" && (
-        <div className="absolute inset-0 bg-background/80 flex items-start justify-center z-10 p-4 overflow-y-auto pt-[var(--navbar-height)]">
-          <Card className="w-full max-w-md">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-center text-lg">
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-4 overflow-hidden">
+          <Card className="w-full max-w-md max-h-[80vh] flex flex-col">
+            <CardHeader className="pb-1 flex-shrink-0">
+              <CardTitle className="text-center text-base">
                 Choose Quiz Type
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {Object.values(QUIZ_DATA).map((quizData) => (
-                <Button
-                  key={quizData.id}
-                  onClick={() => handleQuizTypeSelect(quizData.id)}
-                  variant="outline"
-                  className="w-full h-auto p-2 flex flex-col items-start space-y-1 cursor-pointer text-wrap"
-                >
-                  <div className="font-semibold text-sm">{quizData.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {quizData.description}
-                  </div>
-                </Button>
-              ))}
-              <Button
-                onClick={() => setCurrentStep("settings")}
-                variant="ghost"
-                className="w-full cursor-pointer text-sm"
-              >
-                ← Back to Settings
-              </Button>
+            <CardContent className="flex-1 overflow-y-auto px-3">
+              <div className="grid grid-cols-2 gap-2">
+                {/* Column 1: FLEECE, DRESS, DRESS */}
+                <div className="space-y-2">
+                  {Object.values(QUIZ_DATA)
+                    .filter(
+                      (quizData) =>
+                        quizData.id === QUIZ_TYPE_IDS.FLEECE_KIT ||
+                        quizData.id === QUIZ_TYPE_IDS.DRESS_TRAP ||
+                        quizData.id === QUIZ_TYPE_IDS.DRESS_BAN
+                    )
+                    .map((quizData) => {
+                      const previousResult = previousResults[quizData.id];
+                      return (
+                        <div
+                          key={quizData.id}
+                          onClick={() => handleQuizTypeSelect(quizData.id)}
+                          className={`relative w-full cursor-pointer rounded-lg p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
+                            previousResult
+                              ? `border-2 ${
+                                  previousResult.percentage === 100
+                                    ? "border-green-500"
+                                    : previousResult.percentage >= 80
+                                    ? "border-blue-500"
+                                    : previousResult.percentage >= 60
+                                    ? "border-yellow-500"
+                                    : "border-red-500"
+                                }`
+                              : "border border-border"
+                          } bg-card`}
+                        >
+                          <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                            <div className="font-semibold text-xs">
+                              {quizData.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {quizData.description}
+                            </div>
+                            <div
+                              className={`text-xs font-bold mt-1 ${
+                                previousResult
+                                  ? previousResult.percentage === 100
+                                    ? "text-green-500"
+                                    : previousResult.percentage >= 80
+                                    ? "text-blue-500"
+                                    : previousResult.percentage >= 60
+                                    ? "text-yellow-500"
+                                    : "text-red-500"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {previousResult
+                                ? `${previousResult.percentage}%`
+                                : "No Result Yet"}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                {/* Column 2: FOOT, STRUT */}
+                <div className="space-y-2">
+                  {Object.values(QUIZ_DATA)
+                    .filter(
+                      (quizData) =>
+                        quizData.id === QUIZ_TYPE_IDS.FOOT_GOOSE ||
+                        quizData.id === QUIZ_TYPE_IDS.STRUT_LOT
+                    )
+                    .map((quizData) => {
+                      const previousResult = previousResults[quizData.id];
+                      return (
+                        <div
+                          key={quizData.id}
+                          onClick={() => handleQuizTypeSelect(quizData.id)}
+                          className={`relative w-full cursor-pointer rounded-lg p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
+                            previousResult
+                              ? `border-2 ${
+                                  previousResult.percentage === 100
+                                    ? "border-green-500"
+                                    : previousResult.percentage >= 80
+                                    ? "border-blue-500"
+                                    : previousResult.percentage >= 60
+                                    ? "border-yellow-500"
+                                    : "border-red-500"
+                                }`
+                              : "border border-border"
+                          } bg-card`}
+                        >
+                          <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                            <div className="font-semibold text-xs">
+                              {quizData.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {quizData.description}
+                            </div>
+                            <div
+                              className={`text-xs font-bold mt-1 ${
+                                previousResult
+                                  ? previousResult.percentage === 100
+                                    ? "text-green-500"
+                                    : previousResult.percentage >= 80
+                                    ? "text-blue-500"
+                                    : previousResult.percentage >= 60
+                                    ? "text-yellow-500"
+                                    : "text-red-500"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {previousResult
+                                ? `${previousResult.percentage}%`
+                                : "No Result Yet"}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
             </CardContent>
+            {Object.keys(previousResults).length > 0 && (
+              <div className="p-3 pt-0 flex-shrink-0 space-y-2">
+                <p className="text-xs text-muted-foreground text-center">
+                  Note: Shows last result for each quiz type
+                </p>
+                <div className="flex justify-center gap-3 text-xs">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span className="text-muted-foreground">100%</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span className="text-muted-foreground">80%+</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <span className="text-muted-foreground">60%+</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span className="text-muted-foreground">&lt;60%</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </Card>
         </div>
       )}
