@@ -1114,166 +1114,146 @@ export default function Quiz() {
 
   if (showResults) {
     const percentage = Math.round((score / shuffledQuestions.length) * 100);
-    const accuracy = Math.round((score / questionsAnswered) * 100);
 
     // Determine performance level and message
-    let performanceLevel, message, emoji, colorClass;
+    let performanceLevel, message, colorClass;
     if (percentage === 100) {
       performanceLevel = "Perfect";
-      message = "Outstanding! You've mastered this vowel distinction!";
-      emoji = "🎉";
-      colorClass = "text-green-600 dark:text-green-400";
-    } else if (percentage >= 90) {
-      performanceLevel = "Excellent";
-      message = "Excellent work! You have a strong grasp of this distinction.";
-      emoji = "🌟";
+      message = "Perfect! You've mastered this vowel distinction!";
       colorClass = "text-green-600 dark:text-green-400";
     } else if (percentage >= 80) {
-      performanceLevel = "Very Good";
-      message =
-        "Very good! You're making great progress with this distinction.";
-      emoji = "👍";
-      colorClass = "text-blue-600 dark:text-blue-400";
-    } else if (percentage >= 70) {
       performanceLevel = "Good";
-      message = "Good effort! Keep practicing to improve your accuracy.";
-      emoji = "💪";
-      colorClass = "text-yellow-600 dark:text-yellow-400";
+      message = "Good work! You have a solid grasp of this distinction.";
+      colorClass = "text-blue-600 dark:text-blue-400";
     } else if (percentage >= 60) {
       performanceLevel = "Fair";
       message = "Fair performance. More practice will help you improve.";
-      emoji = "📚";
-      colorClass = "text-orange-600 dark:text-orange-400";
+      colorClass = "text-yellow-600 dark:text-yellow-400";
     } else {
       performanceLevel = "Needs Practice";
       message = "This distinction needs more practice. Don't give up!";
-      emoji = "🎯";
       colorClass = "text-red-600 dark:text-red-400";
     }
 
     return (
-      <div className="h-[calc(100vh-var(--navbar-height))] bg-background flex items-center justify-center p-2 sm:p-4 max-h-screen">
-        <Card className="w-full max-w-lg p-1 m-0">
-          <CardHeader className="text-center p-0 m-0 sm:pb-2">
-            <div className="text-2xl sm:text-5xl p-0 m-0">{emoji}</div>
+      <div className="h-[100vh] bg-background flex items-center justify-center p-2 sm:p-4 max-h-screen">
+        <Card className="w-full max-w-lg ">
+          <CardHeader className="text-center pb-0">
             <CardTitle className="text-base sm:text-xl">
               Quiz Complete!
             </CardTitle>
-            {currentQuizData && (
-              <p className="text-xs text-muted-foreground m-0 p-0">
-                {currentQuizData.title}
-              </p>
-            )}
           </CardHeader>
-          <CardContent className="space-y-1 sm:space-y-4 p-0 m-0">
-            {/* Performance Summary */}
-            <div className="text-center space-y-1">
-              <div className={`text-lg sm:text-3xl font-bold ${colorClass}`}>
-                {score}/{shuffledQuestions.length}
-              </div>
-              <div className="text-xs sm:text-base font-semibold">
-                {performanceLevel}
-              </div>
-              <p className="text-xs text-muted-foreground">{message}</p>
-            </div>
-
-            {/* Detailed Stats */}
-            <div className="grid grid-cols-2 gap-1 sm:gap-2 p-2 bg-muted/50 rounded-lg">
-              <div className="text-center">
-                <div className="text-base sm:text-xl font-bold text-primary">
-                  {percentage}%
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Overall Score
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-base sm:text-xl font-bold text-primary">
-                  {accuracy}%
-                </div>
-                <div className="text-xs text-muted-foreground">Accuracy</div>
-              </div>
-              <div className="text-center">
-                <div className="text-base sm:text-xl font-bold text-primary">
-                  {questionsAnswered}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Questions Attempted
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-base sm:text-xl font-bold text-primary">
-                  {shuffledQuestions.length}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Total Questions
-                </div>
-              </div>
-            </div>
-
-            {/* Vowel Distinction Info */}
-            {currentQuizData && (
-              <div className="p-2 bg-muted/30 rounded-lg">
-                <h3 className="font-semibold mb-1 text-center text-xs">
-                  Vowel Distinction Practiced
-                </h3>
-                <div className="flex justify-center items-center gap-2 text-xs">
-                  <div className="text-center">
-                    <div className="font-mono text-xs sm:text-base">
-                      {currentQuizData.vowel1Symbol}
-                    </div>
-                    <div className="text-muted-foreground">
-                      {currentQuizData.vowel1Name}
-                    </div>
-                  </div>
-                  <div className="text-muted-foreground">vs</div>
-                  <div className="text-center">
-                    <div className="font-mono text-xs sm:text-base">
-                      {currentQuizData.vowel2Symbol}
-                    </div>
-                    <div className="text-muted-foreground">
-                      {currentQuizData.vowel2Name}
+          <CardContent className="px-4 py-0">
+            {/* 2x2 Grid Layout */}
+            <div className="grid grid-cols-2 gap-3 max-w-full">
+              {/* Progress Ring */}
+              <div className="flex items-center justify-center">
+                <div className="text-center">
+                  <div className="relative w-20 h-20 mx-auto">
+                    <svg className="w-20 h-20 transform -rotate-90">
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="30"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                        className="text-muted/20"
+                      />
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="30"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 30}`}
+                        strokeDashoffset={`${
+                          2 * Math.PI * 30 * (1 - percentage / 100)
+                        }`}
+                        className={`${colorClass} transition-all duration-1000`}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className={`text-base font-bold ${colorClass}`}>
+                          {percentage}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {score}/{shuffledQuestions.length}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Action Buttons */}
-            <div className="space-y-1 sm:space-y-2">
-              <Button
-                onClick={handleRestart}
-                className="w-full h-8 sm:h-10 text-sm cursor-pointer"
-              >
-                Try Again
-              </Button>
-              <Button
-                onClick={() => {
-                  setSelectedQuizType(null);
-                  setShowResults(false);
-                  setCurrentStep("quizType");
-                  setHasUserInteracted(false);
-                }}
-                variant="outline"
-                className="w-full h-8 sm:h-10 text-sm cursor-pointer"
-              >
-                Choose Different Quiz
-              </Button>
-            </div>
-
-            {/* Encouragement */}
-            <div className="text-center text-xs text-muted-foreground">
-              {percentage >= 80 ? (
-                <p>
-                  🎉 Great job! Consider trying a different vowel distinction to
-                  expand your skills.
-                </p>
-              ) : (
-                <p>
-                  💡 Tip: Practice regularly and try to identify the vowel
-                  sounds in everyday speech.
-                </p>
+              {/* Vowel Distinction Info */}
+              {currentQuizData && (
+                <div className="flex items-center justify-center">
+                  <div className="text-center">
+                    <h3 className="font-semibold mb-1 text-xs">
+                      Distinction Practiced
+                    </h3>
+                    <div className="flex justify-center items-center gap-1 text-xs">
+                      <div className="text-center">
+                        <div className="font-mono text-xs">
+                          {currentQuizData.vowel1Symbol}
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          {currentQuizData.vowel1Name}
+                        </div>
+                      </div>
+                      <div className="text-muted-foreground text-xs">vs</div>
+                      <div className="text-center">
+                        <div className="font-mono text-xs">
+                          {currentQuizData.vowel2Symbol}
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          {currentQuizData.vowel2Name}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
+
+              {/* Again Button */}
+              <div className="flex items-center justify-center">
+                <Button
+                  onClick={handleRestart}
+                  className="w-full h-8 text-xs cursor-pointer"
+                  size="sm"
+                >
+                  Again
+                </Button>
+              </div>
+
+              {/* Change Button */}
+              <div className="flex items-center justify-center">
+                <Button
+                  onClick={() => {
+                    setSelectedQuizType(null);
+                    setCurrentQuestionIndex(0);
+                    setQuestionsAnswered(0);
+                    setSelectedAnswer(null);
+                    setIsAnswered(false);
+                    setScore(0);
+                    setShowResults(false);
+                    setHasAutoPlayed(false);
+                    setPlayingSource(null);
+                    setHasUserInteracted(false);
+                    setCurrentStep("quizType");
+                    setShuffledQuestions([]);
+                  }}
+                  variant="outline"
+                  className="w-full h-8 text-xs cursor-pointer"
+                  size="sm"
+                >
+                  Change
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
