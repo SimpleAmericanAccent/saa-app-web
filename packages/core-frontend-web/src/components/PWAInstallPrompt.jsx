@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "core-frontend-web/src/components/ui/card";
-import { X, Download, Share } from "lucide-react";
+import { X, Download, Share, Square } from "lucide-react";
 
 export function PWAInstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
@@ -122,34 +122,24 @@ export function PWAInstallPrompt() {
   // For development/testing - show a test button
   const isDev = import.meta.env.DEV;
 
-  if (!showPrompt && !isDev) {
-    return null;
-  }
+  // Show persistent install icon when prompt is not shown
+  if (!showPrompt) {
+    // Don't show if already in standalone mode
+    if (isStandalone) {
+      return null;
+    }
 
-  // Show test button in development
-  if (isDev && !showPrompt) {
     return (
-      <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
-        <Card className="shadow-lg border-2 border-blue-500">
-          <CardContent className="p-3 space-y-2">
-            <Button
-              onClick={() => setShowPrompt(true)}
-              className="w-full text-xs h-8"
-              size="sm"
-              variant="outline"
-            >
-              🧪 Test PWA Prompt
-            </Button>
-            <Button
-              onClick={clearPromptHistory}
-              className="w-full text-xs h-6"
-              size="sm"
-              variant="ghost"
-            >
-              Clear History
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="fixed bottom-4 right-4 z-50">
+        <Button
+          onClick={() => setShowPrompt(true)}
+          className="w-8 h-8 rounded-full shadow-lg bg-blue-500 hover:bg-blue-600 text-white opacity-70"
+          size="sm"
+        >
+          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+          </svg>
+        </Button>
       </div>
     );
   }
@@ -160,8 +150,8 @@ export function PWAInstallPrompt() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
-      <Card className="shadow-lg border-2">
-        <CardHeader className="pb-2">
+      <Card className="shadow-lg border-2 gap-2 py-4">
+        <CardHeader className="pb-0">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-semibold">Install App</CardTitle>
             <Button
@@ -178,20 +168,104 @@ export function PWAInstallPrompt() {
           <div className="space-y-3">
             <p className="text-xs text-muted-foreground">
               {isIOS
-                ? "Add this app to your home screen for quick access and offline use."
-                : "Install this app for quick access and offline use."}
+                ? "Add this to your home screen as an app for quicker access."
+                : "Install this app for quicker access."}
             </p>
 
             {isIOS ? (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs">
-                  <Share className="h-4 w-4" />
-                  <span>Tap the share button</span>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 text-xs">
+                    <div className="flex items-center justify-center w-8 h-8 bg-muted rounded">
+                      <svg
+                        className="h-4 w-4"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z" />
+                      </svg>
+                    </div>
+                    <span className="font-medium">
+                      Step 1: Tap the share button in the <br /> bottom center
+                      of Safari's toolbar
+                    </span>
+                  </div>
+                  <div className="mx-auto text-xs text-muted-foreground">
+                    <div className="ml-4 mt-1 p-2 bg-muted/50 rounded border border-dashed border-muted-foreground/30">
+                      <div className="flex justify-center">
+                        <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center">
+                          <svg
+                            className="h-3 w-3 text-white"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M16 5l-1.42 1.42-1.59-1.59V16h-1.98V4.83L9.42 6.42 8 5l4-4 4 4zm4 5v11c0 1.1-.9 2-2 2H6c-1.11 0-2-.9-2-2V10c0-1.11.89-2 2-2h3v2H6v11h12V10h-3V8h3c1.1 0 2 .89 2 2z" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <Download className="h-4 w-4" />
-                  <span>Select "Add to Home Screen"</span>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 text-xs">
+                    <div className="flex items-center justify-center w-8 h-8 bg-muted rounded">
+                      <svg
+                        className="h-4 w-4"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          ry="2"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                        />
+                        <path
+                          d="M12 8v8M8 12h8"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                        />
+                      </svg>
+                    </div>
+                    <span className="font-medium">
+                      Step 2: Scroll down and select
+                      <br /> "Add to Home Screen"
+                    </span>
+                  </div>
+                  <div className="mx-auto text-xs text-muted-foreground">
+                    <div className="ml-4 mt-1 p-2 bg-muted/50 rounded border border-dashed border-muted-foreground/30">
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-blue-500 font-medium">
+                            Add to Home Screen
+                          </span>
+                          <div className="w-4 h-4 bg-blue-500 rounded flex items-center justify-center">
+                            <svg
+                              className="h-3 w-3"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <path
+                                d="M12 6v12M6 12h12"
+                                stroke="white"
+                                strokeWidth="3"
+                                fill="none"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
                 <Button
                   onClick={handleIOSInstall}
                   className="w-full text-xs h-8"
