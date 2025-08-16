@@ -6,6 +6,7 @@ import { PostHogProvider } from "posthog-js/react";
 
 const options = {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+  cross_subdomain_cookie: false,
   defaults: "2025-05-24",
 };
 
