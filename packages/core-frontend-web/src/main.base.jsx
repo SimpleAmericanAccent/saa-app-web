@@ -15,14 +15,13 @@ export function renderApp(AppComponent) {
   // Check if PostHog is properly configured
   const posthogKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
   const posthogHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST;
-  const environmentFlag = import.meta.env.VITE_ENVIRONMENT_FLAG || "dev";
+
+  // Use Vite's built-in mode detection instead of custom environment flag
+  const isProduction = import.meta.env.PROD;
 
   // Only enable PostHog in production
-  const isProduction =
-    environmentFlag === "prod" || environmentFlag === "production";
-
   if (!isProduction) {
-    console.log(`🧪 ${environmentFlag} mode - PostHog disabled`);
+    console.log(`🧪 ${import.meta.env.MODE} mode - PostHog disabled`);
   } else if (!posthogKey || !posthogHost) {
     console.warn(
       "⚠️ PostHog not properly configured. Missing environment variables."
