@@ -3,19 +3,11 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import "./index.base.css";
 import { PostHogProvider } from "posthog-js/react";
-import posthog from "posthog-js";
 
-// const options = {
-//   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
-//   cross_subdomain_cookie: false,
-//   defaults: "2025-05-24",
-// };
-
-posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY, {
+const options = {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
-  cookie_domain: window.location.hostname, // pin domain -> no probing
-  cross_subdomain_cookie: false, // keep it host-only
-});
+  defaults: "2025-05-24",
+};
 
 export function renderApp(AppComponent) {
   const root = document.getElementById("root");
@@ -45,7 +37,9 @@ export function renderApp(AppComponent) {
   createRoot(root).render(
     <StrictMode>
       {isProduction && posthogKey && posthogHost ? (
-        <PostHogProvider client={posthog}>{appContent}</PostHogProvider>
+        <PostHogProvider apiKey={posthogKey} options={options}>
+          {appContent}
+        </PostHogProvider>
       ) : (
         appContent
       )}
