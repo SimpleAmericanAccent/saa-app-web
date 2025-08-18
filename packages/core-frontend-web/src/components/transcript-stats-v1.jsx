@@ -489,7 +489,7 @@ Before each response, please double-check each included issue, target word list,
 
   return (
     <div>
-      <div className="fixed top-[calc(var(--navbar-height))] bg-background">
+      <div className="fixed top-[calc(var(--navbar-height))] sm:top-0 bg-background">
         <div className="flex items-start justify-between gap-4">
           {/* Left column: existing header content */}
           <div>
@@ -517,7 +517,7 @@ Before each response, please double-check each included issue, target word list,
         </div>
       </div>
 
-      <div className="fixed top-[calc(var(--navbar-height)+192px)] bg-background">
+      <div className="fixed top-[calc(var(--navbar-height)+192px)] sm:top-[192px] bg-background z-999">
         <h3 className="text-xl">Targets, Issues, & Associated Words</h3>
         <div className="flex items-center gap-2 mt-4 mb-2">
           <Checkbox
@@ -619,9 +619,9 @@ Before each response, please double-check each included issue, target word list,
         </div>
       </div>
 
-      <div className="mt-[calc(var(--navbar-height)+235px)] flex gap-4">
+      <div className="mt-[calc(var(--navbar-height)+235px)] sm:mt-[270px] flex gap-4">
         <div className="flex-1">
-          <ScrollArea className="h-[calc(100vh-var(--navbar-height)-235px)]">
+          <ScrollArea className="h-[calc(100vh-var(--navbar-height)-235px)] sm:h-[calc(100vh-270px)]">
             {sortedIssuesData &&
               sortedIssuesData.map((target, targetIndex) => {
                 const targetInstances = target.issues.reduce((total, issue) => {

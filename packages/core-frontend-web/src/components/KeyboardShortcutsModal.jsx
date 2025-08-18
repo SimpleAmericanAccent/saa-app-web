@@ -8,8 +8,8 @@ import {
 
 const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
   return (
-    <Dialog open={isOpen} onOpenChange={onClose} className="max-w-8xl">
-      <DialogContent className="max-w-8xl">
+    <Dialog open={isOpen} onOpenChange={onClose} className="max-w-8xl z-9999">
+      <DialogContent className="max-w-8xl z-9999">
         <DialogHeader>
           <DialogTitle>Keyboard Shortcuts & Pronunciation Guide</DialogTitle>
           <DialogDescription>

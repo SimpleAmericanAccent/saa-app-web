@@ -299,14 +299,14 @@ export default function Transcript() {
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel id="transcript-main" order={0}>
-        <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
+        <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
           <div className="p-2 bg-background">
             <header className="flex flex-col sticky top-0 z-0 bg-background">
               <div
                 className={cn(
                   "flex items-center gap-4",
                   (!hasAudioLoaded || loadError) &&
-                    "h-[calc(100vh-var(--navbar-height))] justify-center flex-col"
+                    "h-[calc(100vh-var(--navbar-height))] sm:h-screen justify-center flex-col"
                 )}
               >
                 <PersonAudioSelector
@@ -330,7 +330,7 @@ export default function Transcript() {
 
               <Button
                 onClick={() => setIsShortcutsModalOpen(true)}
-                className="fixed left-4 bottom-4 rounded-full shadow-md cursor-pointer hover:bg-secondary hover:scale-105 active:scale-100"
+                className="absolute right-0 top-0 rounded-full shadow-md cursor-pointer hover:bg-secondary hover:scale-105 active:scale-100"
                 variant="secondary"
                 size="icon"
               >
@@ -417,9 +417,9 @@ export default function Transcript() {
         <ResizablePanel
           id="transcript-stats"
           order={1}
-          className="h-[calc(100vh-var(--navbar-height))]"
+          className="h-[calc(100vh-var(--navbar-height))] sm:h-screen"
         >
-          <ScrollArea className="h-[calc(100vh-var(--navbar-height))]">
+          <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
             <div className="px-4 bg-background">
               {version === "v1" ? (
                 <TranscriptStatsV1
