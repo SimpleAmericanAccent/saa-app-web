@@ -255,7 +255,7 @@ const TranscriptViewerV1 = ({
   return (
     <ContextMenu>
       <ContextMenuTrigger>{content}</ContextMenuTrigger>
-      <ContextMenuContent className="w-auto">
+      <ContextMenuContent className="w-auto z-9999">
         {issuesData.map((target) => (
           <ContextMenuSub key={target.id}>
             <ContextMenuSubTrigger>{target.name}</ContextMenuSubTrigger>
