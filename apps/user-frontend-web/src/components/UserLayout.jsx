@@ -4,13 +4,17 @@ import { SidebarLeft } from "core-frontend-web/src/components/sidebar-left";
 import { MobileNav } from "core-frontend-web/src/components/MobileNav";
 
 export default function UserLayout({ children }) {
-  const { isLoggedOut } = useAuthStore();
+  const { isLoggedOut, fetchAdminStatus } = useAuthStore();
 
   useEffect(() => {
     if (isLoggedOut === true) {
       window.location.replace("/logout");
     }
   }, [isLoggedOut]);
+
+  useEffect(() => {
+    fetchAdminStatus();
+  }, [fetchAdminStatus]);
 
   return (
     <div className="w-screen h-screen flex flex-col">
