@@ -17,6 +17,17 @@ const QUIZ_TYPE_IDS = {
   BAN_DRESS: "ban_dress",
   FOOT_GOOSE: "foot_goose",
   STRUT_LOT: "strut_lot",
+  DH_D: "dh_d",
+  DARK_L_O: "dark_l_o",
+  DARK_L_U: "dark_l_u",
+  T_CH: "t_ch",
+  S_Z: "s_z",
+  M_N: "m_n",
+  N_NG: "n_ng",
+  M_NG: "m_ng",
+  TH_T: "th_t",
+  TH_F: "th_f",
+  R_NULL: "r_null",
 };
 
 // Minimal pairs data for KIT vs FLEECE vowels (alphabetical by KIT word)
@@ -525,21 +536,753 @@ const strutLotMinimalPairs = [
   ],
 ];
 
+// Minimal pairs data for DH vs D consonants (alphabetical by DH word)
+const dhDMinimalPairs = [
+  [
+    { word: "bathe", alternates: [] },
+    { word: "bade", alternates: [] },
+  ],
+  [
+    { word: "breathe", alternates: [] },
+    { word: "breed", alternates: [] },
+  ],
+  [
+    { word: "clothe", alternates: [] },
+    { word: "clode", alternates: [] },
+  ],
+  [
+    { word: "lathe", alternates: [] },
+    { word: "laid", alternates: [] },
+  ],
+  [
+    { word: "loathe", alternates: [] },
+    { word: "load", alternates: [] },
+  ],
+  [
+    { word: "mouth", alternates: [] },
+    { word: "mouthed", alternates: [] },
+  ],
+  [
+    { word: "scythe", alternates: [] },
+    { word: "sighed", alternates: [] },
+  ],
+  [
+    { word: "seethe", alternates: [] },
+    { word: "seed", alternates: [] },
+  ],
+  [
+    { word: "sheathe", alternates: [] },
+    { word: "she'd", alternates: [] },
+  ],
+  [
+    { word: "soothe", alternates: [] },
+    { word: "sued", alternates: [] },
+  ],
+  [
+    { word: "teethe", alternates: [] },
+    { word: "teed", alternates: [] },
+  ],
+  [
+    { word: "they", alternates: [] },
+    { word: "day", alternates: [] },
+  ],
+  [
+    { word: "this", alternates: [] },
+    { word: "dis", alternates: [] },
+  ],
+  [
+    { word: "thou", alternates: [] },
+    { word: "do", alternates: [] },
+  ],
+  [
+    { word: "though", alternates: [] },
+    { word: "dough", alternates: [] },
+  ],
+  [
+    { word: "thus", alternates: [] },
+    { word: "does", alternates: [] },
+  ],
+  [
+    { word: "thy", alternates: [] },
+    { word: "die", alternates: [] },
+  ],
+  [
+    { word: "wreath", alternates: [] },
+    { word: "reed", alternates: [] },
+  ],
+  [
+    { word: "writhe", alternates: [] },
+    { word: "ride", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for Dark L vs O (alphabetical by Dark L word)
+const darkLOMinimalPairs = [
+  [
+    { word: "eagle", alternates: [] },
+    { word: "ego", alternates: [] },
+  ],
+  [
+    { word: "natal", alternates: [] },
+    { word: "NATO", alternates: [] },
+  ],
+  [
+    { word: "jumble", alternates: [] },
+    { word: "jumbo", alternates: [] },
+  ],
+  [
+    { word: "old", alternates: [] },
+    { word: "owed", alternates: ["ode"] },
+  ],
+  [
+    { word: "cold", alternates: [] },
+    { word: "code", alternates: [] },
+  ],
+  [
+    { word: "mold", alternates: [] },
+    { word: "mowed", alternates: [] },
+  ],
+  [
+    { word: "sold", alternates: [] },
+    { word: "sowed", alternates: ["sewed"] },
+  ],
+  [
+    { word: "toll", alternates: [] },
+    { word: "toe", alternates: ["tow"] },
+  ],
+  [
+    { word: "told", alternates: [] },
+    { word: "towed", alternates: ["toed"] },
+  ],
+  [
+    { word: "bolt", alternates: [] },
+    { word: "boat", alternates: [] },
+  ],
+  [
+    { word: "colt", alternates: [] },
+    { word: "coat", alternates: [] },
+  ],
+  [
+    { word: "molt", alternates: [] },
+    { word: "moat", alternates: [] },
+  ],
+  [
+    { word: "volt", alternates: [] },
+    { word: "vote", alternates: [] },
+  ],
+  [
+    { word: "bowl", alternates: ["bull"] },
+    { word: "bow", alternates: ["Bo"] },
+  ],
+  [
+    { word: "coal", alternates: ["Cole", "cull"] },
+    { word: "co", alternates: [] },
+  ],
+  [
+    { word: "dull", alternates: ["dole"] },
+    { word: "dough", alternates: ["doe"] },
+  ],
+  [
+    { word: "full", alternates: ["foal"] },
+    { word: "foe", alternates: [] },
+  ],
+  [
+    { word: "goal", alternates: ["gull"] },
+    { word: "go", alternates: [] },
+  ],
+  [
+    { word: "whole", alternates: ["hole", "hull"] },
+    { word: "hoe", alternates: ["ho"] },
+  ],
+  [
+    { word: "joel", alternates: [] },
+    { word: "Joe", alternates: [] },
+  ],
+  [
+    { word: "lull", alternates: [] },
+    { word: "low", alternates: ["lo"] },
+  ],
+  [
+    { word: "mole", alternates: ["mull"] },
+    { word: "mow", alternates: ["Moe"] },
+  ],
+  [
+    { word: "null", alternates: ["knoll"] },
+    { word: "no", alternates: ["know"] },
+  ],
+  [
+    { word: "pull", alternates: ["poll"] },
+    { word: "Poe", alternates: [] },
+  ],
+  [
+    { word: "roll", alternates: ["role"] },
+    { word: "row", alternates: ["Roe"] },
+  ],
+  [
+    { word: "soul", alternates: ["sole"] },
+    { word: "so", alternates: ["sew", "sow"] },
+  ],
+  [
+    { word: "stole", alternates: [] },
+    { word: "stow", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for Dark L vs U (alphabetical by Dark L word)
+const darkLUMinimalPairs = [
+  [
+    { word: "tool", alternates: [] },
+    { word: "too", alternates: [] },
+  ],
+  [
+    { word: "bull", alternates: [] },
+    { word: "boo", alternates: [] },
+  ],
+  [
+    { word: "dull", alternates: [] },
+    { word: "do", alternates: ["due", "dew"] },
+  ],
+  [
+    { word: "null", alternates: [] },
+    { word: "new", alternates: ["knew"] },
+  ],
+  [
+    { word: "cool", alternates: [] },
+    { word: "coo", alternates: [] },
+  ],
+  [
+    { word: "jewel", alternates: [] },
+    { word: "Jew", alternates: [] },
+  ],
+  [
+    { word: "rule", alternates: [] },
+    { word: "rue", alternates: [] },
+  ],
+  [
+    { word: "stool", alternates: [] },
+    { word: "stew", alternates: [] },
+  ],
+  [
+    { word: "wool", alternates: [] },
+    { word: "woo", alternates: [] },
+  ],
+  [
+    { word: "yule", alternates: [] },
+    { word: "you", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for T vs CH (alphabetical by T word)
+const tChMinimalPairs = [
+  [
+    { word: "too", alternates: ["two", "to"] },
+    { word: "chew", alternates: ["choo"] },
+  ],
+  [
+    { word: "tea", alternates: ["T", "tee"] },
+    { word: "chi", alternates: [] },
+  ],
+  [
+    { word: "tease", alternates: ["teas"] },
+    { word: "cheese", alternates: [] },
+  ],
+  [
+    { word: "tear", alternates: [] },
+    { word: "cheer", alternates: [] },
+  ],
+  [
+    { word: "teach", alternates: [] },
+    { word: "Cheech", alternates: [] },
+  ],
+  [
+    { word: "teak", alternates: [] },
+    { word: "cheek", alternates: [] },
+  ],
+  [
+    { word: "twos", alternates: [] },
+    { word: "choose", alternates: ["chews"] },
+  ],
+  [
+    { word: "bat", alternates: [] },
+    { word: "batch", alternates: [] },
+  ],
+  [
+    { word: "bit", alternates: [] },
+    { word: "bitch", alternates: [] },
+  ],
+  [
+    { word: "eat", alternates: [] },
+    { word: "each", alternates: [] },
+  ],
+  [
+    { word: "hat", alternates: [] },
+    { word: "hatch", alternates: [] },
+  ],
+  [
+    { word: "hit", alternates: [] },
+    { word: "hitch", alternates: [] },
+  ],
+  [
+    { word: "it", alternates: [] },
+    { word: "itch", alternates: [] },
+  ],
+  [
+    { word: "mat", alternates: ["Matt"] },
+    { word: "match", alternates: [] },
+  ],
+  [
+    { word: "not", alternates: ["knot"] },
+    { word: "notch", alternates: [] },
+  ],
+  [
+    { word: "pat", alternates: [] },
+    { word: "patch", alternates: [] },
+  ],
+  [
+    { word: "pit", alternates: [] },
+    { word: "pitch", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for S vs Z (alphabetical by S word)
+const sZMinimalPairs = [
+  [
+    { word: "ace", alternates: [] },
+    { word: "A's", alternates: [] },
+  ],
+  [
+    { word: "advice", alternates: [] },
+    { word: "advise", alternates: [] },
+  ],
+  [
+    { word: "ass", alternates: [] },
+    { word: "as", alternates: [] },
+  ],
+  [
+    { word: "base", alternates: [] },
+    { word: "bays", alternates: [] },
+  ],
+  [
+    { word: "bus", alternates: [] },
+    { word: "buzz", alternates: [] },
+  ],
+  [
+    { word: "cease", alternates: [] },
+    { word: "seize", alternates: [] },
+  ],
+  [
+    { word: "device", alternates: [] },
+    { word: "devise", alternates: [] },
+  ],
+  [
+    { word: "dice", alternates: [] },
+    { word: "dies", alternates: [] },
+  ],
+  [
+    { word: "face", alternates: [] },
+    { word: "phase", alternates: [] },
+  ],
+  [
+    { word: "fleece", alternates: [] },
+    { word: "fleas", alternates: [] },
+  ],
+  [
+    { word: "force", alternates: [] },
+    { word: "fours", alternates: [] },
+  ],
+  [
+    { word: "grace", alternates: [] },
+    { word: "graze", alternates: [] },
+  ],
+  [
+    { word: "gross", alternates: [] },
+    { word: "grows", alternates: [] },
+  ],
+  [
+    { word: "ice", alternates: [] },
+    { word: "eyes", alternates: [] },
+  ],
+  [
+    { word: "lace", alternates: [] },
+    { word: "lays", alternates: [] },
+  ],
+  [
+    { word: "loose", alternates: [] },
+    { word: "lose", alternates: [] },
+  ],
+  [
+    { word: "mace", alternates: [] },
+    { word: "maze", alternates: [] },
+  ],
+  [
+    { word: "pace", alternates: [] },
+    { word: "pays", alternates: [] },
+  ],
+  [
+    { word: "peace", alternates: ["piece"] },
+    { word: "peas", alternates: ["pees"] },
+  ],
+  [
+    { word: "place", alternates: [] },
+    { word: "plays", alternates: [] },
+  ],
+  [
+    { word: "price", alternates: [] },
+    { word: "prize", alternates: [] },
+  ],
+  [
+    { word: "race", alternates: [] },
+    { word: "raise", alternates: ["rays"] },
+  ],
+  [
+    { word: "rice", alternates: [] },
+    { word: "rise", alternates: ["ryes"] },
+  ],
+  [
+    { word: "sauce", alternates: [] },
+    { word: "saws", alternates: [] },
+  ],
+  [
+    { word: "source", alternates: [] },
+    { word: "sores", alternates: ["soars"] },
+  ],
+  [
+    { word: "spice", alternates: [] },
+    { word: "spies", alternates: [] },
+  ],
+  [
+    { word: "trace", alternates: [] },
+    { word: "trays", alternates: [] },
+  ],
+  [
+    { word: "vice", alternates: [] },
+    { word: "vies", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for M vs N (alphabetical by M word)
+const mNMinimalPairs = [
+  [
+    { word: "beam", alternates: [] },
+    { word: "bean", alternates: [] },
+  ],
+  [
+    { word: "dim", alternates: [] },
+    { word: "din", alternates: [] },
+  ],
+  [
+    { word: "dime", alternates: [] },
+    { word: "dine", alternates: [] },
+  ],
+  [
+    { word: "game", alternates: [] },
+    { word: "gain", alternates: [] },
+  ],
+  [
+    { word: "hem", alternates: [] },
+    { word: "hen", alternates: [] },
+  ],
+  [
+    { word: "lame", alternates: [] },
+    { word: "lane", alternates: [] },
+  ],
+  [
+    { word: "limb", alternates: [] },
+    { word: "Lynn", alternates: [] },
+  ],
+  [
+    { word: "lime", alternates: [] },
+    { word: "line", alternates: [] },
+  ],
+  [
+    { word: "ram", alternates: [] },
+    { word: "ran", alternates: [] },
+  ],
+  [
+    { word: "same", alternates: [] },
+    { word: "sane", alternates: [] },
+  ],
+  [
+    { word: "seem", alternates: ["seam"] },
+    { word: "seen", alternates: ["scene"] },
+  ],
+  [
+    { word: "sim", alternates: [] },
+    { word: "sin", alternates: [] },
+  ],
+  [
+    { word: "sum", alternates: ["some"] },
+    { word: "sun", alternates: ["son"] },
+  ],
+  [
+    { word: "team", alternates: [] },
+    { word: "teen", alternates: [] },
+  ],
+  [
+    { word: "M", alternates: ["Em"] },
+    { word: "N", alternates: [] },
+  ],
+  [
+    { word: "gum", alternates: [] },
+    { word: "gun", alternates: [] },
+  ],
+  [
+    { word: "ohm", alternates: [] },
+    { word: "own", alternates: [] },
+  ],
+  [
+    { word: "foam", alternates: [] },
+    { word: "phone", alternates: [] },
+  ],
+  [
+    { word: "them", alternates: [] },
+    { word: "then", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for N vs NG (alphabetical by N word)
+const nNgMinimalPairs = [
+  [
+    { word: "bin", alternates: ["been"] },
+    { word: "bing", alternates: [] },
+  ],
+  [
+    { word: "din", alternates: [] },
+    { word: "ding", alternates: [] },
+  ],
+  [
+    { word: "kin", alternates: [] },
+    { word: "king", alternates: [] },
+  ],
+  [
+    { word: "pin", alternates: [] },
+    { word: "ping", alternates: [] },
+  ],
+  [
+    { word: "sin", alternates: [] },
+    { word: "sing", alternates: [] },
+  ],
+  [
+    { word: "thin", alternates: [] },
+    { word: "thing", alternates: [] },
+  ],
+  [
+    { word: "win", alternates: [] },
+    { word: "wing", alternates: [] },
+  ],
+  [
+    { word: "talkin", alternates: [] },
+    { word: "talking", alternates: [] },
+  ],
+  [
+    { word: "walkin", alternates: [] },
+    { word: "walking", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for M vs NG (alphabetical by M word)
+const mNgMinimalPairs = [
+  [
+    { word: "dim", alternates: [] },
+    { word: "ding", alternates: [] },
+  ],
+  [
+    { word: "game", alternates: [] },
+    { word: "gang", alternates: [] },
+  ],
+  [
+    { word: "hem", alternates: [] },
+    { word: "hang", alternates: [] },
+  ],
+  [
+    { word: "lame", alternates: [] },
+    { word: "laying", alternates: [] },
+  ],
+  [
+    { word: "limb", alternates: [] },
+    { word: "ling", alternates: [] },
+  ],
+  [
+    { word: "same", alternates: [] },
+    { word: "saying", alternates: [] },
+  ],
+  [
+    { word: "sim", alternates: [] },
+    { word: "sing", alternates: [] },
+  ],
+  [
+    { word: "sum", alternates: ["some"] },
+    { word: "sung", alternates: [] },
+  ],
+  [
+    { word: "rim", alternates: [] },
+    { word: "ring", alternates: [] },
+  ],
+  [
+    { word: "whim", alternates: [] },
+    { word: "wing", alternates: [] },
+  ],
+  [
+    { word: "whim", alternates: [] },
+    { word: "whin", alternates: [] },
+  ],
+  [
+    { word: "bomb", alternates: [] },
+    { word: "bong", alternates: [] },
+  ],
+  [
+    { word: "calm", alternates: [] },
+    { word: "Kong", alternates: [] },
+  ],
+  [
+    { word: "palm", alternates: [] },
+    { word: "pong", alternates: [] },
+  ],
+  [
+    { word: "ROM", alternates: [] },
+    { word: "wrong", alternates: [] },
+  ],
+  [
+    { word: "psalm", alternates: [] },
+    { word: "song", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for TH vs T (alphabetical by TH word)
+const thTMinimalPairs = [
+  [
+    { word: "thank", alternates: [] },
+    { word: "tank", alternates: [] },
+  ],
+  [
+    { word: "theme", alternates: [] },
+    { word: "team", alternates: [] },
+  ],
+  [
+    { word: "thick", alternates: [] },
+    { word: "tick", alternates: [] },
+  ],
+  [
+    { word: "thigh", alternates: [] },
+    { word: "tie", alternates: [] },
+  ],
+  [
+    { word: "thin", alternates: [] },
+    { word: "tin", alternates: [] },
+  ],
+  [
+    { word: "thinker", alternates: [] },
+    { word: "tinker", alternates: [] },
+  ],
+  [
+    { word: "third", alternates: [] },
+    { word: "turd", alternates: [] },
+  ],
+  [
+    { word: "thong", alternates: [] },
+    { word: "tong", alternates: [] },
+  ],
+  [
+    { word: "thorn", alternates: [] },
+    { word: "torn", alternates: [] },
+  ],
+  [
+    { word: "three", alternates: [] },
+    { word: "tree", alternates: [] },
+  ],
+  [
+    { word: "through", alternates: ["threw"] },
+    { word: "true", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for TH vs F (alphabetical by TH word)
+const thFMinimalPairs = [
+  [
+    { word: "thin", alternates: [] },
+    { word: "fin", alternates: [] },
+  ],
+  [
+    { word: "thirst", alternates: [] },
+    { word: "first", alternates: [] },
+  ],
+  [
+    { word: "three", alternates: [] },
+    { word: "free", alternates: [] },
+  ],
+  [
+    { word: "with", alternates: [] },
+    { word: "whiff", alternates: [] },
+  ],
+  [
+    { word: "death", alternates: [] },
+    { word: "deaf", alternates: [] },
+  ],
+];
+
+// Minimal pairs data for R vs null (alphabetical by R word)
+const rNullMinimalPairs = [
+  [
+    { word: "are", alternates: [] },
+    { word: "ah", alternates: [] },
+  ],
+  [
+    { word: "art", alternates: [] },
+    { word: "ought", alternates: ["aught"] },
+  ],
+  [
+    { word: "card", alternates: [] },
+    { word: "cod", alternates: [] },
+  ],
+  [
+    { word: "cart", alternates: [] },
+    { word: "caught", alternates: ["cot"] },
+  ],
+  [
+    { word: "fear", alternates: [] },
+    { word: "fee", alternates: [] },
+  ],
+  [
+    { word: "here", alternates: [] },
+    { word: "he", alternates: [] },
+  ],
+  [
+    { word: "more", alternates: ["moor"] },
+    { word: "mow", alternates: ["Moe"] },
+  ],
+  [
+    { word: "near", alternates: [] },
+    { word: "knee", alternates: [] },
+  ],
+  [
+    { word: "or", alternates: [] },
+    { word: "owe", alternates: [] },
+  ],
+  [
+    { word: "word", alternates: [] },
+    { word: "wood", alternates: [] },
+  ],
+  [
+    { word: "heard", alternates: [] },
+    { word: "hood", alternates: [] },
+  ],
+];
+
 // Function to process minimal pairs data into quiz format
 const processMinimalPairsData = (pairsData) => {
   return pairsData
-    .map(([vowel1Data, vowel2Data]) => [
+    .map(([sound1Data, sound2Data]) => [
       {
-        word: vowel1Data.word,
-        options: [vowel1Data.word, vowel2Data.word],
-        vowelType: "VOWEL1",
-        alternates: vowel1Data.alternates,
+        word: sound1Data.word,
+        options: [sound1Data.word, sound2Data.word],
+        soundType: "SOUND1",
+        alternates: sound1Data.alternates,
       },
       {
-        word: vowel2Data.word,
-        options: [vowel1Data.word, vowel2Data.word],
-        vowelType: "VOWEL2",
-        alternates: vowel2Data.alternates,
+        word: sound2Data.word,
+        options: [sound1Data.word, sound2Data.word],
+        soundType: "SOUND2",
+        alternates: sound2Data.alternates,
       },
     ])
     .flat();
@@ -553,10 +1296,10 @@ const QUIZ_DATA = {
     title: "KIT vs FLEECE Minimal Pairs Quiz",
     description: "sick vs seek",
     pairs: processMinimalPairsData(kitFleeceMinimalPairs),
-    vowel1Name: "KIT",
-    vowel2Name: "FLEECE",
-    vowel1Symbol: "[ɪ]",
-    vowel2Symbol: "[i]",
+    sound1Name: "KIT",
+    sound2Name: "FLEECE",
+    sound1Symbol: "[ɪ]",
+    sound2Symbol: "[i]",
   },
   [QUIZ_TYPE_IDS.TRAP_DRESS]: {
     id: QUIZ_TYPE_IDS.TRAP_DRESS,
@@ -564,10 +1307,10 @@ const QUIZ_DATA = {
     title: "TRAP vs DRESS Minimal Pairs Quiz",
     description: "bad vs bed",
     pairs: processMinimalPairsData(trapDressMinimalPairs),
-    vowel1Name: "TRAP",
-    vowel2Name: "DRESS",
-    vowel1Symbol: "[æ]",
-    vowel2Symbol: "[ɛ]",
+    sound1Name: "TRAP",
+    sound2Name: "DRESS",
+    sound1Symbol: "[æ]",
+    sound2Symbol: "[ɛ]",
   },
   [QUIZ_TYPE_IDS.BAN_DRESS]: {
     id: QUIZ_TYPE_IDS.BAN_DRESS,
@@ -575,10 +1318,10 @@ const QUIZ_DATA = {
     title: "BAN vs DRESS Minimal Pairs Quiz",
     description: "tan vs ten",
     pairs: processMinimalPairsData(banDressMinimalPairs),
-    vowel1Name: "BAN",
-    vowel2Name: "DRESS",
-    vowel1Symbol: "[eə̯]",
-    vowel2Symbol: "[ɛ]",
+    sound1Name: "BAN",
+    sound2Name: "DRESS",
+    sound1Symbol: "[eə̯]",
+    sound2Symbol: "[ɛ]",
   },
   [QUIZ_TYPE_IDS.FOOT_GOOSE]: {
     id: QUIZ_TYPE_IDS.FOOT_GOOSE,
@@ -586,10 +1329,10 @@ const QUIZ_DATA = {
     title: "FOOT vs GOOSE Minimal Pairs Quiz",
     description: "look vs Luke",
     pairs: processMinimalPairsData(footGooseMinimalPairs),
-    vowel1Name: "FOOT",
-    vowel2Name: "GOOSE",
-    vowel1Symbol: "[ʊ]",
-    vowel2Symbol: "[ɨ̯u]",
+    sound1Name: "FOOT",
+    sound2Name: "GOOSE",
+    sound1Symbol: "[ʊ]",
+    sound2Symbol: "[ɨ̯u]",
   },
   [QUIZ_TYPE_IDS.STRUT_LOT]: {
     id: QUIZ_TYPE_IDS.STRUT_LOT,
@@ -597,10 +1340,131 @@ const QUIZ_DATA = {
     title: "STRUT vs LOT Minimal Pairs Quiz",
     description: "luck vs lock",
     pairs: processMinimalPairsData(strutLotMinimalPairs),
-    vowel1Name: "STRUT",
-    vowel2Name: "LOT",
-    vowel1Symbol: "[ʌ̟]",
-    vowel2Symbol: "[ɑ]",
+    sound1Name: "STRUT",
+    sound2Name: "LOT",
+    sound1Symbol: "[ʌ̟]",
+    sound2Symbol: "[ɑ]",
+  },
+  [QUIZ_TYPE_IDS.DH_D]: {
+    id: QUIZ_TYPE_IDS.DH_D,
+    name: "DH vs D",
+    title: "DH vs D Minimal Pairs Quiz",
+    description: "they vs day",
+    pairs: processMinimalPairsData(dhDMinimalPairs),
+    sound1Name: "DH",
+    sound2Name: "D",
+    sound1Symbol: "[ð]",
+    sound2Symbol: "[d]",
+  },
+  [QUIZ_TYPE_IDS.DARK_L_O]: {
+    id: QUIZ_TYPE_IDS.DARK_L_O,
+    name: "Dark L vs O",
+    title: "Dark L vs O Minimal Pairs Quiz",
+    description: "cold vs code",
+    pairs: processMinimalPairsData(darkLOMinimalPairs),
+    sound1Name: "Dark L",
+    sound2Name: "O",
+    sound1Symbol: "[ɫ]",
+    sound2Symbol: "[o]",
+  },
+  [QUIZ_TYPE_IDS.DARK_L_U]: {
+    id: QUIZ_TYPE_IDS.DARK_L_U,
+    name: "Dark L vs U",
+    title: "Dark L vs U Minimal Pairs Quiz",
+    description: "tool vs too",
+    pairs: processMinimalPairsData(darkLUMinimalPairs),
+    sound1Name: "Dark L",
+    sound2Name: "U",
+    sound1Symbol: "[ɫ]",
+    sound2Symbol: "[u]",
+  },
+  [QUIZ_TYPE_IDS.T_CH]: {
+    id: QUIZ_TYPE_IDS.T_CH,
+    name: "T vs CH",
+    title: "T vs CH Minimal Pairs Quiz",
+    description: "too vs choo",
+    pairs: processMinimalPairsData(tChMinimalPairs),
+    sound1Name: "T",
+    sound2Name: "CH",
+    sound1Symbol: "[t]",
+    sound2Symbol: "[tʃ]",
+  },
+  [QUIZ_TYPE_IDS.S_Z]: {
+    id: QUIZ_TYPE_IDS.S_Z,
+    name: "S vs Z",
+    title: "S vs Z Minimal Pairs Quiz",
+    description: "ice vs eyes",
+    pairs: processMinimalPairsData(sZMinimalPairs),
+    sound1Name: "S",
+    sound2Name: "Z",
+    sound1Symbol: "[s]",
+    sound2Symbol: "[z]",
+  },
+  [QUIZ_TYPE_IDS.M_N]: {
+    id: QUIZ_TYPE_IDS.M_N,
+    name: "M vs N",
+    title: "M vs N Minimal Pairs Quiz",
+    description: "sim vs sin",
+    pairs: processMinimalPairsData(mNMinimalPairs),
+    sound1Name: "M",
+    sound2Name: "N",
+    sound1Symbol: "[m]",
+    sound2Symbol: "[n]",
+  },
+  [QUIZ_TYPE_IDS.N_NG]: {
+    id: QUIZ_TYPE_IDS.N_NG,
+    name: "N vs NG",
+    title: "N vs NG Minimal Pairs Quiz",
+    description: "sin vs sing",
+    pairs: processMinimalPairsData(nNgMinimalPairs),
+    sound1Name: "N",
+    sound2Name: "NG",
+    sound1Symbol: "[n]",
+    sound2Symbol: "[ŋ]",
+  },
+  [QUIZ_TYPE_IDS.M_NG]: {
+    id: QUIZ_TYPE_IDS.M_NG,
+    name: "M vs NG",
+    title: "M vs NG Minimal Pairs Quiz",
+    description: "sim vs sing",
+    pairs: processMinimalPairsData(mNgMinimalPairs),
+    sound1Name: "M",
+    sound2Name: "NG",
+    sound1Symbol: "[m]",
+    sound2Symbol: "[ŋ]",
+  },
+  [QUIZ_TYPE_IDS.TH_T]: {
+    id: QUIZ_TYPE_IDS.TH_T,
+    name: "TH vs T",
+    title: "TH vs T Minimal Pairs Quiz",
+    description: "thigh vs tie",
+    pairs: processMinimalPairsData(thTMinimalPairs),
+    sound1Name: "TH",
+    sound2Name: "T",
+    sound1Symbol: "[θ]",
+    sound2Symbol: "[t]",
+  },
+  [QUIZ_TYPE_IDS.TH_F]: {
+    id: QUIZ_TYPE_IDS.TH_F,
+    name: "TH vs F",
+    title: "TH vs F Minimal Pairs Quiz",
+    description: "thin vs fin",
+    pairs: processMinimalPairsData(thFMinimalPairs),
+    sound1Name: "TH",
+    sound2Name: "F",
+    sound1Symbol: "[θ]",
+    sound2Symbol: "[f]",
+  },
+  [QUIZ_TYPE_IDS.R_NULL]: {
+    id: QUIZ_TYPE_IDS.R_NULL,
+    name: "R vs null",
+    title: "R vs null Minimal Pairs Quiz",
+    description: "here vs he",
+    pairs: processMinimalPairsData(rNullMinimalPairs),
+    sound1Name: "R",
+    sound2Name: "null",
+    sound1Symbol: "[ɹ]",
+    sound2Symbol: "[∅]",
   },
 };
 
@@ -689,7 +1553,7 @@ export default function Quiz() {
   const [quizSettings, setQuizSettings] = useState({
     numberOfQuestions: 10,
     autoPlayAudio: true,
-    showVowelSymbols: true,
+    showSoundSymbols: true,
   });
 
   // Load previous quiz results from localStorage
@@ -1136,7 +2000,7 @@ export default function Quiz() {
     let performanceLevel, message, colorClass;
     if (percentage === 100) {
       performanceLevel = "Perfect";
-      message = "Perfect! You've mastered this vowel distinction!";
+      message = "Perfect! You've mastered this sound distinction!";
       colorClass = "text-green-600 dark:text-green-400";
     } else if (percentage >= 80) {
       performanceLevel = "Good";
@@ -1206,7 +2070,7 @@ export default function Quiz() {
                 </div>
               </div>
 
-              {/* Vowel Distinction Info */}
+              {/* Sound Distinction Info */}
               {currentQuizData && (
                 <div className="flex items-center justify-center">
                   <div className="text-center">
@@ -1216,19 +2080,19 @@ export default function Quiz() {
                     <div className="flex justify-center items-center gap-1 text-xs">
                       <div className="text-center">
                         <div className="font-mono text-xs">
-                          {currentQuizData.vowel1Symbol}
+                          {currentQuizData.sound1Symbol}
                         </div>
                         <div className="text-muted-foreground text-xs">
-                          {currentQuizData.vowel1Name}
+                          {currentQuizData.sound1Name}
                         </div>
                       </div>
                       <div className="text-muted-foreground text-xs">vs</div>
                       <div className="text-center">
                         <div className="font-mono text-xs">
-                          {currentQuizData.vowel2Symbol}
+                          {currentQuizData.sound2Symbol}
                         </div>
                         <div className="text-muted-foreground text-xs">
-                          {currentQuizData.vowel2Name}
+                          {currentQuizData.sound2Name}
                         </div>
                       </div>
                     </div>
@@ -1354,22 +2218,22 @@ export default function Quiz() {
                 </div>
               </div> */}
 
-              {/* Show Vowel Symbols */}
+              {/* Show Sound Symbols */}
               {/* <div className="space-y-2">
                 <label className="text-sm font-medium">Display Options</label>
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="showVowelSymbols"
-                    checked={quizSettings.showVowelSymbols}
+                    id="showSoundSymbols"
+                    checked={quizSettings.showSoundSymbols}
                     onCheckedChange={(checked) =>
-                      handleSettingsChange("showVowelSymbols", checked)
+                      handleSettingsChange("showSoundSymbols", checked)
                     }
                   />
                   <label
-                    htmlFor="showVowelSymbols"
+                    htmlFor="showSoundSymbols"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                   >
-                    Show vowel symbols (IPA)
+                    Show sound symbols (IPA)
                   </label>
                 </div>
               </div> */}
@@ -1416,14 +2280,16 @@ export default function Quiz() {
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto px-3">
               <div className="grid grid-cols-2 gap-2">
-                {/* Column 1: FLEECE, DRESS, DRESS */}
+                {/* Column 1: Vowels */}
                 <div className="space-y-2">
                   {Object.values(QUIZ_DATA)
                     .filter(
                       (quizData) =>
                         quizData.id === QUIZ_TYPE_IDS.KIT_FLEECE ||
                         quizData.id === QUIZ_TYPE_IDS.TRAP_DRESS ||
-                        quizData.id === QUIZ_TYPE_IDS.BAN_DRESS
+                        quizData.id === QUIZ_TYPE_IDS.BAN_DRESS ||
+                        quizData.id === QUIZ_TYPE_IDS.FOOT_GOOSE ||
+                        quizData.id === QUIZ_TYPE_IDS.STRUT_LOT
                     )
                     .map((quizData) => {
                       const previousResult = previousResults[quizData.id];
@@ -1475,13 +2341,22 @@ export default function Quiz() {
                     })}
                 </div>
 
-                {/* Column 2: FOOT, STRUT */}
+                {/* Column 2: Consonants */}
                 <div className="space-y-2">
                   {Object.values(QUIZ_DATA)
                     .filter(
                       (quizData) =>
-                        quizData.id === QUIZ_TYPE_IDS.FOOT_GOOSE ||
-                        quizData.id === QUIZ_TYPE_IDS.STRUT_LOT
+                        quizData.id === QUIZ_TYPE_IDS.DH_D ||
+                        quizData.id === QUIZ_TYPE_IDS.DARK_L_O ||
+                        quizData.id === QUIZ_TYPE_IDS.DARK_L_U ||
+                        quizData.id === QUIZ_TYPE_IDS.T_CH ||
+                        quizData.id === QUIZ_TYPE_IDS.S_Z ||
+                        quizData.id === QUIZ_TYPE_IDS.M_N ||
+                        quizData.id === QUIZ_TYPE_IDS.N_NG ||
+                        quizData.id === QUIZ_TYPE_IDS.M_NG ||
+                        quizData.id === QUIZ_TYPE_IDS.TH_T ||
+                        quizData.id === QUIZ_TYPE_IDS.TH_F ||
+                        quizData.id === QUIZ_TYPE_IDS.R_NULL
                     )
                     .map((quizData) => {
                       const previousResult = previousResults[quizData.id];
@@ -1731,7 +2606,7 @@ export default function Quiz() {
             {/* Question */}
             <div className="text-center">
               <p className="text-lg font-medium">Which word did you hear?</p>
-              {quizSettings.showVowelSymbols}
+              {quizSettings.showSoundSymbols}
             </div>
 
             {/* Answer Options */}
@@ -1763,11 +2638,11 @@ export default function Quiz() {
                     : [];
                 }
 
-                // Determine which vowel symbol to show for this option
-                const vowelSymbol =
+                // Determine which sound symbol to show for this option
+                const soundSymbol =
                   index === 0
-                    ? `${currentQuizData.vowel1Name} ${currentQuizData.vowel1Symbol}`
-                    : `${currentQuizData.vowel2Name} ${currentQuizData.vowel2Symbol}`;
+                    ? `${currentQuizData.sound1Name} ${currentQuizData.sound1Symbol}`
+                    : `${currentQuizData.sound2Name} ${currentQuizData.sound2Symbol}`;
 
                 return (
                   <div
@@ -1793,16 +2668,16 @@ export default function Quiz() {
                       <div className="flex flex-col items-center">
                         {optionAlternates.length > 0 ? (
                           <span>
-                            {option} / {optionAlternates.join(" / ")}
+                            {option}, {optionAlternates.join(", ")}
                           </span>
                         ) : (
                           <span>{option}</span>
                         )}
                       </div>
                     </Button>
-                    {quizSettings.showVowelSymbols && (
+                    {quizSettings.showSoundSymbols && (
                       <div className="text-xs text-muted-foreground">
-                        {vowelSymbol}
+                        {soundSymbol}
                       </div>
                     )}
                   </div>
