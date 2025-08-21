@@ -1,4 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
+import { getQuizStats } from "../utils/quizStats";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import {
+  getPerformanceLevel,
+  getTextColorClass,
+  getBorderColorClass,
+  getPerformanceMessage,
+  getPerformanceLevelName,
+  getGradientNumberLineLegend,
+  getGradientColorStyle,
+  getGradientBorderStyle,
+  getQuizCardTextProps,
+} from "../utils/performanceColors";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import {
   Card,
@@ -1556,19 +1569,11 @@ export default function Quiz() {
     showSoundSymbols: true,
   });
 
-  // Load previous quiz results from localStorage
-  const [previousResults, setPreviousResults] = useState({});
-
-  useEffect(() => {
-    const stored = localStorage.getItem("quizResults");
-    if (stored) {
-      try {
-        setPreviousResults(JSON.parse(stored));
-      } catch (error) {
-        console.error("Error loading quiz results:", error);
-      }
-    }
-  }, []);
+  // Load previous quiz results from localStorage using custom hook
+  const [previousResults, setPreviousResults] = useLocalStorage(
+    "quizResults",
+    {}
+  );
 
   // Save quiz result to localStorage
   const saveQuizResult = (quizTypeId, score, totalQuestions) => {
@@ -1583,7 +1588,6 @@ export default function Quiz() {
       },
     };
     setPreviousResults(newResults);
-    localStorage.setItem("quizResults", JSON.stringify(newResults));
   };
 
   const [selectedQuizType, setSelectedQuizType] = useState(null);
@@ -1617,87 +1621,12 @@ export default function Quiz() {
   // Get current quiz data
   const currentQuizData = selectedQuizType ? QUIZ_DATA[selectedQuizType] : null;
 
-  // Calculate average performance for categories
-  const getCategoryAverage = (category) => {
-    const categoryQuizIds =
-      category === "vowels"
-        ? [
-            QUIZ_TYPE_IDS.KIT_FLEECE,
-            QUIZ_TYPE_IDS.TRAP_DRESS,
-            QUIZ_TYPE_IDS.BAN_DRESS,
-            QUIZ_TYPE_IDS.FOOT_GOOSE,
-            QUIZ_TYPE_IDS.STRUT_LOT,
-          ]
-        : [
-            QUIZ_TYPE_IDS.DH_D,
-            QUIZ_TYPE_IDS.TH_T,
-            QUIZ_TYPE_IDS.TH_F,
-            QUIZ_TYPE_IDS.R_NULL,
-            QUIZ_TYPE_IDS.T_CH,
-            QUIZ_TYPE_IDS.DARK_L_O,
-            QUIZ_TYPE_IDS.DARK_L_U,
-            QUIZ_TYPE_IDS.S_Z,
-            QUIZ_TYPE_IDS.M_N,
-            QUIZ_TYPE_IDS.N_NG,
-            QUIZ_TYPE_IDS.M_NG,
-          ];
-
-    const results = categoryQuizIds
-      .map((id) => previousResults[id])
-      .filter((result) => result !== undefined);
-
-    if (results.length === 0) return null;
-
-    const average =
-      results.reduce((sum, result) => sum + result.percentage, 0) /
-      results.length;
-    return Math.round(average);
-  };
-
-  const vowelsAverage = getCategoryAverage("vowels");
-  const consonantsAverage = getCategoryAverage("consonants");
-
-  // Calculate completion percentage for categories
-  const getCategoryCompletion = (category) => {
-    const categoryQuizIds =
-      category === "vowels"
-        ? [
-            QUIZ_TYPE_IDS.KIT_FLEECE,
-            QUIZ_TYPE_IDS.TRAP_DRESS,
-            QUIZ_TYPE_IDS.BAN_DRESS,
-            QUIZ_TYPE_IDS.FOOT_GOOSE,
-            QUIZ_TYPE_IDS.STRUT_LOT,
-          ]
-        : [
-            QUIZ_TYPE_IDS.DH_D,
-            QUIZ_TYPE_IDS.TH_T,
-            QUIZ_TYPE_IDS.TH_F,
-            QUIZ_TYPE_IDS.R_NULL,
-            QUIZ_TYPE_IDS.T_CH,
-            QUIZ_TYPE_IDS.DARK_L_O,
-            QUIZ_TYPE_IDS.DARK_L_U,
-            QUIZ_TYPE_IDS.S_Z,
-            QUIZ_TYPE_IDS.M_N,
-            QUIZ_TYPE_IDS.N_NG,
-            QUIZ_TYPE_IDS.M_NG,
-          ];
-
-    const completedQuizzes = categoryQuizIds.filter(
-      (id) => previousResults[id] !== undefined
-    );
-    const completionPercentage = Math.round(
-      (completedQuizzes.length / categoryQuizIds.length) * 100
-    );
-
-    return {
-      completed: completedQuizzes.length,
-      total: categoryQuizIds.length,
-      percentage: completionPercentage,
-    };
-  };
-
-  const vowelsCompletion = getCategoryCompletion("vowels");
-  const consonantsCompletion = getCategoryCompletion("consonants");
+  // Get quiz statistics using utility function
+  const quizStats = getQuizStats();
+  const vowelsAverage = quizStats.vowels.average;
+  const consonantsAverage = quizStats.consonants.average;
+  const vowelsCompletion = quizStats.vowels.completion;
+  const consonantsCompletion = quizStats.consonants.completion;
 
   // Initialize shuffled questions when quiz type is selected
   useEffect(() => {
@@ -2079,25 +2008,10 @@ export default function Quiz() {
   if (showResults) {
     const percentage = Math.round((score / shuffledQuestions.length) * 100);
 
-    // Determine performance level and message
-    let performanceLevel, message, colorClass;
-    if (percentage === 100) {
-      performanceLevel = "Perfect";
-      message = "Perfect! You've mastered this sound distinction!";
-      colorClass = "text-green-600 dark:text-green-400";
-    } else if (percentage >= 80) {
-      performanceLevel = "Good";
-      message = "Good work! You have a solid grasp of this distinction.";
-      colorClass = "text-blue-500";
-    } else if (percentage >= 60) {
-      performanceLevel = "Fair";
-      message = "Fair performance. More practice will help you improve.";
-      colorClass = "text-yellow-500";
-    } else {
-      performanceLevel = "Needs Practice";
-      message = "This distinction needs more practice. Don't give up!";
-      colorClass = "text-red-600 dark:text-red-400";
-    }
+    // Determine performance level and message using centralized functions
+    const performanceLevel = getPerformanceLevelName(percentage);
+    const message = getPerformanceMessage(percentage);
+    const colorClass = getTextColorClass(percentage);
 
     return (
       <div className="h-[calc(100vh-var(--navbar-height))] sm:h-screen bg-background flex items-center justify-center p-2 sm:p-4 overflow-hidden">
@@ -2135,13 +2049,17 @@ export default function Quiz() {
                         strokeDashoffset={`${
                           2 * Math.PI * 30 * (1 - percentage / 100)
                         }`}
-                        className={`${colorClass} transition-all duration-1000`}
+                        style={getGradientColorStyle(percentage)}
+                        className="transition-all duration-1000"
                         strokeLinecap="round"
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
-                        <div className={`text-base font-bold ${colorClass}`}>
+                        <div
+                          className="text-base font-bold"
+                          style={getGradientColorStyle(percentage)}
+                        >
                           {percentage}%
                         </div>
                         <div className="text-xs text-muted-foreground">
@@ -2370,18 +2288,11 @@ export default function Quiz() {
                     setCurrentStep("quizType");
                   }}
                   className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                    vowelsAverage
-                      ? `border-2 ${
-                          vowelsAverage === 100
-                            ? "border-green-500"
-                            : vowelsAverage >= 80
-                            ? "border-blue-500"
-                            : vowelsAverage >= 60
-                            ? "border-yellow-500"
-                            : "border-red-500"
-                        }`
-                      : "border border-border"
+                    vowelsAverage ? "border-2" : "border border-border"
                   } bg-card`}
+                  style={
+                    vowelsAverage ? getGradientBorderStyle(vowelsAverage) : {}
+                  }
                 >
                   <div className="relative z-10 flex flex-col items-center justify-center text-center">
                     <div className="font-semibold text-lg mb-2">Vowels</div>
@@ -2393,15 +2304,8 @@ export default function Quiz() {
                       </div>
                       {vowelsAverage && (
                         <div
-                          className={`text-[10px] sm:text-xs font-bold ${
-                            vowelsAverage === 100
-                              ? "text-green-500"
-                              : vowelsAverage >= 80
-                              ? "text-blue-500"
-                              : vowelsAverage >= 60
-                              ? "text-yellow-500"
-                              : "text-red-500"
-                          }`}
+                          className="text-[10px] sm:text-xs font-bold"
+                          style={getGradientColorStyle(vowelsAverage)}
                         >
                           {vowelsAverage}% Average
                         </div>
@@ -2417,18 +2321,13 @@ export default function Quiz() {
                     setCurrentStep("quizType");
                   }}
                   className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                    consonantsAverage
-                      ? `border-2 ${
-                          consonantsAverage === 100
-                            ? "border-green-500"
-                            : consonantsAverage >= 80
-                            ? "border-blue-500"
-                            : consonantsAverage >= 60
-                            ? "border-yellow-500"
-                            : "border-red-500"
-                        }`
-                      : "border border-border"
+                    consonantsAverage ? "border-2" : "border border-border"
                   } bg-card`}
+                  style={
+                    consonantsAverage
+                      ? getGradientBorderStyle(consonantsAverage)
+                      : {}
+                  }
                 >
                   <div className="relative z-10 flex flex-col items-center justify-center text-center">
                     <div className="font-semibold text-lg mb-2">Consonants</div>
@@ -2440,15 +2339,8 @@ export default function Quiz() {
                       </div>
                       {consonantsAverage && (
                         <div
-                          className={`text-[10px] sm:text-xs font-bold ${
-                            consonantsAverage === 100
-                              ? "text-green-500"
-                              : consonantsAverage >= 80
-                              ? "text-blue-500"
-                              : consonantsAverage >= 60
-                              ? "text-yellow-500"
-                              : "text-red-500"
-                          }`}
+                          className="text-[10px] sm:text-xs font-bold"
+                          style={getGradientColorStyle(consonantsAverage)}
                         >
                           {consonantsAverage}% Average
                         </div>
@@ -2457,6 +2349,41 @@ export default function Quiz() {
                   </div>
                 </div>
               </div>
+
+              {/* Color Legend - Show when there are quiz results */}
+              {(vowelsAverage !== null || consonantsAverage !== null) && (
+                <div className="mt-4 p-3 pt-0 space-y-2">
+                  <p className="text-xs text-muted-foreground text-center">
+                    Performance Legend
+                  </p>
+                  <div className="flex flex-col items-center gap-2 text-xs">
+                    {(() => {
+                      const legend = getGradientNumberLineLegend();
+                      return (
+                        <>
+                          <div className="w-full max-w-xs relative">
+                            <div style={legend.gradientStyle}></div>
+                            <div className="relative mt-1 h-4">
+                              {legend.markers.map((marker, index) => (
+                                <div
+                                  key={index}
+                                  className="absolute flex flex-col items-center transform -translate-x-1/2"
+                                  style={{ left: marker.left }}
+                                >
+                                  <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                                  <span className="text-muted-foreground text-[10px] mt-1 whitespace-nowrap">
+                                    {marker.label}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -2491,17 +2418,16 @@ export default function Quiz() {
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
                               previousResult
-                                ? `border-2 ${
-                                    previousResult.percentage === 100
-                                      ? "border-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "border-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "border-yellow-500"
-                                      : "border-red-500"
-                                  }`
+                                ? "border-2"
                                 : "border border-border"
                             } bg-card`}
+                            style={
+                              previousResult
+                                ? getGradientBorderStyle(
+                                    previousResult.percentage
+                                  )
+                                : {}
+                            }
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -2510,19 +2436,7 @@ export default function Quiz() {
                               <div className="text-xs text-muted-foreground">
                                 {quizData.description}
                               </div>
-                              <div
-                                className={`text-xs font-bold mt-1 ${
-                                  previousResult
-                                    ? previousResult.percentage === 100
-                                      ? "text-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "text-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "text-yellow-500"
-                                      : "text-red-500"
-                                    : "text-muted-foreground"
-                                }`}
-                              >
+                              <div {...getQuizCardTextProps(previousResult)}>
                                 {previousResult
                                   ? `${previousResult.percentage}%`
                                   : "No Result Yet"}
@@ -2549,17 +2463,16 @@ export default function Quiz() {
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
                               previousResult
-                                ? `border-2 ${
-                                    previousResult.percentage === 100
-                                      ? "border-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "border-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "border-yellow-500"
-                                      : "border-red-500"
-                                  }`
+                                ? "border-2"
                                 : "border border-border"
                             } bg-card`}
+                            style={
+                              previousResult
+                                ? getGradientBorderStyle(
+                                    previousResult.percentage
+                                  )
+                                : {}
+                            }
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -2568,19 +2481,7 @@ export default function Quiz() {
                               <div className="text-xs text-muted-foreground">
                                 {quizData.description}
                               </div>
-                              <div
-                                className={`text-xs font-bold mt-1 ${
-                                  previousResult
-                                    ? previousResult.percentage === 100
-                                      ? "text-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "text-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "text-yellow-500"
-                                      : "text-red-500"
-                                    : "text-muted-foreground"
-                                }`}
-                              >
+                              <div {...getQuizCardTextProps(previousResult)}>
                                 {previousResult
                                   ? `${previousResult.percentage}%`
                                   : "No Result Yet"}
@@ -2613,17 +2514,16 @@ export default function Quiz() {
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
                               previousResult
-                                ? `border-2 ${
-                                    previousResult.percentage === 100
-                                      ? "border-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "border-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "border-yellow-500"
-                                      : "border-red-500"
-                                  }`
+                                ? "border-2"
                                 : "border border-border"
                             } bg-card`}
+                            style={
+                              previousResult
+                                ? getGradientBorderStyle(
+                                    previousResult.percentage
+                                  )
+                                : {}
+                            }
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -2633,17 +2533,7 @@ export default function Quiz() {
                                 {quizData.description}
                               </div>
                               <div
-                                className={`text-[11px] sm:text-xs font-bold mt-1 ${
-                                  previousResult
-                                    ? previousResult.percentage === 100
-                                      ? "text-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "text-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "text-yellow-500"
-                                      : "text-red-500"
-                                    : "text-muted-foreground"
-                                }`}
+                                {...getQuizCardTextProps(previousResult, true)}
                               >
                                 {previousResult
                                   ? `${previousResult.percentage}%`
@@ -2673,17 +2563,16 @@ export default function Quiz() {
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
                               previousResult
-                                ? `border-2 ${
-                                    previousResult.percentage === 100
-                                      ? "border-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "border-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "border-yellow-500"
-                                      : "border-red-500"
-                                  }`
+                                ? "border-2"
                                 : "border border-border"
                             } bg-card`}
+                            style={
+                              previousResult
+                                ? getGradientBorderStyle(
+                                    previousResult.percentage
+                                  )
+                                : {}
+                            }
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -2693,17 +2582,7 @@ export default function Quiz() {
                                 {quizData.description}
                               </div>
                               <div
-                                className={`text-[11px] sm:text-xs font-bold mt-1 ${
-                                  previousResult
-                                    ? previousResult.percentage === 100
-                                      ? "text-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "text-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "text-yellow-500"
-                                      : "text-red-500"
-                                    : "text-muted-foreground"
-                                }`}
+                                {...getQuizCardTextProps(previousResult, true)}
                               >
                                 {previousResult
                                   ? `${previousResult.percentage}%`
@@ -2732,17 +2611,16 @@ export default function Quiz() {
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
                               previousResult
-                                ? `border-2 ${
-                                    previousResult.percentage === 100
-                                      ? "border-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "border-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "border-yellow-500"
-                                      : "border-red-500"
-                                  }`
+                                ? "border-2"
                                 : "border border-border"
                             } bg-card`}
+                            style={
+                              previousResult
+                                ? getGradientBorderStyle(
+                                    previousResult.percentage
+                                  )
+                                : {}
+                            }
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -2752,17 +2630,7 @@ export default function Quiz() {
                                 {quizData.description}
                               </div>
                               <div
-                                className={`text-[11px] sm:text-xs font-bold mt-1 ${
-                                  previousResult
-                                    ? previousResult.percentage === 100
-                                      ? "text-green-500"
-                                      : previousResult.percentage >= 80
-                                      ? "text-blue-500"
-                                      : previousResult.percentage >= 60
-                                      ? "text-yellow-500"
-                                      : "text-red-500"
-                                    : "text-muted-foreground"
-                                }`}
+                                {...getQuizCardTextProps(previousResult, true)}
                               >
                                 {previousResult
                                   ? `${previousResult.percentage}%`
@@ -2790,23 +2658,31 @@ export default function Quiz() {
                 <p className="text-xs text-muted-foreground text-center">
                   Note: Shows last result for each quiz type
                 </p>
-                <div className="flex justify-center gap-3 text-xs">
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span className="text-muted-foreground">100%</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                    <span className="text-muted-foreground">80%+</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <span className="text-muted-foreground">60%+</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <span className="text-muted-foreground">&lt;60%</span>
-                  </div>
+                <div className="flex flex-col items-center gap-2 text-xs">
+                  {(() => {
+                    const legend = getGradientNumberLineLegend();
+                    return (
+                      <>
+                        <div className="w-full max-w-xs relative">
+                          <div style={legend.gradientStyle}></div>
+                          <div className="relative mt-1 h-4">
+                            {legend.markers.map((marker, index) => (
+                              <div
+                                key={index}
+                                className="absolute flex flex-col items-center transform -translate-x-1/2"
+                                style={{ left: marker.left }}
+                              >
+                                <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+                                <span className="text-muted-foreground text-[10px] mt-1 whitespace-nowrap">
+                                  {marker.label}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
                 <div className="flex justify-center">
                   <Button
@@ -2849,7 +2725,6 @@ export default function Quiz() {
                 <Button
                   onClick={() => {
                     setPreviousResults({});
-                    localStorage.removeItem("quizResults");
                     setShowClearConfirm(false);
                   }}
                   variant="destructive"

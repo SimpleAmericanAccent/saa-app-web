@@ -57,6 +57,39 @@ import { ModeToggle } from "./mode-toggle";
 import useAuthStore from "core-frontend-web/src/stores/authStore";
 import { useIsMobile } from "core-frontend-web/src/hooks/use-mobile";
 import { User, LogOut, Settings } from "lucide-react";
+import { getQuizStats } from "../utils/quizStats";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import {
+  getTextColorClass,
+  getGradientColorStyle,
+} from "../utils/performanceColors";
+
+// Quiz statistics component for sidebar
+function QuizStats() {
+  // Use the hook to automatically sync with localStorage changes
+  const [quizResults] = useLocalStorage("quizResults", {});
+  const stats = getQuizStats();
+
+  if (!stats) {
+    return null;
+  }
+
+  return (
+    <div className="flex items-center gap-0 text-xs text-muted-foreground m-auto">
+      <span>
+        {stats.overall.completed}/{stats.overall.total}
+      </span>
+      {stats.overall.average && (
+        <span
+          className="font-medium"
+          style={getGradientColorStyle(stats.overall.average)}
+        >
+          &nbsp;@&nbsp;{stats.overall.average}% Avg
+        </span>
+      )}
+    </div>
+  );
+}
 
 // Custom Link component that closes mobile sidebar on click
 function SidebarLink({ to, children, ...props }) {
@@ -466,7 +499,12 @@ export function SidebarLeft() {
                 <SidebarMenuButton asChild tooltip="Quiz">
                   <SidebarLink to="/quiz" className="flex items-center gap-2">
                     <HelpCircle className="h-4 w-4" />
-                    {!isCollapsed && <span>Quiz</span>}
+                    {!isCollapsed && (
+                      <div className="flex items-center gap-2 flex-1">
+                        <span>Quiz</span>
+                        <QuizStats />
+                      </div>
+                    )}
                   </SidebarLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
