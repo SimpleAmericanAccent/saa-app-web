@@ -12,426 +12,403 @@ import { Play, Volume2, Loader2 } from "lucide-react";
 
 // Quiz type IDs for easy reference
 const QUIZ_TYPE_IDS = {
-  FLEECE_KIT: "fleece_kit",
-  DRESS_TRAP: "dress_trap",
-  DRESS_BAN: "dress_ban",
+  KIT_FLEECE: "kit_fleece",
+  TRAP_DRESS: "trap_dress",
+  BAN_DRESS: "ban_dress",
   FOOT_GOOSE: "foot_goose",
   STRUT_LOT: "strut_lot",
 };
 
-// Minimal pairs data for FLEECE vs KIT vowels (alphabetical by FLEECE word)
-const fleeceKitMinimalPairs = [
+// Minimal pairs data for KIT vs FLEECE vowels (alphabetical by KIT word)
+const kitFleeceMinimalPairs = [
   // Basic minimal pairs with alternates
   [
-    { word: "beach", alternates: ["beech"] },
     { word: "bitch", alternates: [] },
+    { word: "beach", alternates: ["beech"] },
   ],
   [
-    { word: "bead", alternates: [] },
     { word: "bid", alternates: [] },
+    { word: "bead", alternates: [] },
   ],
   [
-    { word: "bean", alternates: [] },
     { word: "bin", alternates: ["been"] },
+    { word: "bean", alternates: [] },
   ],
   [
-    { word: "bees", alternates: [] },
     { word: "biz", alternates: [] },
+    { word: "bees", alternates: [] },
   ],
   [
-    { word: "beat", alternates: ["beet"] },
     { word: "bit", alternates: [] },
+    { word: "beat", alternates: ["beet"] },
   ],
   [
-    { word: "cease", alternates: [] },
     { word: "sis", alternates: ["cis"] },
+    { word: "cease", alternates: [] },
   ],
   [
-    { word: "cheap", alternates: [] },
     { word: "chip", alternates: [] },
+    { word: "cheap", alternates: [] },
   ],
   [
-    { word: "cheek", alternates: [] },
     { word: "chick", alternates: [] },
+    { word: "cheek", alternates: [] },
   ],
   [
-    { word: "deal", alternates: [] },
     { word: "dill", alternates: [] },
+    { word: "deal", alternates: [] },
   ],
   [
-    { word: "deep", alternates: [] },
     { word: "dip", alternates: [] },
+    { word: "deep", alternates: [] },
   ],
   [
-    { word: "deed", alternates: [] },
     { word: "did", alternates: [] },
+    { word: "deed", alternates: [] },
   ],
   [
-    { word: "each", alternates: [] },
     { word: "itch", alternates: [] },
+    { word: "each", alternates: [] },
   ],
   [
-    { word: "eat", alternates: [] },
     { word: "it", alternates: [] },
+    { word: "eat", alternates: [] },
   ],
   [
-    { word: "ease", alternates: [] },
     { word: "is", alternates: [] },
+    { word: "ease", alternates: [] },
   ],
   [
-    { word: "eel", alternates: [] },
     { word: "ill", alternates: [] },
+    { word: "eel", alternates: [] },
   ],
   [
-    { word: "feet", alternates: ["feat"] },
     { word: "fit", alternates: [] },
+    { word: "feet", alternates: ["feat"] },
   ],
   [
-    { word: "feel", alternates: [] },
     { word: "fill", alternates: ["Phil"] },
+    { word: "feel", alternates: [] },
   ],
   [
-    { word: "fees", alternates: [] },
     { word: "fizz", alternates: [] },
+    { word: "fees", alternates: [] },
   ],
   [
-    { word: "green", alternates: [] },
     { word: "grin", alternates: [] },
+    { word: "green", alternates: [] },
   ],
   [
-    { word: "heap", alternates: [] },
     { word: "hip", alternates: [] },
+    { word: "heap", alternates: [] },
   ],
   [
-    { word: "heat", alternates: [] },
     { word: "hit", alternates: [] },
+    { word: "heat", alternates: [] },
   ],
   [
-    { word: "heel", alternates: ["heal"] },
     { word: "hill", alternates: [] },
+    { word: "heel", alternates: ["heal"] },
   ],
   [
-    { word: "he's", alternates: [] },
     { word: "his", alternates: [] },
+    { word: "he's", alternates: [] },
   ],
   [
-    { word: "Jeep", alternates: [] },
     { word: "gyp", alternates: [] },
+    { word: "Jeep", alternates: [] },
   ],
   [
-    { word: "keep", alternates: [] },
     { word: "kip", alternates: [] },
+    { word: "keep", alternates: [] },
   ],
   [
-    { word: "keyed", alternates: [] },
     { word: "kid", alternates: [] },
+    { word: "keyed", alternates: [] },
   ],
   [
-    { word: "leak", alternates: ["leek"] },
     { word: "lick", alternates: [] },
+    { word: "leak", alternates: ["leek"] },
   ],
   [
-    { word: "leap", alternates: [] },
     { word: "lip", alternates: [] },
+    { word: "leap", alternates: [] },
   ],
   [
-    { word: "leave", alternates: [] },
     { word: "live", alternates: [] },
+    { word: "leave", alternates: [] },
   ],
   [
-    { word: "Lee's", alternates: [] },
     { word: "Liz", alternates: [] },
+    { word: "Lee's", alternates: [] },
   ],
   [
-    { word: "meal", alternates: [] },
     { word: "mill", alternates: ["mil"] },
+    { word: "meal", alternates: [] },
   ],
   [
-    { word: "mean", alternates: [] },
     { word: "min", alternates: [] },
+    { word: "mean", alternates: [] },
   ],
   [
-    { word: "meet", alternates: ["meat"] },
     { word: "mitt", alternates: [] },
+    { word: "meet", alternates: ["meat"] },
   ],
   [
-    { word: "peach", alternates: [] },
     { word: "pitch", alternates: [] },
+    { word: "peach", alternates: [] },
   ],
   [
-    { word: "peek", alternates: ["peak", "pique"] },
     { word: "pick", alternates: ["pic"] },
+    { word: "peek", alternates: ["peak", "pique"] },
   ],
   [
-    { word: "peel", alternates: [] },
     { word: "pill", alternates: [] },
+    { word: "peel", alternates: [] },
   ],
   [
-    { word: "Pete", alternates: ["peat"] },
     { word: "pit", alternates: [] },
+    { word: "Pete", alternates: ["peat"] },
   ],
   [
-    { word: "piece", alternates: ["peace"] },
     { word: "piss", alternates: [] },
+    { word: "piece", alternates: ["peace"] },
   ],
   [
-    { word: "reach", alternates: [] },
     { word: "rich", alternates: [] },
+    { word: "reach", alternates: [] },
   ],
   [
-    { word: "read", alternates: ["reed"] },
     { word: "rid", alternates: [] },
+    { word: "read", alternates: ["reed"] },
   ],
   [
-    { word: "reef", alternates: [] },
     { word: "riff", alternates: [] },
+    { word: "reef", alternates: [] },
   ],
   [
-    { word: "seal", alternates: [] },
     { word: "sill", alternates: [] },
+    { word: "seal", alternates: [] },
   ],
   [
-    { word: "seat", alternates: [] },
     { word: "sit", alternates: [] },
+    { word: "seat", alternates: [] },
   ],
   [
-    { word: "seek", alternates: [] },
     { word: "sick", alternates: [] },
+    { word: "seek", alternates: [] },
   ],
   [
-    { word: "seen", alternates: ["scene"] },
     { word: "sin", alternates: [] },
+    { word: "seen", alternates: ["scene"] },
   ],
   [
-    { word: "seem", alternates: ["seam"] },
     { word: "sim", alternates: [] },
+    { word: "seem", alternates: ["seam"] },
   ],
   [
-    { word: "sheet", alternates: [] },
     { word: "shit", alternates: [] },
+    { word: "sheet", alternates: [] },
   ],
   [
-    { word: "sheen", alternates: [] },
     { word: "shin", alternates: [] },
+    { word: "sheen", alternates: [] },
   ],
   [
-    { word: "sheep", alternates: [] },
     { word: "ship", alternates: [] },
+    { word: "sheep", alternates: [] },
   ],
   [
-    { word: "sleep", alternates: [] },
     { word: "slip", alternates: [] },
+    { word: "sleep", alternates: [] },
   ],
   [
-    { word: "steal", alternates: ["steel"] },
     { word: "still", alternates: [] },
+    { word: "steal", alternates: ["steel"] },
   ],
   [
-    { word: "team", alternates: [] },
     { word: "Tim", alternates: [] },
+    { word: "team", alternates: [] },
   ],
   [
-    { word: "teen", alternates: [] },
     { word: "tin", alternates: [] },
+    { word: "teen", alternates: [] },
   ],
   [
-    { word: "wean", alternates: [] },
     { word: "win", alternates: [] },
+    { word: "wean", alternates: [] },
   ],
   [
-    { word: "week", alternates: ["weak"] },
     { word: "wick", alternates: [] },
+    { word: "week", alternates: ["weak"] },
   ],
   [
-    { word: "weep", alternates: [] },
     { word: "whip", alternates: [] },
+    { word: "weep", alternates: [] },
   ],
   [
-    { word: "wheat", alternates: [] },
     { word: "wit", alternates: [] },
+    { word: "wheat", alternates: [] },
   ],
   [
-    { word: "wheel", alternates: [] },
     { word: "will", alternates: [] },
+    { word: "wheel", alternates: [] },
   ],
   [
-    { word: "wheeze", alternates: [] },
     { word: "wiz", alternates: [] },
+    { word: "wheeze", alternates: [] },
   ],
 ];
 
-// Minimal pairs data for DRESS vs TRAP vowels (alphabetical by DRESS word)
-const dressTrapMinimalPairs = [
+// Minimal pairs data for TRAP vs DRESS vowels (alphabetical by TRAP word)
+const trapDressMinimalPairs = [
   [
-    { word: "bed", alternates: [] },
-    { word: "bad", alternates: [] },
-  ],
-  [
-    { word: "bet", alternates: [] },
-    { word: "bat", alternates: [] },
-  ],
-  [
-    { word: "dead", alternates: [] },
-    { word: "dad", alternates: ["Dad"] },
-  ],
-  [
-    { word: "fed", alternates: [] },
-    { word: "fad", alternates: [] },
-  ],
-  [
-    { word: "head", alternates: [] },
-    { word: "had", alternates: [] },
-  ],
-  [
-    { word: "led", alternates: ["lead"] },
-    { word: "lad", alternates: [] },
-  ],
-  [
-    { word: "met", alternates: [] },
-    { word: "mat", alternates: ["Matt"] },
-  ],
-  [
-    { word: "red", alternates: ["read"] },
-    { word: "rad", alternates: [] },
-  ],
-  [
-    { word: "said", alternates: [] },
-    { word: "sad", alternates: [] },
-  ],
-  [
-    { word: "set", alternates: [] },
-    { word: "sat", alternates: [] },
-  ],
-
-  [
-    { word: "ed", alternates: ["Ed"] },
     { word: "ad", alternates: ["add"] },
+    { word: "ed", alternates: ["Ed"] },
   ],
   [
-    { word: "L", alternates: ["Elle"] },
     { word: "Al", alternates: [] },
+    { word: "L", alternates: ["Elle"] },
   ],
   [
-    { word: "S", alternates: [] },
     { word: "ass", alternates: [] },
+    { word: "S", alternates: [] },
   ],
   [
-    { word: "Deb", alternates: [] },
-    { word: "dab", alternates: [] },
+    { word: "bad", alternates: [] },
+    { word: "bed", alternates: [] },
   ],
   [
-    { word: "neck", alternates: [] },
-    { word: "knack", alternates: [] },
-  ],
-  [
-    { word: "peck", alternates: ["pec"] },
-    { word: "pack", alternates: [] },
-  ],
-  [
-    { word: "wreck", alternates: [] },
-    { word: "rack", alternates: [] },
-  ],
-  [
-    { word: "tech", alternates: [] },
-    { word: "tack", alternates: [] },
-  ],
-  [
-    { word: "med", alternates: [] },
-    { word: "mad", alternates: [] },
-  ],
-  [
-    { word: "Ted", alternates: [] },
-    { word: "tad", alternates: [] },
-  ],
-  [
-    { word: "left", alternates: [] },
-    { word: "laughed", alternates: [] },
-  ],
-  [
-    { word: "left", alternates: [] },
-    { word: "laughed", alternates: [] },
-  ],
-  [
-    { word: "left", alternates: [] },
-    { word: "laughed", alternates: [] },
-  ],
-  [
-    { word: "beg", alternates: [] },
     { word: "bag", alternates: [] },
+    { word: "beg", alternates: [] },
   ],
   [
-    { word: "Meg", alternates: [] },
+    { word: "bat", alternates: [] },
+    { word: "bet", alternates: [] },
+  ],
+  [
+    { word: "dad", alternates: ["Dad"] },
+    { word: "dead", alternates: [] },
+  ],
+  [
+    { word: "dab", alternates: [] },
+    { word: "Deb", alternates: [] },
+  ],
+  [
+    { word: "fad", alternates: [] },
+    { word: "fed", alternates: [] },
+  ],
+  [
+    { word: "had", alternates: [] },
+    { word: "head", alternates: [] },
+  ],
+  [
+    { word: "knack", alternates: [] },
+    { word: "neck", alternates: [] },
+  ],
+  [
+    { word: "lad", alternates: [] },
+    { word: "led", alternates: ["lead"] },
+  ],
+  [
+    { word: "laughed", alternates: [] },
+    { word: "left", alternates: [] },
+  ],
+  [
+    { word: "mad", alternates: [] },
+    { word: "med", alternates: [] },
+  ],
+  [
     { word: "mag", alternates: [] },
+    { word: "Meg", alternates: [] },
   ],
   [
-    { word: "reg", alternates: [] },
+    { word: "mat", alternates: ["Matt"] },
+    { word: "met", alternates: [] },
+  ],
+  [
+    { word: "pack", alternates: [] },
+    { word: "peck", alternates: ["pec"] },
+  ],
+  [
+    { word: "rack", alternates: [] },
+    { word: "wreck", alternates: [] },
+  ],
+  [
+    { word: "rad", alternates: [] },
+    { word: "red", alternates: ["read"] },
+  ],
+  [
     { word: "rag", alternates: [] },
+    { word: "reg", alternates: [] },
   ],
   [
-    { word: "sell", alternates: [] },
+    { word: "sad", alternates: [] },
+    { word: "said", alternates: [] },
+  ],
+  [
     { word: "Sal", alternates: [] },
+    { word: "sell", alternates: [] },
   ],
   [
-    { word: "shell", alternates: [] },
+    { word: "sat", alternates: [] },
+    { word: "set", alternates: [] },
+  ],
+  [
     { word: "shall", alternates: [] },
+    { word: "shell", alternates: [] },
   ],
   [
-    { word: "reg", alternates: [] },
-    { word: "rag", alternates: [] },
+    { word: "tack", alternates: [] },
+    { word: "tech", alternates: [] },
   ],
   [
-    { word: "reg", alternates: [] },
-    { word: "rag", alternates: [] },
+    { word: "tad", alternates: [] },
+    { word: "Ted", alternates: [] },
   ],
 ];
 
-// Minimal pairs data for DRESS vs BAN vowels (alphabetical by DRESS word)
-const dressBanMinimalPairs = [
+// Minimal pairs data for BAN vs DRESS vowels (alphabetical by BAN word)
+const banDressMinimalPairs = [
   [
-    { word: "ten", alternates: [] },
-    { word: "tan", alternates: [] },
-  ],
-  [
-    { word: "send", alternates: [] },
-    { word: "sand", alternates: [] },
-  ],
-  [
-    { word: "Ken", alternates: [] },
     { word: "can", alternates: [] },
+    { word: "Ken", alternates: [] },
   ],
   [
-    { word: "den", alternates: [] },
     { word: "Dan", alternates: [] },
-  ],
-  [
     { word: "den", alternates: [] },
-    { word: "Dan", alternates: [] },
   ],
   [
-    { word: "Jen", alternates: ["gen"] },
     { word: "Jan", alternates: [] },
+    { word: "Jen", alternates: ["gen"] },
   ],
   [
-    { word: "lend", alternates: [] },
     { word: "land", alternates: [] },
+    { word: "lend", alternates: [] },
   ],
-
   [
-    { word: "pen", alternates: [] },
     { word: "pan", alternates: [] },
+    { word: "pen", alternates: [] },
   ],
   [
-    { word: "rent", alternates: [] },
     { word: "rant", alternates: [] },
-  ],
-
-  [
-    { word: "Venn", alternates: [] },
-    { word: "van", alternates: [] },
+    { word: "rent", alternates: [] },
   ],
   [
-    { word: "then", alternates: [] },
+    { word: "sand", alternates: [] },
+    { word: "send", alternates: [] },
+  ],
+  [
+    { word: "tan", alternates: [] },
+    { word: "ten", alternates: [] },
+  ],
+  [
     { word: "than", alternates: [] },
+    { word: "then", alternates: [] },
+  ],
+  [
+    { word: "van", alternates: [] },
+    { word: "Venn", alternates: [] },
   ],
 ];
 
@@ -570,38 +547,38 @@ const processMinimalPairsData = (pairsData) => {
 
 // Quiz data mapping
 const QUIZ_DATA = {
-  [QUIZ_TYPE_IDS.FLEECE_KIT]: {
-    id: QUIZ_TYPE_IDS.FLEECE_KIT,
-    name: "FLEECE vs KIT",
-    title: "FLEECE vs KIT Minimal Pairs Quiz",
-    description: "seek vs sick",
-    pairs: processMinimalPairsData(fleeceKitMinimalPairs),
-    vowel1Name: "FLEECE",
-    vowel2Name: "KIT",
-    vowel1Symbol: "[i]",
-    vowel2Symbol: "[ɪ]",
+  [QUIZ_TYPE_IDS.KIT_FLEECE]: {
+    id: QUIZ_TYPE_IDS.KIT_FLEECE,
+    name: "KIT vs FLEECE",
+    title: "KIT vs FLEECE Minimal Pairs Quiz",
+    description: "sick vs seek",
+    pairs: processMinimalPairsData(kitFleeceMinimalPairs),
+    vowel1Name: "KIT",
+    vowel2Name: "FLEECE",
+    vowel1Symbol: "[ɪ]",
+    vowel2Symbol: "[i]",
   },
-  [QUIZ_TYPE_IDS.DRESS_TRAP]: {
-    id: QUIZ_TYPE_IDS.DRESS_TRAP,
-    name: "DRESS vs TRAP",
-    title: "DRESS vs TRAP Minimal Pairs Quiz",
-    description: "bed vs bad",
-    pairs: processMinimalPairsData(dressTrapMinimalPairs),
-    vowel1Name: "DRESS",
-    vowel2Name: "TRAP",
-    vowel1Symbol: "[ɛ]",
-    vowel2Symbol: "[æ]",
+  [QUIZ_TYPE_IDS.TRAP_DRESS]: {
+    id: QUIZ_TYPE_IDS.TRAP_DRESS,
+    name: "TRAP vs DRESS",
+    title: "TRAP vs DRESS Minimal Pairs Quiz",
+    description: "bad vs bed",
+    pairs: processMinimalPairsData(trapDressMinimalPairs),
+    vowel1Name: "TRAP",
+    vowel2Name: "DRESS",
+    vowel1Symbol: "[æ]",
+    vowel2Symbol: "[ɛ]",
   },
-  [QUIZ_TYPE_IDS.DRESS_BAN]: {
-    id: QUIZ_TYPE_IDS.DRESS_BAN,
-    name: "DRESS vs BAN",
-    title: "DRESS vs BAN Minimal Pairs Quiz",
-    description: "ten vs tan",
-    pairs: processMinimalPairsData(dressBanMinimalPairs),
-    vowel1Name: "DRESS",
-    vowel2Name: "BAN",
-    vowel1Symbol: "[ɛ]",
-    vowel2Symbol: "[eə̯]",
+  [QUIZ_TYPE_IDS.BAN_DRESS]: {
+    id: QUIZ_TYPE_IDS.BAN_DRESS,
+    name: "BAN vs DRESS",
+    title: "BAN vs DRESS Minimal Pairs Quiz",
+    description: "tan vs ten",
+    pairs: processMinimalPairsData(banDressMinimalPairs),
+    vowel1Name: "BAN",
+    vowel2Name: "DRESS",
+    vowel1Symbol: "[eə̯]",
+    vowel2Symbol: "[ɛ]",
   },
   [QUIZ_TYPE_IDS.FOOT_GOOSE]: {
     id: QUIZ_TYPE_IDS.FOOT_GOOSE,
@@ -1444,9 +1421,9 @@ export default function Quiz() {
                   {Object.values(QUIZ_DATA)
                     .filter(
                       (quizData) =>
-                        quizData.id === QUIZ_TYPE_IDS.FLEECE_KIT ||
-                        quizData.id === QUIZ_TYPE_IDS.DRESS_TRAP ||
-                        quizData.id === QUIZ_TYPE_IDS.DRESS_BAN
+                        quizData.id === QUIZ_TYPE_IDS.KIT_FLEECE ||
+                        quizData.id === QUIZ_TYPE_IDS.TRAP_DRESS ||
+                        quizData.id === QUIZ_TYPE_IDS.BAN_DRESS
                     )
                     .map((quizData) => {
                       const previousResult = previousResults[quizData.id];
