@@ -1389,7 +1389,17 @@ const QUIZ_DATA = {
     sound1Symbol: "[ɫ]",
     sound2Symbol: "[u]",
   },
-
+  [QUIZ_TYPE_IDS.R_NULL]: {
+    id: QUIZ_TYPE_IDS.R_NULL,
+    name: "R vs null",
+    title: "R vs null Minimal Pairs Quiz",
+    description: "here vs he",
+    pairs: processMinimalPairsData(rNullMinimalPairs),
+    sound1Name: "R",
+    sound2Name: "null",
+    sound1Symbol: "[ɹ]",
+    sound2Symbol: "[∅]",
+  },
   [QUIZ_TYPE_IDS.S_Z]: {
     id: QUIZ_TYPE_IDS.S_Z,
     name: "S vs Z",
@@ -1455,17 +1465,6 @@ const QUIZ_DATA = {
     sound2Name: "F",
     sound1Symbol: "[θ]",
     sound2Symbol: "[f]",
-  },
-  [QUIZ_TYPE_IDS.R_NULL]: {
-    id: QUIZ_TYPE_IDS.R_NULL,
-    name: "R vs null",
-    title: "R vs null Minimal Pairs Quiz",
-    description: "here vs he",
-    pairs: processMinimalPairsData(rNullMinimalPairs),
-    sound1Name: "R",
-    sound2Name: "null",
-    sound1Symbol: "[ɹ]",
-    sound2Symbol: "[∅]",
   },
 };
 
@@ -1620,40 +1619,85 @@ export default function Quiz() {
 
   // Calculate average performance for categories
   const getCategoryAverage = (category) => {
-    const categoryQuizIds = category === "vowels" 
-      ? [
-          QUIZ_TYPE_IDS.KIT_FLEECE,
-          QUIZ_TYPE_IDS.TRAP_DRESS,
-          QUIZ_TYPE_IDS.BAN_DRESS,
-          QUIZ_TYPE_IDS.FOOT_GOOSE,
-          QUIZ_TYPE_IDS.STRUT_LOT
-        ]
-      : [
-          QUIZ_TYPE_IDS.DH_D,
-          QUIZ_TYPE_IDS.TH_T,
-          QUIZ_TYPE_IDS.TH_F,
-          QUIZ_TYPE_IDS.R_NULL,
-          QUIZ_TYPE_IDS.T_CH,
-          QUIZ_TYPE_IDS.DARK_L_O,
-          QUIZ_TYPE_IDS.DARK_L_U,
-          QUIZ_TYPE_IDS.S_Z,
-          QUIZ_TYPE_IDS.M_N,
-          QUIZ_TYPE_IDS.N_NG,
-          QUIZ_TYPE_IDS.M_NG
-        ];
+    const categoryQuizIds =
+      category === "vowels"
+        ? [
+            QUIZ_TYPE_IDS.KIT_FLEECE,
+            QUIZ_TYPE_IDS.TRAP_DRESS,
+            QUIZ_TYPE_IDS.BAN_DRESS,
+            QUIZ_TYPE_IDS.FOOT_GOOSE,
+            QUIZ_TYPE_IDS.STRUT_LOT,
+          ]
+        : [
+            QUIZ_TYPE_IDS.DH_D,
+            QUIZ_TYPE_IDS.TH_T,
+            QUIZ_TYPE_IDS.TH_F,
+            QUIZ_TYPE_IDS.R_NULL,
+            QUIZ_TYPE_IDS.T_CH,
+            QUIZ_TYPE_IDS.DARK_L_O,
+            QUIZ_TYPE_IDS.DARK_L_U,
+            QUIZ_TYPE_IDS.S_Z,
+            QUIZ_TYPE_IDS.M_N,
+            QUIZ_TYPE_IDS.N_NG,
+            QUIZ_TYPE_IDS.M_NG,
+          ];
 
     const results = categoryQuizIds
-      .map(id => previousResults[id])
-      .filter(result => result !== undefined);
+      .map((id) => previousResults[id])
+      .filter((result) => result !== undefined);
 
     if (results.length === 0) return null;
 
-    const average = results.reduce((sum, result) => sum + result.percentage, 0) / results.length;
+    const average =
+      results.reduce((sum, result) => sum + result.percentage, 0) /
+      results.length;
     return Math.round(average);
   };
 
   const vowelsAverage = getCategoryAverage("vowels");
   const consonantsAverage = getCategoryAverage("consonants");
+
+  // Calculate completion percentage for categories
+  const getCategoryCompletion = (category) => {
+    const categoryQuizIds =
+      category === "vowels"
+        ? [
+            QUIZ_TYPE_IDS.KIT_FLEECE,
+            QUIZ_TYPE_IDS.TRAP_DRESS,
+            QUIZ_TYPE_IDS.BAN_DRESS,
+            QUIZ_TYPE_IDS.FOOT_GOOSE,
+            QUIZ_TYPE_IDS.STRUT_LOT,
+          ]
+        : [
+            QUIZ_TYPE_IDS.DH_D,
+            QUIZ_TYPE_IDS.TH_T,
+            QUIZ_TYPE_IDS.TH_F,
+            QUIZ_TYPE_IDS.R_NULL,
+            QUIZ_TYPE_IDS.T_CH,
+            QUIZ_TYPE_IDS.DARK_L_O,
+            QUIZ_TYPE_IDS.DARK_L_U,
+            QUIZ_TYPE_IDS.S_Z,
+            QUIZ_TYPE_IDS.M_N,
+            QUIZ_TYPE_IDS.N_NG,
+            QUIZ_TYPE_IDS.M_NG,
+          ];
+
+    const completedQuizzes = categoryQuizIds.filter(
+      (id) => previousResults[id] !== undefined
+    );
+    const completionPercentage = Math.round(
+      (completedQuizzes.length / categoryQuizIds.length) * 100
+    );
+
+    return {
+      completed: completedQuizzes.length,
+      total: categoryQuizIds.length,
+      percentage: completionPercentage,
+    };
+  };
+
+  const vowelsCompletion = getCategoryCompletion("vowels");
+  const consonantsCompletion = getCategoryCompletion("consonants");
 
   // Initialize shuffled questions when quiz type is selected
   useEffect(() => {
@@ -2313,7 +2357,7 @@ export default function Quiz() {
         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-4 overflow-hidden">
           <Card className="w-full max-w-md max-h-[80vh] flex flex-col">
             <CardHeader className="pb-1 flex-shrink-0">
-              <CardTitle className="text-center text-base">
+              <CardTitle className="text-center text-xl">
                 Choose Category
               </CardTitle>
             </CardHeader>
@@ -2325,10 +2369,44 @@ export default function Quiz() {
                     setSelectedCategory("vowels");
                     setCurrentStep("quizType");
                   }}
-                  className="relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors border border-border bg-card"
+                  className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors ${
+                    vowelsAverage
+                      ? `border-2 ${
+                          vowelsAverage === 100
+                            ? "border-green-500"
+                            : vowelsAverage >= 80
+                            ? "border-blue-500"
+                            : vowelsAverage >= 60
+                            ? "border-yellow-500"
+                            : "border-red-500"
+                        }`
+                      : "border border-border"
+                  } bg-card`}
                 >
                   <div className="relative z-10 flex flex-col items-center justify-center text-center">
                     <div className="font-semibold text-lg mb-2">Vowels</div>
+
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">
+                        {vowelsCompletion.completed}/{vowelsCompletion.total}{" "}
+                        completed
+                      </div>
+                      {vowelsAverage && (
+                        <div
+                          className={`text-[10px] sm:text-xs font-bold ${
+                            vowelsAverage === 100
+                              ? "text-green-500"
+                              : vowelsAverage >= 80
+                              ? "text-blue-500"
+                              : vowelsAverage >= 60
+                              ? "text-yellow-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {vowelsAverage}% Average
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -2338,10 +2416,44 @@ export default function Quiz() {
                     setSelectedCategory("consonants");
                     setCurrentStep("quizType");
                   }}
-                  className="relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors border border-border bg-card"
+                  className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors ${
+                    consonantsAverage
+                      ? `border-2 ${
+                          consonantsAverage === 100
+                            ? "border-green-500"
+                            : consonantsAverage >= 80
+                            ? "border-blue-500"
+                            : consonantsAverage >= 60
+                            ? "border-yellow-500"
+                            : "border-red-500"
+                        }`
+                      : "border border-border"
+                  } bg-card`}
                 >
                   <div className="relative z-10 flex flex-col items-center justify-center text-center">
                     <div className="font-semibold text-lg mb-2">Consonants</div>
+
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">
+                        {consonantsCompletion.completed}/
+                        {consonantsCompletion.total} completed
+                      </div>
+                      {consonantsAverage && (
+                        <div
+                          className={`text-[10px] sm:text-xs font-bold ${
+                            consonantsAverage === 100
+                              ? "text-green-500"
+                              : consonantsAverage >= 80
+                              ? "text-blue-500"
+                              : consonantsAverage >= 60
+                              ? "text-yellow-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {consonantsAverage}% Average
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
