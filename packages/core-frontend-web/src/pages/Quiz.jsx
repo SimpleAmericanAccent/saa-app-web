@@ -1345,6 +1345,17 @@ const QUIZ_DATA = {
     sound1Symbol: "[ʌ̟]",
     sound2Symbol: "[ɑ]",
   },
+  [QUIZ_TYPE_IDS.T_CH]: {
+    id: QUIZ_TYPE_IDS.T_CH,
+    name: "T vs CH",
+    title: "T vs CH Minimal Pairs Quiz",
+    description: "too vs choo",
+    pairs: processMinimalPairsData(tChMinimalPairs),
+    sound1Name: "T",
+    sound2Name: "CH",
+    sound1Symbol: "[t]",
+    sound2Symbol: "[tʃ]",
+  },
   [QUIZ_TYPE_IDS.DH_D]: {
     id: QUIZ_TYPE_IDS.DH_D,
     name: "DH vs D",
@@ -1378,17 +1389,7 @@ const QUIZ_DATA = {
     sound1Symbol: "[ɫ]",
     sound2Symbol: "[u]",
   },
-  [QUIZ_TYPE_IDS.T_CH]: {
-    id: QUIZ_TYPE_IDS.T_CH,
-    name: "T vs CH",
-    title: "T vs CH Minimal Pairs Quiz",
-    description: "too vs choo",
-    pairs: processMinimalPairsData(tChMinimalPairs),
-    sound1Name: "T",
-    sound2Name: "CH",
-    sound1Symbol: "[t]",
-    sound2Symbol: "[tʃ]",
-  },
+
   [QUIZ_TYPE_IDS.S_Z]: {
     id: QUIZ_TYPE_IDS.S_Z,
     name: "S vs Z",
@@ -1602,7 +1603,8 @@ export default function Quiz() {
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
-  const [currentStep, setCurrentStep] = useState("quizType"); // "quizType", "settings", "quiz"
+  const [currentStep, setCurrentStep] = useState("category"); // "category", "quizType", "settings", "quiz"
+  const [selectedCategory, setSelectedCategory] = useState(null); // "vowels", "consonants"
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const audioRef = useRef(null);
 
@@ -1615,6 +1617,43 @@ export default function Quiz() {
 
   // Get current quiz data
   const currentQuizData = selectedQuizType ? QUIZ_DATA[selectedQuizType] : null;
+
+  // Calculate average performance for categories
+  const getCategoryAverage = (category) => {
+    const categoryQuizIds = category === "vowels" 
+      ? [
+          QUIZ_TYPE_IDS.KIT_FLEECE,
+          QUIZ_TYPE_IDS.TRAP_DRESS,
+          QUIZ_TYPE_IDS.BAN_DRESS,
+          QUIZ_TYPE_IDS.FOOT_GOOSE,
+          QUIZ_TYPE_IDS.STRUT_LOT
+        ]
+      : [
+          QUIZ_TYPE_IDS.DH_D,
+          QUIZ_TYPE_IDS.TH_T,
+          QUIZ_TYPE_IDS.TH_F,
+          QUIZ_TYPE_IDS.R_NULL,
+          QUIZ_TYPE_IDS.T_CH,
+          QUIZ_TYPE_IDS.DARK_L_O,
+          QUIZ_TYPE_IDS.DARK_L_U,
+          QUIZ_TYPE_IDS.S_Z,
+          QUIZ_TYPE_IDS.M_N,
+          QUIZ_TYPE_IDS.N_NG,
+          QUIZ_TYPE_IDS.M_NG
+        ];
+
+    const results = categoryQuizIds
+      .map(id => previousResults[id])
+      .filter(result => result !== undefined);
+
+    if (results.length === 0) return null;
+
+    const average = results.reduce((sum, result) => sum + result.percentage, 0) / results.length;
+    return Math.round(average);
+  };
+
+  const vowelsAverage = getCategoryAverage("vowels");
+  const consonantsAverage = getCategoryAverage("consonants");
 
   // Initialize shuffled questions when quiz type is selected
   useEffect(() => {
@@ -2125,7 +2164,7 @@ export default function Quiz() {
                     setHasAutoPlayed(false);
                     setPlayingSource(null);
                     setHasUserInteracted(false);
-                    setCurrentStep("quizType");
+                    setCurrentStep("category");
                     setShuffledQuestions([]);
                   }}
                   variant="outline"
@@ -2269,146 +2308,371 @@ export default function Quiz() {
         </div>
       )}
 
-      {/* Quiz Type Selection Step */}
-      {currentStep === "quizType" && (
+      {/* Category Selection Step */}
+      {currentStep === "category" && (
         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-4 overflow-hidden">
           <Card className="w-full max-w-md max-h-[80vh] flex flex-col">
             <CardHeader className="pb-1 flex-shrink-0">
               <CardTitle className="text-center text-base">
-                Choose Quiz Type
+                Choose Category
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto px-3">
-              <div className="grid grid-cols-2 gap-2">
-                {/* Column 1: Vowels */}
-                <div className="space-y-2">
-                  {Object.values(QUIZ_DATA)
-                    .filter(
-                      (quizData) =>
-                        quizData.id === QUIZ_TYPE_IDS.KIT_FLEECE ||
-                        quizData.id === QUIZ_TYPE_IDS.TRAP_DRESS ||
-                        quizData.id === QUIZ_TYPE_IDS.BAN_DRESS ||
-                        quizData.id === QUIZ_TYPE_IDS.FOOT_GOOSE ||
-                        quizData.id === QUIZ_TYPE_IDS.STRUT_LOT
-                    )
-                    .map((quizData) => {
-                      const previousResult = previousResults[quizData.id];
-                      return (
-                        <div
-                          key={quizData.id}
-                          onClick={() => handleQuizTypeSelect(quizData.id)}
-                          className={`relative w-full cursor-pointer rounded-lg p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                            previousResult
-                              ? `border-2 ${
-                                  previousResult.percentage === 100
-                                    ? "border-green-500"
-                                    : previousResult.percentage >= 80
-                                    ? "border-blue-500"
-                                    : previousResult.percentage >= 60
-                                    ? "border-yellow-500"
-                                    : "border-red-500"
-                                }`
-                              : "border border-border"
-                          } bg-card`}
-                        >
-                          <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                            <div className="font-semibold text-xs">
-                              {quizData.name}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {quizData.description}
-                            </div>
-                            <div
-                              className={`text-xs font-bold mt-1 ${
-                                previousResult
-                                  ? previousResult.percentage === 100
-                                    ? "text-green-500"
-                                    : previousResult.percentage >= 80
-                                    ? "text-blue-500"
-                                    : previousResult.percentage >= 60
-                                    ? "text-yellow-500"
-                                    : "text-red-500"
-                                  : "text-muted-foreground"
-                              }`}
-                            >
-                              {previousResult
-                                ? `${previousResult.percentage}%`
-                                : "No Result Yet"}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Vowels Category */}
+                <div
+                  onClick={() => {
+                    setSelectedCategory("vowels");
+                    setCurrentStep("quizType");
+                  }}
+                  className="relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors border border-border bg-card"
+                >
+                  <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                    <div className="font-semibold text-lg mb-2">Vowels</div>
+                  </div>
                 </div>
 
-                {/* Column 2: Consonants */}
-                <div className="space-y-2">
-                  {Object.values(QUIZ_DATA)
-                    .filter(
-                      (quizData) =>
-                        quizData.id === QUIZ_TYPE_IDS.DH_D ||
-                        quizData.id === QUIZ_TYPE_IDS.DARK_L_O ||
-                        quizData.id === QUIZ_TYPE_IDS.DARK_L_U ||
-                        quizData.id === QUIZ_TYPE_IDS.T_CH ||
-                        quizData.id === QUIZ_TYPE_IDS.S_Z ||
-                        quizData.id === QUIZ_TYPE_IDS.M_N ||
-                        quizData.id === QUIZ_TYPE_IDS.N_NG ||
-                        quizData.id === QUIZ_TYPE_IDS.M_NG ||
-                        quizData.id === QUIZ_TYPE_IDS.TH_T ||
-                        quizData.id === QUIZ_TYPE_IDS.TH_F ||
-                        quizData.id === QUIZ_TYPE_IDS.R_NULL
-                    )
-                    .map((quizData) => {
-                      const previousResult = previousResults[quizData.id];
-                      return (
-                        <div
-                          key={quizData.id}
-                          onClick={() => handleQuizTypeSelect(quizData.id)}
-                          className={`relative w-full cursor-pointer rounded-lg p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                            previousResult
-                              ? `border-2 ${
-                                  previousResult.percentage === 100
-                                    ? "border-green-500"
-                                    : previousResult.percentage >= 80
-                                    ? "border-blue-500"
-                                    : previousResult.percentage >= 60
-                                    ? "border-yellow-500"
-                                    : "border-red-500"
-                                }`
-                              : "border border-border"
-                          } bg-card`}
-                        >
-                          <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                            <div className="font-semibold text-xs">
-                              {quizData.name}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {quizData.description}
-                            </div>
-                            <div
-                              className={`text-xs font-bold mt-1 ${
-                                previousResult
-                                  ? previousResult.percentage === 100
-                                    ? "text-green-500"
-                                    : previousResult.percentage >= 80
-                                    ? "text-blue-500"
-                                    : previousResult.percentage >= 60
-                                    ? "text-yellow-500"
-                                    : "text-red-500"
-                                  : "text-muted-foreground"
-                              }`}
-                            >
-                              {previousResult
-                                ? `${previousResult.percentage}%`
-                                : "No Result Yet"}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                {/* Consonants Category */}
+                <div
+                  onClick={() => {
+                    setSelectedCategory("consonants");
+                    setCurrentStep("quizType");
+                  }}
+                  className="relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors border border-border bg-card"
+                >
+                  <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                    <div className="font-semibold text-lg mb-2">Consonants</div>
+                  </div>
                 </div>
               </div>
             </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Quiz Type Selection Step */}
+      {currentStep === "quizType" && (
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-2 sm:p-4 overflow-hidden">
+          <Card className="w-full gap-0 py-3 max-w-md max-h-[95vh] sm:max-h-[80vh] flex flex-col">
+            <CardHeader className="pb-1 flex-shrink-0">
+              <CardTitle className="text-center text-sm sm:text-base">
+                Choose Quiz Type
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 overflow-y-auto px-2 sm:px-3">
+              {selectedCategory === "vowels" && (
+                <div className="grid grid-cols-2 gap-1 sm:gap-2">
+                  {/* Column 1: KIT_FLEECE, TRAP_DRESS, BAN_DRESS */}
+                  <div className="space-y-1 sm:space-y-2">
+                    {Object.values(QUIZ_DATA)
+                      .filter(
+                        (quizData) =>
+                          quizData.id === QUIZ_TYPE_IDS.KIT_FLEECE ||
+                          quizData.id === QUIZ_TYPE_IDS.TRAP_DRESS ||
+                          quizData.id === QUIZ_TYPE_IDS.BAN_DRESS
+                      )
+                      .map((quizData) => {
+                        const previousResult = previousResults[quizData.id];
+                        return (
+                          <div
+                            key={quizData.id}
+                            onClick={() => handleQuizTypeSelect(quizData.id)}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
+                              previousResult
+                                ? `border-2 ${
+                                    previousResult.percentage === 100
+                                      ? "border-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "border-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "border-yellow-500"
+                                      : "border-red-500"
+                                  }`
+                                : "border border-border"
+                            } bg-card`}
+                          >
+                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                              <div className="font-semibold text-xs">
+                                {quizData.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {quizData.description}
+                              </div>
+                              <div
+                                className={`text-xs font-bold mt-1 ${
+                                  previousResult
+                                    ? previousResult.percentage === 100
+                                      ? "text-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "text-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "text-yellow-500"
+                                      : "text-red-500"
+                                    : "text-muted-foreground"
+                                }`}
+                              >
+                                {previousResult
+                                  ? `${previousResult.percentage}%`
+                                  : "No Result Yet"}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+
+                  {/* Column 2: FOOT_GOOSE, STRUT_LOT */}
+                  <div className="space-y-1 sm:space-y-2">
+                    {Object.values(QUIZ_DATA)
+                      .filter(
+                        (quizData) =>
+                          quizData.id === QUIZ_TYPE_IDS.FOOT_GOOSE ||
+                          quizData.id === QUIZ_TYPE_IDS.STRUT_LOT
+                      )
+                      .map((quizData) => {
+                        const previousResult = previousResults[quizData.id];
+                        return (
+                          <div
+                            key={quizData.id}
+                            onClick={() => handleQuizTypeSelect(quizData.id)}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
+                              previousResult
+                                ? `border-2 ${
+                                    previousResult.percentage === 100
+                                      ? "border-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "border-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "border-yellow-500"
+                                      : "border-red-500"
+                                  }`
+                                : "border border-border"
+                            } bg-card`}
+                          >
+                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                              <div className="font-semibold text-xs">
+                                {quizData.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {quizData.description}
+                              </div>
+                              <div
+                                className={`text-xs font-bold mt-1 ${
+                                  previousResult
+                                    ? previousResult.percentage === 100
+                                      ? "text-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "text-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "text-yellow-500"
+                                      : "text-red-500"
+                                    : "text-muted-foreground"
+                                }`}
+                              >
+                                {previousResult
+                                  ? `${previousResult.percentage}%`
+                                  : "No Result Yet"}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+
+              {selectedCategory === "consonants" && (
+                <div className="grid grid-cols-3 gap-1 sm:gap-2">
+                  {/* Column 1: DH_D, TH_T, TH_F, R_NULL */}
+                  <div className="space-y-1 sm:space-y-2">
+                    {Object.values(QUIZ_DATA)
+                      .filter(
+                        (quizData) =>
+                          quizData.id === QUIZ_TYPE_IDS.T_CH ||
+                          quizData.id === QUIZ_TYPE_IDS.DH_D ||
+                          quizData.id === QUIZ_TYPE_IDS.TH_T ||
+                          quizData.id === QUIZ_TYPE_IDS.TH_F
+                      )
+                      .map((quizData) => {
+                        const previousResult = previousResults[quizData.id];
+                        return (
+                          <div
+                            key={quizData.id}
+                            onClick={() => handleQuizTypeSelect(quizData.id)}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
+                              previousResult
+                                ? `border-2 ${
+                                    previousResult.percentage === 100
+                                      ? "border-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "border-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "border-yellow-500"
+                                      : "border-red-500"
+                                  }`
+                                : "border border-border"
+                            } bg-card`}
+                          >
+                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                              <div className="font-semibold text-xs">
+                                {quizData.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {quizData.description}
+                              </div>
+                              <div
+                                className={`text-[11px] sm:text-xs font-bold mt-1 ${
+                                  previousResult
+                                    ? previousResult.percentage === 100
+                                      ? "text-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "text-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "text-yellow-500"
+                                      : "text-red-500"
+                                    : "text-muted-foreground"
+                                }`}
+                              >
+                                {previousResult
+                                  ? `${previousResult.percentage}%`
+                                  : "No Result Yet"}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+
+                  {/* Column 2: T_CH, DARK_L_O, DARK_L_U, S_Z */}
+                  <div className="space-y-1 sm:space-y-2">
+                    {Object.values(QUIZ_DATA)
+                      .filter(
+                        (quizData) =>
+                          quizData.id === QUIZ_TYPE_IDS.DARK_L_O ||
+                          quizData.id === QUIZ_TYPE_IDS.DARK_L_U ||
+                          quizData.id === QUIZ_TYPE_IDS.R_NULL ||
+                          quizData.id === QUIZ_TYPE_IDS.S_Z
+                      )
+                      .map((quizData) => {
+                        const previousResult = previousResults[quizData.id];
+                        return (
+                          <div
+                            key={quizData.id}
+                            onClick={() => handleQuizTypeSelect(quizData.id)}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
+                              previousResult
+                                ? `border-2 ${
+                                    previousResult.percentage === 100
+                                      ? "border-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "border-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "border-yellow-500"
+                                      : "border-red-500"
+                                  }`
+                                : "border border-border"
+                            } bg-card`}
+                          >
+                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                              <div className="font-semibold text-xs">
+                                {quizData.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {quizData.description}
+                              </div>
+                              <div
+                                className={`text-[11px] sm:text-xs font-bold mt-1 ${
+                                  previousResult
+                                    ? previousResult.percentage === 100
+                                      ? "text-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "text-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "text-yellow-500"
+                                      : "text-red-500"
+                                    : "text-muted-foreground"
+                                }`}
+                              >
+                                {previousResult
+                                  ? `${previousResult.percentage}%`
+                                  : "No Result Yet"}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+
+                  {/* Column 3: M_N, N_NG, M_NG */}
+                  <div className="space-y-1 sm:space-y-2">
+                    {Object.values(QUIZ_DATA)
+                      .filter(
+                        (quizData) =>
+                          quizData.id === QUIZ_TYPE_IDS.M_N ||
+                          quizData.id === QUIZ_TYPE_IDS.N_NG ||
+                          quizData.id === QUIZ_TYPE_IDS.M_NG
+                      )
+                      .map((quizData) => {
+                        const previousResult = previousResults[quizData.id];
+                        return (
+                          <div
+                            key={quizData.id}
+                            onClick={() => handleQuizTypeSelect(quizData.id)}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
+                              previousResult
+                                ? `border-2 ${
+                                    previousResult.percentage === 100
+                                      ? "border-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "border-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "border-yellow-500"
+                                      : "border-red-500"
+                                  }`
+                                : "border border-border"
+                            } bg-card`}
+                          >
+                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                              <div className="font-semibold text-xs">
+                                {quizData.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {quizData.description}
+                              </div>
+                              <div
+                                className={`text-[11px] sm:text-xs font-bold mt-1 ${
+                                  previousResult
+                                    ? previousResult.percentage === 100
+                                      ? "text-green-500"
+                                      : previousResult.percentage >= 80
+                                      ? "text-blue-500"
+                                      : previousResult.percentage >= 60
+                                      ? "text-yellow-500"
+                                      : "text-red-500"
+                                    : "text-muted-foreground"
+                                }`}
+                              >
+                                {previousResult
+                                  ? `${previousResult.percentage}%`
+                                  : "No Result Yet"}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+            <div className="p-3 pt-0 flex-shrink-0">
+              <Button
+                onClick={() => setCurrentStep("category")}
+                variant="ghost"
+                className="w-full cursor-pointer text-sm"
+              >
+                ← Back to Categories
+              </Button>
+            </div>
             {Object.keys(previousResults).length > 0 && (
               <div className="p-3 pt-0 flex-shrink-0 space-y-2">
                 <p className="text-xs text-muted-foreground text-center">
