@@ -1677,7 +1677,7 @@ export default function Quiz() {
     ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
 
   // Function to play a simple tone
-  const playTone = (frequency, duration, type = "sine") => {
+  const playTone = (frequency, duration, type = "sine", volume = 0.3) => {
     try {
       const audioContext = new (window.AudioContext ||
         window.webkitAudioContext)();
@@ -1693,7 +1693,7 @@ export default function Quiz() {
       // Fade in and out for smooth sound
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
       gainNode.gain.linearRampToValueAtTime(
-        0.3,
+        volume,
         audioContext.currentTime + 0.01
       );
       gainNode.gain.linearRampToValueAtTime(
@@ -1710,37 +1710,12 @@ export default function Quiz() {
 
   // Function to play correct answer sound
   const playCorrectSound = () => {
-    playTone(800, 0.2, "sine"); // Higher pitch, short duration
+    playTone(800, 0.2, "sine", 0.04); // Higher pitch, short duration, normal volume
   };
 
   // Function to play incorrect answer sound
   const playIncorrectSound = () => {
-    // Use a gentler approach with lower volume
-    try {
-      const audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-      oscillator.type = "sine";
-
-      // Lower volume and gentler fade for incorrect answers
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(
-        0.15, // Lower volume than correct answer
-        audioContext.currentTime + 0.01
-      );
-      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.25);
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.25);
-    } catch (error) {
-      console.log("Sound effect not supported:", error);
-    }
+    playTone(600, 0.25, "sine", 0.04); // Lower pitch, longer duration, gentler volume
   };
 
   // Function to get US audio from Free Dictionary API
