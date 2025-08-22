@@ -51,9 +51,13 @@ const QuizAudioAdmin = () => {
         data[0].phonetics &&
         data[0].phonetics.length > 0
       ) {
-        // Look for US audio specifically
+        // Look for US audio specifically - check for various US audio patterns
         const usPhonetic = data[0].phonetics.find(
-          (p) => p.audio && p.audio.includes("-us.")
+          (p) =>
+            p.audio &&
+            (p.audio.includes("-us.") ||
+              p.audio.includes("-us-") ||
+              p.audio.includes("/us/"))
         );
 
         // Only return US audio, no fallback

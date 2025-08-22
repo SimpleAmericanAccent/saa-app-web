@@ -403,70 +403,87 @@ const banDressMinimalPairs = [
     { word: "Dan", alternates: [] },
     { word: "den", alternates: [] },
   ],
-  [
-    { word: "Jan", alternates: [] },
-    { word: "Jen", alternates: ["gen"] },
-  ],
+  // [
+  //   { word: "Jan", alternates: [] },
+  //   { word: "Jen", alternates: ["gen"] },
+  // ],
   [
     { word: "land", alternates: [] },
     { word: "lend", alternates: [] },
   ],
-  [
-    { word: "pan", alternates: [] },
-    { word: "pen", alternates: [] },
-  ],
-  [
-    { word: "rant", alternates: [] },
-    { word: "rent", alternates: [] },
-  ],
+  // [
+  //   { word: "pan", alternates: [] },
+  //   { word: "pen", alternates: [] },
+  // ],
+  // [
+  //   { word: "rant", alternates: [] },
+  //   { word: "rent", alternates: [] },
+  // ],
   [
     { word: "sand", alternates: [] },
     { word: "send", alternates: [] },
   ],
-  [
-    { word: "tan", alternates: [] },
-    { word: "ten", alternates: [] },
-  ],
-  [
-    { word: "than", alternates: [] },
-    { word: "then", alternates: [] },
-  ],
-  [
-    { word: "van", alternates: [] },
-    { word: "Venn", alternates: [] },
-  ],
+  // [
+  //   { word: "tan", alternates: [] },
+  //   { word: "ten", alternates: [] },
+  // ],
+  // [
+  //   { word: "than", alternates: [] },
+  //   { word: "then", alternates: [] },
+  // ],
+  // [
+  //   { word: "van", alternates: [] },
+  //   { word: "Venn", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for FOOT vs GOOSE vowels (alphabetical by FOOT word)
 const footGooseMinimalPairs = [
+  // [
+  //   { word: "nook", alternates: [] },
+  //   { word: "nuke", alternates: [] },
+  // ],
+  // [
+  //   { word: "would", alternates: ["wood"] },
+  //   { word: "wooed", alternates: [] },
+  // ],
+  // [
+  //   { word: "stood", alternates: [] },
+  //   { word: "stewed", alternates: [] },
+  // ],
+  // [
+  //   { word: "cook", alternates: [] },
+  //   { word: "kook", alternates: [] },
+  // ],
   [
-    { word: "nook", alternates: [] },
-    { word: "nuke", alternates: [] },
+    { word: "soot", alternates: [] },
+    { word: "suit", alternates: [] },
   ],
-  [
-    { word: "would", alternates: ["wood"] },
-    { word: "wooed", alternates: [] },
-  ],
-  [
-    { word: "could", alternates: [] },
-    { word: "cooed", alternates: [] },
-  ],
-  [
-    { word: "should", alternates: [] },
-    { word: "shooed", alternates: [] },
-  ],
-  [
-    { word: "look", alternates: [] },
-    { word: "Luke", alternates: [] },
-  ],
+  // [
+  //   { word: "who'd", alternates: [] },
+  //   { word: "hood", alternates: [] },
+  // ],
+
+  // [
+  //   { word: "could", alternates: [] },
+  //   { word: "cooed", alternates: [] },
+  // ],
+  // [
+  //   { word: "should", alternates: [] },
+  //   { word: "shooed", alternates: [] },
+  // ],
+  // [
+  //   { word: "look", alternates: [] },
+  //   { word: "Luke", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for STRUT vs LOT vowels (alphabetical by STRUT word)
 const strutLotMinimalPairs = [
-  [
-    { word: "bud", alternates: [] },
-    { word: "bod", alternates: [] },
-  ],
+  // [
+  //   { word: "bud", alternates: [] },
+  //   { word: "bod", alternates: [] },
+  // ],
   [
     { word: "bus", alternates: [] },
     { word: "boss", alternates: [] },
@@ -475,10 +492,10 @@ const strutLotMinimalPairs = [
     { word: "but", alternates: ["butt"] },
     { word: "bot", alternates: [] },
   ],
-  [
-    { word: "cup", alternates: [] },
-    { word: "cop", alternates: [] },
-  ],
+  // [
+  //   { word: "cup", alternates: [] },
+  //   { word: "cop", alternates: [] },
+  // ],
   [
     { word: "cut", alternates: [] },
     { word: "cot", alternates: ["caught"] },
@@ -487,11 +504,10 @@ const strutLotMinimalPairs = [
     { word: "duck", alternates: [] },
     { word: "dock", alternates: [] },
   ],
-
-  [
-    { word: "fun", alternates: [] },
-    { word: "fawn", alternates: [] },
-  ],
+  // [
+  //   { word: "fun", alternates: [] },
+  //   { word: "fawn", alternates: [] },
+  // ],
   [
     { word: "hut", alternates: [] },
     { word: "hot", alternates: [] },
@@ -500,18 +516,18 @@ const strutLotMinimalPairs = [
     { word: "luck", alternates: [] },
     { word: "lock", alternates: [] },
   ],
-  [
-    { word: "mud", alternates: [] },
-    { word: "mod", alternates: [] },
-  ],
+  // [
+  //   { word: "mud", alternates: [] },
+  //   { word: "mod", alternates: [] },
+  // ],
   [
     { word: "nut", alternates: [] },
     { word: "not", alternates: [] },
   ],
-  [
-    { word: "run", alternates: [] },
-    { word: "Ron", alternates: [] },
-  ],
+  // [
+  //   { word: "run", alternates: [] },
+  //   { word: "Ron", alternates: [] },
+  // ],
   [
     { word: "shut", alternates: [] },
     { word: "shot", alternates: [] },
@@ -520,10 +536,10 @@ const strutLotMinimalPairs = [
     { word: "lunch", alternates: [] },
     { word: "launch", alternates: [] },
   ],
-  [
-    { word: "done", alternates: [] },
-    { word: "dawn", alternates: ["dawn"] },
-  ],
+  // [
+  //   { word: "done", alternates: [] },
+  //   { word: "dawn", alternates: ["dawn"] },
+  // ],
   [
     { word: "gun", alternates: [] },
     { word: "gone", alternates: [] },
@@ -532,10 +548,10 @@ const strutLotMinimalPairs = [
     { word: "none", alternates: ["nun"] },
     { word: "non", alternates: [] },
   ],
-  [
-    { word: "pun", alternates: [] },
-    { word: "pawn", alternates: [] },
-  ],
+  // [
+  //   { word: "pun", alternates: [] },
+  //   { word: "pawn", alternates: [] },
+  // ],
   [
     { word: "rung", alternates: [] },
     { word: "wrong", alternates: [] },
@@ -544,10 +560,10 @@ const strutLotMinimalPairs = [
     { word: "sung", alternates: [] },
     { word: "song", alternates: [] },
   ],
-  [
-    { word: "son", alternates: ["sun"] },
-    { word: "sawn", alternates: [] },
-  ],
+  // [
+  //   { word: "son", alternates: ["sun"] },
+  //   { word: "sawn", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for DH vs D consonants (alphabetical by DH word)
@@ -561,10 +577,6 @@ const dhDMinimalPairs = [
     { word: "breed", alternates: [] },
   ],
   [
-    { word: "clothe", alternates: [] },
-    { word: "clode", alternates: [] },
-  ],
-  [
     { word: "lathe", alternates: [] },
     { word: "laid", alternates: [] },
   ],
@@ -572,10 +584,10 @@ const dhDMinimalPairs = [
     { word: "loathe", alternates: [] },
     { word: "load", alternates: [] },
   ],
-  [
-    { word: "mouth", alternates: [] },
-    { word: "mouthed", alternates: [] },
-  ],
+  // [
+  //   { word: "mouth", alternates: [] },
+  //   { word: "mouthed", alternates: [] },
+  // ],
   [
     { word: "scythe", alternates: [] },
     { word: "sighed", alternates: [] },
@@ -584,38 +596,47 @@ const dhDMinimalPairs = [
     { word: "seethe", alternates: [] },
     { word: "seed", alternates: [] },
   ],
-  [
-    { word: "sheathe", alternates: [] },
-    { word: "she'd", alternates: [] },
-  ],
-  [
-    { word: "soothe", alternates: [] },
-    { word: "sued", alternates: [] },
-  ],
-  [
-    { word: "teethe", alternates: [] },
-    { word: "teed", alternates: [] },
-  ],
+  // [
+  //   { word: "sheathe", alternates: [] },
+  //   { word: "she'd", alternates: [] },
+  // ],
+  // [
+  //   { word: "soothe", alternates: [] },
+  //   { word: "sued", alternates: [] },
+  // ],
+  // [
+  //   { word: "teethe", alternates: [] },
+  //   { word: "teed", alternates: [] },
+  // ],
   [
     { word: "they", alternates: [] },
     { word: "day", alternates: [] },
   ],
+  // [
+  //   { word: "this", alternates: [] },
+  //   { word: "diss", alternates: [] },
+  // ],
   [
-    { word: "this", alternates: [] },
-    { word: "dis", alternates: [] },
+    { word: "there", alternates: [] },
+    { word: "dare", alternates: [] },
   ],
   [
-    { word: "thou", alternates: [] },
-    { word: "do", alternates: [] },
+    { word: "then", alternates: [] },
+    { word: "den", alternates: [] },
   ],
+  // [
+  //   { word: "than", alternates: [] },
+  //   { word: "Dan", alternates: [] },
+  // ],
+
   [
     { word: "though", alternates: [] },
     { word: "dough", alternates: [] },
   ],
-  [
-    { word: "thus", alternates: [] },
-    { word: "does", alternates: [] },
-  ],
+  // [
+  //   { word: "thus", alternates: [] },
+  //   { word: "does", alternates: [] },
+  // ],
   [
     { word: "thy", alternates: [] },
     { word: "die", alternates: [] },
@@ -632,14 +653,14 @@ const dhDMinimalPairs = [
 
 // Minimal pairs data for Dark L vs O (alphabetical by Dark L word)
 const darkLOMinimalPairs = [
-  [
-    { word: "eagle", alternates: [] },
-    { word: "ego", alternates: [] },
-  ],
-  [
-    { word: "natal", alternates: [] },
-    { word: "NATO", alternates: [] },
-  ],
+  // [
+  //   { word: "eagle", alternates: [] },
+  //   { word: "ego", alternates: [] },
+  // ],
+  // [
+  //   { word: "natal", alternates: [] },
+  //   { word: "NATO", alternates: [] },
+  // ],
   [
     { word: "jumble", alternates: [] },
     { word: "jumbo", alternates: [] },
@@ -648,50 +669,50 @@ const darkLOMinimalPairs = [
     { word: "old", alternates: [] },
     { word: "owed", alternates: ["ode"] },
   ],
-  [
-    { word: "cold", alternates: [] },
-    { word: "code", alternates: [] },
-  ],
-  [
-    { word: "mold", alternates: [] },
-    { word: "mowed", alternates: [] },
-  ],
-  [
-    { word: "sold", alternates: [] },
-    { word: "sowed", alternates: ["sewed"] },
-  ],
-  [
-    { word: "toll", alternates: [] },
-    { word: "toe", alternates: ["tow"] },
-  ],
-  [
-    { word: "told", alternates: [] },
-    { word: "towed", alternates: ["toed"] },
-  ],
+  // [
+  //   { word: "cold", alternates: [] },
+  //   { word: "code", alternates: [] },
+  // ],
+  // [
+  //   { word: "mold", alternates: [] },
+  //   { word: "mowed", alternates: [] },
+  // ],
+  // [
+  //   { word: "sold", alternates: [] },
+  //   { word: "sowed", alternates: ["sewed"] },
+  // ],
+  // [
+  //   { word: "toll", alternates: [] },
+  //   { word: "toe", alternates: ["tow"] },
+  // ],
+  // [
+  //   { word: "told", alternates: [] },
+  //   { word: "towed", alternates: ["toed"] },
+  // ],
   [
     { word: "bolt", alternates: [] },
     { word: "boat", alternates: [] },
   ],
-  [
-    { word: "colt", alternates: [] },
-    { word: "coat", alternates: [] },
-  ],
-  [
-    { word: "molt", alternates: [] },
-    { word: "moat", alternates: [] },
-  ],
-  [
-    { word: "volt", alternates: [] },
-    { word: "vote", alternates: [] },
-  ],
+  // [
+  //   { word: "colt", alternates: [] },
+  //   { word: "coat", alternates: [] },
+  // ],
+  // [
+  //   { word: "molt", alternates: [] },
+  //   { word: "moat", alternates: [] },
+  // ],
+  // [
+  //   { word: "volt", alternates: [] },
+  //   { word: "vote", alternates: [] },
+  // ],
   [
     { word: "bowl", alternates: ["bull"] },
     { word: "bow", alternates: ["Bo"] },
   ],
-  [
-    { word: "coal", alternates: ["Cole", "cull"] },
-    { word: "co", alternates: [] },
-  ],
+  // [
+  //   { word: "coal", alternates: ["Cole", "cull"] },
+  //   { word: "co", alternates: [] },
+  // ],
   [
     { word: "dull", alternates: ["dole"] },
     { word: "dough", alternates: ["doe"] },
@@ -704,18 +725,18 @@ const darkLOMinimalPairs = [
     { word: "goal", alternates: ["gull"] },
     { word: "go", alternates: [] },
   ],
-  [
-    { word: "whole", alternates: ["hole", "hull"] },
-    { word: "hoe", alternates: ["ho"] },
-  ],
-  [
-    { word: "joel", alternates: [] },
-    { word: "Joe", alternates: [] },
-  ],
-  [
-    { word: "lull", alternates: [] },
-    { word: "low", alternates: ["lo"] },
-  ],
+  // [
+  //   { word: "whole", alternates: ["hole", "hull"] },
+  //   { word: "hoe", alternates: ["ho"] },
+  // ],
+  // [
+  //   { word: "joel", alternates: [] },
+  //   { word: "Joe", alternates: [] },
+  // ],
+  // [
+  //   { word: "lull", alternates: [] },
+  //   { word: "low", alternates: ["lo"] },
+  // ],
   [
     { word: "mole", alternates: ["mull"] },
     { word: "mow", alternates: ["Moe"] },
@@ -724,10 +745,10 @@ const darkLOMinimalPairs = [
     { word: "null", alternates: ["knoll"] },
     { word: "no", alternates: ["know"] },
   ],
-  [
-    { word: "pull", alternates: ["poll"] },
-    { word: "Poe", alternates: [] },
-  ],
+  // [
+  //   { word: "pull", alternates: ["poll"] },
+  //   { word: "Poe", alternates: [] },
+  // ],
   [
     { word: "roll", alternates: ["role"] },
     { word: "row", alternates: ["Roe"] },
@@ -736,22 +757,22 @@ const darkLOMinimalPairs = [
     { word: "soul", alternates: ["sole"] },
     { word: "so", alternates: ["sew", "sow"] },
   ],
-  [
-    { word: "stole", alternates: [] },
-    { word: "stow", alternates: [] },
-  ],
+  // [
+  //   { word: "stole", alternates: [] },
+  //   { word: "stow", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for Dark L vs U (alphabetical by Dark L word)
 const darkLUMinimalPairs = [
-  [
-    { word: "tool", alternates: [] },
-    { word: "too", alternates: [] },
-  ],
-  [
-    { word: "bull", alternates: [] },
-    { word: "boo", alternates: [] },
-  ],
+  // [
+  //   { word: "tool", alternates: [] },
+  //   { word: "too", alternates: [] },
+  // ],
+  // [
+  //   { word: "bull", alternates: [] },
+  //   { word: "boo", alternates: [] },
+  // ],
   [
     { word: "dull", alternates: [] },
     { word: "do", alternates: ["due", "dew"] },
@@ -760,30 +781,30 @@ const darkLUMinimalPairs = [
     { word: "null", alternates: [] },
     { word: "new", alternates: ["knew"] },
   ],
-  [
-    { word: "cool", alternates: [] },
-    { word: "coo", alternates: [] },
-  ],
+  // [
+  //   { word: "cool", alternates: [] },
+  //   { word: "coo", alternates: [] },
+  // ],
   [
     { word: "jewel", alternates: [] },
     { word: "Jew", alternates: [] },
   ],
-  [
-    { word: "rule", alternates: [] },
-    { word: "rue", alternates: [] },
-  ],
-  [
-    { word: "stool", alternates: [] },
-    { word: "stew", alternates: [] },
-  ],
+  // [
+  //   { word: "rule", alternates: [] },
+  //   { word: "rue", alternates: [] },
+  // ],
+  // [
+  //   { word: "stool", alternates: [] },
+  //   { word: "stew", alternates: [] },
+  // ],
   [
     { word: "wool", alternates: [] },
     { word: "woo", alternates: [] },
   ],
-  [
-    { word: "yule", alternates: [] },
-    { word: "you", alternates: [] },
-  ],
+  // [
+  //   { word: "yule", alternates: [] },
+  //   { word: "you", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for T vs CH (alphabetical by T word)
@@ -800,22 +821,22 @@ const tChMinimalPairs = [
     { word: "tease", alternates: ["teas"] },
     { word: "cheese", alternates: [] },
   ],
-  [
-    { word: "tear", alternates: [] },
-    { word: "cheer", alternates: [] },
-  ],
-  [
-    { word: "teach", alternates: [] },
-    { word: "Cheech", alternates: [] },
-  ],
-  [
-    { word: "teak", alternates: [] },
-    { word: "cheek", alternates: [] },
-  ],
-  [
-    { word: "twos", alternates: [] },
-    { word: "choose", alternates: ["chews"] },
-  ],
+  // [
+  //   { word: "tear", alternates: [] },
+  //   { word: "cheer", alternates: [] },
+  // ],
+  // [
+  //   { word: "teach", alternates: [] },
+  //   { word: "Cheech", alternates: [] },
+  // ],
+  // [
+  //   { word: "teak", alternates: [] },
+  //   { word: "cheek", alternates: [] },
+  // ],
+  // [
+  //   { word: "twos", alternates: [] },
+  //   { word: "choose", alternates: ["chews"] },
+  // ],
   [
     { word: "bat", alternates: [] },
     { word: "batch", alternates: [] },
@@ -828,10 +849,10 @@ const tChMinimalPairs = [
     { word: "eat", alternates: [] },
     { word: "each", alternates: [] },
   ],
-  [
-    { word: "hat", alternates: [] },
-    { word: "hatch", alternates: [] },
-  ],
+  // [
+  //   { word: "hat", alternates: [] },
+  //   { word: "hatch", alternates: [] },
+  // ],
   [
     { word: "hit", alternates: [] },
     { word: "hitch", alternates: [] },
@@ -844,26 +865,26 @@ const tChMinimalPairs = [
     { word: "mat", alternates: ["Matt"] },
     { word: "match", alternates: [] },
   ],
-  [
-    { word: "not", alternates: ["knot"] },
-    { word: "notch", alternates: [] },
-  ],
+  // [
+  //   { word: "not", alternates: ["knot"] },
+  //   { word: "notch", alternates: [] },
+  // ],
   [
     { word: "pat", alternates: [] },
     { word: "patch", alternates: [] },
   ],
-  [
-    { word: "pit", alternates: [] },
-    { word: "pitch", alternates: [] },
-  ],
+  // [
+  //   { word: "pit", alternates: [] },
+  //   { word: "pitch", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for S vs Z (alphabetical by S word)
 const sZMinimalPairs = [
-  [
-    { word: "ace", alternates: [] },
-    { word: "A's", alternates: [] },
-  ],
+  // [
+  //   { word: "ace", alternates: [] },
+  //   { word: "A's", alternates: [] },
+  // ],
   [
     { word: "advice", alternates: [] },
     { word: "advise", alternates: [] },
@@ -872,10 +893,10 @@ const sZMinimalPairs = [
     { word: "ass", alternates: [] },
     { word: "as", alternates: [] },
   ],
-  [
-    { word: "base", alternates: [] },
-    { word: "bays", alternates: [] },
-  ],
+  // [
+  //   { word: "base", alternates: [] },
+  //   { word: "bays", alternates: [] },
+  // ],
   [
     { word: "bus", alternates: [] },
     { word: "buzz", alternates: [] },
@@ -892,18 +913,18 @@ const sZMinimalPairs = [
     { word: "dice", alternates: [] },
     { word: "dies", alternates: [] },
   ],
-  [
-    { word: "face", alternates: [] },
-    { word: "phase", alternates: [] },
-  ],
-  [
-    { word: "fleece", alternates: [] },
-    { word: "fleas", alternates: [] },
-  ],
-  [
-    { word: "force", alternates: [] },
-    { word: "fours", alternates: [] },
-  ],
+  // [
+  //   { word: "face", alternates: [] },
+  //   { word: "phase", alternates: [] },
+  // ],
+  // [
+  //   { word: "fleece", alternates: [] },
+  //   { word: "fleas", alternates: [] },
+  // ],
+  // [
+  //   { word: "force", alternates: [] },
+  //   { word: "fours", alternates: [] },
+  // ],
   [
     { word: "grace", alternates: [] },
     { word: "graze", alternates: [] },
@@ -932,10 +953,10 @@ const sZMinimalPairs = [
     { word: "pace", alternates: [] },
     { word: "pays", alternates: [] },
   ],
-  [
-    { word: "peace", alternates: ["piece"] },
-    { word: "peas", alternates: ["pees"] },
-  ],
+  // [
+  //   { word: "peace", alternates: ["piece"] },
+  //   { word: "peas", alternates: ["pees"] },
+  // ],
   [
     { word: "place", alternates: [] },
     { word: "plays", alternates: [] },
@@ -952,26 +973,26 @@ const sZMinimalPairs = [
     { word: "rice", alternates: [] },
     { word: "rise", alternates: ["ryes"] },
   ],
-  [
-    { word: "sauce", alternates: [] },
-    { word: "saws", alternates: [] },
-  ],
-  [
-    { word: "source", alternates: [] },
-    { word: "sores", alternates: ["soars"] },
-  ],
-  [
-    { word: "spice", alternates: [] },
-    { word: "spies", alternates: [] },
-  ],
-  [
-    { word: "trace", alternates: [] },
-    { word: "trays", alternates: [] },
-  ],
-  [
-    { word: "vice", alternates: [] },
-    { word: "vies", alternates: [] },
-  ],
+  // [
+  //   { word: "sauce", alternates: [] },
+  //   { word: "saws", alternates: [] },
+  // ],
+  // [
+  //   { word: "source", alternates: [] },
+  //   { word: "sores", alternates: ["soars"] },
+  // ],
+  // [
+  //   { word: "spice", alternates: [] },
+  //   { word: "spies", alternates: [] },
+  // ],
+  // [
+  //   { word: "trace", alternates: [] },
+  //   { word: "trays", alternates: [] },
+  // ],
+  // [
+  //   { word: "vice", alternates: [] },
+  //   { word: "vies", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for M vs N (alphabetical by M word)
@@ -984,10 +1005,10 @@ const mNMinimalPairs = [
     { word: "dim", alternates: [] },
     { word: "din", alternates: [] },
   ],
-  [
-    { word: "dime", alternates: [] },
-    { word: "dine", alternates: [] },
-  ],
+  // [
+  //   { word: "dime", alternates: [] },
+  //   { word: "dine", alternates: [] },
+  // ],
   [
     { word: "game", alternates: [] },
     { word: "gain", alternates: [] },
@@ -996,34 +1017,34 @@ const mNMinimalPairs = [
     { word: "hem", alternates: [] },
     { word: "hen", alternates: [] },
   ],
-  [
-    { word: "lame", alternates: [] },
-    { word: "lane", alternates: [] },
-  ],
-  [
-    { word: "limb", alternates: [] },
-    { word: "Lynn", alternates: [] },
-  ],
-  [
-    { word: "lime", alternates: [] },
-    { word: "line", alternates: [] },
-  ],
+  // [
+  //   { word: "lame", alternates: [] },
+  //   { word: "lane", alternates: [] },
+  // ],
+  // [
+  //   { word: "limb", alternates: [] },
+  //   { word: "Lynn", alternates: [] },
+  // ],
+  // [
+  //   { word: "lime", alternates: [] },
+  //   { word: "line", alternates: [] },
+  // ],
   [
     { word: "ram", alternates: [] },
     { word: "ran", alternates: [] },
   ],
-  [
-    { word: "same", alternates: [] },
-    { word: "sane", alternates: [] },
-  ],
+  // [
+  //   { word: "same", alternates: [] },
+  //   { word: "sane", alternates: [] },
+  // ],
   [
     { word: "seem", alternates: ["seam"] },
     { word: "seen", alternates: ["scene"] },
   ],
-  [
-    { word: "sim", alternates: [] },
-    { word: "sin", alternates: [] },
-  ],
+  // [
+  //   { word: "sim", alternates: [] },
+  //   { word: "sin", alternates: [] },
+  // ],
   [
     { word: "sum", alternates: ["some"] },
     { word: "sun", alternates: ["son"] },
@@ -1032,18 +1053,18 @@ const mNMinimalPairs = [
     { word: "team", alternates: [] },
     { word: "teen", alternates: [] },
   ],
-  [
-    { word: "M", alternates: ["Em"] },
-    { word: "N", alternates: [] },
-  ],
+  // [
+  //   { word: "M", alternates: ["Em"] },
+  //   { word: "N", alternates: [] },
+  // ],
   [
     { word: "gum", alternates: [] },
     { word: "gun", alternates: [] },
   ],
-  [
-    { word: "ohm", alternates: [] },
-    { word: "own", alternates: [] },
-  ],
+  // [
+  //   { word: "ohm", alternates: [] },
+  //   { word: "own", alternates: [] },
+  // ],
   [
     { word: "foam", alternates: [] },
     { word: "phone", alternates: [] },
@@ -1056,22 +1077,22 @@ const mNMinimalPairs = [
 
 // Minimal pairs data for N vs NG (alphabetical by N word)
 const nNgMinimalPairs = [
-  [
-    { word: "bin", alternates: ["been"] },
-    { word: "bing", alternates: [] },
-  ],
-  [
-    { word: "din", alternates: [] },
-    { word: "ding", alternates: [] },
-  ],
+  // [
+  //   { word: "bin", alternates: ["been"] },
+  //   { word: "bing", alternates: [] },
+  // ],
+  // [
+  //   { word: "din", alternates: [] },
+  //   { word: "ding", alternates: [] },
+  // ],
   [
     { word: "kin", alternates: [] },
     { word: "king", alternates: [] },
   ],
-  [
-    { word: "pin", alternates: [] },
-    { word: "ping", alternates: [] },
-  ],
+  // [
+  //   { word: "pin", alternates: [] },
+  //   { word: "ping", alternates: [] },
+  // ],
   [
     { word: "sin", alternates: [] },
     { word: "sing", alternates: [] },
@@ -1084,46 +1105,46 @@ const nNgMinimalPairs = [
     { word: "win", alternates: [] },
     { word: "wing", alternates: [] },
   ],
-  [
-    { word: "talkin", alternates: [] },
-    { word: "talking", alternates: [] },
-  ],
-  [
-    { word: "walkin", alternates: [] },
-    { word: "walking", alternates: [] },
-  ],
+  // [
+  //   { word: "talkin", alternates: [] },
+  //   { word: "talking", alternates: [] },
+  // ],
+  // [
+  //   { word: "walkin", alternates: [] },
+  //   { word: "walking", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for M vs NG (alphabetical by M word)
 const mNgMinimalPairs = [
-  [
-    { word: "dim", alternates: [] },
-    { word: "ding", alternates: [] },
-  ],
-  [
-    { word: "game", alternates: [] },
-    { word: "gang", alternates: [] },
-  ],
+  // [
+  //   { word: "dim", alternates: [] },
+  //   { word: "ding", alternates: [] },
+  // ],
+  // [
+  //   { word: "game", alternates: [] },
+  //   { word: "gang", alternates: [] },
+  // ],
   [
     { word: "hem", alternates: [] },
     { word: "hang", alternates: [] },
   ],
-  [
-    { word: "lame", alternates: [] },
-    { word: "laying", alternates: [] },
-  ],
-  [
-    { word: "limb", alternates: [] },
-    { word: "ling", alternates: [] },
-  ],
+  // [
+  //   { word: "lame", alternates: [] },
+  //   { word: "laying", alternates: [] },
+  // ],
+  // [
+  //   { word: "limb", alternates: [] },
+  //   { word: "ling", alternates: [] },
+  // ],
   [
     { word: "same", alternates: [] },
     { word: "saying", alternates: [] },
   ],
-  [
-    { word: "sim", alternates: [] },
-    { word: "sing", alternates: [] },
-  ],
+  // [
+  //   { word: "sim", alternates: [] },
+  //   { word: "sing", alternates: [] },
+  // ],
   [
     { word: "sum", alternates: ["some"] },
     { word: "sung", alternates: [] },
@@ -1132,30 +1153,30 @@ const mNgMinimalPairs = [
     { word: "rim", alternates: [] },
     { word: "ring", alternates: [] },
   ],
-  [
-    { word: "whim", alternates: [] },
-    { word: "wing", alternates: [] },
-  ],
-  [
-    { word: "whim", alternates: [] },
-    { word: "whin", alternates: [] },
-  ],
-  [
-    { word: "bomb", alternates: [] },
-    { word: "bong", alternates: [] },
-  ],
-  [
-    { word: "calm", alternates: [] },
-    { word: "Kong", alternates: [] },
-  ],
-  [
-    { word: "palm", alternates: [] },
-    { word: "pong", alternates: [] },
-  ],
-  [
-    { word: "ROM", alternates: [] },
-    { word: "wrong", alternates: [] },
-  ],
+  // [
+  //   { word: "whim", alternates: [] },
+  //   { word: "wing", alternates: [] },
+  // ],
+  // [
+  //   { word: "whim", alternates: [] },
+  //   { word: "whin", alternates: [] },
+  // ],
+  // [
+  //   { word: "bomb", alternates: [] },
+  //   { word: "bong", alternates: [] },
+  // ],
+  // [
+  //   { word: "calm", alternates: [] },
+  //   { word: "Kong", alternates: [] },
+  // ],
+  // [
+  //   { word: "palm", alternates: [] },
+  //   { word: "pong", alternates: [] },
+  // ],
+  // [
+  //   { word: "ROM", alternates: [] },
+  //   { word: "wrong", alternates: [] },
+  // ],
   [
     { word: "psalm", alternates: [] },
     { word: "song", alternates: [] },
@@ -1164,18 +1185,18 @@ const mNgMinimalPairs = [
 
 // Minimal pairs data for TH vs T (alphabetical by TH word)
 const thTMinimalPairs = [
-  [
-    { word: "thank", alternates: [] },
-    { word: "tank", alternates: [] },
-  ],
+  // [
+  //   { word: "thank", alternates: [] },
+  //   { word: "tank", alternates: [] },
+  // ],
   [
     { word: "theme", alternates: [] },
     { word: "team", alternates: [] },
   ],
-  [
-    { word: "thick", alternates: [] },
-    { word: "tick", alternates: [] },
-  ],
+  // [
+  //   { word: "thick", alternates: [] },
+  //   { word: "tick", alternates: [] },
+  // ],
   [
     { word: "thigh", alternates: [] },
     { word: "tie", alternates: [] },
@@ -1184,18 +1205,18 @@ const thTMinimalPairs = [
     { word: "thin", alternates: [] },
     { word: "tin", alternates: [] },
   ],
-  [
-    { word: "thinker", alternates: [] },
-    { word: "tinker", alternates: [] },
-  ],
-  [
-    { word: "third", alternates: [] },
-    { word: "turd", alternates: [] },
-  ],
-  [
-    { word: "thong", alternates: [] },
-    { word: "tong", alternates: [] },
-  ],
+  // [
+  //   { word: "thinker", alternates: [] },
+  //   { word: "tinker", alternates: [] },
+  // ],
+  // [
+  //   { word: "third", alternates: [] },
+  //   { word: "turd", alternates: [] },
+  // ],
+  // [
+  //   { word: "thong", alternates: [] },
+  //   { word: "tong", alternates: [] },
+  // ],
   [
     { word: "thorn", alternates: [] },
     { word: "torn", alternates: [] },
@@ -1224,10 +1245,10 @@ const thFMinimalPairs = [
     { word: "three", alternates: [] },
     { word: "free", alternates: [] },
   ],
-  [
-    { word: "with", alternates: [] },
-    { word: "whiff", alternates: [] },
-  ],
+  // [
+  //   { word: "with", alternates: [] },
+  //   { word: "whiff", alternates: [] },
+  // ],
   [
     { word: "death", alternates: [] },
     { word: "deaf", alternates: [] },
@@ -1236,14 +1257,14 @@ const thFMinimalPairs = [
 
 // Minimal pairs data for R vs null (alphabetical by R word)
 const rNullMinimalPairs = [
-  [
-    { word: "are", alternates: [] },
-    { word: "ah", alternates: [] },
-  ],
-  [
-    { word: "art", alternates: [] },
-    { word: "ought", alternates: ["aught"] },
-  ],
+  // [
+  //   { word: "are", alternates: [] },
+  //   { word: "ah", alternates: [] },
+  // ],
+  // [
+  //   { word: "art", alternates: [] },
+  //   { word: "ought", alternates: ["aught"] },
+  // ],
   [
     { word: "card", alternates: [] },
     { word: "cod", alternates: [] },
@@ -1272,10 +1293,10 @@ const rNullMinimalPairs = [
     { word: "or", alternates: [] },
     { word: "owe", alternates: [] },
   ],
-  [
-    { word: "word", alternates: [] },
-    { word: "wood", alternates: [] },
-  ],
+  // [
+  //   { word: "word", alternates: [] },
+  //   { word: "wood", alternates: [] },
+  // ],
   [
     { word: "heard", alternates: [] },
     { word: "hood", alternates: [] },
@@ -1670,9 +1691,13 @@ export default function Quiz() {
         data[0].phonetics &&
         data[0].phonetics.length > 0
       ) {
-        // Look for US audio specifically
+        // Look for US audio specifically - check for various US audio patterns
         const usPhonetic = data[0].phonetics.find(
-          (p) => p.audio && p.audio.includes("-us.")
+          (p) =>
+            p.audio &&
+            (p.audio.includes("-us.") ||
+              p.audio.includes("-us-") ||
+              p.audio.includes("/us/"))
         );
 
         // Only return US audio, no fallback
@@ -1708,6 +1733,7 @@ export default function Quiz() {
           word,
           quizType: selectedQuizType,
           hasAudio: !!dictionaryAudio,
+          audioUrl: dictionaryAudio || null,
           timestamp: new Date().toISOString(),
         };
 
