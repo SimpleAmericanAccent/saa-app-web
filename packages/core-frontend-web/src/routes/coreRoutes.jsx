@@ -16,6 +16,7 @@ import ConsonantReplays from "core-frontend-web/src/pages/replays/consonants.jsx
 import FlowReplays from "core-frontend-web/src/pages/replays/flow.jsx";
 import SmartPracticeReplays from "core-frontend-web/src/pages/replays/smart-practice.jsx";
 import Quiz from "core-frontend-web/src/pages/Quiz.jsx";
+import QuizAudioAdmin from "core-frontend-web/src/pages/QuizAudioAdmin.jsx";
 
 const coreRoutes = (
   <>
@@ -30,6 +31,7 @@ const coreRoutes = (
     <Route path="/links" element={<Links />} />
     <Route path="/phonemes" element={<Phonemes />} />
     <Route path="/quiz" element={<Quiz />} />
+    <Route path="/quiz-audio-admin" element={<QuizAudioAdmin />} />
 
     <Route
       path="/spelling-pronunciation"

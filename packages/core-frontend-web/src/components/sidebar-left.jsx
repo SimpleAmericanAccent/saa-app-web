@@ -109,7 +109,7 @@ function SidebarLink({ to, children, ...props }) {
 }
 
 export function SidebarLeft() {
-  const { logout, user, fetchUserProfile } = useAuthStore();
+  const { logout, user, fetchUserProfile, isAdmin } = useAuthStore();
   const { state, setOpen } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [openSubmenus, setOpenSubmenus] = React.useState(new Set());
@@ -508,6 +508,21 @@ export function SidebarLeft() {
                   </SidebarLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              {/* Quiz Audio Admin - Only show for admins */}
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Quiz Audio Admin">
+                    <SidebarLink
+                      to="/quiz-audio-admin"
+                      className="flex items-center gap-2"
+                    >
+                      <Volume2 className="h-4 w-4" />
+                      {!isCollapsed && <span>Audio Admin</span>}
+                    </SidebarLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>

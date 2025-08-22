@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { getQuizStats } from "../utils/quizStats";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import useAuthStore from "../stores/authStore";
 import {
   getPerformanceLevel,
   getTextColorClass,
@@ -24,7 +25,7 @@ import { Checkbox } from "core-frontend-web/src/components/ui/checkbox";
 import { Play, Volume2, Loader2 } from "lucide-react";
 
 // Quiz type IDs for easy reference
-const QUIZ_TYPE_IDS = {
+export const QUIZ_TYPE_IDS = {
   KIT_FLEECE: "kit_fleece",
   TRAP_DRESS: "trap_dress",
   BAN_DRESS: "ban_dress",
@@ -58,50 +59,50 @@ const kitFleeceMinimalPairs = [
     { word: "bin", alternates: ["been"] },
     { word: "bean", alternates: [] },
   ],
-  [
-    { word: "biz", alternates: [] },
-    { word: "bees", alternates: [] },
-  ],
+  // [
+  //   { word: "biz", alternates: [] },
+  //   { word: "bees", alternates: [] },
+  // ],
   [
     { word: "bit", alternates: [] },
     { word: "beat", alternates: ["beet"] },
   ],
-  [
-    { word: "sis", alternates: ["cis"] },
-    { word: "cease", alternates: [] },
-  ],
-  [
-    { word: "chip", alternates: [] },
-    { word: "cheap", alternates: [] },
-  ],
+  // [
+  //   { word: "sis", alternates: ["cis"] },
+  //   { word: "cease", alternates: [] },
+  // ],
+  // [
+  //   { word: "chip", alternates: [] },
+  //   { word: "cheap", alternates: [] },
+  // ],
   [
     { word: "chick", alternates: [] },
     { word: "cheek", alternates: [] },
   ],
-  [
-    { word: "dill", alternates: [] },
-    { word: "deal", alternates: [] },
-  ],
-  [
-    { word: "dip", alternates: [] },
-    { word: "deep", alternates: [] },
-  ],
-  [
-    { word: "did", alternates: [] },
-    { word: "deed", alternates: [] },
-  ],
+  // [
+  //   { word: "dill", alternates: [] },
+  //   { word: "deal", alternates: [] },
+  // ],
+  // [
+  //   { word: "dip", alternates: [] },
+  //   { word: "deep", alternates: [] },
+  // ],
+  // [
+  //   { word: "did", alternates: [] },
+  //   { word: "deed", alternates: [] },
+  // ],
   [
     { word: "itch", alternates: [] },
     { word: "each", alternates: [] },
   ],
-  [
-    { word: "it", alternates: [] },
-    { word: "eat", alternates: [] },
-  ],
-  [
-    { word: "is", alternates: [] },
-    { word: "ease", alternates: [] },
-  ],
+  // [
+  //   { word: "it", alternates: [] },
+  //   { word: "eat", alternates: [] },
+  // ],
+  // [
+  //   { word: "is", alternates: [] },
+  //   { word: "ease", alternates: [] },
+  // ],
   [
     { word: "ill", alternates: [] },
     { word: "eel", alternates: [] },
@@ -134,22 +135,22 @@ const kitFleeceMinimalPairs = [
     { word: "hill", alternates: [] },
     { word: "heel", alternates: ["heal"] },
   ],
-  [
-    { word: "his", alternates: [] },
-    { word: "he's", alternates: [] },
-  ],
-  [
-    { word: "gyp", alternates: [] },
-    { word: "Jeep", alternates: [] },
-  ],
-  [
-    { word: "kip", alternates: [] },
-    { word: "keep", alternates: [] },
-  ],
-  [
-    { word: "kid", alternates: [] },
-    { word: "keyed", alternates: [] },
-  ],
+  // [
+  //   { word: "his", alternates: [] },
+  //   { word: "he's", alternates: [] },
+  // ],
+  // [
+  //   { word: "gyp", alternates: [] },
+  //   { word: "Jeep", alternates: [] },
+  // ],
+  // [
+  //   { word: "kip", alternates: [] },
+  //   { word: "keep", alternates: [] },
+  // ],
+  // [
+  //   { word: "kid", alternates: [] },
+  //   { word: "keyed", alternates: [] },
+  // ],
   [
     { word: "lick", alternates: [] },
     { word: "leak", alternates: ["leek"] },
@@ -162,42 +163,42 @@ const kitFleeceMinimalPairs = [
     { word: "live", alternates: [] },
     { word: "leave", alternates: [] },
   ],
-  [
-    { word: "Liz", alternates: [] },
-    { word: "Lee's", alternates: [] },
-  ],
+  // [
+  //   { word: "Liz", alternates: [] },
+  //   { word: "Lee's", alternates: [] },
+  // ],
   [
     { word: "mill", alternates: ["mil"] },
     { word: "meal", alternates: [] },
   ],
-  [
-    { word: "min", alternates: [] },
-    { word: "mean", alternates: [] },
-  ],
-  [
-    { word: "mitt", alternates: [] },
-    { word: "meet", alternates: ["meat"] },
-  ],
+  // [
+  //   { word: "min", alternates: [] },
+  //   { word: "mean", alternates: [] },
+  // ],
+  // [
+  //   { word: "mitt", alternates: [] },
+  //   { word: "meet", alternates: ["meat"] },
+  // ],
   [
     { word: "pitch", alternates: [] },
     { word: "peach", alternates: [] },
   ],
-  [
-    { word: "pick", alternates: ["pic"] },
-    { word: "peek", alternates: ["peak", "pique"] },
-  ],
-  [
-    { word: "pill", alternates: [] },
-    { word: "peel", alternates: [] },
-  ],
-  [
-    { word: "pit", alternates: [] },
-    { word: "Pete", alternates: ["peat"] },
-  ],
-  [
-    { word: "piss", alternates: [] },
-    { word: "piece", alternates: ["peace"] },
-  ],
+  // [
+  //   { word: "pick", alternates: ["pic"] },
+  //   { word: "peek", alternates: ["peak", "pique"] },
+  // ],
+  // [
+  //   { word: "pill", alternates: [] },
+  //   { word: "peel", alternates: [] },
+  // ],
+  // [
+  //   { word: "pit", alternates: [] },
+  //   { word: "Pete", alternates: ["peat"] },
+  // ],
+  // [
+  //   { word: "piss", alternates: [] },
+  //   { word: "piece", alternates: ["peace"] },
+  // ],
   [
     { word: "rich", alternates: [] },
     { word: "reach", alternates: [] },
@@ -206,14 +207,14 @@ const kitFleeceMinimalPairs = [
     { word: "rid", alternates: [] },
     { word: "read", alternates: ["reed"] },
   ],
-  [
-    { word: "riff", alternates: [] },
-    { word: "reef", alternates: [] },
-  ],
-  [
-    { word: "sill", alternates: [] },
-    { word: "seal", alternates: [] },
-  ],
+  // [
+  //   { word: "riff", alternates: [] },
+  //   { word: "reef", alternates: [] },
+  // ],
+  // [
+  //   { word: "sill", alternates: [] },
+  //   { word: "seal", alternates: [] },
+  // ],
   [
     { word: "sit", alternates: [] },
     { word: "seat", alternates: [] },
@@ -226,18 +227,18 @@ const kitFleeceMinimalPairs = [
     { word: "sin", alternates: [] },
     { word: "seen", alternates: ["scene"] },
   ],
-  [
-    { word: "sim", alternates: [] },
-    { word: "seem", alternates: ["seam"] },
-  ],
+  // [
+  //   { word: "sim", alternates: [] },
+  //   { word: "seem", alternates: ["seam"] },
+  // ],
   [
     { word: "shit", alternates: [] },
     { word: "sheet", alternates: [] },
   ],
-  [
-    { word: "shin", alternates: [] },
-    { word: "sheen", alternates: [] },
-  ],
+  // [
+  //   { word: "shin", alternates: [] },
+  //   { word: "sheen", alternates: [] },
+  // ],
   [
     { word: "ship", alternates: [] },
     { word: "sheep", alternates: [] },
@@ -250,22 +251,22 @@ const kitFleeceMinimalPairs = [
     { word: "still", alternates: [] },
     { word: "steal", alternates: ["steel"] },
   ],
-  [
-    { word: "Tim", alternates: [] },
-    { word: "team", alternates: [] },
-  ],
+  // [
+  //   { word: "Tim", alternates: [] },
+  //   { word: "team", alternates: [] },
+  // ],
   [
     { word: "tin", alternates: [] },
     { word: "teen", alternates: [] },
   ],
-  [
-    { word: "win", alternates: [] },
-    { word: "wean", alternates: [] },
-  ],
-  [
-    { word: "wick", alternates: [] },
-    { word: "week", alternates: ["weak"] },
-  ],
+  // [
+  //   { word: "win", alternates: [] },
+  //   { word: "wean", alternates: [] },
+  // ],
+  // [
+  //   { word: "wick", alternates: [] },
+  //   { word: "week", alternates: ["weak"] },
+  // ],
   [
     { word: "whip", alternates: [] },
     { word: "weep", alternates: [] },
@@ -278,26 +279,26 @@ const kitFleeceMinimalPairs = [
     { word: "will", alternates: [] },
     { word: "wheel", alternates: [] },
   ],
-  [
-    { word: "wiz", alternates: [] },
-    { word: "wheeze", alternates: [] },
-  ],
+  // [
+  //   { word: "wiz", alternates: [] },
+  //   { word: "wheeze", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for TRAP vs DRESS vowels (alphabetical by TRAP word)
 const trapDressMinimalPairs = [
-  [
-    { word: "ad", alternates: ["add"] },
-    { word: "ed", alternates: ["Ed"] },
-  ],
-  [
-    { word: "Al", alternates: [] },
-    { word: "L", alternates: ["Elle"] },
-  ],
-  [
-    { word: "ass", alternates: [] },
-    { word: "S", alternates: [] },
-  ],
+  // [
+  //   { word: "ad", alternates: ["add"] },
+  //   { word: "ed", alternates: ["Ed"] },
+  // ],
+  // [
+  //   { word: "Al", alternates: [] },
+  //   { word: "L", alternates: ["Elle"] },
+  // ],
+  // [
+  //   { word: "ass", alternates: [] },
+  //   { word: "S", alternates: [] },
+  // ],
   [
     { word: "bad", alternates: [] },
     { word: "bed", alternates: [] },
@@ -314,14 +315,14 @@ const trapDressMinimalPairs = [
     { word: "dad", alternates: ["Dad"] },
     { word: "dead", alternates: [] },
   ],
-  [
-    { word: "dab", alternates: [] },
-    { word: "Deb", alternates: [] },
-  ],
-  [
-    { word: "fad", alternates: [] },
-    { word: "fed", alternates: [] },
-  ],
+  // [
+  //   { word: "dab", alternates: [] },
+  //   { word: "Deb", alternates: [] },
+  // ],
+  // [
+  //   { word: "fad", alternates: [] },
+  //   { word: "fed", alternates: [] },
+  // ],
   [
     { word: "had", alternates: [] },
     { word: "head", alternates: [] },
@@ -342,54 +343,54 @@ const trapDressMinimalPairs = [
     { word: "mad", alternates: [] },
     { word: "med", alternates: [] },
   ],
-  [
-    { word: "mag", alternates: [] },
-    { word: "Meg", alternates: [] },
-  ],
+  // [
+  //   { word: "mag", alternates: [] },
+  //   { word: "Meg", alternates: [] },
+  // ],
   [
     { word: "mat", alternates: ["Matt"] },
     { word: "met", alternates: [] },
   ],
-  [
-    { word: "pack", alternates: [] },
-    { word: "peck", alternates: ["pec"] },
-  ],
+  // [
+  //   { word: "pack", alternates: [] },
+  //   { word: "peck", alternates: ["pec"] },
+  // ],
   [
     { word: "rack", alternates: [] },
     { word: "wreck", alternates: [] },
   ],
-  [
-    { word: "rad", alternates: [] },
-    { word: "red", alternates: ["read"] },
-  ],
-  [
-    { word: "rag", alternates: [] },
-    { word: "reg", alternates: [] },
-  ],
-  [
-    { word: "sad", alternates: [] },
-    { word: "said", alternates: [] },
-  ],
-  [
-    { word: "Sal", alternates: [] },
-    { word: "sell", alternates: [] },
-  ],
+  // [
+  //   { word: "rad", alternates: [] },
+  //   { word: "red", alternates: ["read"] },
+  // ],
+  // [
+  //   { word: "rag", alternates: [] },
+  //   { word: "reg", alternates: [] },
+  // ],
+  // [
+  //   { word: "sad", alternates: [] },
+  //   { word: "said", alternates: [] },
+  // ],
+  // [
+  //   { word: "Sal", alternates: [] },
+  //   { word: "sell", alternates: [] },
+  // ],
   [
     { word: "sat", alternates: [] },
     { word: "set", alternates: [] },
   ],
-  [
-    { word: "shall", alternates: [] },
-    { word: "shell", alternates: [] },
-  ],
-  [
-    { word: "tack", alternates: [] },
-    { word: "tech", alternates: [] },
-  ],
-  [
-    { word: "tad", alternates: [] },
-    { word: "Ted", alternates: [] },
-  ],
+  // [
+  //   { word: "shall", alternates: [] },
+  //   { word: "shell", alternates: [] },
+  // ],
+  // [
+  //   { word: "tack", alternates: [] },
+  //   { word: "tech", alternates: [] },
+  // ],
+  // [
+  //   { word: "tad", alternates: [] },
+  //   { word: "Ted", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for BAN vs DRESS vowels (alphabetical by BAN word)
@@ -1302,7 +1303,7 @@ const processMinimalPairsData = (pairsData) => {
 };
 
 // Quiz data mapping
-const QUIZ_DATA = {
+export const QUIZ_DATA = {
   [QUIZ_TYPE_IDS.KIT_FLEECE]: {
     id: QUIZ_TYPE_IDS.KIT_FLEECE,
     name: "KIT vs FLEECE",
@@ -1601,7 +1602,9 @@ export default function Quiz() {
   const [isLoading, setIsLoading] = useState(false);
   const [audioUrls, setAudioUrls] = useState({
     dictionary: null,
-    browserTTS: null,
+  });
+  const [nextAudioUrls, setNextAudioUrls] = useState({
+    dictionary: null,
   });
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
@@ -1638,6 +1641,12 @@ export default function Quiz() {
           ? allQuestions
           : allQuestions.slice(0, quizSettings.numberOfQuestions);
       setShuffledQuestions(limitedQuestions);
+
+      // Preload audio for the second question if available
+      if (limitedQuestions.length > 1) {
+        const secondQuestion = limitedQuestions[1];
+        preloadNextAudio(secondQuestion.word);
+      }
     }
   }, [selectedQuizType, currentQuizData, quizSettings.numberOfQuestions]);
 
@@ -1678,53 +1687,94 @@ export default function Quiz() {
     }
   };
 
-  // Function to check if browser TTS is available
-  const getBrowserTTSAudio = async (word) => {
-    if (!word) return null;
-
-    try {
-      // Check if browser supports speech synthesis
-      if ("speechSynthesis" in window) {
-        // iOS Safari specific check
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isSafari =
-          /Safari/.test(navigator.userAgent) &&
-          !/Chrome/.test(navigator.userAgent);
-
-        if (isIOS && isSafari) {
-          // For iOS Safari, we'll still return browserTTS but handle it differently
-          return "browserTTS";
-        }
-
-        return "browserTTS"; // Special identifier for browser TTS
-      }
-      return null;
-    } catch (error) {
-      console.error("Error checking browser TTS:", error);
-      return null;
-    }
-  };
-
   // Function to get all audio sources for a word
   const getAudioForWord = async (word) => {
     if (!word) return;
 
     setIsLoading(true);
     try {
-      const [dictionaryAudio, browserTTSAudio] = await Promise.all([
-        getDictionaryAudio(word),
-        getBrowserTTSAudio(word),
-      ]);
+      const dictionaryAudio = await getDictionaryAudio(word);
 
-      setAudioUrls({
+      const newAudioUrls = {
         dictionary: dictionaryAudio,
-        browserTTS: browserTTSAudio,
-      });
+      };
+
+      setAudioUrls(newAudioUrls);
+
+      // Log audio availability for admin users
+      const { isAdmin } = useAuthStore.getState();
+      if (isAdmin && selectedQuizType) {
+        const audioStatus = {
+          word,
+          quizType: selectedQuizType,
+          hasAudio: !!dictionaryAudio,
+          timestamp: new Date().toISOString(),
+        };
+
+        // Get existing audio logs
+        const existingLogs = JSON.parse(
+          localStorage.getItem("quizAudioLogs") || "{}"
+        );
+        if (!existingLogs[selectedQuizType]) {
+          existingLogs[selectedQuizType] = {};
+        }
+        existingLogs[selectedQuizType][word] = audioStatus;
+        localStorage.setItem("quizAudioLogs", JSON.stringify(existingLogs));
+      }
+
+      // Auto-play immediately if conditions are met
+      if (
+        hasUserInteracted &&
+        quizSettings.autoPlayAudio &&
+        !hasAutoPlayed &&
+        !playingSource &&
+        dictionaryAudio
+      ) {
+        setHasAutoPlayed(true);
+        playAudio("dictionary");
+      }
     } catch (error) {
       console.error("Error fetching audio:", error);
-      setAudioUrls({ dictionary: null, browserTTS: null });
+      setAudioUrls({ dictionary: null });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Function to preload audio for the next question
+  const preloadNextAudio = async (word) => {
+    if (!word) return;
+
+    try {
+      const dictionaryAudio = await getDictionaryAudio(word);
+
+      setNextAudioUrls({
+        dictionary: dictionaryAudio,
+      });
+
+      // Log audio availability for admin users (for preloaded audio)
+      const { isAdmin } = useAuthStore.getState();
+      if (isAdmin && selectedQuizType) {
+        const audioStatus = {
+          word,
+          quizType: selectedQuizType,
+          hasAudio: !!dictionaryAudio,
+          timestamp: new Date().toISOString(),
+        };
+
+        // Get existing audio logs
+        const existingLogs = JSON.parse(
+          localStorage.getItem("quizAudioLogs") || "{}"
+        );
+        if (!existingLogs[selectedQuizType]) {
+          existingLogs[selectedQuizType] = {};
+        }
+        existingLogs[selectedQuizType][word] = audioStatus;
+        localStorage.setItem("quizAudioLogs", JSON.stringify(existingLogs));
+      }
+    } catch (error) {
+      console.error("Error preloading audio:", error);
+      setNextAudioUrls({ dictionary: null });
     }
   };
 
@@ -1736,19 +1786,29 @@ export default function Quiz() {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
-      speechSynthesis.cancel();
       setPlayingSource(null);
       setHasAutoPlayed(false); // Reset auto-play flag
 
-      setAudioUrls({ dictionary: null, browserTTS: null });
+      // Load current question audio
+      setAudioUrls({ dictionary: null });
       getAudioForWord(currentQuestion.word);
+
+      // Preload next question audio if available
+      const nextQuestionIndex = currentQuestionIndex + 1;
+      if (nextQuestionIndex < shuffledQuestions.length) {
+        const nextQuestion = shuffledQuestions[nextQuestionIndex];
+        preloadNextAudio(nextQuestion.word);
+      } else {
+        // Clear next audio if this is the last question
+        setNextAudioUrls({ dictionary: null });
+      }
     }
   }, [currentQuestionIndex, currentQuestion]);
 
   // Auto-play audio when URLs are loaded
   useEffect(() => {
     if (
-      (audioUrls.dictionary || audioUrls.browserTTS) &&
+      audioUrls.dictionary &&
       !playingSource &&
       !isLoading &&
       !hasAutoPlayed &&
@@ -1756,29 +1816,11 @@ export default function Quiz() {
       quizSettings.autoPlayAudio && // Only autoplay if setting is enabled
       currentQuestion // Only autoplay if we have a current question
     ) {
-      const timer = setTimeout(() => {
-        // Check if we're on iOS Safari
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isSafari =
-          /Safari/.test(navigator.userAgent) &&
-          !/Chrome/.test(navigator.userAgent);
-
-        if (audioUrls.dictionary) {
-          // Always prefer dictionary audio if available
-          setHasAutoPlayed(true);
-          playAudio("dictionary");
-        } else if (audioUrls.browserTTS && !(isIOS && isSafari)) {
-          // Only auto-play browser TTS on non-iOS Safari
-          setHasAutoPlayed(true);
-          playAudio("browserTTS");
-        }
-      }, 800); // Slight delay to ensure audio is ready
-
-      return () => clearTimeout(timer);
+      setHasAutoPlayed(true);
+      playAudio("dictionary");
     }
   }, [
     audioUrls.dictionary,
-    audioUrls.browserTTS,
     playingSource,
     isLoading,
     hasAutoPlayed,
@@ -1825,78 +1867,16 @@ export default function Quiz() {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-    speechSynthesis.cancel(); // Stop any TTS
 
-    if (source === "browserTTS") {
-      // iOS Safari specific handling
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isSafari =
-        /Safari/.test(navigator.userAgent) &&
-        !/Chrome/.test(navigator.userAgent);
-
-      if (isIOS && isSafari) {
-        // iOS Safari requires special handling
-        try {
-          // Cancel any existing speech
-          speechSynthesis.cancel();
-
-          // Create utterance with iOS-friendly settings
-          const utterance = new SpeechSynthesisUtterance(currentQuestion.word);
-          utterance.lang = "en-US";
-          utterance.rate = 0.7; // Slightly slower for iOS
-          utterance.pitch = 1.0;
-          utterance.volume = 1.0;
-
-          // iOS Safari specific event handlers
-          utterance.onstart = () => {
-            setPlayingSource(source);
-          };
-
-          utterance.onend = () => {
-            setPlayingSource(null);
-          };
-
-          utterance.onerror = (event) => {
-            console.error("iOS Safari TTS error:", event);
-            setPlayingSource(null);
-
-            // If it's a not-allowed error, show user-friendly message
-            if (event.error === "not-allowed") {
-              alert(
-                "Please enable speech synthesis in your iOS settings or try the US Native audio option."
-              );
-            }
-          };
-
-          // Add a small delay for iOS Safari
-          setTimeout(() => {
-            speechSynthesis.speak(utterance);
-          }, 100);
-        } catch (error) {
-          console.error("iOS Safari TTS setup error:", error);
-          setPlayingSource(null);
-        }
-      } else {
-        // Standard browser TTS for other browsers
-        const utterance = new SpeechSynthesisUtterance(currentQuestion.word);
-        utterance.lang = "en-US";
-        utterance.rate = 0.8; // Slightly slower for clarity
-        utterance.onend = () => setPlayingSource(null);
-        utterance.onerror = () => setPlayingSource(null);
-        speechSynthesis.speak(utterance);
-        setPlayingSource(source);
-      }
-    } else {
-      // Use audio element for dictionary audio
-      const url = audioUrls[source];
-      if (audioRef.current && url) {
-        audioRef.current.src = url;
-        audioRef.current.play().catch((error) => {
-          console.error("Error playing audio:", error);
-          setPlayingSource(null);
-        });
-        setPlayingSource(source);
-      }
+    // Use audio element for dictionary audio
+    const url = audioUrls[source];
+    if (audioRef.current && url) {
+      audioRef.current.src = url;
+      audioRef.current.play().catch((error) => {
+        console.error("Error playing audio:", error);
+        setPlayingSource(null);
+      });
+      setPlayingSource(source);
     }
   };
 
@@ -1911,11 +1891,7 @@ export default function Quiz() {
             playAudio("dictionary");
           }
           break;
-        case "2":
-          if (audioUrls.browserTTS && !playingSource && !isLoading) {
-            playAudio("browserTTS");
-          }
-          break;
+
         case "ArrowLeft":
         case "a":
           if (currentQuestion.options[0]) {
@@ -1983,9 +1959,14 @@ export default function Quiz() {
 
   const handleNext = () => {
     if (currentQuestionIndex < shuffledQuestions.length - 1) {
+      // Use preloaded audio for the next question
+      setAudioUrls(nextAudioUrls);
+      setNextAudioUrls({ dictionary: null });
+
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);
       setIsAnswered(false);
+      setHasAutoPlayed(false); // Reset auto-play flag for next question
     } else {
       setShowResults(true);
     }
@@ -2802,43 +2783,9 @@ export default function Quiz() {
                     ? "Playing..."
                     : "US Native"}
                 </Button>
-
-                {/* Browser TTS */}
-                <Button
-                  onClick={() => playAudio("browserTTS")}
-                  disabled={playingSource || isLoading || !audioUrls.browserTTS}
-                  variant="outline"
-                  className={`flex items-center gap-2 px-4 py-2 cursor-pointer ${
-                    !audioUrls.browserTTS && !isLoading ? "opacity-50" : ""
-                  }`}
-                  title={
-                    /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-                    /Safari/.test(navigator.userAgent) &&
-                    !/Chrome/.test(navigator.userAgent)
-                      ? "iOS Safari: May require settings permission"
-                      : "Press '2' to play Browser TTS"
-                  }
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : playingSource === "browserTTS" ? (
-                    <Volume2 className="h-4 w-4 animate-pulse" />
-                  ) : (
-                    <Play className="h-4 w-4" />
-                  )}
-                  {isLoading
-                    ? "Loading..."
-                    : playingSource === "browserTTS"
-                    ? "Playing..."
-                    : /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-                      /Safari/.test(navigator.userAgent) &&
-                      !/Chrome/.test(navigator.userAgent)
-                    ? "iOS TTS"
-                    : "Browser TTS"}
-                </Button>
               </div>
 
-              {!audioUrls.dictionary && !audioUrls.browserTTS && !isLoading && (
+              {!audioUrls.dictionary && !isLoading && (
                 <div className="space-y-3">
                   <p className="text-xs text-orange-600 dark:text-orange-400 text-center">
                     ⚠️ No audio available for this word.
