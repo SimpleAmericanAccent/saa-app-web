@@ -1589,6 +1589,7 @@ export default function Quiz() {
     numberOfQuestions: 10,
     autoPlayAudio: true,
     showSoundSymbols: true,
+    soundEffects: true,
   });
 
   // Load previous quiz results from localStorage using custom hook
@@ -1674,6 +1675,73 @@ export default function Quiz() {
   const currentQuestion = shuffledQuestions[currentQuestionIndex];
   const progress =
     ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+
+  // Function to play a simple tone
+  const playTone = (frequency, duration, type = "sine") => {
+    try {
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      oscillator.type = type;
+
+      // Fade in and out for smooth sound
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        0.3,
+        audioContext.currentTime + 0.01
+      );
+      gainNode.gain.linearRampToValueAtTime(
+        0,
+        audioContext.currentTime + duration
+      );
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration);
+    } catch (error) {
+      console.log("Sound effect not supported:", error);
+    }
+  };
+
+  // Function to play correct answer sound
+  const playCorrectSound = () => {
+    playTone(800, 0.2, "sine"); // Higher pitch, short duration
+  };
+
+  // Function to play incorrect answer sound
+  const playIncorrectSound = () => {
+    // Use a gentler approach with lower volume
+    try {
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+      oscillator.type = "sine";
+
+      // Lower volume and gentler fade for incorrect answers
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        0.15, // Lower volume than correct answer
+        audioContext.currentTime + 0.01
+      );
+      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.25);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.25);
+    } catch (error) {
+      console.log("Sound effect not supported:", error);
+    }
+  };
 
   // Function to get US audio from Free Dictionary API
   const getDictionaryAudio = async (word) => {
@@ -1970,6 +2038,13 @@ export default function Quiz() {
 
     if (isCorrect) {
       setScore(score + 1);
+      if (quizSettings.soundEffects) {
+        playCorrectSound();
+      }
+    } else {
+      if (quizSettings.soundEffects) {
+        playIncorrectSound();
+      }
     }
 
     // Auto-advance after a short delay for better flow
@@ -2245,6 +2320,26 @@ export default function Quiz() {
                   </label>
                 </div>
               </div> */}
+
+              {/* Sound Effects */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Sound Effects</label>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="soundEffects"
+                    checked={quizSettings.soundEffects}
+                    onCheckedChange={(checked) =>
+                      handleSettingsChange("soundEffects", checked)
+                    }
+                  />
+                  <label
+                    htmlFor="soundEffects"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    Play sound effects for correct/incorrect answers
+                  </label>
+                </div>
+              </div>
 
               {/* Start Quiz Button */}
               <Button
