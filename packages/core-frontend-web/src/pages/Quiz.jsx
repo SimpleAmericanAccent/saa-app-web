@@ -167,10 +167,10 @@ const kitFleeceMinimalPairs = [
   //   { word: "Liz", alternates: [] },
   //   { word: "Lee's", alternates: [] },
   // ],
-  [
-    { word: "mill", alternates: ["mil"] },
-    { word: "meal", alternates: [] },
-  ],
+  // [
+  //   { word: "mill", alternates: ["mil"] },
+  //   { word: "meal", alternates: [] },
+  // ],
   // [
   //   { word: "min", alternates: [] },
   //   { word: "mean", alternates: [] },
@@ -203,10 +203,10 @@ const kitFleeceMinimalPairs = [
     { word: "rich", alternates: [] },
     { word: "reach", alternates: [] },
   ],
-  [
-    { word: "rid", alternates: [] },
-    { word: "read", alternates: ["reed"] },
-  ],
+  // [
+  //   { word: "rid", alternates: [] },
+  //   { word: "read", alternates: ["reed"] },
+  // ],
   // [
   //   { word: "riff", alternates: [] },
   //   { word: "reef", alternates: [] },
@@ -641,10 +641,10 @@ const dhDMinimalPairs = [
     { word: "thy", alternates: [] },
     { word: "die", alternates: [] },
   ],
-  [
-    { word: "wreath", alternates: [] },
-    { word: "reed", alternates: [] },
-  ],
+  // [
+  //   { word: "wreath", alternates: [] },
+  //   { word: "reed", alternates: [] },
+  // ],
   [
     { word: "writhe", alternates: [] },
     { word: "ride", alternates: [] },
@@ -661,10 +661,10 @@ const darkLOMinimalPairs = [
   //   { word: "natal", alternates: [] },
   //   { word: "NATO", alternates: [] },
   // ],
-  [
-    { word: "jumble", alternates: [] },
-    { word: "jumbo", alternates: [] },
-  ],
+  // [
+  //   { word: "jumble", alternates: [] },
+  //   { word: "jumbo", alternates: [] },
+  // ],
   [
     { word: "old", alternates: [] },
     { word: "owed", alternates: ["ode"] },
@@ -813,10 +813,10 @@ const tChMinimalPairs = [
     { word: "too", alternates: ["two", "to"] },
     { word: "chew", alternates: ["choo"] },
   ],
-  [
-    { word: "tea", alternates: ["T", "tee"] },
-    { word: "chi", alternates: [] },
-  ],
+  // [
+  //   { word: "tea", alternates: ["T", "tee"] },
+  //   { word: "chi", alternates: [] },
+  // ],
   [
     { word: "tease", alternates: ["teas"] },
     { word: "cheese", alternates: [] },
@@ -949,10 +949,10 @@ const sZMinimalPairs = [
     { word: "mace", alternates: [] },
     { word: "maze", alternates: [] },
   ],
-  [
-    { word: "pace", alternates: [] },
-    { word: "pays", alternates: [] },
-  ],
+  // [
+  //   { word: "pace", alternates: [] },
+  //   { word: "pays", alternates: [] },
+  // ],
   // [
   //   { word: "peace", alternates: ["piece"] },
   //   { word: "peas", alternates: ["pees"] },
@@ -1177,10 +1177,10 @@ const mNgMinimalPairs = [
   //   { word: "ROM", alternates: [] },
   //   { word: "wrong", alternates: [] },
   // ],
-  [
-    { word: "psalm", alternates: [] },
-    { word: "song", alternates: [] },
-  ],
+  // [
+  //   { word: "psalm", alternates: [] },
+  //   { word: "song", alternates: [] },
+  // ],
 ];
 
 // Minimal pairs data for TH vs T (alphabetical by TH word)
@@ -1233,10 +1233,10 @@ const thTMinimalPairs = [
 
 // Minimal pairs data for TH vs F (alphabetical by TH word)
 const thFMinimalPairs = [
-  [
-    { word: "thin", alternates: [] },
-    { word: "fin", alternates: [] },
-  ],
+  // [
+  //   { word: "thin", alternates: [] },
+  //   { word: "fin", alternates: [] },
+  // ],
   [
     { word: "thirst", alternates: [] },
     { word: "first", alternates: [] },
@@ -1411,7 +1411,7 @@ export const QUIZ_DATA = {
     sound1Name: "Dark L",
     sound2Name: "O",
     sound1Symbol: "[ɫ]",
-    sound2Symbol: "[o]",
+    sound2Symbol: "[o]/[ʌʊ̯]",
   },
   [QUIZ_TYPE_IDS.DARK_L_U]: {
     id: QUIZ_TYPE_IDS.DARK_L_U,
@@ -1422,7 +1422,7 @@ export const QUIZ_DATA = {
     sound1Name: "Dark L",
     sound2Name: "U",
     sound1Symbol: "[ɫ]",
-    sound2Symbol: "[u]",
+    sound2Symbol: "[u]/[ɨ̯u]",
   },
   [QUIZ_TYPE_IDS.R_NULL]: {
     id: QUIZ_TYPE_IDS.R_NULL,
