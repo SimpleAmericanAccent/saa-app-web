@@ -2402,7 +2402,7 @@ export default function Quiz() {
                     <div className="flex flex-col gap-1">
                       <div className="text-[10px] sm:text-xs text-muted-foreground">
                         {vowelsCompletion.completed}/{vowelsCompletion.total}{" "}
-                        completed
+                        Completed
                       </div>
                       {vowelsAverage && (
                         <div
@@ -2437,7 +2437,7 @@ export default function Quiz() {
                     <div className="flex flex-col gap-1">
                       <div className="text-[10px] sm:text-xs text-muted-foreground">
                         {consonantsCompletion.completed}/
-                        {consonantsCompletion.total} completed
+                        {consonantsCompletion.total} Completed
                       </div>
                       {consonantsAverage && (
                         <div
@@ -2455,6 +2455,26 @@ export default function Quiz() {
               {/* Color Legend - Show when there are quiz results */}
               {(vowelsAverage !== null || consonantsAverage !== null) && (
                 <div className="mt-4 p-3 pt-0 space-y-2">
+                  {/* Overall Quiz Stats */}
+                  <div className="flex items-center justify-center gap-1 pb-2 text-xs text-muted-foreground">
+                    <div className="flex flex-col gap-1 items-center">
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">
+                        {quizStats.overall.completed}/{quizStats.overall.total}{" "}
+                        Completed
+                      </div>
+                      {quizStats.overall.average && (
+                        <div
+                          className="text-[10px] sm:text-xs font-bold"
+                          style={getGradientColorStyle(
+                            quizStats.overall.average
+                          )}
+                        >
+                          {quizStats.overall.average}% Average
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <p className="text-xs text-muted-foreground text-center">
                     Performance Legend
                   </p>
