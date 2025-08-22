@@ -16,6 +16,7 @@ model User {
   name      String?
   role      String?
   audios    Audio[]  @relation("UserAudios")
+  trials    Trial[]
 }
 
 model Audio {
@@ -186,4 +187,39 @@ model PronCmuDict {
   orthoWord    OrthoWord   @relation(fields: [orthoWordId], references: [id])
 
   @@unique([orthoWordId, pronCmuDict])
+}
+
+// Quiz-related models - Using ChatGPT's improved approach
+enum Side {
+  A
+  B
+}
+
+model Pair {
+  pairId      String @id @default(uuid()) @map("pair_id")
+  contrastKey String @map("contrast_key")      // e.g. "DRESS~TRAP"
+  wordA       String @map("word_a")
+  wordB       String @map("word_b")
+  audioAUrl   String @map("audio_a_url")
+  audioBUrl   String @map("audio_b_url")
+  active      Boolean @default(true)
+  trials      Trial[]
+  @@map("pair")
+}
+
+model Trial {
+  trialId       String   @id @map("trial_id")  // client UUID for idempotency
+  userId        Int?     @map("user_id")       // derive from auth on server
+  pairId        String   @map("pair_id")
+  presentedSide Side     @map("presented_side") // "A" or "B"
+  choiceSide    Side     @map("choice_side")    // "A" or "B"
+  isCorrect     Boolean  @map("is_correct")
+  presentedAt   DateTime @map("presented_at")
+  respondedAt   DateTime @map("responded_at")
+  latencyMs     Int      @map("latency_ms")
+  pair          Pair     @relation(fields: [pairId], references: [pairId], onDelete: Restrict)
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  @@index([userId, presentedAt(sort: Desc)], name: "ix_user_time")
+  @@index([userId, pairId, presentedAt(sort: Desc)], name: "ix_user_pair_time")
+  @@map("trial")
 }
