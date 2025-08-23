@@ -9,14 +9,15 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  createdAt DateTime @default(now())
-  auth0Id   String?  @unique
-  name      String?
-  role      String?
-  audios    Audio[]  @relation("UserAudios")
-  trials    Trial[]
+  id         String   @id @default(uuid()) @map("user_id")
+  auth0Id    String?  @unique              @map("auth0_id") // e.g. "auth0|abc" or "google-oauth2|123"
+  email      String                       // optional, for convenience
+  name       String?                       // optional
+  role       String?
+  createdAt  DateTime @default(now())      @map("created_at")
+  lastSeenAt DateTime @default(now())      @map("last_seen_at")
+  audios     Audio[]  @relation("UserAudios")
+  trials     Trial[]
 }
 
 model Audio {
@@ -209,7 +210,7 @@ model Pair {
 
 model Trial {
   trialId       String   @id @map("trial_id")  // client UUID for idempotency
-  userId        Int?     @map("user_id")       // derive from auth on server
+  userId        String   @map("user_id")       // our UUID, not Auth0's sub
   pairId        String   @map("pair_id")
   presentedSide Side     @map("presented_side") // "A" or "B"
   choiceSide    Side     @map("choice_side")    // "A" or "B"
@@ -218,7 +219,7 @@ model Trial {
   respondedAt   DateTime @map("responded_at")
   latencyMs     Int      @map("latency_ms")
   pair          Pair     @relation(fields: [pairId], references: [pairId], onDelete: Restrict)
-  user          User?    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Restrict)
   @@index([userId, presentedAt(sort: Desc)], name: "ix_user_time")
   @@index([userId, pairId, presentedAt(sort: Desc)], name: "ix_user_pair_time")
   @@map("trial")

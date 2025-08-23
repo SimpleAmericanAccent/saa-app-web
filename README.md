@@ -19,3 +19,8 @@ Emoji shorthand conventions for console.log decoration:
 🚀 Prod
 
 Localhost over https via mkcert
+
+How to migrate db:
+cd to app root first, if needed. then:
+
+$env:DATABASE_URL = "insert main url from render here, not userapp or adminapp but the main db url"; pnpm --filter core-backend-node exec prisma migrate dev --name update_user_id_to_uuid_required; Remove-Item Env:DATABASE_URL

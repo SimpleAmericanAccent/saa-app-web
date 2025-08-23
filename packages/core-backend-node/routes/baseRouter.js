@@ -177,19 +177,35 @@ baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
   });
 });
 
-baseRouter.get("/api/me", (req, res) => {
+baseRouter.get("/api/me", async (req, res) => {
   const user = req.oidc.user;
 
   if (!user) {
     return res.status(401).json({ error: "User not authenticated" });
   }
 
-  res.json({
-    name: user.name,
-    email: user.email,
-    sub: user.sub,
-    picture: user.picture, // optional
-  });
+  try {
+    // Use userId from global middleware (JIT provisioning already happened)
+    const userId = req.userId;
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      sub: user.sub,
+      picture: user.picture, // optional
+      id: userId, // database user ID from global JIT middleware
+    });
+  } catch (error) {
+    console.error("Error getting user info:", error);
+    // Return user info without database ID if lookup fails
+    res.json({
+      name: user.name,
+      email: user.email,
+      sub: user.sub,
+      picture: user.picture,
+      id: null,
+    });
+  }
 });
 
 export default baseRouter;
