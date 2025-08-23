@@ -78,9 +78,9 @@ router.get("/pairs", async (req, res) => {
       },
     });
 
-    res.json({ 
+    res.json({
       contrast: contrast.name,
-      pairs 
+      pairs,
     });
   } catch (error) {
     console.error("Error fetching pairs:", error);
@@ -254,10 +254,10 @@ router.get("/results", async (req, res) => {
 
     // Group trials by contrast and calculate results
     const resultsByContrast = {};
-    
+
     trials.forEach((trial) => {
       const contrastKey = trial.pair.contrast.key;
-      
+
       if (!resultsByContrast[contrastKey]) {
         resultsByContrast[contrastKey] = {
           contrastKey,
@@ -268,13 +268,13 @@ router.get("/results", async (req, res) => {
           lastAttempt: null,
         };
       }
-      
+
       const result = resultsByContrast[contrastKey];
       result.totalTrials++;
       if (trial.isCorrect) {
         result.correctTrials++;
       }
-      
+
       // Update last attempt timestamp
       if (!result.lastAttempt || trial.presentedAt > result.lastAttempt) {
         result.lastAttempt = trial.presentedAt;
@@ -283,7 +283,9 @@ router.get("/results", async (req, res) => {
 
     // Calculate percentages
     Object.values(resultsByContrast).forEach((result) => {
-      result.percentage = Math.round((result.correctTrials / result.totalTrials) * 100);
+      result.percentage = Math.round(
+        (result.correctTrials / result.totalTrials) * 100
+      );
     });
 
     res.json({ results: resultsByContrast });
@@ -355,8 +357,8 @@ router.get("/settings", async (req, res) => {
       soundEffects: true,
     };
 
-    res.json({ 
-      settings: userSettings?.quizSettings || defaultSettings 
+    res.json({
+      settings: userSettings?.quizSettings || defaultSettings,
     });
   } catch (error) {
     console.error("Error fetching quiz settings:", error);
