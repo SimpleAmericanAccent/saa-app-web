@@ -30,6 +30,8 @@ const QuizAudioAdmin = () => {
   const [playingAudio, setPlayingAudio] = useState(null);
   const [quizDataFromApi, setQuizDataFromApi] = useState({});
   const [isLoadingQuizData, setIsLoadingQuizData] = useState(false);
+  const [quizWords, setQuizWords] = useState({}); // Store word pairs for each quiz
+  const [loadingWords, setLoadingWords] = useState(new Set()); // Track which quizzes are loading words
   const audioRef = useRef(null);
 
   // Load audio logs from localStorage
@@ -127,8 +129,17 @@ const QuizAudioAdmin = () => {
     setCheckingQuiz(quizType);
 
     try {
-      // Fetch pairs from API
-      const pairs = await fetchPairs(quizType);
+      // Fetch pairs from API (or use cached words if available)
+      let pairs = quizWords[quizType];
+      if (!pairs) {
+        pairs = await fetchPairs(quizType);
+        // Cache the words for future use
+        setQuizWords((prev) => ({
+          ...prev,
+          [quizType]: pairs,
+        }));
+      }
+
       if (!pairs || pairs.length === 0) return;
 
       const newLogs = { ...audioLogs };
@@ -249,8 +260,32 @@ const QuizAudioAdmin = () => {
       newExpanded.delete(quizId);
     } else {
       newExpanded.add(quizId);
+      // Load words if not already loaded
+      if (!quizWords[quizId]) {
+        loadQuizWords(quizId);
+      }
     }
     setExpandedQuizzes(newExpanded);
+  };
+
+  // Load word pairs for a specific quiz
+  const loadQuizWords = async (quizId) => {
+    setLoadingWords((prev) => new Set(prev).add(quizId));
+    try {
+      const pairs = await fetchPairs(quizId);
+      setQuizWords((prev) => ({
+        ...prev,
+        [quizId]: pairs,
+      }));
+    } catch (error) {
+      console.error("Error loading quiz words:", error);
+    } finally {
+      setLoadingWords((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(quizId);
+        return newSet;
+      });
+    }
   };
 
   // Get audio coverage for a quiz
@@ -465,16 +500,102 @@ const QuizAudioAdmin = () => {
 
                 {isExpanded && (
                   <CardContent>
-                    <div className="text-center p-4 text-muted-foreground">
-                      <p>
-                        Word pairs are loaded dynamically from the database when
-                        needed.
-                      </p>
-                      <p className="text-sm mt-2">
-                        Use "Check All" to load and check audio for all words in
-                        this quiz.
-                      </p>
-                    </div>
+                    {loadingWords.has(quizId) ? (
+                      <div className="flex items-center justify-center p-4">
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        Loading words...
+                      </div>
+                    ) : quizWords[quizId] ? (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {quizWords[quizId].map((pair, index) => {
+                            const wordLog = audioLogs[quizId]?.[pair.word];
+                            const isChecking = checkingWord === pair.word;
+
+                            return (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-3 border rounded-lg"
+                              >
+                                <div className="flex-1">
+                                  <div className="font-medium">{pair.word}</div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {pair.wordA} vs {pair.wordB}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {wordLog ? (
+                                    <>
+                                      {wordLog.hasAudio ? (
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() =>
+                                            playAudio(pair.word, quizId)
+                                          }
+                                          disabled={playingAudio === pair.word}
+                                        >
+                                          {playingAudio === pair.word ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                          ) : (
+                                            <Volume2 className="h-4 w-4" />
+                                          )}
+                                        </Button>
+                                      ) : (
+                                        <VolumeX className="h-4 w-4 text-red-500" />
+                                      )}
+                                      <Badge
+                                        variant={
+                                          wordLog.hasAudio
+                                            ? "default"
+                                            : "destructive"
+                                        }
+                                        className="text-xs"
+                                      >
+                                        {wordLog.hasAudio
+                                          ? "Available"
+                                          : "Missing"}
+                                      </Badge>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                          checkWordAudio(pair.word, quizId)
+                                        }
+                                        disabled={isChecking}
+                                      >
+                                        {isChecking ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          "Check"
+                                        )}
+                                      </Button>
+                                      <Badge
+                                        variant="secondary"
+                                        className="text-xs"
+                                      >
+                                        Not Checked
+                                      </Badge>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center p-4 text-muted-foreground">
+                        <p>No words loaded yet.</p>
+                        <p className="text-sm mt-2">
+                          Click "Check All" to load and check audio for all
+                          words in this quiz.
+                        </p>
+                      </div>
+                    )}
                   </CardContent>
                 )}
               </Card>
