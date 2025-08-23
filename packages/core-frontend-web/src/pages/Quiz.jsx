@@ -1704,7 +1704,7 @@ export default function Quiz() {
             {Object.keys(previousResults).length > 0 && (
               <div className="p-3 pt-4 flex-shrink-0 space-y-2">
                 <p className="text-xs text-muted-foreground text-center">
-                  Note: Shows last result for each quiz type
+                  Performance Legend
                 </p>
                 <div className="flex flex-col items-center gap-2 text-xs">
                   {(() => {
