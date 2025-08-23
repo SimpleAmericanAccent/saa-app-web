@@ -252,6 +252,16 @@ export default function Quiz() {
     loadQuizResults();
   }, []);
 
+  // Function to refresh quiz results
+  const refreshQuizResults = async () => {
+    try {
+      const results = await fetchQuizResults();
+      setPreviousResults(results);
+    } catch (error) {
+      console.error("Failed to refresh quiz results:", error);
+    }
+  };
+
   // Load user profile on component mount
   useEffect(() => {
     useAuthStore.getState().fetchUserProfile();
@@ -270,7 +280,8 @@ export default function Quiz() {
   // Save result when quiz is completed
   useEffect(() => {
     if (showResults && selectedQuizType && shuffledQuestions.length > 0) {
-      saveQuizResult(selectedQuizType, score, shuffledQuestions.length);
+      // Refresh quiz results after quiz completion to update stats
+      refreshQuizResults();
     }
   }, [showResults, selectedQuizType, score, shuffledQuestions.length]);
 
@@ -283,23 +294,24 @@ export default function Quiz() {
   const [quizStats, setQuizStats] = useState(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
 
-  // Load quiz stats from API
-  useEffect(() => {
-    const loadQuizStats = async () => {
-      try {
-        setIsLoadingStats(true);
-        const stats = await getQuizStats();
-        setQuizStats(stats);
-      } catch (error) {
-        console.error("Failed to load quiz stats:", error);
-        setQuizStats(null);
-      } finally {
-        setIsLoadingStats(false);
-      }
-    };
+  // Function to refresh quiz stats
+  const refreshQuizStats = async () => {
+    try {
+      setIsLoadingStats(true);
+      const stats = await getQuizStats();
+      setQuizStats(stats);
+    } catch (error) {
+      console.error("Failed to load quiz stats:", error);
+      setQuizStats(null);
+    } finally {
+      setIsLoadingStats(false);
+    }
+  };
 
-    loadQuizStats();
-  }, []);
+  // Load quiz stats from API and refresh when results change
+  useEffect(() => {
+    refreshQuizStats();
+  }, [previousResults]); // Refresh when previousResults change
 
   const vowelsAverage = quizStats?.vowels?.average;
   const consonantsAverage = quizStats?.consonants?.average;
@@ -1057,7 +1069,7 @@ export default function Quiz() {
                     setHasAutoPlayed(false);
                     setPlayingSource(null);
                     setHasStartedQuiz(false);
-                    setCurrentStep("category");
+                    setCurrentStep("quizType");
                     setShuffledQuestions([]);
 
                     // Reset endless mode state
@@ -2146,7 +2158,10 @@ export default function Quiz() {
                     )}
                   </CardTitle>
                   <Button
-                    onClick={() => setShowResults(true)}
+                    onClick={() => {
+                      setShowResults(true);
+                      refreshQuizResults(); // Refresh results when ending quiz early
+                    }}
                     variant="ghost"
                     size="sm"
                     className="h-8 w-8 p-0 hover:bg-destructive hover:text-destructive-foreground"
