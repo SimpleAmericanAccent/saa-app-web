@@ -5,13 +5,17 @@ import { Route } from "react-router-dom";
 import UserAppView from "./views/UserAppView";
 import CoachingView from "./views/CoachingView";
 import OpsView from "./views/OpsView";
+import UserTrialsAdmin from "./pages/user-trials";
+import AdminOverview from "./pages/admin-overview";
 
 const adminRoutes = (
   <>
     <Route path="/user/*" element={<UserAppView />} />
     <Route path="/coaching/*" element={<CoachingView />} />
     <Route path="/ops/*" element={<OpsView />} />
-    <Route path="*" element={<UserAppView />} />
+    <Route path="/user-trials" element={<UserTrialsAdmin />} />
+    <Route path="/overview" element={<AdminOverview />} />
+    <Route path="*" element={<AdminOverview />} />
   </>
 );
 

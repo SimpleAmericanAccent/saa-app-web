@@ -5,9 +5,11 @@ export default function AdminSidebar() {
   const location = useLocation();
 
   const navItems = [
+    { label: "Overview", path: "/overview" },
     { label: "User App", path: "/user" },
     { label: "Coaching", path: "/coaching" },
     { label: "Ops", path: "/ops" },
+    { label: "User Trials", path: "/user-trials" },
   ];
 
   return (
