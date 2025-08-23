@@ -58,7 +58,7 @@ import useAuthStore from "core-frontend-web/src/stores/authStore";
 import { useIsMobile } from "core-frontend-web/src/hooks/use-mobile";
 import { User, LogOut, Settings } from "lucide-react";
 import { getQuizStats } from "../utils/quizStats";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+
 import {
   getTextColorClass,
   getGradientColorStyle,
@@ -66,11 +66,27 @@ import {
 
 // Quiz statistics component for sidebar
 function QuizStats() {
-  // Use the hook to automatically sync with localStorage changes
-  const [quizResults] = useLocalStorage("quizResults", {});
-  const stats = getQuizStats();
+  const [stats, setStats] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  if (!stats) {
+  React.useEffect(() => {
+    const loadStats = async () => {
+      try {
+        setIsLoading(true);
+        const quizStats = await getQuizStats();
+        setStats(quizStats);
+      } catch (error) {
+        console.error("Error loading quiz stats:", error);
+        setStats(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadStats();
+  }, []);
+
+  if (isLoading || !stats) {
     return null;
   }
 

@@ -6,6 +6,7 @@ import baseRouter from "./baseRouter.js";
 import prismaRouter from "./prismaRouter.js";
 import dictionaryRouter from "./dictionaryRouter.js";
 import orthoRouter from "./orthoRouter.js";
+import quizRouter from "./quizRouter.js";
 import { wrapMethodsWithSafeRoute } from "../middleware/safeRoute.js";
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.use("/v2", v2Router);
 router.use("/prisma", prismaRouter);
 router.use("/api/dictionary", dictionaryRouter);
 router.use("/api/ortho", orthoRouter);
+router.use("/api/quiz", quizRouter);
 
 export default router;

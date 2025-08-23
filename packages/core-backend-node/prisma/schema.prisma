@@ -18,6 +18,7 @@ model User {
   lastSeenAt DateTime @default(now())      @map("last_seen_at")
   audios     Audio[]  @relation("UserAudios")
   trials     Trial[]
+  settings   UserSettings?
 }
 
 model Audio {
@@ -196,15 +197,37 @@ enum Side {
   B
 }
 
+model Contrast {
+  id            String  @id @default(uuid())     @map("contrast_id")
+  key           String  @unique                  @map("key")         // e.g. "KIT_FLEECE" (your QUIZ_TYPE_IDS)
+  name          String                           @map("name")        // "KIT vs FLEECE"
+  title         String                           @map("title")       // "KIT vs FLEECE Minimal Pairs Quiz"
+  description   String?                          @map("description") // "sick vs seek"
+  category      String                           @map("category")    // "vowels" | "consonants" (keep string for MVP)
+  soundAName    String                           @map("sound_a_name") // "KIT"
+  soundBName    String                           @map("sound_b_name") // "FLEECE"
+  soundASymbol  String?                          @map("sound_a_symbol") // "[ɪ]"
+  soundBSymbol  String?                          @map("sound_b_symbol") // "[i]"
+  active        Boolean @default(true)
+
+  pairs         Pair[]
+
+  @@map("contrast")
+}
+
 model Pair {
-  pairId      String @id @default(uuid()) @map("pair_id")
-  contrastKey String @map("contrast_key")      // e.g. "DRESS~TRAP"
-  wordA       String @map("word_a")
-  wordB       String @map("word_b")
-  audioAUrl   String @map("audio_a_url")
-  audioBUrl   String @map("audio_b_url")
-  active      Boolean @default(true)
+  pairId      String   @id @default(uuid()) @map("pair_id")
+  contrastId  String   @map("contrast_id")
+  wordA       String   @map("word_a")
+  wordB       String   @map("word_b")
+  alternateA  String[] @map("alternate_a")       // Homophones for wordA (same pronunciation, different spellings)
+  alternateB  String[] @map("alternate_b")       // Homophones for wordB (same pronunciation, different spellings)
+  audioAUrl   String   @map("audio_a_url")
+  audioBUrl   String   @map("audio_b_url")
+  active      Boolean  @default(true)
+  contrast    Contrast @relation(fields: [contrastId], references: [id], onDelete: Restrict)
   trials      Trial[]
+  @@unique([contrastId, wordA, wordB], name: "uq_pair_in_contrast") // prevents duplicates inside a contrast
   @@map("pair")
 }
 
@@ -223,4 +246,14 @@ model Trial {
   @@index([userId, presentedAt(sort: Desc)], name: "ix_user_time")
   @@index([userId, pairId, presentedAt(sort: Desc)], name: "ix_user_pair_time")
   @@map("trial")
+}
+
+model UserSettings {
+  id           String   @id @default(uuid()) @map("user_settings_id")
+  userId       String   @unique @map("user_id")
+  quizSettings Json     @map("quiz_settings") // Store quiz preferences as JSON
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("user_settings")
 }

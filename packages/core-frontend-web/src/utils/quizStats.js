@@ -21,19 +21,19 @@ const QUIZ_TYPE_IDS = {
   M_NG: "m_ng",
 };
 
-// Get quiz results from localStorage
-export const getQuizResults = () => {
+// Get quiz results from API
+export const getQuizResults = async () => {
   try {
-    const results = localStorage.getItem("quizResults");
-    return results ? JSON.parse(results) : {};
+    const { fetchQuizResults } = await import("./quizApi");
+    return await fetchQuizResults();
   } catch (error) {
-    console.error("Error parsing quiz results:", error);
+    console.error("Error fetching quiz results:", error);
     return {};
   }
 };
 
 // Calculate average performance for a category
-export const getCategoryAverage = (category, previousResults) => {
+export const getCategoryAverage = async (category, previousResults) => {
   const categoryQuizIds =
     category === "vowels"
       ? [
@@ -70,7 +70,7 @@ export const getCategoryAverage = (category, previousResults) => {
 };
 
 // Calculate completion percentage for a category
-export const getCategoryCompletion = (category, previousResults) => {
+export const getCategoryCompletion = async (category, previousResults) => {
   const categoryQuizIds =
     category === "vowels"
       ? [
@@ -109,16 +109,22 @@ export const getCategoryCompletion = (category, previousResults) => {
 };
 
 // Get overall quiz statistics
-export const getQuizStats = () => {
-  const previousResults = getQuizResults();
+export const getQuizStats = async () => {
+  const previousResults = await getQuizResults();
 
-  const vowelsCompletion = getCategoryCompletion("vowels", previousResults);
-  const consonantsCompletion = getCategoryCompletion(
+  const vowelsCompletion = await getCategoryCompletion(
+    "vowels",
+    previousResults
+  );
+  const consonantsCompletion = await getCategoryCompletion(
     "consonants",
     previousResults
   );
-  const vowelsAverage = getCategoryAverage("vowels", previousResults);
-  const consonantsAverage = getCategoryAverage("consonants", previousResults);
+  const vowelsAverage = await getCategoryAverage("vowels", previousResults);
+  const consonantsAverage = await getCategoryAverage(
+    "consonants",
+    previousResults
+  );
 
   // Calculate overall stats
   const totalCompleted =

@@ -16,8 +16,9 @@ import {
   RefreshCw,
   Trash2,
 } from "lucide-react";
-import { QUIZ_DATA, QUIZ_TYPE_IDS } from "./Quiz";
+import { QUIZ_TYPE_IDS } from "./Quiz";
 import useAuthStore from "../stores/authStore";
+import { fetchContrasts, fetchPairs } from "../utils/quizApi";
 
 const QuizAudioAdmin = () => {
   const { isAdmin, isLoading: authLoading } = useAuthStore();
@@ -27,12 +28,32 @@ const QuizAudioAdmin = () => {
   const [checkingWord, setCheckingWord] = useState(null);
   const [checkingQuiz, setCheckingQuiz] = useState(null);
   const [playingAudio, setPlayingAudio] = useState(null);
+  const [quizDataFromApi, setQuizDataFromApi] = useState({});
+  const [isLoadingQuizData, setIsLoadingQuizData] = useState(false);
   const audioRef = useRef(null);
 
   // Load audio logs from localStorage
   useEffect(() => {
     const logs = JSON.parse(localStorage.getItem("quizAudioLogs") || "{}");
     setAudioLogs(logs);
+  }, []);
+
+  // Load quiz data from API
+  useEffect(() => {
+    const loadQuizData = async () => {
+      setIsLoadingQuizData(true);
+      try {
+        const data = await fetchContrasts();
+        setQuizDataFromApi(data);
+      } catch (error) {
+        console.error("Failed to load quiz data from API:", error);
+        setQuizDataFromApi({});
+      } finally {
+        setIsLoadingQuizData(false);
+      }
+    };
+
+    loadQuizData();
   }, []);
 
   // Function to get US audio from Free Dictionary API
@@ -104,18 +125,20 @@ const QuizAudioAdmin = () => {
   // Check audio for all words in a quiz
   const checkQuizAudio = async (quizType) => {
     setCheckingQuiz(quizType);
-    const quizData = QUIZ_DATA[quizType];
-    if (!quizData || !quizData.pairs) return;
 
     try {
+      // Fetch pairs from API
+      const pairs = await fetchPairs(quizType);
+      if (!pairs || pairs.length === 0) return;
+
       const newLogs = { ...audioLogs };
       if (!newLogs[quizType]) {
         newLogs[quizType] = {};
       }
 
       // Check each word in the quiz
-      for (let i = 0; i < quizData.pairs.length; i++) {
-        const pair = quizData.pairs[i];
+      for (let i = 0; i < pairs.length; i++) {
+        const pair = pairs[i];
         const audioUrl = await getDictionaryAudio(pair.word);
 
         newLogs[quizType][pair.word] = {
@@ -127,7 +150,7 @@ const QuizAudioAdmin = () => {
         };
 
         // Add a small delay to avoid overwhelming the API
-        if (i < quizData.pairs.length - 1) {
+        if (i < pairs.length - 1) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
       }
@@ -231,16 +254,15 @@ const QuizAudioAdmin = () => {
   };
 
   // Get audio coverage for a quiz
-  const getQuizAudioCoverage = (quizData, quizType) => {
-    if (!quizData || !quizData.pairs)
-      return { available: 0, total: 0, percentage: 0 };
-
+  const getQuizAudioCoverage = (quizType) => {
     const quizLogs = audioLogs[quizType] || {};
     let availableCount = 0;
-    const totalWords = quizData.pairs.length;
+    let totalWords = 0;
 
-    quizData.pairs.forEach((pair) => {
-      if (quizLogs[pair.word] && quizLogs[pair.word].hasAudio) {
+    // Count words that have audio logs
+    Object.values(quizLogs).forEach((log) => {
+      totalWords++;
+      if (log.hasAudio) {
         availableCount++;
       }
     });
@@ -248,16 +270,19 @@ const QuizAudioAdmin = () => {
     return {
       available: availableCount,
       total: totalWords,
-      percentage: Math.round((availableCount / totalWords) * 100),
+      percentage:
+        totalWords > 0 ? Math.round((availableCount / totalWords) * 100) : 0,
     };
   };
 
   // Get overall audio coverage
   const getOverallCoverage = () => {
     const allWords = new Set();
-    Object.values(QUIZ_DATA).forEach((quizData) => {
-      quizData.pairs.forEach((pair) => {
-        allWords.add(pair.word);
+
+    // Collect all words from audio logs
+    Object.values(audioLogs).forEach((quizLogs) => {
+      Object.keys(quizLogs).forEach((word) => {
+        allWords.add(word);
       });
     });
 
@@ -277,7 +302,8 @@ const QuizAudioAdmin = () => {
     return {
       available: availableCount,
       total: totalWords,
-      percentage: Math.round((availableCount / totalWords) * 100),
+      percentage:
+        totalWords > 0 ? Math.round((availableCount / totalWords) * 100) : 0,
     };
   };
 
@@ -372,174 +398,89 @@ const QuizAudioAdmin = () => {
 
       {/* Quiz List */}
       <div className="space-y-4">
-        {Object.entries(QUIZ_DATA).map(([quizId, quizData]) => {
-          const coverage = getQuizAudioCoverage(quizData, quizId);
-          const isExpanded = expandedQuizzes.has(quizId);
-          const isChecking = checkingQuiz === quizId;
+        {isLoadingQuizData ? (
+          <div className="flex items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <span className="ml-2">Loading quiz data...</span>
+          </div>
+        ) : (
+          Object.entries(quizDataFromApi).map(([quizId, quizData]) => {
+            const coverage = getQuizAudioCoverage(quizId);
+            const isExpanded = expandedQuizzes.has(quizId);
+            const isChecking = checkingQuiz === quizId;
 
-          return (
-            <Card key={quizId}>
-              <CardHeader
-                className="cursor-pointer hover:bg-accent/50 transition-colors"
-                onClick={() => toggleQuiz(quizId)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <CardTitle className="text-lg">{quizData.name}</CardTitle>
-                    <Badge
-                      variant={
-                        coverage.percentage === 100
-                          ? "default"
-                          : coverage.percentage >= 80
-                          ? "secondary"
-                          : "destructive"
-                      }
-                    >
-                      {coverage.percentage}% ({coverage.available}/
-                      {coverage.total})
-                    </Badge>
+            return (
+              <Card key={quizId}>
+                <CardHeader
+                  className="cursor-pointer hover:bg-accent/50 transition-colors"
+                  onClick={() => toggleQuiz(quizId)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <CardTitle className="text-lg">{quizData.name}</CardTitle>
+                      <Badge
+                        variant={
+                          coverage.percentage === 100
+                            ? "default"
+                            : coverage.percentage >= 80
+                            ? "secondary"
+                            : "destructive"
+                        }
+                      >
+                        {coverage.percentage}% ({coverage.available}/
+                        {coverage.total})
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          checkQuizAudio(quizId);
+                        }}
+                        disabled={isChecking}
+                      >
+                        {isChecking ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            Checking...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Check All
+                          </>
+                        )}
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        {isExpanded ? "Collapse" : "Expand"}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        checkQuizAudio(quizId);
-                      }}
-                      disabled={isChecking}
-                    >
-                      {isChecking ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                          Checking...
-                        </>
-                      ) : (
-                        <>
-                          <RefreshCw className="h-4 w-4 mr-2" />
-                          Check All
-                        </>
-                      )}
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      {isExpanded ? "Collapse" : "Expand"}
-                    </Button>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {quizData.description}
-                </p>
-              </CardHeader>
+                  <p className="text-sm text-muted-foreground">
+                    {quizData.description}
+                  </p>
+                </CardHeader>
 
-              {isExpanded && (
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {quizData.pairs.map((pair, index) => {
-                      const wordLog = audioLogs[quizId]?.[pair.word];
-                      const isCheckingWord = checkingWord === pair.word;
-
-                      return (
-                        <div
-                          key={`${quizId}-${index}`}
-                          className="flex items-center justify-between p-3 border rounded-lg"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{pair.word}</span>
-                            {pair.alternates && pair.alternates.length > 0 && (
-                              <span className="text-xs text-muted-foreground">
-                                ({pair.alternates.join(", ")})
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {wordLog ? (
-                              <>
-                                {wordLog.hasAudio ? (
-                                  <>
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                    <button
-                                      onClick={() =>
-                                        playAudio(pair.word, quizId)
-                                      }
-                                      className={`p-1 rounded hover:bg-accent transition-colors ${
-                                        playingAudio === pair.word
-                                          ? "bg-accent"
-                                          : ""
-                                      }`}
-                                      title="Click to play audio"
-                                    >
-                                      {playingAudio === pair.word ? (
-                                        <Loader2 className="h-4 w-4 text-green-500 animate-spin" />
-                                      ) : (
-                                        <Volume2 className="h-4 w-4 text-green-500" />
-                                      )}
-                                    </button>
-                                  </>
-                                ) : (
-                                  <>
-                                    <XCircle className="h-4 w-4 text-red-500" />
-                                    <VolumeX className="h-4 w-4 text-red-500" />
-                                  </>
-                                )}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    checkWordAudio(pair.word, quizId)
-                                  }
-                                  disabled={isCheckingWord}
-                                >
-                                  {isCheckingWord ? (
-                                    <Loader2 className="h-3 w-3 animate-spin" />
-                                  ) : (
-                                    <RefreshCw className="h-3 w-3" />
-                                  )}
-                                </Button>
-                              </>
-                            ) : (
-                              <>
-                                <div className="w-4 h-4 border-2 border-muted-foreground rounded-full" />
-                                <button
-                                  onClick={() => playAudio(pair.word, quizId)}
-                                  className={`p-1 rounded hover:bg-accent transition-colors ${
-                                    playingAudio === pair.word
-                                      ? "bg-accent"
-                                      : ""
-                                  }`}
-                                  title="Click to play audio (will check availability)"
-                                >
-                                  {playingAudio === pair.word ? (
-                                    <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
-                                  ) : (
-                                    <Volume2 className="h-4 w-4 text-muted-foreground" />
-                                  )}
-                                </button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    checkWordAudio(pair.word, quizId)
-                                  }
-                                  disabled={isCheckingWord}
-                                >
-                                  {isCheckingWord ? (
-                                    <Loader2 className="h-3 w-3 animate-spin" />
-                                  ) : (
-                                    <RefreshCw className="h-3 w-3" />
-                                  )}
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              )}
-            </Card>
-          );
-        })}
+                {isExpanded && (
+                  <CardContent>
+                    <div className="text-center p-4 text-muted-foreground">
+                      <p>
+                        Word pairs are loaded dynamically from the database when
+                        needed.
+                      </p>
+                      <p className="text-sm mt-2">
+                        Use "Check All" to load and check audio for all words in
+                        this quiz.
+                      </p>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            );
+          })
+        )}
       </div>
     </div>
   );
