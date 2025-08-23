@@ -32,7 +32,18 @@ import {
 } from "core-frontend-web/src/components/ui/card";
 import { Progress } from "core-frontend-web/src/components/ui/progress";
 import { Checkbox } from "core-frontend-web/src/components/ui/checkbox";
-import { Play, Volume2, Loader2 } from "lucide-react";
+import {
+  Play,
+  Volume2,
+  Loader2,
+  X,
+  BarChart3,
+  Clock,
+  Target,
+  TrendingUp,
+  Calendar,
+  Award,
+} from "lucide-react";
 
 // Quiz type IDs for easy reference
 export const QUIZ_TYPE_IDS = {
@@ -70,6 +81,7 @@ export default function Quiz() {
     autoPlayAudio: true,
     showSoundSymbols: true,
     soundEffects: true,
+    endlessMode: false, // Add endless mode setting
   });
 
   // Load previous quiz results from API
@@ -107,7 +119,8 @@ export default function Quiz() {
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const [currentStep, setCurrentStep] = useState("category"); // "category", "quizType", "settings", "quiz"
   const [selectedCategory, setSelectedCategory] = useState(null); // "vowels", "consonants"
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  const [showQuizHistory, setShowQuizHistory] = useState(false); // Control quiz history view
   const audioRef = useRef(null);
 
   // Ref to store current question data to prevent race conditions
@@ -119,6 +132,67 @@ export default function Quiz() {
   const [quizDataFromApi, setQuizDataFromApi] = useState({});
   const [isLoadingQuizData, setIsLoadingQuizData] = useState(false);
   const [apiError, setApiError] = useState(null);
+
+  // Add state for endless mode
+  const [allAvailableQuestions, setAllAvailableQuestions] = useState([]);
+  const [currentQuestionPool, setCurrentQuestionPool] = useState([]);
+  const [questionsUsed, setQuestionsUsed] = useState(new Set());
+  const [questionsPresented, setQuestionsPresented] = useState(0); // Track actual questions presented
+
+  // Utility functions for quiz history
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    if (diffDays > 0) return `${diffDays}d ago`;
+    if (diffHours > 0) return `${diffHours}h ago`;
+    if (diffMinutes > 0) return `${diffMinutes}m ago`;
+    return "Just now";
+  };
+
+  const getPerformanceTrend = (results) => {
+    if (!results || Object.keys(results).length === 0) return "neutral";
+
+    // Get the most recent results and calculate trend
+    const recentResults = Object.values(results)
+      .filter((result) => result.lastAttempt)
+      .sort((a, b) => new Date(b.lastAttempt) - new Date(a.lastAttempt))
+      .slice(0, 5); // Last 5 attempts
+
+    if (recentResults.length < 2) return "neutral";
+
+    const recentAvg =
+      recentResults.reduce((sum, r) => sum + r.percentage, 0) /
+      recentResults.length;
+    const olderResults = Object.values(results)
+      .filter((result) => result.lastAttempt)
+      .sort((a, b) => new Date(b.lastAttempt) - new Date(a.lastAttempt))
+      .slice(5, 10); // Previous 5 attempts
+
+    if (olderResults.length === 0) return "neutral";
+
+    const olderAvg =
+      olderResults.reduce((sum, r) => sum + r.percentage, 0) /
+      olderResults.length;
+
+    if (recentAvg > olderAvg + 5) return "improving";
+    if (recentAvg < olderAvg - 5) return "declining";
+    return "stable";
+  };
 
   // Load quiz data from API on component mount
   useEffect(() => {
@@ -231,19 +305,40 @@ export default function Quiz() {
         try {
           // Always fetch pairs from API
           const pairsFromApi = await fetchPairs(selectedQuizType);
-          const allQuestions = shuffleArray(pairsFromApi);
 
-          // Limit questions based on settings
-          const limitedQuestions =
-            quizSettings.numberOfQuestions === "all"
-              ? allQuestions
-              : allQuestions.slice(0, quizSettings.numberOfQuestions);
-          setShuffledQuestions(limitedQuestions);
+          if (quizSettings.endlessMode) {
+            // For endless mode, store all questions and create initial pool
+            setAllAvailableQuestions(pairsFromApi);
+            const initialPool = shuffleArray(pairsFromApi);
+            setCurrentQuestionPool(initialPool);
+            setQuestionsUsed(new Set());
+            setQuestionsPresented(0); // Reset counter for new quiz
 
-          // Preload audio for the second question if available
-          if (limitedQuestions.length > 1) {
-            const secondQuestion = limitedQuestions[1];
-            preloadNextAudio(secondQuestion.word);
+            // Start with first few questions
+            const initialQuestions = initialPool.slice(0, 10);
+            setShuffledQuestions(initialQuestions);
+
+            // Preload audio for the second question if available
+            if (initialQuestions.length > 1) {
+              const secondQuestion = initialQuestions[1];
+              preloadNextAudio(secondQuestion.word);
+            }
+          } else {
+            // Regular mode - use existing logic
+            const allQuestions = shuffleArray(pairsFromApi);
+
+            // Limit questions based on settings
+            const limitedQuestions =
+              quizSettings.numberOfQuestions === "all"
+                ? allQuestions
+                : allQuestions.slice(0, quizSettings.numberOfQuestions);
+            setShuffledQuestions(limitedQuestions);
+
+            // Preload audio for the second question if available
+            if (limitedQuestions.length > 1) {
+              const secondQuestion = limitedQuestions[1];
+              preloadNextAudio(secondQuestion.word);
+            }
           }
         } catch (error) {
           console.error("Failed to fetch pairs from API:", error);
@@ -253,7 +348,12 @@ export default function Quiz() {
     };
 
     initializeQuiz();
-  }, [selectedQuizType, currentQuizData, quizSettings.numberOfQuestions]);
+  }, [
+    selectedQuizType,
+    currentQuizData,
+    quizSettings.numberOfQuestions,
+    quizSettings.endlessMode,
+  ]);
 
   const currentQuestion = shuffledQuestions[currentQuestionIndex];
   const progress =
@@ -604,6 +704,11 @@ export default function Quiz() {
     setIsAnswered(true);
     setQuestionsAnswered(questionsAnswered + 1);
 
+    // Increment questions presented counter for endless mode
+    if (quizSettings.endlessMode) {
+      setQuestionsPresented(questionsPresented + 1);
+    }
+
     // Check if answer matches the word or any of its alternates
     const isCorrect =
       answer === currentQuestion.word ||
@@ -661,19 +766,27 @@ export default function Quiz() {
 
     // Auto-advance after a short delay for better flow
     setTimeout(() => {
-      if (currentQuestionIndex < shuffledQuestions.length - 1) {
+      if (quizSettings.endlessMode) {
+        // In endless mode, always continue to next question
+        handleNext();
+      } else if (currentQuestionIndex < shuffledQuestions.length - 1) {
         handleNext();
       } else {
-        // This is the last question, show results
+        // This is the last question, show results (only for fixed mode)
         setShowResults(true);
       }
     }, 1000); // 1 second delay
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < shuffledQuestions.length - 1) {
+    if (quizSettings.endlessMode) {
+      // Endless mode logic
       const nextQuestionIndex = currentQuestionIndex + 1;
-      const nextQuestion = shuffledQuestions[nextQuestionIndex];
+
+      // If we're running out of questions in the current pool, add more
+      if (nextQuestionIndex >= shuffledQuestions.length - 2) {
+        addMoreQuestionsToPool();
+      }
 
       // Stop any currently playing audio
       if (audioRef.current) {
@@ -686,6 +799,7 @@ export default function Quiz() {
       previousQuestionIndexRef.current = currentQuestionIndex;
 
       // Load audio for the next question
+      const nextQuestion = shuffledQuestions[nextQuestionIndex];
       if (nextAudioUrls.dictionary) {
         // Use preloaded audio
         setAudioUrls(nextAudioUrls);
@@ -712,7 +826,82 @@ export default function Quiz() {
         preloadNextAudio(nextNextQuestion.word);
       }
     } else {
-      setShowResults(true);
+      // Regular mode logic (existing code)
+      if (currentQuestionIndex < shuffledQuestions.length - 1) {
+        const nextQuestionIndex = currentQuestionIndex + 1;
+        const nextQuestion = shuffledQuestions[nextQuestionIndex];
+
+        // Stop any currently playing audio
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+        setPlayingSource(null);
+
+        // Update the previous question index ref
+        previousQuestionIndexRef.current = currentQuestionIndex;
+
+        // Load audio for the next question
+        if (nextAudioUrls.dictionary) {
+          // Use preloaded audio
+          setAudioUrls(nextAudioUrls);
+          setNextAudioUrls({ dictionary: null });
+        } else {
+          // Load audio normally (non-blocking)
+          setAudioUrls({ dictionary: null });
+          getAudioForWord(nextQuestion.word).then((audioSources) => {
+            if (audioSources.dictionary) {
+              setAudioUrls({ dictionary: audioSources.dictionary });
+            }
+          });
+        }
+
+        setCurrentQuestionIndex(nextQuestionIndex);
+        setSelectedAnswer(null);
+        setIsAnswered(false);
+        setHasAutoPlayed(false); // Reset auto-play flag for next question
+
+        // Start preloading the next question's audio immediately
+        const nextNextQuestionIndex = nextQuestionIndex + 1;
+        if (nextNextQuestionIndex < shuffledQuestions.length) {
+          const nextNextQuestion = shuffledQuestions[nextNextQuestionIndex];
+          preloadNextAudio(nextNextQuestion.word);
+        }
+      } else {
+        setShowResults(true);
+      }
+    }
+  };
+
+  // Function to add more questions to the pool for endless mode
+  const addMoreQuestionsToPool = () => {
+    if (allAvailableQuestions.length === 0) return;
+
+    // Get questions that haven't been used recently
+    const unusedQuestions = allAvailableQuestions.filter(
+      (q) => !questionsUsed.has(q.pairId)
+    );
+
+    // If we've used all questions, reset the used set and start over
+    if (unusedQuestions.length === 0) {
+      setQuestionsUsed(new Set());
+      const newPool = shuffleArray(allAvailableQuestions);
+      setCurrentQuestionPool(newPool);
+
+      // Add 10 more questions to the shuffled questions
+      const currentQuestions = [...shuffledQuestions];
+      const additionalQuestions = newPool.slice(0, 10);
+      setShuffledQuestions([...currentQuestions, ...additionalQuestions]);
+    } else {
+      // Add unused questions to the pool
+      const newQuestions = shuffleArray(unusedQuestions).slice(0, 10);
+      const currentQuestions = [...shuffledQuestions];
+      setShuffledQuestions([...currentQuestions, ...newQuestions]);
+
+      // Mark these questions as used
+      const newUsedSet = new Set(questionsUsed);
+      newQuestions.forEach((q) => newUsedSet.add(q.pairId));
+      setQuestionsUsed(newUsedSet);
     }
   };
 
@@ -729,10 +918,18 @@ export default function Quiz() {
     setCurrentStep("settings");
     setShuffledQuestions([]);
     currentQuestionRef.current = null; // Clear ref to prevent stale data
+
+    // Reset endless mode state
+    setAllAvailableQuestions([]);
+    setCurrentQuestionPool([]);
+    setQuestionsUsed(new Set());
+    setQuestionsPresented(0);
   };
 
   if (showResults) {
-    const percentage = Math.round((score / shuffledQuestions.length) * 100);
+    // Use questionsAnswered for percentage calculation to not penalize skipped questions
+    const totalQuestions = questionsAnswered;
+    const percentage = Math.round((score / totalQuestions) * 100);
 
     // Determine performance level and message using centralized functions
     const performanceLevel = getPerformanceLevelName(percentage);
@@ -789,7 +986,7 @@ export default function Quiz() {
                           {percentage}%
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {score}/{shuffledQuestions.length}
+                          {score}/{totalQuestions}
                         </div>
                       </div>
                     </div>
@@ -854,6 +1051,12 @@ export default function Quiz() {
                     setHasStartedQuiz(false);
                     setCurrentStep("category");
                     setShuffledQuestions([]);
+
+                    // Reset endless mode state
+                    setAllAvailableQuestions([]);
+                    setCurrentQuestionPool([]);
+                    setQuestionsUsed(new Set());
+                    setQuestionsPresented(0);
                   }}
                   variant="outline"
                   className="w-full h-8 text-xs cursor-pointer"
@@ -900,30 +1103,65 @@ export default function Quiz() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Number of Questions */}
+              {/* Quiz Mode Selection */}
               <div className="space-y-2 text-center">
-                <label className="text-md font-medium">
-                  Number of Questions
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {[10, 20, 30, "all"].map((num) => (
-                    <Button
-                      key={num}
-                      variant={
-                        quizSettings.numberOfQuestions === num
-                          ? "default"
-                          : "outline"
-                      }
-                      onClick={() =>
-                        handleSettingsChange("numberOfQuestions", num)
-                      }
-                      className="w-full cursor-pointer mt-2"
-                    >
-                      {num === "all" ? "All" : num}
-                    </Button>
-                  ))}
+                <label className="text-md font-medium">Quiz Mode</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant={!quizSettings.endlessMode ? "default" : "outline"}
+                    onClick={() => handleSettingsChange("endlessMode", false)}
+                    className="w-full cursor-pointer"
+                  >
+                    Fixed Length
+                  </Button>
+                  <Button
+                    variant={quizSettings.endlessMode ? "default" : "outline"}
+                    onClick={() => handleSettingsChange("endlessMode", true)}
+                    className="w-full cursor-pointer"
+                  >
+                    Endless Mode
+                  </Button>
                 </div>
               </div>
+
+              {/* Number of Questions - Only show for fixed mode */}
+              {!quizSettings.endlessMode && (
+                <div className="space-y-2 text-center">
+                  <label className="text-md font-medium">
+                    Number of Questions
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[10, 20, 30, "all"].map((num) => (
+                      <Button
+                        key={num}
+                        variant={
+                          quizSettings.numberOfQuestions === num
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() =>
+                          handleSettingsChange("numberOfQuestions", num)
+                        }
+                        className="w-full cursor-pointer mt-2"
+                      >
+                        {num === "all" ? "All" : num}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Endless Mode Info */}
+              {quizSettings.endlessMode && (
+                <div className="space-y-2 text-center">
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-sm text-muted-foreground">
+                      Practice continuously with unlimited questions. Questions
+                      will cycle through all available pairs.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Auto-play Audio */}
               {/* <div className="space-y-2">
@@ -1168,6 +1406,18 @@ export default function Quiz() {
                   </div>
                 )}
             </CardContent>
+
+            {/* View History Button */}
+            <div className="p-3 pt-0 flex-shrink-0">
+              <Button
+                onClick={() => setShowQuizHistory(true)}
+                variant="outline"
+                className="w-full cursor-pointer text-sm"
+              >
+                <BarChart3 className="h-4 w-4 mr-2" />
+                View History & Stats
+              </Button>
+            </div>
           </Card>
         </div>
       )}
@@ -1486,56 +1736,389 @@ export default function Quiz() {
                     );
                   })()}
                 </div>
-                <div className="flex justify-center">
-                  <Button
-                    onClick={() => setShowClearConfirm(true)}
-                    variant="outline"
-                    className="w-50 text-xs text-muted-foreground hover:text-destructive cursor-pointer"
-                    size="sm"
-                  >
-                    Clear All Results
-                  </Button>
-                </div>
               </div>
             )}
           </Card>
         </div>
       )}
 
-      {/* Clear Results Confirmation Dialog */}
-      {showClearConfirm && (
-        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20 p-4">
-          <Card className="w-full max-w-sm">
-            <CardHeader>
-              <CardTitle className="text-center text-base">
-                Clear All Results?
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground text-center">
-                This will delete your quiz results and cannot be undone.
-              </p>
-              <div className="flex gap-2">
+      {/* Quiz History & Stats View */}
+      {showQuizHistory && (
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20 p-4 overflow-hidden">
+          <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <CardHeader className="pb-2 flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">
+                  Quiz History & Statistics
+                </CardTitle>
                 <Button
-                  onClick={() => setShowClearConfirm(false)}
-                  variant="outline"
-                  className="flex-1 cursor-pointer"
+                  onClick={() => setShowQuizHistory(false)}
+                  variant="ghost"
                   size="sm"
+                  className="h-8 w-8 p-0"
                 >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => {
-                    setPreviousResults({});
-                    setShowClearConfirm(false);
-                  }}
-                  variant="destructive"
-                  className="flex-1 cursor-pointer"
-                  size="sm"
-                >
-                  Clear All
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
+            </CardHeader>
+            <CardContent className="flex-1 overflow-y-auto space-y-6">
+              {/* Overall Stats Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Target className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">
+                        Overall Performance
+                      </span>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {quizStats?.overall?.average || 0}%
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {quizStats?.overall?.completed || 0} of{" "}
+                      {quizStats?.overall?.total || 0} quizzes completed
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">
+                        Performance Trend
+                      </span>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {getPerformanceTrend(previousResults) === "improving" &&
+                        "↗️ Improving"}
+                      {getPerformanceTrend(previousResults) === "declining" &&
+                        "↘️ Declining"}
+                      {getPerformanceTrend(previousResults) === "stable" &&
+                        "→ Stable"}
+                      {getPerformanceTrend(previousResults) === "neutral" &&
+                        "— No Data"}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Based on recent attempts
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">
+                        Recent Activity
+                      </span>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {
+                        Object.values(previousResults).filter(
+                          (r) =>
+                            r.lastAttempt &&
+                            new Date(r.lastAttempt) >
+                              new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                        ).length
+                      }
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Quizzes in last 7 days
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Category Breakdown */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">
+                      Vowels Performance
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Completion</span>
+                      <span className="text-sm font-medium">
+                        {vowelsCompletion?.completed || 0}/
+                        {vowelsCompletion?.total || 0}
+                      </span>
+                    </div>
+                    <Progress
+                      value={vowelsCompletion?.percentage || 0}
+                      className="h-2"
+                    />
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Average Score</span>
+                      <span
+                        className="text-sm font-bold"
+                        style={
+                          vowelsAverage
+                            ? getGradientColorStyle(vowelsAverage)
+                            : {}
+                        }
+                      >
+                        {vowelsAverage || 0}%
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">
+                      Consonants Performance
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Completion</span>
+                      <span className="text-sm font-medium">
+                        {consonantsCompletion?.completed || 0}/
+                        {consonantsCompletion?.total || 0}
+                      </span>
+                    </div>
+                    <Progress
+                      value={consonantsCompletion?.percentage || 0}
+                      className="h-2"
+                    />
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Average Score</span>
+                      <span
+                        className="text-sm font-bold"
+                        style={
+                          consonantsAverage
+                            ? getGradientColorStyle(consonantsAverage)
+                            : {}
+                        }
+                      >
+                        {consonantsAverage || 0}%
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Detailed Quiz Results */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">
+                    Quiz Results History
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {Object.keys(previousResults).length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Award className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No quiz results yet</p>
+                      <p className="text-sm">
+                        Complete your first quiz to see your progress here!
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {Object.entries(previousResults)
+                        .sort(
+                          ([, a], [, b]) =>
+                            new Date(b.lastAttempt) - new Date(a.lastAttempt)
+                        )
+                        .map(([quizId, result]) => {
+                          const quizData = quizDataFromApi[quizId];
+                          return (
+                            <div
+                              key={quizId}
+                              className="flex items-center justify-between p-3 rounded-lg border"
+                            >
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-sm">
+                                    {quizData?.name || quizId}
+                                  </span>
+                                  <span
+                                    className="text-xs px-2 py-1 rounded-full"
+                                    style={{
+                                      backgroundColor:
+                                        result.percentage >= 80
+                                          ? "rgba(34, 197, 94, 0.1)"
+                                          : result.percentage >= 60
+                                          ? "rgba(234, 179, 8, 0.1)"
+                                          : "rgba(239, 68, 68, 0.1)",
+                                      color:
+                                        result.percentage >= 80
+                                          ? "rgb(34, 197, 94)"
+                                          : result.percentage >= 60
+                                          ? "rgb(234, 179, 8)"
+                                          : "rgb(239, 68, 68)",
+                                    }}
+                                  >
+                                    {result.percentage}%
+                                  </span>
+                                </div>
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  {result.correctTrials} correct out of{" "}
+                                  {result.totalTrials} attempts
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-xs text-muted-foreground">
+                                  {result.lastAttempt
+                                    ? getTimeAgo(result.lastAttempt)
+                                    : "Unknown"}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {result.lastAttempt
+                                    ? formatDate(result.lastAttempt)
+                                    : ""}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Performance Insights */}
+              {Object.keys(previousResults).length > 0 && (
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">
+                      Performance Insights
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Best and Worst Performances */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium text-green-600">
+                          Best Performance
+                        </h4>
+                        {(() => {
+                          const bestQuiz = Object.entries(previousResults).sort(
+                            ([, a], [, b]) => b.percentage - a.percentage
+                          )[0];
+                          if (!bestQuiz)
+                            return (
+                              <p className="text-sm text-muted-foreground">
+                                No data
+                              </p>
+                            );
+                          const [quizId, result] = bestQuiz;
+                          const quizData = quizDataFromApi[quizId];
+                          return (
+                            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950/20">
+                              <div className="font-medium text-sm">
+                                {quizData?.name || quizId}
+                              </div>
+                              <div className="text-sm text-green-600 font-bold">
+                                {result.percentage}%
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {result.lastAttempt
+                                  ? getTimeAgo(result.lastAttempt)
+                                  : "Unknown"}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium text-red-600">
+                          Needs Improvement
+                        </h4>
+                        {(() => {
+                          const worstQuiz = Object.entries(
+                            previousResults
+                          ).sort(
+                            ([, a], [, b]) => a.percentage - b.percentage
+                          )[0];
+                          if (!worstQuiz)
+                            return (
+                              <p className="text-sm text-muted-foreground">
+                                No data
+                              </p>
+                            );
+                          const [quizId, result] = worstQuiz;
+                          const quizData = quizDataFromApi[quizId];
+                          return (
+                            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/20">
+                              <div className="font-medium text-sm">
+                                {quizData?.name || quizId}
+                              </div>
+                              <div className="text-sm text-red-600 font-bold">
+                                {result.percentage}%
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {result.lastAttempt
+                                  ? getTimeAgo(result.lastAttempt)
+                                  : "Unknown"}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+
+                    {/* Recent Activity */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">Recent Activity</h4>
+                      <div className="space-y-2">
+                        {Object.entries(previousResults)
+                          .filter(
+                            ([, result]) =>
+                              result.lastAttempt &&
+                              new Date(result.lastAttempt) >
+                                new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                          )
+                          .sort(
+                            ([, a], [, b]) =>
+                              new Date(b.lastAttempt) - new Date(a.lastAttempt)
+                          )
+                          .slice(0, 5)
+                          .map(([quizId, result]) => {
+                            const quizData = quizDataFromApi[quizId];
+                            return (
+                              <div
+                                key={quizId}
+                                className="flex items-center justify-between text-sm"
+                              >
+                                <span>{quizData?.name || quizId}</span>
+                                <div className="flex items-center gap-2">
+                                  <span
+                                    className="font-medium"
+                                    style={getGradientColorStyle(
+                                      result.percentage
+                                    )}
+                                  >
+                                    {result.percentage}%
+                                  </span>
+                                  <span className="text-muted-foreground text-xs">
+                                    {getTimeAgo(result.lastAttempt)}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        {Object.entries(previousResults).filter(
+                          ([, result]) =>
+                            result.lastAttempt &&
+                            new Date(result.lastAttempt) >
+                              new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                        ).length === 0 && (
+                          <p className="text-sm text-muted-foreground">
+                            No recent activity
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -1551,24 +2134,67 @@ export default function Quiz() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base sm:text-lg">
                     {currentQuizData?.name || "Quiz"}
+                    {quizSettings.endlessMode && (
+                      <span className="text-sm text-muted-foreground ml-2">
+                        (Endless)
+                      </span>
+                    )}
                   </CardTitle>
+                  <Button
+                    onClick={() => setShowResults(true)}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                    title="End Quiz"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                <Progress value={progress} className="w-full" />
-                <div className="flex justify-between items-center text-sm text-muted-foreground">
-                  <span>
-                    Question {currentQuestionIndex + 1} of{" "}
-                    {shuffledQuestions.length}
-                  </span>
-                  <span className="text-right">
-                    {score}/{questionsAnswered} (
-                    {questionsAnswered > 0
-                      ? Math.round((score / questionsAnswered) * 100)
-                      : 0}
-                    %)
-                  </span>
-                </div>
+                {/* Progress - Show differently for endless mode */}
+                {quizSettings.endlessMode ? (
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-sm text-muted-foreground">
+                      <span>Question {currentQuestionIndex + 1}</span>
+                      <span className="text-right">
+                        {score}/{questionsAnswered} (
+                        {questionsAnswered > 0
+                          ? Math.round((score / questionsAnswered) * 100)
+                          : 0}
+                        %)
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
+                        style={{
+                          width: `${Math.min(
+                            (questionsAnswered / 10) * 100,
+                            100
+                          )}%`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <Progress value={progress} className="w-full" />
+                    <div className="flex justify-between items-center text-sm text-muted-foreground">
+                      <span>
+                        Question {currentQuestionIndex + 1} of{" "}
+                        {shuffledQuestions.length}
+                      </span>
+                      <span className="text-right">
+                        {score}/{questionsAnswered} (
+                        {questionsAnswered > 0
+                          ? Math.round((score / questionsAnswered) * 100)
+                          : 0}
+                        %)
+                      </span>
+                    </div>
+                  </>
+                )}
 
                 <div className="space-y-4">
                   <p className="text-lg font-medium text-center">
