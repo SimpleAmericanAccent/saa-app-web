@@ -81,7 +81,7 @@ export default function Quiz() {
     autoPlayAudio: true,
     showSoundSymbols: true,
     soundEffects: true,
-    endlessMode: false, // Add endless mode setting
+    endlessMode: true, // Default to endless mode
   });
 
   // Load previous quiz results from API
@@ -218,8 +218,16 @@ export default function Quiz() {
   useEffect(() => {
     const loadQuizSettings = async () => {
       try {
-        const settings = await fetchQuizSettings();
-        setQuizSettings(settings);
+        const apiSettings = await fetchQuizSettings();
+        // Merge API settings with defaults to ensure endlessMode defaults to true
+        setQuizSettings((prevSettings) => ({
+          ...prevSettings,
+          ...apiSettings,
+          endlessMode:
+            apiSettings.endlessMode !== undefined
+              ? apiSettings.endlessMode
+              : true,
+        }));
       } catch (error) {
         console.error("Failed to load quiz settings from API:", error);
         // Keep default settings if API fails
@@ -1108,18 +1116,18 @@ export default function Quiz() {
                 <label className="text-md font-medium">Quiz Mode</label>
                 <div className="grid grid-cols-2 gap-2">
                   <Button
-                    variant={!quizSettings.endlessMode ? "default" : "outline"}
-                    onClick={() => handleSettingsChange("endlessMode", false)}
-                    className="w-full cursor-pointer"
-                  >
-                    Fixed Length
-                  </Button>
-                  <Button
                     variant={quizSettings.endlessMode ? "default" : "outline"}
                     onClick={() => handleSettingsChange("endlessMode", true)}
                     className="w-full cursor-pointer"
                   >
                     Endless Mode
+                  </Button>
+                  <Button
+                    variant={!quizSettings.endlessMode ? "default" : "outline"}
+                    onClick={() => handleSettingsChange("endlessMode", false)}
+                    className="w-full cursor-pointer"
+                  >
+                    Fixed Length
                   </Button>
                 </div>
               </div>
@@ -1257,7 +1265,7 @@ export default function Quiz() {
       {/* Category Selection Step */}
       {currentStep === "category" && (
         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-4 overflow-hidden">
-          <Card className="w-full max-w-md max-h-[80vh] flex flex-col">
+          <Card className="w-full max-w-md max-h-[80vh] flex flex-col gap-3 pb-3">
             <CardHeader className="pb-1 flex-shrink-0">
               <CardTitle className="text-center text-xl">
                 Choose Category
@@ -1355,25 +1363,6 @@ export default function Quiz() {
                 (vowelsAverage !== null || consonantsAverage !== null) && (
                   <div className="mt-4 p-3 pt-0 space-y-2">
                     {/* Overall Quiz Stats */}
-                    <div className="flex items-center justify-center gap-1 pb-2 text-xs text-muted-foreground">
-                      <div className="flex flex-col gap-1 items-center">
-                        <div className="text-[10px] sm:text-xs text-muted-foreground">
-                          {quizStats?.overall?.completed || 0}/
-                          {quizStats?.overall?.total || 0} Completed
-                        </div>
-                        {quizStats?.overall?.average && (
-                          <div
-                            className="text-[10px] sm:text-xs font-bold"
-                            style={getGradientColorStyle(
-                              quizStats.overall.average
-                            )}
-                          >
-                            {quizStats.overall.average}% Average
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
                     <p className="text-xs text-muted-foreground text-center">
                       Performance Legend
                     </p>
@@ -1408,7 +1397,7 @@ export default function Quiz() {
             </CardContent>
 
             {/* View History Button */}
-            <div className="p-3 pt-0 flex-shrink-0">
+            <div className="px-2 pt-0 flex-shrink-0 ">
               <Button
                 onClick={() => setShowQuizHistory(true)}
                 variant="outline"
@@ -1417,6 +1406,22 @@ export default function Quiz() {
                 <BarChart3 className="h-4 w-4 mr-2" />
                 View History & Stats
               </Button>
+            </div>
+            <div className="flex items-center justify-center gap-0 p-0 m-0 text-sm text-muted-foreground">
+              <div className="flex flex-col gap-0 items-center">
+                <div className="text-sm text-muted-foreground">
+                  {quizStats?.overall?.completed || 0}/
+                  {quizStats?.overall?.total || 0} Completed
+                </div>
+                {quizStats?.overall?.average && (
+                  <div
+                    className="text-sm font-bold"
+                    style={getGradientColorStyle(quizStats.overall.average)}
+                  >
+                    {quizStats.overall.average}% Average
+                  </div>
+                )}
+              </div>
             </div>
           </Card>
         </div>
@@ -1696,17 +1701,8 @@ export default function Quiz() {
                 </div>
               )}
             </CardContent>
-            <div className="p-3 pt-0 flex-shrink-0">
-              <Button
-                onClick={() => setCurrentStep("category")}
-                variant="ghost"
-                className="w-full cursor-pointer text-sm"
-              >
-                ← Back to Categories
-              </Button>
-            </div>
             {Object.keys(previousResults).length > 0 && (
-              <div className="p-3 pt-0 flex-shrink-0 space-y-2">
+              <div className="p-3 pt-4 flex-shrink-0 space-y-2">
                 <p className="text-xs text-muted-foreground text-center">
                   Note: Shows last result for each quiz type
                 </p>
@@ -1738,6 +1734,15 @@ export default function Quiz() {
                 </div>
               </div>
             )}
+            <div className="p-3 pt-0 flex-shrink-0">
+              <Button
+                onClick={() => setCurrentStep("category")}
+                variant="ghost"
+                className="w-full cursor-pointer text-sm"
+              >
+                ← Back to Categories
+              </Button>
+            </div>
           </Card>
         </div>
       )}
@@ -1755,7 +1760,7 @@ export default function Quiz() {
                   onClick={() => setShowQuizHistory(false)}
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0"
+                  className="h-8 w-8 p-0 cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </Button>
