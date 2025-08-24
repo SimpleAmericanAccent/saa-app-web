@@ -1500,7 +1500,8 @@ export default function Quiz() {
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
-                                    previousResult.percentage
+                                    previousResult.recentPercentage ||
+                                      previousResult.percentage
                                   )
                                 : {}
                             }
@@ -1515,11 +1516,21 @@ export default function Quiz() {
                               <div {...getQuizCardTextProps(previousResult)}>
                                 {previousResult ? (
                                   <div className="flex items-center justify-center gap-1">
-                                    <span>{previousResult.percentage}%</span>
-                                    {previousResult.totalTrials > 0 && (
+                                    <span>
+                                      {previousResult.recentPercentage ||
+                                        previousResult.percentage}
+                                      %
+                                    </span>
+                                    {(previousResult.recentTotalTrials ||
+                                      previousResult.totalTrials) > 0 && (
                                       <span className="text-muted-foreground font-normal">
-                                        ({previousResult.correctTrials}/
-                                        {previousResult.totalTrials})
+                                        (
+                                        {previousResult.recentCorrectTrials ||
+                                          previousResult.correctTrials}
+                                        /
+                                        {previousResult.recentTotalTrials ||
+                                          previousResult.totalTrials}
+                                        )
                                       </span>
                                     )}
                                   </div>
@@ -1554,7 +1565,8 @@ export default function Quiz() {
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
-                                    previousResult.percentage
+                                    previousResult.recentPercentage ||
+                                      previousResult.percentage
                                   )
                                 : {}
                             }
@@ -1569,11 +1581,21 @@ export default function Quiz() {
                               <div {...getQuizCardTextProps(previousResult)}>
                                 {previousResult ? (
                                   <div className="flex items-center justify-center gap-1">
-                                    <span>{previousResult.percentage}%</span>
-                                    {previousResult.totalTrials > 0 && (
+                                    <span>
+                                      {previousResult.recentPercentage ||
+                                        previousResult.percentage}
+                                      %
+                                    </span>
+                                    {(previousResult.recentTotalTrials ||
+                                      previousResult.totalTrials) > 0 && (
                                       <span className="text-muted-foreground font-normal">
-                                        ({previousResult.correctTrials}/
-                                        {previousResult.totalTrials})
+                                        (
+                                        {previousResult.recentCorrectTrials ||
+                                          previousResult.correctTrials}
+                                        /
+                                        {previousResult.recentTotalTrials ||
+                                          previousResult.totalTrials}
+                                        )
                                       </span>
                                     )}
                                   </div>
@@ -1614,7 +1636,8 @@ export default function Quiz() {
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
-                                    previousResult.percentage
+                                    previousResult.recentPercentage ||
+                                      previousResult.percentage
                                   )
                                 : {}
                             }
@@ -1631,11 +1654,21 @@ export default function Quiz() {
                               >
                                 {previousResult ? (
                                   <div className="flex items-center justify-center gap-1">
-                                    <span>{previousResult.percentage}%</span>
-                                    {previousResult.totalTrials > 0 && (
+                                    <span>
+                                      {previousResult.recentPercentage ||
+                                        previousResult.percentage}
+                                      %
+                                    </span>
+                                    {(previousResult.recentTotalTrials ||
+                                      previousResult.totalTrials) > 0 && (
                                       <span className="text-muted-foreground font-normal">
-                                        ({previousResult.correctTrials}/
-                                        {previousResult.totalTrials})
+                                        (
+                                        {previousResult.recentCorrectTrials ||
+                                          previousResult.correctTrials}
+                                        /
+                                        {previousResult.recentTotalTrials ||
+                                          previousResult.totalTrials}
+                                        )
                                       </span>
                                     )}
                                   </div>
@@ -1672,7 +1705,8 @@ export default function Quiz() {
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
-                                    previousResult.percentage
+                                    previousResult.recentPercentage ||
+                                      previousResult.percentage
                                   )
                                 : {}
                             }
@@ -1689,11 +1723,21 @@ export default function Quiz() {
                               >
                                 {previousResult ? (
                                   <div className="flex items-center justify-center gap-1">
-                                    <span>{previousResult.percentage}%</span>
-                                    {previousResult.totalTrials > 0 && (
+                                    <span>
+                                      {previousResult.recentPercentage ||
+                                        previousResult.percentage}
+                                      %
+                                    </span>
+                                    {(previousResult.recentTotalTrials ||
+                                      previousResult.totalTrials) > 0 && (
                                       <span className="text-muted-foreground font-normal">
-                                        ({previousResult.correctTrials}/
-                                        {previousResult.totalTrials})
+                                        (
+                                        {previousResult.recentCorrectTrials ||
+                                          previousResult.correctTrials}
+                                        /
+                                        {previousResult.recentTotalTrials ||
+                                          previousResult.totalTrials}
+                                        )
                                       </span>
                                     )}
                                   </div>
@@ -1729,7 +1773,8 @@ export default function Quiz() {
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
-                                    previousResult.percentage
+                                    previousResult.recentPercentage ||
+                                      previousResult.percentage
                                   )
                                 : {}
                             }
@@ -1746,11 +1791,21 @@ export default function Quiz() {
                               >
                                 {previousResult ? (
                                   <div className="flex items-center justify-center gap-1">
-                                    <span>{previousResult.percentage}%</span>
-                                    {previousResult.totalTrials > 0 && (
+                                    <span>
+                                      {previousResult.recentPercentage ||
+                                        previousResult.percentage}
+                                      %
+                                    </span>
+                                    {(previousResult.recentTotalTrials ||
+                                      previousResult.totalTrials) > 0 && (
                                       <span className="text-muted-foreground font-normal">
-                                        ({previousResult.correctTrials}/
-                                        {previousResult.totalTrials})
+                                        (
+                                        {previousResult.recentCorrectTrials ||
+                                          previousResult.correctTrials}
+                                        /
+                                        {previousResult.recentTotalTrials ||
+                                          previousResult.totalTrials}
+                                        )
                                       </span>
                                     )}
                                   </div>

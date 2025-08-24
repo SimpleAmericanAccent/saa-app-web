@@ -128,9 +128,11 @@ export async function getAllQuizMetadata() {
 }
 
 // Fetch quiz results from API
-export async function fetchQuizResults() {
+export async function fetchQuizResults(recentTrials = 30) {
   try {
-    const response = await fetch(`${API_BASE_URL}/results`);
+    const response = await fetch(
+      `${API_BASE_URL}/results?recentTrials=${recentTrials}`
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -184,7 +186,9 @@ export async function fetchQuizSettings() {
 export async function fetchProgressData(contrastKey, windowSize = 30) {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/progress/${encodeURIComponent(contrastKey)}?windowSize=${windowSize}`
+      `${API_BASE_URL}/progress/${encodeURIComponent(
+        contrastKey
+      )}?windowSize=${windowSize}`
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

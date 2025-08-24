@@ -22,10 +22,10 @@ const QUIZ_TYPE_IDS = {
 };
 
 // Get quiz results from API
-export const getQuizResults = async () => {
+export const getQuizResults = async (recentTrials = 30) => {
   try {
     const { fetchQuizResults } = await import("./quizApi");
-    return await fetchQuizResults();
+    return await fetchQuizResults(recentTrials);
   } catch (error) {
     console.error("Error fetching quiz results:", error);
     return {};
@@ -64,17 +64,20 @@ export const getCategoryStats = async (category, previousResults) => {
   if (results.length === 0)
     return { average: null, totalTrials: 0, correctTrials: 0 };
 
+  // Use recent percentage if available, otherwise fall back to all-time percentage
   const average =
-    results.reduce((sum, result) => sum + result.percentage, 0) /
-    results.length;
+    results.reduce(
+      (sum, result) => sum + (result.recentPercentage || result.percentage),
+      0
+    ) / results.length;
 
-  // Calculate total trials and correct trials
+  // Use recent trial counts if available, otherwise fall back to all-time counts
   const totalTrials = results.reduce(
-    (sum, result) => sum + result.totalTrials,
+    (sum, result) => sum + (result.recentTotalTrials || result.totalTrials),
     0
   );
   const correctTrials = results.reduce(
-    (sum, result) => sum + result.correctTrials,
+    (sum, result) => sum + (result.recentCorrectTrials || result.correctTrials),
     0
   );
 
@@ -125,8 +128,8 @@ export const getCategoryCompletion = async (category, previousResults) => {
 };
 
 // Get overall quiz statistics
-export const getQuizStats = async () => {
-  const previousResults = await getQuizResults();
+export const getQuizStats = async (recentTrials = 30) => {
+  const previousResults = await getQuizResults(recentTrials);
 
   const vowelsCompletion = await getCategoryCompletion(
     "vowels",
@@ -145,22 +148,25 @@ export const getQuizStats = async () => {
   const totalQuizzes = vowelsCompletion.total + consonantsCompletion.total;
   const overallCompletion = Math.round((totalCompleted / totalQuizzes) * 100);
 
-  // Calculate overall average and trial counts
+  // Calculate overall average and trial counts using recent data
   const allResults = Object.values(previousResults);
   const overallAverage =
     allResults.length > 0
       ? Math.round(
-          allResults.reduce((sum, result) => sum + result.percentage, 0) /
-            allResults.length
+          allResults.reduce(
+            (sum, result) =>
+              sum + (result.recentPercentage || result.percentage),
+            0
+          ) / allResults.length
         )
       : null;
 
   const overallTotalTrials = allResults.reduce(
-    (sum, result) => sum + result.totalTrials,
+    (sum, result) => sum + (result.recentTotalTrials || result.totalTrials),
     0
   );
   const overallCorrectTrials = allResults.reduce(
-    (sum, result) => sum + result.correctTrials,
+    (sum, result) => sum + (result.recentCorrectTrials || result.correctTrials),
     0
   );
 

@@ -241,6 +241,7 @@ router.get("/trials", async (req, res) => {
 router.get("/results", async (req, res) => {
   try {
     const userId = req.userId;
+    const { recentTrials = 30 } = req.query; // Default to 30 most recent trials
 
     if (!userId) {
       return res.status(401).json({
@@ -249,7 +250,7 @@ router.get("/results", async (req, res) => {
     }
 
     // Get all trials for the user, grouped by contrast
-    const trials = await prisma.trial.findMany({
+    const allTrials = await prisma.trial.findMany({
       where: { userId },
       include: {
         pair: {
@@ -269,25 +270,28 @@ router.get("/results", async (req, res) => {
     // Group trials by contrast and calculate results
     const resultsByContrast = {};
 
-    trials.forEach((trial) => {
+    // First pass: group all trials by contrast
+    allTrials.forEach((trial) => {
       const contrastKey = trial.pair.contrast.key;
 
       if (!resultsByContrast[contrastKey]) {
         resultsByContrast[contrastKey] = {
           contrastKey,
           contrastName: trial.pair.contrast.name,
+          allTrials: [],
+          recentTrials: [],
           totalTrials: 0,
           correctTrials: 0,
+          recentTotalTrials: 0,
+          recentCorrectTrials: 0,
           percentage: 0,
+          recentPercentage: 0,
           lastAttempt: null,
         };
       }
 
       const result = resultsByContrast[contrastKey];
-      result.totalTrials++;
-      if (trial.isCorrect) {
-        result.correctTrials++;
-      }
+      result.allTrials.push(trial);
 
       // Update last attempt timestamp
       if (!result.lastAttempt || trial.presentedAt > result.lastAttempt) {
@@ -295,11 +299,41 @@ router.get("/results", async (req, res) => {
       }
     });
 
-    // Calculate percentages
+    // Second pass: calculate stats for each contrast
     Object.values(resultsByContrast).forEach((result) => {
-      result.percentage = Math.round(
-        (result.correctTrials / result.totalTrials) * 100
+      // Sort trials by presentedAt (most recent first)
+      result.allTrials.sort(
+        (a, b) => new Date(b.presentedAt) - new Date(a.presentedAt)
       );
+
+      // Get recent trials (up to the specified limit)
+      result.recentTrials = result.allTrials.slice(0, parseInt(recentTrials));
+
+      // Calculate all-time stats
+      result.totalTrials = result.allTrials.length;
+      result.correctTrials = result.allTrials.filter(
+        (trial) => trial.isCorrect
+      ).length;
+      result.percentage =
+        result.totalTrials > 0
+          ? Math.round((result.correctTrials / result.totalTrials) * 100)
+          : 0;
+
+      // Calculate recent stats
+      result.recentTotalTrials = result.recentTrials.length;
+      result.recentCorrectTrials = result.recentTrials.filter(
+        (trial) => trial.isCorrect
+      ).length;
+      result.recentPercentage =
+        result.recentTotalTrials > 0
+          ? Math.round(
+              (result.recentCorrectTrials / result.recentTotalTrials) * 100
+            )
+          : 0;
+
+      // Clean up - remove the trial arrays to reduce response size
+      delete result.allTrials;
+      delete result.recentTrials;
     });
 
     res.json({ results: resultsByContrast });
@@ -325,18 +359,18 @@ router.get("/progress/:contrastKey", async (req, res) => {
 
     // Handle special data keys for aggregated views
     let whereClause = { userId };
-    
+
     if (contrastKey === "vowels") {
       whereClause.pair = {
         contrast: {
-          category: "vowels"
-        }
+          category: "vowels",
+        },
       };
     } else if (contrastKey === "consonants") {
       whereClause.pair = {
         contrast: {
-          category: "consonants"
-        }
+          category: "consonants",
+        },
       };
     } else if (contrastKey === "overall") {
       // No additional filter - get all trials
@@ -344,8 +378,8 @@ router.get("/progress/:contrastKey", async (req, res) => {
       // Specific contrast key
       whereClause.pair = {
         contrast: {
-          key: contrastKey
-        }
+          key: contrastKey,
+        },
       };
     }
 
@@ -383,9 +417,9 @@ router.get("/progress/:contrastKey", async (req, res) => {
 
     for (let i = windowSizeNum - 1; i < trials.length; i++) {
       const window = trials.slice(i - windowSizeNum + 1, i + 1);
-      const correctCount = window.filter(trial => trial.isCorrect).length;
+      const correctCount = window.filter((trial) => trial.isCorrect).length;
       const accuracy = Math.round((correctCount / windowSizeNum) * 100);
-      
+
       rollingAverages.push({
         trialIndex: i + 1,
         accuracy,
@@ -398,8 +432,8 @@ router.get("/progress/:contrastKey", async (req, res) => {
 
     // Also calculate daily aggregates for broader trends
     const dailyStats = {};
-    trials.forEach(trial => {
-      const date = trial.presentedAt.toISOString().split('T')[0];
+    trials.forEach((trial) => {
+      const date = trial.presentedAt.toISOString().split("T")[0];
       if (!dailyStats[date]) {
         dailyStats[date] = {
           date,
@@ -409,7 +443,7 @@ router.get("/progress/:contrastKey", async (req, res) => {
           responseTimes: [],
         };
       }
-      
+
       dailyStats[date].totalTrials++;
       if (trial.isCorrect) {
         dailyStats[date].correctTrials++;
@@ -420,20 +454,24 @@ router.get("/progress/:contrastKey", async (req, res) => {
     });
 
     // Calculate daily averages
-    const dailyAverages = Object.values(dailyStats).map(day => ({
+    const dailyAverages = Object.values(dailyStats).map((day) => ({
       date: day.date,
       accuracy: Math.round((day.correctTrials / day.totalTrials) * 100),
       totalTrials: day.totalTrials,
       correctTrials: day.correctTrials,
-      avgResponseTime: day.responseTimes.length > 0 
-        ? Math.round(day.responseTimes.reduce((a, b) => a + b, 0) / day.responseTimes.length)
-        : 0,
+      avgResponseTime:
+        day.responseTimes.length > 0
+          ? Math.round(
+              day.responseTimes.reduce((a, b) => a + b, 0) /
+                day.responseTimes.length
+            )
+          : 0,
     }));
 
     res.json({
       contrastKey,
       contrastName: getContrastDisplayName(contrastKey),
-      trials: trials.map(trial => ({
+      trials: trials.map((trial) => ({
         trialId: trial.trialId,
         isCorrect: trial.isCorrect,
         presentedAt: trial.presentedAt,
