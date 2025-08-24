@@ -179,3 +179,20 @@ export async function fetchQuizSettings() {
     throw error;
   }
 }
+
+// Fetch progress data for a specific contrast
+export async function fetchProgressData(contrastKey, windowSize = 30) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/progress/${encodeURIComponent(contrastKey)}?windowSize=${windowSize}`
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching progress data:", error);
+    throw error;
+  }
+}

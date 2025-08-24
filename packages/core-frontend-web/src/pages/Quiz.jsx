@@ -44,6 +44,8 @@ import {
   Calendar,
   Award,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import ProgressModal from "../components/ProgressModal";
 
 // Quiz type IDs for easy reference
 export const QUIZ_TYPE_IDS = {
@@ -121,6 +123,7 @@ export default function Quiz() {
   const [selectedCategory, setSelectedCategory] = useState(null); // "vowels", "consonants"
 
   const [showQuizHistory, setShowQuizHistory] = useState(false); // Control quiz history view
+  const [showProgressModal, setShowProgressModal] = useState(false); // Control progress modal
   const audioRef = useRef(null);
 
   // Ref to store current question data to prevent race conditions
@@ -1421,7 +1424,7 @@ export default function Quiz() {
             </CardContent>
 
             {/* View History Button */}
-            <div className="px-2 pt-0 flex-shrink-0 ">
+            <div className="px-2 pt-0 flex-shrink-0 space-y-2">
               <Button
                 onClick={() => setShowQuizHistory(true)}
                 variant="outline"
@@ -1429,6 +1432,14 @@ export default function Quiz() {
               >
                 <BarChart3 className="h-4 w-4 mr-2" />
                 View History & Stats
+              </Button>
+              <Button
+                onClick={() => setShowProgressModal(true)}
+                variant="outline"
+                className="w-full cursor-pointer text-sm"
+              >
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Progress Tracking
               </Button>
             </div>
             <div className="flex items-center justify-center gap-0 p-0 m-0 text-sm text-muted-foreground">
@@ -1836,14 +1847,28 @@ export default function Quiz() {
                 <CardTitle className="text-lg">
                   Quiz History & Statistics
                 </CardTitle>
-                <Button
-                  onClick={() => setShowQuizHistory(false)}
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 cursor-pointer"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => {
+                      setShowQuizHistory(false);
+                      setShowProgressModal(true);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-3 cursor-pointer"
+                  >
+                    <TrendingUp className="h-4 w-4 mr-1" />
+                    Progress
+                  </Button>
+                  <Button
+                    onClick={() => setShowQuizHistory(false)}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 cursor-pointer"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto space-y-6">
@@ -2467,6 +2492,13 @@ export default function Quiz() {
             </Card>
           </div>
         )}
+
+      {/* Progress Modal */}
+      <ProgressModal
+        isOpen={showProgressModal}
+        onClose={() => setShowProgressModal(false)}
+        contrastKey={currentQuizData?.contrastKey || "kit_fleece"}
+      />
     </div>
   );
 }

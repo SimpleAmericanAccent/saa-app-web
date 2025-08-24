@@ -4,6 +4,20 @@ import { PrismaClient } from "../prisma/generated/index.js";
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Helper function to get display name for different data keys
+function getContrastDisplayName(contrastKey) {
+  switch (contrastKey) {
+    case "vowels":
+      return "All Vowels";
+    case "consonants":
+      return "All Consonants";
+    case "overall":
+      return "Overall Progress";
+    default:
+      return "Unknown";
+  }
+}
+
 // GET /api/quiz/contrasts
 // Get all available contrasts with metadata
 router.get("/contrasts", async (req, res) => {
@@ -292,6 +306,147 @@ router.get("/results", async (req, res) => {
   } catch (error) {
     console.error("Error fetching quiz results:", error);
     res.status(500).json({ error: "Failed to fetch quiz results" });
+  }
+});
+
+// GET /api/quiz/progress/:contrastKey
+// Get progress data for a specific contrast with rolling averages
+router.get("/progress/:contrastKey", async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { contrastKey } = req.params;
+    const { windowSize = 30 } = req.query; // Rolling average window size
+
+    if (!userId) {
+      return res.status(401).json({
+        error: "User not authenticated",
+      });
+    }
+
+    // Handle special data keys for aggregated views
+    let whereClause = { userId };
+    
+    if (contrastKey === "vowels") {
+      whereClause.pair = {
+        contrast: {
+          category: "vowels"
+        }
+      };
+    } else if (contrastKey === "consonants") {
+      whereClause.pair = {
+        contrast: {
+          category: "consonants"
+        }
+      };
+    } else if (contrastKey === "overall") {
+      // No additional filter - get all trials
+    } else {
+      // Specific contrast key
+      whereClause.pair = {
+        contrast: {
+          key: contrastKey
+        }
+      };
+    }
+
+    // Get all trials based on the filter, ordered by time
+    const trials = await prisma.trial.findMany({
+      where: whereClause,
+      include: {
+        pair: {
+          include: {
+            contrast: {
+              select: {
+                key: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { presentedAt: "asc" }, // Oldest first for rolling average calculation
+    });
+
+    if (trials.length === 0) {
+      return res.json({
+        contrastKey,
+        contrastName: getContrastDisplayName(contrastKey),
+        trials: [],
+        rollingAverages: [],
+        totalTrials: 0,
+      });
+    }
+
+    // Calculate rolling averages
+    const rollingAverages = [];
+    const windowSizeNum = parseInt(windowSize);
+
+    for (let i = windowSizeNum - 1; i < trials.length; i++) {
+      const window = trials.slice(i - windowSizeNum + 1, i + 1);
+      const correctCount = window.filter(trial => trial.isCorrect).length;
+      const accuracy = Math.round((correctCount / windowSizeNum) * 100);
+      
+      rollingAverages.push({
+        trialIndex: i + 1,
+        accuracy,
+        trialCount: windowSizeNum,
+        timestamp: window[window.length - 1].presentedAt,
+        correctTrials: correctCount,
+        totalTrials: windowSizeNum,
+      });
+    }
+
+    // Also calculate daily aggregates for broader trends
+    const dailyStats = {};
+    trials.forEach(trial => {
+      const date = trial.presentedAt.toISOString().split('T')[0];
+      if (!dailyStats[date]) {
+        dailyStats[date] = {
+          date,
+          totalTrials: 0,
+          correctTrials: 0,
+          avgResponseTime: 0,
+          responseTimes: [],
+        };
+      }
+      
+      dailyStats[date].totalTrials++;
+      if (trial.isCorrect) {
+        dailyStats[date].correctTrials++;
+      }
+      if (trial.latencyMs) {
+        dailyStats[date].responseTimes.push(trial.latencyMs);
+      }
+    });
+
+    // Calculate daily averages
+    const dailyAverages = Object.values(dailyStats).map(day => ({
+      date: day.date,
+      accuracy: Math.round((day.correctTrials / day.totalTrials) * 100),
+      totalTrials: day.totalTrials,
+      correctTrials: day.correctTrials,
+      avgResponseTime: day.responseTimes.length > 0 
+        ? Math.round(day.responseTimes.reduce((a, b) => a + b, 0) / day.responseTimes.length)
+        : 0,
+    }));
+
+    res.json({
+      contrastKey,
+      contrastName: getContrastDisplayName(contrastKey),
+      trials: trials.map(trial => ({
+        trialId: trial.trialId,
+        isCorrect: trial.isCorrect,
+        presentedAt: trial.presentedAt,
+        respondedAt: trial.respondedAt,
+        latencyMs: trial.latencyMs,
+      })),
+      rollingAverages,
+      dailyAverages,
+      totalTrials: trials.length,
+    });
+  } catch (error) {
+    console.error("Error fetching progress data:", error);
+    res.status(500).json({ error: "Failed to fetch progress data" });
   }
 });
 
