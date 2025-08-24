@@ -42,7 +42,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 export function ProgressChart({ data, isLoading, error }) {
   if (isLoading) {
     return (
-      <div className="w-full h-64 flex items-center justify-center">
+      <div className="w-full h-48 md:h-64 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
           <p className="text-sm text-muted-foreground">
@@ -55,7 +55,7 @@ export function ProgressChart({ data, isLoading, error }) {
 
   if (error) {
     return (
-      <div className="w-full h-64 flex items-center justify-center">
+      <div className="w-full h-48 md:h-64 flex items-center justify-center">
         <div className="text-center">
           <p className="text-sm text-destructive mb-2">
             Failed to load progress data
@@ -68,13 +68,13 @@ export function ProgressChart({ data, isLoading, error }) {
 
   if (!data || !data.rollingAverages || data.rollingAverages.length === 0) {
     return (
-      <div className="w-full h-64 flex items-center justify-center">
+      <div className="w-full h-48 md:h-64 flex items-center justify-center">
         <div className="text-center">
           <p className="text-sm text-muted-foreground mb-2">
             No progress data available
           </p>
           <p className="text-xs text-muted-foreground">
-            Complete some trials to see your progress over time
+            Complete more trials to see your progress over time
           </p>
         </div>
       </div>
@@ -88,11 +88,11 @@ export function ProgressChart({ data, isLoading, error }) {
   }));
 
   return (
-    <div className="w-full h-64">
+    <div className="w-full h-48 md:h-64">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={chartData}
-          margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+          margin={{ top: 5, right: 10, left: 10, bottom: 25 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#6b7280" opacity={0.2} />
           <XAxis
@@ -102,6 +102,12 @@ export function ProgressChart({ data, isLoading, error }) {
             tickLine={false}
             axisLine={false}
             tick={{ fill: "#9ca3af" }}
+            label={{
+              value: "# of Trials",
+              position: "bottom",
+              offset: 0,
+              style: { textAnchor: "middle", fill: "#9ca3af", fontSize: 12 },
+            }}
           />
           <YAxis
             stroke="#9ca3af"
@@ -111,6 +117,14 @@ export function ProgressChart({ data, isLoading, error }) {
             domain={[0, 100]}
             tickFormatter={(value) => `${value}%`}
             tick={{ fill: "#9ca3af" }}
+            width={40}
+            label={{
+              value: "Accuracy",
+              angle: -90,
+              position: "left",
+              offset: 0,
+              style: { textAnchor: "middle", fill: "#9ca3af", fontSize: 12 },
+            }}
           />
           <Tooltip content={<CustomTooltip />} />
           <Area
@@ -120,6 +134,7 @@ export function ProgressChart({ data, isLoading, error }) {
             strokeWidth={4}
             fill="#3b82f6"
             fillOpacity={0.4}
+            className="cursor-pointer"
           />
         </AreaChart>
       </ResponsiveContainer>

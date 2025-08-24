@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { ProgressChart } from "./ProgressChart";
 import { fetchProgressData, fetchContrasts } from "../utils/quizApi";
-import { TrendingUp, Target, Clock, X, BarChart3 } from "lucide-react";
+import {
+  TrendingUp,
+  Target,
+  Clock,
+  X,
+  BarChart3,
+  RefreshCw,
+} from "lucide-react";
 
 export default function ProgressModal({
   isOpen,
@@ -17,11 +31,13 @@ export default function ProgressModal({
   const [selectedView, setSelectedView] = useState("vowels"); // vowels, consonants, overall
   const [selectedQuizType, setSelectedQuizType] = useState(contrastKey);
   const [availableQuizTypes, setAvailableQuizTypes] = useState({});
+  const [trialCounts, setTrialCounts] = useState({});
 
   useEffect(() => {
     if (isOpen) {
       loadAvailableQuizTypes();
       loadProgressData();
+      loadTrialCounts();
     }
   }, [isOpen, windowSize, selectedView, selectedQuizType]);
 
@@ -60,13 +76,51 @@ export default function ProgressModal({
     }
   };
 
+  const loadTrialCounts = async () => {
+    try {
+      const counts = {};
+
+      // Get trial counts for all available quiz types
+      const quizTypes = Object.keys(availableQuizTypes);
+      for (const quizType of quizTypes) {
+        try {
+          const data = await fetchProgressData(quizType, 1); // Use minimal window size
+          counts[quizType] = data.totalTrials || 0;
+        } catch (err) {
+          counts[quizType] = 0;
+        }
+      }
+
+      // Get counts for aggregated views
+      try {
+        const vowelsData = await fetchProgressData("vowels", 1);
+        counts["all_vowels"] = vowelsData.totalTrials || 0;
+      } catch (err) {
+        counts["all_vowels"] = 0;
+      }
+
+      try {
+        const consonantsData = await fetchProgressData("consonants", 1);
+        counts["all_consonants"] = consonantsData.totalTrials || 0;
+      } catch (err) {
+        counts["all_consonants"] = 0;
+      }
+
+      setTrialCounts(counts);
+    } catch (err) {
+      console.error("Failed to load trial counts:", err);
+    }
+  };
+
   const loadProgressData = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
       let dataKey;
-      if (selectedQuizType === "all_vowels") {
+      if (selectedView === "overall") {
+        dataKey = "overall";
+      } else if (selectedQuizType === "all_vowels") {
         dataKey = "vowels";
       } else if (selectedQuizType === "all_consonants") {
         dataKey = "consonants";
@@ -98,7 +152,9 @@ export default function ProgressModal({
   };
 
   const getViewDisplayName = () => {
-    if (selectedQuizType === "all_vowels") {
+    if (selectedView === "overall") {
+      return "Overall Progress";
+    } else if (selectedQuizType === "all_vowels") {
       return "All Vowels";
     } else if (selectedQuizType === "all_consonants") {
       return "All Consonants";
@@ -110,25 +166,54 @@ export default function ProgressModal({
 
   // Calculate summary stats
   const getSummaryStats = () => {
-    if (!progressData || !progressData.rollingAverages.length) {
+    if (!progressData) {
       return null;
     }
 
-    const averages = progressData.rollingAverages;
-    const latest = averages[averages.length - 1];
-    const first = averages[0];
+    // If we have rolling averages, use them for more detailed stats
+    if (
+      progressData.rollingAverages &&
+      progressData.rollingAverages.length > 0
+    ) {
+      const averages = progressData.rollingAverages;
+      const latest = averages[averages.length - 1];
+      const first = averages[0];
 
-    const improvement = latest.accuracy - first.accuracy;
-    const trend =
-      improvement > 0 ? "improving" : improvement < 0 ? "declining" : "stable";
+      const improvement = latest.accuracy - first.accuracy;
+      const trend =
+        improvement > 0
+          ? "improving"
+          : improvement < 0
+          ? "declining"
+          : "stable";
 
-    return {
-      currentAccuracy: latest.accuracy,
-      totalTrials: progressData.totalTrials,
-      improvement,
-      trend,
-      totalDataPoints: averages.length,
-    };
+      return {
+        currentAccuracy: latest.accuracy,
+        totalTrials: progressData.totalTrials,
+        improvement,
+        trend,
+        totalDataPoints: averages.length,
+      };
+    }
+
+    // If we don't have rolling averages but have trials data, calculate basic stats
+    if (progressData.trials && progressData.trials.length > 0) {
+      const trials = progressData.trials;
+      const totalTrials = trials.length;
+      const correctTrials = trials.filter((trial) => trial.isCorrect).length;
+      const currentAccuracy =
+        totalTrials > 0 ? Math.round((correctTrials / totalTrials) * 100) : 0;
+
+      return {
+        currentAccuracy,
+        totalTrials,
+        improvement: 0, // Can't calculate improvement without enough data
+        trend: "insufficient data",
+        totalDataPoints: totalTrials,
+      };
+    }
+
+    return null;
   };
 
   const summaryStats = getSummaryStats();
@@ -137,189 +222,253 @@ export default function ProgressModal({
 
   return (
     <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col">
-        <CardHeader className="pb-2 flex-shrink-0">
+      <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col gap-0">
+        <CardHeader className="pb-0 flex-shrink-0">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">Progress Tracking</CardTitle>
             <Button
               onClick={onClose}
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 cursor-pointer"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
 
           {/* View Selector */}
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex gap-1 mt-0">
             <Button
               onClick={() => setSelectedView("vowels")}
               variant={selectedView === "vowels" ? "default" : "outline"}
               size="sm"
-              className="text-xs"
+              className="text-xs px-1 py-1 h-7 flex-1 min-w-0 cursor-pointer"
             >
-              <TrendingUp className="h-3 w-3 mr-1" />
               Vowels
             </Button>
             <Button
               onClick={() => setSelectedView("consonants")}
               variant={selectedView === "consonants" ? "default" : "outline"}
               size="sm"
-              className="text-xs"
+              className="text-xs px-1 py-1 h-7 flex-1 min-w-0 cursor-pointer"
             >
-              <Target className="h-3 w-3 mr-1" />
               Consonants
             </Button>
             <Button
-              onClick={() => setSelectedView("overall")}
+              onClick={() => {
+                setSelectedView("overall");
+                setSelectedQuizType(null);
+              }}
               variant={selectedView === "overall" ? "default" : "outline"}
               size="sm"
-              className="text-xs"
+              className="text-xs px-1 py-1 h-7 flex-1 min-w-0 cursor-pointer"
             >
-              <Clock className="h-3 w-3 mr-1" />
               Overall
             </Button>
           </div>
         </CardHeader>
         <CardContent className="flex-1 overflow-y-auto space-y-6">
           {/* Controls */}
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2 mb-2 mt-2">
             {(selectedView === "vowels" || selectedView === "consonants") && (
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium">Quiz Type:</label>
-                <select
+                <Select
                   value={selectedQuizType}
-                  onChange={(e) => setSelectedQuizType(e.target.value)}
-                  className="px-3 py-1 border border-border rounded-md text-sm bg-background min-w-[150px]"
+                  onValueChange={setSelectedQuizType}
                 >
-                  {selectedView === "vowels" && (
-                    <option value="all_vowels">All Vowels</option>
-                  )}
-                  {selectedView === "consonants" && (
-                    <option value="all_consonants">All Consonants</option>
-                  )}
-                  {Object.entries(getQuizTypesByCategory(selectedView)).map(
-                    ([key, quizData]) => (
-                      <option key={key} value={key}>
-                        {quizData.name}
-                      </option>
-                    )
-                  )}
-                </select>
+                  <SelectTrigger className="min-w-[130px] cursor-pointer">
+                    <SelectValue>
+                      {selectedQuizType === "all_vowels"
+                        ? "All Vowels"
+                        : selectedQuizType === "all_consonants"
+                        ? "All Consonants"
+                        : availableQuizTypes[selectedQuizType]?.name ||
+                          "Select quiz type"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {selectedView === "vowels" && (
+                      <SelectItem value="all_vowels">
+                        All Vowels 📊 {trialCounts["all_vowels"] || 0} trials
+                      </SelectItem>
+                    )}
+                    {selectedView === "consonants" && (
+                      <SelectItem value="all_consonants">
+                        All Consonants 📊 {trialCounts["all_consonants"] || 0}{" "}
+                        trials
+                      </SelectItem>
+                    )}
+                    {Object.entries(getQuizTypesByCategory(selectedView)).map(
+                      ([key, quizData]) => (
+                        <SelectItem key={key} value={key}>
+                          {quizData.name} 📊 {trialCounts[key] || 0} trials
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
             )}
 
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Rolling Average:</label>
-              <select
-                value={windowSize}
-                onChange={(e) => setWindowSize(parseInt(e.target.value))}
-                className="px-3 py-1 border border-border rounded-md text-sm bg-background"
+            {/* <div className="flex items-center gap-2">
+              <Select
+                value={windowSize.toString()}
+                onValueChange={(value) => setWindowSize(parseInt(value))}
               >
-                <option value={10}>10 trials</option>
-                <option value={20}>20 trials</option>
-                <option value={30}>30 trials</option>
-                <option value={50}>50 trials</option>
-              </select>
-            </div>
+                <SelectTrigger className="cursor-pointer">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10 trials</SelectItem>
+                  <SelectItem value="20">20 trials</SelectItem>
+                  <SelectItem value="30">30 trials</SelectItem>
+                  <SelectItem value="50">50 trials</SelectItem>
+                </SelectContent>
+              </Select>
+            </div> */}
 
-            <Button onClick={handleRefresh} variant="outline" size="sm">
-              Refresh
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              size="sm"
+              className="cursor-pointer p-2"
+            >
+              <RefreshCw className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Summary Stats */}
           {summaryStats && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="p-0">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">
-                      Current Accuracy
+            <>
+              {/* Mobile: Simple text layout */}
+              <div className="md:hidden flex justify-between text-center">
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">
+                    Accuracy
+                  </span>
+                  <span className="text-lg font-bold text-foreground">
+                    {summaryStats.currentAccuracy}%
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted-foreground">Trials</span>
+                  <span className="text-lg font-bold text-foreground">
+                    {summaryStats.totalTrials}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  {summaryStats.trend === "insufficient data" ? (
+                    <>
+                      <span className="text-xs text-muted-foreground">
+                        Improvement
+                      </span>
+                      <span className="text-lg font-bold text-muted-foreground">
+                        TBD
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-xs text-muted-foreground">
+                        Improvement
+                      </span>
+                      <span
+                        className={`text-lg font-bold ${
+                          summaryStats.improvement > 0
+                            ? "text-green-600"
+                            : summaryStats.improvement < 0
+                            ? "text-red-600"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {summaryStats.improvement > 0 ? "+" : ""}
+                        {summaryStats.improvement}%
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Desktop: Card layout */}
+              <div className="hidden md:grid md:grid-cols-3 gap-3 text-center">
+                <div className="flex flex-col items-center p-3 rounded-lg bg-muted/50">
+                  <div className="flex items-center gap-1 mb-1">
+                    <Target className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Accuracy
                     </span>
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-lg font-bold">
                     {summaryStats.currentAccuracy}%
                   </div>
-                </CardContent>
-              </Card>
+                </div>
 
-              <Card className="p-0">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Total Trials</span>
+                <div className="flex flex-col items-center p-3 rounded-lg bg-muted/50">
+                  <div className="flex items-center gap-1 mb-1">
+                    <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Trials
+                    </span>
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-lg font-bold">
                     {summaryStats.totalTrials}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
 
-              <Card className="p-0">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Improvement</span>
+                <div className="flex flex-col items-center p-3 rounded-lg bg-muted/50">
+                  <div className="flex items-center gap-1 mb-1">
+                    <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {summaryStats.trend === "insufficient data"
+                        ? "Status"
+                        : "Improvement"}
+                    </span>
                   </div>
                   <div
-                    className={`text-2xl font-bold ${
-                      summaryStats.improvement > 0
+                    className={`text-lg font-bold ${
+                      summaryStats.trend === "insufficient data"
+                        ? "text-muted-foreground"
+                        : summaryStats.improvement > 0
                         ? "text-green-600"
                         : summaryStats.improvement < 0
                         ? "text-red-600"
                         : "text-muted-foreground"
                     }`}
                   >
-                    {summaryStats.improvement > 0 ? "+" : ""}
-                    {summaryStats.improvement}%
+                    {summaryStats.trend === "insufficient data"
+                      ? "Need more data"
+                      : `${summaryStats.improvement > 0 ? "+" : ""}${
+                          summaryStats.improvement
+                        }%`}
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="p-0">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Data Points</span>
-                  </div>
-                  <div className="text-2xl font-bold">
-                    {summaryStats.totalDataPoints}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </div>
+            </>
           )}
 
           {/* Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <div className="w-full">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                {getViewDisplayName()} - Accuracy Over Trials (Rolling{" "}
-                {windowSize}-trial Average)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
+                {getViewDisplayName()}
+              </h3>
+            </div>
+            <div className="-mx-6 max-w-4xl mx-auto">
               <ProgressChart
                 data={progressData}
                 isLoading={isLoading}
                 error={error}
               />
-            </CardContent>
-          </Card>
-
-          {/* Info */}
-          <div className="text-sm text-muted-foreground">
-            <p>
-              This chart shows your {getViewDisplayName().toLowerCase()}{" "}
-              accuracy over time using a rolling average of {windowSize} trials.
-              Each point represents the average accuracy of the previous{" "}
-              {windowSize} trials, which helps smooth out natural variability
-              and shows your true progress trend.
-            </p>
+            </div>
+            <div className="text-sm text-muted-foreground mt-2 max-w-xl m-auto">
+              <p>
+                This chart shows your {getViewDisplayName()} accuracy over time
+                using a rolling average of {windowSize} trials. Each point
+                represents the average accuracy of the previous {windowSize}{" "}
+                trials, which helps smooth out natural variability and shows a
+                more useful progress trend.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
