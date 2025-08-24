@@ -2175,26 +2175,16 @@ export default function Quiz() {
                 {/* Progress - Show differently for endless mode */}
                 {quizSettings.endlessMode ? (
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>Question {currentQuestionIndex + 1}</span>
-                      <span className="text-right">
-                        {score}/{questionsAnswered} (
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-primary">
+                        {score}/{questionsAnswered}
+                      </div>
+                      <div className="text-lg text-muted-foreground">
                         {questionsAnswered > 0
                           ? Math.round((score / questionsAnswered) * 100)
                           : 0}
-                        %)
-                      </span>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div
-                        className="bg-primary h-2 rounded-full transition-all duration-300"
-                        style={{
-                          width: `${Math.min(
-                            (questionsAnswered / 10) * 100,
-                            100
-                          )}%`,
-                        }}
-                      ></div>
+                        % accuracy
+                      </div>
                     </div>
                   </div>
                 ) : (
