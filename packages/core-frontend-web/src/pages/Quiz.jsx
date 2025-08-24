@@ -122,8 +122,8 @@ export default function Quiz() {
   const [currentStep, setCurrentStep] = useState("category"); // "category", "quizType", "settings", "quiz"
   const [selectedCategory, setSelectedCategory] = useState(null); // "vowels", "consonants"
 
-  const [showQuizHistory, setShowQuizHistory] = useState(false); // Control quiz history view
   const [showProgressModal, setShowProgressModal] = useState(false); // Control progress modal
+
   const audioRef = useRef(null);
 
   // Ref to store current question data to prevent race conditions
@@ -1294,9 +1294,9 @@ export default function Quiz() {
                     setSelectedCategory("vowels");
                     setCurrentStep("quizType");
                   }}
-                  className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                    vowelsAverage ? "border-2" : "border border-border"
-                  } bg-card`}
+                  className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
+                    vowelsAverage ? "" : "border-gray"
+                  }`}
                   style={
                     vowelsAverage ? getGradientBorderStyle(vowelsAverage) : {}
                   }
@@ -1341,9 +1341,9 @@ export default function Quiz() {
                     setSelectedCategory("consonants");
                     setCurrentStep("quizType");
                   }}
-                  className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                    consonantsAverage ? "border-2" : "border border-border"
-                  } bg-card`}
+                  className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
+                    consonantsAverage ? "" : "border-gray"
+                  }`}
                   style={
                     consonantsAverage
                       ? getGradientBorderStyle(consonantsAverage)
@@ -1423,16 +1423,8 @@ export default function Quiz() {
                 )}
             </CardContent>
 
-            {/* View History Button */}
-            <div className="px-2 pt-0 flex-shrink-0 space-y-2">
-              <Button
-                onClick={() => setShowQuizHistory(true)}
-                variant="outline"
-                className="w-full cursor-pointer text-sm"
-              >
-                <BarChart3 className="h-4 w-4 mr-2" />
-                View History & Stats
-              </Button>
+            {/* Progress Tracking Button */}
+            <div className="px-2 pt-0 flex-shrink-0">
               <Button
                 onClick={() => setShowProgressModal(true)}
                 variant="outline"
@@ -1510,11 +1502,9 @@ export default function Quiz() {
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
-                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                              previousResult
-                                ? "border-2"
-                                : "border border-border"
-                            } bg-card`}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
+                              previousResult ? "" : "border-gray"
+                            }`}
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
@@ -1566,11 +1556,9 @@ export default function Quiz() {
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
-                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                              previousResult
-                                ? "border-2"
-                                : "border border-border"
-                            } bg-card`}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
+                              previousResult ? "" : "border-gray"
+                            }`}
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
@@ -1628,11 +1616,9 @@ export default function Quiz() {
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
-                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                              previousResult
-                                ? "border-2"
-                                : "border border-border"
-                            } bg-card`}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
+                              previousResult ? "" : "border-gray"
+                            }`}
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
@@ -1688,11 +1674,9 @@ export default function Quiz() {
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
-                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                              previousResult
-                                ? "border-2"
-                                : "border border-border"
-                            } bg-card`}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
+                              previousResult ? "" : "border-gray"
+                            }`}
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
@@ -1747,11 +1731,9 @@ export default function Quiz() {
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
-                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors ${
-                              previousResult
-                                ? "border-2"
-                                : "border border-border"
-                            } bg-card`}
+                            className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
+                              previousResult ? "" : "border-gray"
+                            }`}
                             style={
                               previousResult
                                 ? getGradientBorderStyle(
@@ -1834,424 +1816,6 @@ export default function Quiz() {
                 ← Back to Categories
               </Button>
             </div>
-          </Card>
-        </div>
-      )}
-
-      {/* Quiz History & Stats View */}
-      {showQuizHistory && (
-        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20 p-4 overflow-hidden">
-          <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col">
-            <CardHeader className="pb-2 flex-shrink-0">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">
-                  Quiz History & Statistics
-                </CardTitle>
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={() => {
-                      setShowQuizHistory(false);
-                      setShowProgressModal(true);
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="h-8 px-3 cursor-pointer"
-                  >
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                    Progress
-                  </Button>
-                  <Button
-                    onClick={() => setShowQuizHistory(false)}
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 cursor-pointer"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto space-y-6">
-              {/* Overall Stats Summary */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Target className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">
-                        Overall Performance
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold flex items-center gap-2">
-                      <span>{quizStats?.overall?.average || 0}%</span>
-                      {quizStats?.overall?.totalTrials > 0 && (
-                        <span className="text-sm text-muted-foreground font-normal">
-                          ({quizStats.overall.correctTrials}/
-                          {quizStats.overall.totalTrials})
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {quizStats?.overall?.completed || 0} of{" "}
-                      {quizStats?.overall?.total || 0} quizzes completed
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">
-                        Performance Trend
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold">
-                      {getPerformanceTrend(previousResults) === "improving" &&
-                        "↗️ Improving"}
-                      {getPerformanceTrend(previousResults) === "declining" &&
-                        "↘️ Declining"}
-                      {getPerformanceTrend(previousResults) === "stable" &&
-                        "→ Stable"}
-                      {getPerformanceTrend(previousResults) === "neutral" &&
-                        "— No Data"}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Based on recent attempts
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">
-                        Recent Activity
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold">
-                      {
-                        Object.values(previousResults).filter(
-                          (r) =>
-                            r.lastAttempt &&
-                            new Date(r.lastAttempt) >
-                              new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-                        ).length
-                      }
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Quizzes in last 7 days
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Category Breakdown */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">
-                      Vowels Performance
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Completion</span>
-                      <span className="text-sm font-medium">
-                        {vowelsCompletion?.completed || 0}/
-                        {vowelsCompletion?.total || 0}
-                      </span>
-                    </div>
-                    <Progress
-                      value={vowelsCompletion?.percentage || 0}
-                      className="h-2"
-                    />
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Average Score</span>
-                      <div className="flex items-center gap-1">
-                        <span
-                          className="text-sm font-bold"
-                          style={
-                            vowelsAverage
-                              ? getGradientColorStyle(vowelsAverage)
-                              : {}
-                          }
-                        >
-                          {vowelsAverage || 0}%
-                        </span>
-                        {quizStats?.vowels?.totalTrials > 0 && (
-                          <span className="text-sm text-muted-foreground">
-                            ({quizStats.vowels.correctTrials}/
-                            {quizStats.vowels.totalTrials})
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">
-                      Consonants Performance
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Completion</span>
-                      <span className="text-sm font-medium">
-                        {consonantsCompletion?.completed || 0}/
-                        {consonantsCompletion?.total || 0}
-                      </span>
-                    </div>
-                    <Progress
-                      value={consonantsCompletion?.percentage || 0}
-                      className="h-2"
-                    />
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Average Score</span>
-                      <div className="flex items-center gap-1">
-                        <span
-                          className="text-sm font-bold"
-                          style={
-                            consonantsAverage
-                              ? getGradientColorStyle(consonantsAverage)
-                              : {}
-                          }
-                        >
-                          {consonantsAverage || 0}%
-                        </span>
-                        {quizStats?.consonants?.totalTrials > 0 && (
-                          <span className="text-sm text-muted-foreground">
-                            ({quizStats.consonants.correctTrials}/
-                            {quizStats.consonants.totalTrials})
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Detailed Quiz Results */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">
-                    Quiz Results History
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {Object.keys(previousResults).length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <Award className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No quiz results yet</p>
-                      <p className="text-sm">
-                        Complete your first quiz to see your progress here!
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {Object.entries(previousResults)
-                        .sort(
-                          ([, a], [, b]) =>
-                            new Date(b.lastAttempt) - new Date(a.lastAttempt)
-                        )
-                        .map(([quizId, result]) => {
-                          const quizData = quizDataFromApi[quizId];
-                          return (
-                            <div
-                              key={quizId}
-                              className="flex items-center justify-between p-3 rounded-lg border"
-                            >
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium text-sm">
-                                    {quizData?.name || quizId}
-                                  </span>
-                                  <span
-                                    className="text-xs px-2 py-1 rounded-full"
-                                    style={{
-                                      backgroundColor:
-                                        result.percentage >= 80
-                                          ? "rgba(34, 197, 94, 0.1)"
-                                          : result.percentage >= 60
-                                          ? "rgba(234, 179, 8, 0.1)"
-                                          : "rgba(239, 68, 68, 0.1)",
-                                      color:
-                                        result.percentage >= 80
-                                          ? "rgb(34, 197, 94)"
-                                          : result.percentage >= 60
-                                          ? "rgb(234, 179, 8)"
-                                          : "rgb(239, 68, 68)",
-                                    }}
-                                  >
-                                    {result.percentage}%
-                                  </span>
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  {result.correctTrials} correct out of{" "}
-                                  {result.totalTrials} attempts
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-xs text-muted-foreground">
-                                  {result.lastAttempt
-                                    ? getTimeAgo(result.lastAttempt)
-                                    : "Unknown"}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  {result.lastAttempt
-                                    ? formatDate(result.lastAttempt)
-                                    : ""}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Performance Insights */}
-              {Object.keys(previousResults).length > 0 && (
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base">
-                      Performance Insights
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Best and Worst Performances */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-green-600">
-                          Best Performance
-                        </h4>
-                        {(() => {
-                          const bestQuiz = Object.entries(previousResults).sort(
-                            ([, a], [, b]) => b.percentage - a.percentage
-                          )[0];
-                          if (!bestQuiz)
-                            return (
-                              <p className="text-sm text-muted-foreground">
-                                No data
-                              </p>
-                            );
-                          const [quizId, result] = bestQuiz;
-                          const quizData = quizDataFromApi[quizId];
-                          return (
-                            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950/20">
-                              <div className="font-medium text-sm">
-                                {quizData?.name || quizId}
-                              </div>
-                              <div className="text-sm text-green-600 font-bold">
-                                {result.percentage}%
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {result.lastAttempt
-                                  ? getTimeAgo(result.lastAttempt)
-                                  : "Unknown"}
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </div>
-
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-red-600">
-                          Needs Improvement
-                        </h4>
-                        {(() => {
-                          const worstQuiz = Object.entries(
-                            previousResults
-                          ).sort(
-                            ([, a], [, b]) => a.percentage - b.percentage
-                          )[0];
-                          if (!worstQuiz)
-                            return (
-                              <p className="text-sm text-muted-foreground">
-                                No data
-                              </p>
-                            );
-                          const [quizId, result] = worstQuiz;
-                          const quizData = quizDataFromApi[quizId];
-                          return (
-                            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/20">
-                              <div className="font-medium text-sm">
-                                {quizData?.name || quizId}
-                              </div>
-                              <div className="text-sm text-red-600 font-bold">
-                                {result.percentage}%
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {result.lastAttempt
-                                  ? getTimeAgo(result.lastAttempt)
-                                  : "Unknown"}
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium">Recent Activity</h4>
-                      <div className="space-y-2">
-                        {Object.entries(previousResults)
-                          .filter(
-                            ([, result]) =>
-                              result.lastAttempt &&
-                              new Date(result.lastAttempt) >
-                                new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-                          )
-                          .sort(
-                            ([, a], [, b]) =>
-                              new Date(b.lastAttempt) - new Date(a.lastAttempt)
-                          )
-                          .slice(0, 5)
-                          .map(([quizId, result]) => {
-                            const quizData = quizDataFromApi[quizId];
-                            return (
-                              <div
-                                key={quizId}
-                                className="flex items-center justify-between text-sm"
-                              >
-                                <span>{quizData?.name || quizId}</span>
-                                <div className="flex items-center gap-2">
-                                  <span
-                                    className="font-medium"
-                                    style={getGradientColorStyle(
-                                      result.percentage
-                                    )}
-                                  >
-                                    {result.percentage}%
-                                  </span>
-                                  <span className="text-muted-foreground text-xs">
-                                    {getTimeAgo(result.lastAttempt)}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        {Object.entries(previousResults).filter(
-                          ([, result]) =>
-                            result.lastAttempt &&
-                            new Date(result.lastAttempt) >
-                              new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-                        ).length === 0 && (
-                          <p className="text-sm text-muted-foreground">
-                            No recent activity
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </CardContent>
           </Card>
         </div>
       )}
