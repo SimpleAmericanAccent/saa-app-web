@@ -77,7 +77,7 @@ function QuizStats() {
   }
 
   return (
-    <div className="flex items-center gap-0 text-xs text-muted-foreground m-auto">
+    <div className="flex items-center gap-0 text-xs text-muted-foreground m-auto whitespace-nowrap">
       <span>
         {stats.overall.completed}/{stats.overall.total} quizzes
       </span>
@@ -91,8 +91,7 @@ function QuizStats() {
       )}
       {stats.overall.totalTrials > 0 && (
         <span className="text-muted-foreground">
-          &nbsp;({stats.overall.correctTrials}/{stats.overall.totalTrials}{" "}
-          trials)
+          &nbsp;({stats.overall.correctTrials}/{stats.overall.totalTrials})
         </span>
       )}
     </div>
