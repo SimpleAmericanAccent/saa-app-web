@@ -57,7 +57,7 @@ import { ModeToggle } from "./mode-toggle";
 import useAuthStore from "core-frontend-web/src/stores/authStore";
 import { useIsMobile } from "core-frontend-web/src/hooks/use-mobile";
 import { User, LogOut, Settings } from "lucide-react";
-import { getQuizStats } from "../utils/quizStats";
+import { useQuizStatsStore } from "../stores/quizStatsStore";
 
 import {
   getTextColorClass,
@@ -66,25 +66,11 @@ import {
 
 // Quiz statistics component for sidebar
 function QuizStats() {
-  const [stats, setStats] = React.useState(null);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const { stats, isLoading, loadStats } = useQuizStatsStore();
 
   React.useEffect(() => {
-    const loadStats = async () => {
-      try {
-        setIsLoading(true);
-        const quizStats = await getQuizStats();
-        setStats(quizStats);
-      } catch (error) {
-        console.error("Error loading quiz stats:", error);
-        setStats(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadStats();
-  }, []);
+  }, [loadStats]);
 
   if (isLoading || !stats) {
     return null;
@@ -93,14 +79,20 @@ function QuizStats() {
   return (
     <div className="flex items-center gap-0 text-xs text-muted-foreground m-auto">
       <span>
-        {stats.overall.completed}/{stats.overall.total}
+        {stats.overall.completed}/{stats.overall.total} quizzes
       </span>
       {stats.overall.average && (
         <span
           className="font-medium"
           style={getGradientColorStyle(stats.overall.average)}
         >
-          &nbsp;@&nbsp;{stats.overall.average}% Avg
+          &nbsp;@&nbsp;{stats.overall.average}%
+        </span>
+      )}
+      {stats.overall.totalTrials > 0 && (
+        <span className="text-muted-foreground">
+          &nbsp;({stats.overall.correctTrials}/{stats.overall.totalTrials}{" "}
+          trials)
         </span>
       )}
     </div>

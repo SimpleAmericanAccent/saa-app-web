@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { getQuizStats } from "../utils/quizStats";
+import { useQuizStatsStore } from "../stores/quizStatsStore";
 import {
   fetchQuizSettings,
   saveQuizSettings,
@@ -290,28 +290,25 @@ export default function Quiz() {
     ? quizDataFromApi[selectedQuizType]
     : null;
 
-  // Get quiz statistics using utility function
-  const [quizStats, setQuizStats] = useState(null);
-  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  // Get quiz statistics using centralized store
+  const {
+    stats: quizStats,
+    isLoading: isLoadingStats,
+    loadStats,
+    refreshStats,
+  } = useQuizStatsStore();
 
-  // Function to refresh quiz stats
-  const refreshQuizStats = async () => {
-    try {
-      setIsLoadingStats(true);
-      const stats = await getQuizStats();
-      setQuizStats(stats);
-    } catch (error) {
-      console.error("Failed to load quiz stats:", error);
-      setQuizStats(null);
-    } finally {
-      setIsLoadingStats(false);
-    }
-  };
-
-  // Load quiz stats from API and refresh when results change
+  // Load quiz stats and refresh when results change
   useEffect(() => {
-    refreshQuizStats();
-  }, [previousResults]); // Refresh when previousResults change
+    loadStats();
+  }, [loadStats]);
+
+  // Refresh stats when previousResults change
+  useEffect(() => {
+    if (Object.keys(previousResults).length > 0) {
+      refreshStats();
+    }
+  }, [previousResults, refreshStats]);
 
   const vowelsAverage = quizStats?.vowels?.average;
   const consonantsAverage = quizStats?.consonants?.average;
@@ -779,6 +776,9 @@ export default function Quiz() {
       console.log("Question data:", questionData);
 
       await saveTrial(trialData);
+
+      // Refresh stats after saving trial
+      refreshStats();
     } catch (error) {
       console.error("Failed to save trial to database:", error);
       // Continue with quiz even if saving fails
@@ -1310,7 +1310,7 @@ export default function Quiz() {
                         <>
                           <div className="text-[10px] sm:text-xs text-muted-foreground">
                             {vowelsCompletion?.completed || 0}/
-                            {vowelsCompletion?.total || 0} Attempted
+                            {vowelsCompletion?.total || 0} quizzes
                           </div>
                           {vowelsAverage && (
                             <div
@@ -1359,7 +1359,7 @@ export default function Quiz() {
                         <>
                           <div className="text-[10px] sm:text-xs text-muted-foreground">
                             {consonantsCompletion?.completed || 0}/
-                            {consonantsCompletion?.total || 0} Attempted
+                            {consonantsCompletion?.total || 0} quizzes
                           </div>
                           {consonantsAverage && (
                             <div
@@ -1435,7 +1435,7 @@ export default function Quiz() {
               <div className="flex flex-col gap-0 items-center">
                 <div className="text-sm text-muted-foreground">
                   {quizStats?.overall?.completed || 0}/
-                  {quizStats?.overall?.total || 0} Attempted
+                  {quizStats?.overall?.total || 0} quizzes
                 </div>
                 {quizStats?.overall?.average && (
                   <div
@@ -1868,7 +1868,7 @@ export default function Quiz() {
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {quizStats?.overall?.completed || 0} of{" "}
-                      {quizStats?.overall?.total || 0} quizzes attempted
+                      {quizStats?.overall?.total || 0} quizzes completed
                     </div>
                   </CardContent>
                 </Card>
@@ -2250,7 +2250,7 @@ export default function Quiz() {
                   <Button
                     onClick={() => {
                       setShowResults(true);
-                      refreshQuizResults(); // Refresh results when ending quiz early
+                      refreshStats(); // Refresh results when ending quiz early
                     }}
                     variant="ghost"
                     size="sm"
