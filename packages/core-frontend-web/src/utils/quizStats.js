@@ -32,8 +32,8 @@ export const getQuizResults = async () => {
   }
 };
 
-// Calculate average performance for a category
-export const getCategoryAverage = async (category, previousResults) => {
+// Calculate average performance and trial counts for a category
+export const getCategoryStats = async (category, previousResults) => {
   const categoryQuizIds =
     category === "vowels"
       ? [
@@ -61,12 +61,28 @@ export const getCategoryAverage = async (category, previousResults) => {
     .map((id) => previousResults[id])
     .filter((result) => result !== undefined);
 
-  if (results.length === 0) return null;
+  if (results.length === 0)
+    return { average: null, totalTrials: 0, correctTrials: 0 };
 
   const average =
     results.reduce((sum, result) => sum + result.percentage, 0) /
     results.length;
-  return Math.round(average);
+
+  // Calculate total trials and correct trials
+  const totalTrials = results.reduce(
+    (sum, result) => sum + result.totalTrials,
+    0
+  );
+  const correctTrials = results.reduce(
+    (sum, result) => sum + result.correctTrials,
+    0
+  );
+
+  return {
+    average: Math.round(average),
+    totalTrials,
+    correctTrials,
+  };
 };
 
 // Calculate completion percentage for a category
@@ -120,11 +136,8 @@ export const getQuizStats = async () => {
     "consonants",
     previousResults
   );
-  const vowelsAverage = await getCategoryAverage("vowels", previousResults);
-  const consonantsAverage = await getCategoryAverage(
-    "consonants",
-    previousResults
-  );
+  const vowelsStats = await getCategoryStats("vowels", previousResults);
+  const consonantsStats = await getCategoryStats("consonants", previousResults);
 
   // Calculate overall stats
   const totalCompleted =
@@ -132,7 +145,7 @@ export const getQuizStats = async () => {
   const totalQuizzes = vowelsCompletion.total + consonantsCompletion.total;
   const overallCompletion = Math.round((totalCompleted / totalQuizzes) * 100);
 
-  // Calculate overall average (only for completed quizzes)
+  // Calculate overall average and trial counts
   const allResults = Object.values(previousResults);
   const overallAverage =
     allResults.length > 0
@@ -142,20 +155,35 @@ export const getQuizStats = async () => {
         )
       : null;
 
+  const overallTotalTrials = allResults.reduce(
+    (sum, result) => sum + result.totalTrials,
+    0
+  );
+  const overallCorrectTrials = allResults.reduce(
+    (sum, result) => sum + result.correctTrials,
+    0
+  );
+
   return {
     vowels: {
       completion: vowelsCompletion,
-      average: vowelsAverage,
+      average: vowelsStats.average,
+      totalTrials: vowelsStats.totalTrials,
+      correctTrials: vowelsStats.correctTrials,
     },
     consonants: {
       completion: consonantsCompletion,
-      average: consonantsAverage,
+      average: consonantsStats.average,
+      totalTrials: consonantsStats.totalTrials,
+      correctTrials: consonantsStats.correctTrials,
     },
     overall: {
       completed: totalCompleted,
       total: totalQuizzes,
       completion: overallCompletion,
       average: overallAverage,
+      totalTrials: overallTotalTrials,
+      correctTrials: overallCorrectTrials,
     },
   };
 };

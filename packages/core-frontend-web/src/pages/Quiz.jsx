@@ -1314,10 +1314,16 @@ export default function Quiz() {
                           </div>
                           {vowelsAverage && (
                             <div
-                              className="text-[10px] sm:text-xs font-bold"
+                              className="text-[10px] sm:text-xs font-bold flex items-center justify-center gap-1"
                               style={getGradientColorStyle(vowelsAverage)}
                             >
-                              {vowelsAverage}% Average
+                              <span>{vowelsAverage}%</span>
+                              {quizStats?.vowels?.totalTrials > 0 && (
+                                <span className="text-muted-foreground font-normal">
+                                  ({quizStats.vowels.correctTrials}/
+                                  {quizStats.vowels.totalTrials})
+                                </span>
+                              )}
                             </div>
                           )}
                         </>
@@ -1357,10 +1363,16 @@ export default function Quiz() {
                           </div>
                           {consonantsAverage && (
                             <div
-                              className="text-[10px] sm:text-xs font-bold"
+                              className="text-[10px] sm:text-xs font-bold flex items-center justify-center gap-1"
                               style={getGradientColorStyle(consonantsAverage)}
                             >
-                              {consonantsAverage}% Average
+                              <span>{consonantsAverage}%</span>
+                              {quizStats?.consonants?.totalTrials > 0 && (
+                                <span className="text-muted-foreground font-normal">
+                                  ({quizStats.consonants.correctTrials}/
+                                  {quizStats.consonants.totalTrials})
+                                </span>
+                              )}
                             </div>
                           )}
                         </>
@@ -1427,10 +1439,16 @@ export default function Quiz() {
                 </div>
                 {quizStats?.overall?.average && (
                   <div
-                    className="text-sm font-bold"
+                    className="text-sm font-bold flex items-center gap-1"
                     style={getGradientColorStyle(quizStats.overall.average)}
                   >
-                    {quizStats.overall.average}% Average
+                    <span>{quizStats.overall.average}%</span>
+                    {quizStats?.overall?.totalTrials > 0 && (
+                      <span className="text-xs text-muted-foreground font-normal">
+                        ({quizStats.overall.correctTrials}/
+                        {quizStats.overall.totalTrials})
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -1502,9 +1520,19 @@ export default function Quiz() {
                                 {quizData.description}
                               </div>
                               <div {...getQuizCardTextProps(previousResult)}>
-                                {previousResult
-                                  ? `${previousResult.percentage}%`
-                                  : "No Result Yet"}
+                                {previousResult ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <span>{previousResult.percentage}%</span>
+                                    {previousResult.totalTrials > 0 && (
+                                      <span className="text-muted-foreground font-normal">
+                                        ({previousResult.correctTrials}/
+                                        {previousResult.totalTrials})
+                                      </span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  "No Result Yet"
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1548,9 +1576,19 @@ export default function Quiz() {
                                 {quizData.description}
                               </div>
                               <div {...getQuizCardTextProps(previousResult)}>
-                                {previousResult
-                                  ? `${previousResult.percentage}%`
-                                  : "No Result Yet"}
+                                {previousResult ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <span>{previousResult.percentage}%</span>
+                                    {previousResult.totalTrials > 0 && (
+                                      <span className="text-muted-foreground font-normal">
+                                        ({previousResult.correctTrials}/
+                                        {previousResult.totalTrials})
+                                      </span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  "No Result Yet"
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1602,9 +1640,19 @@ export default function Quiz() {
                               <div
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
-                                {previousResult
-                                  ? `${previousResult.percentage}%`
-                                  : "No Result Yet"}
+                                {previousResult ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <span>{previousResult.percentage}%</span>
+                                    {previousResult.totalTrials > 0 && (
+                                      <span className="text-muted-foreground font-normal">
+                                        ({previousResult.correctTrials}/
+                                        {previousResult.totalTrials})
+                                      </span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  "No Result Yet"
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1652,9 +1700,19 @@ export default function Quiz() {
                               <div
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
-                                {previousResult
-                                  ? `${previousResult.percentage}%`
-                                  : "No Result Yet"}
+                                {previousResult ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <span>{previousResult.percentage}%</span>
+                                    {previousResult.totalTrials > 0 && (
+                                      <span className="text-muted-foreground font-normal">
+                                        ({previousResult.correctTrials}/
+                                        {previousResult.totalTrials})
+                                      </span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  "No Result Yet"
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1701,9 +1759,19 @@ export default function Quiz() {
                               <div
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
-                                {previousResult
-                                  ? `${previousResult.percentage}%`
-                                  : "No Result Yet"}
+                                {previousResult ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <span>{previousResult.percentage}%</span>
+                                    {previousResult.totalTrials > 0 && (
+                                      <span className="text-muted-foreground font-normal">
+                                        ({previousResult.correctTrials}/
+                                        {previousResult.totalTrials})
+                                      </span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  "No Result Yet"
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1789,8 +1857,14 @@ export default function Quiz() {
                         Overall Performance
                       </span>
                     </div>
-                    <div className="text-2xl font-bold">
-                      {quizStats?.overall?.average || 0}%
+                    <div className="text-2xl font-bold flex items-center gap-2">
+                      <span>{quizStats?.overall?.average || 0}%</span>
+                      {quizStats?.overall?.totalTrials > 0 && (
+                        <span className="text-sm text-muted-foreground font-normal">
+                          ({quizStats.overall.correctTrials}/
+                          {quizStats.overall.totalTrials})
+                        </span>
+                      )}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {quizStats?.overall?.completed || 0} of{" "}
@@ -1870,16 +1944,24 @@ export default function Quiz() {
                     />
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Average Score</span>
-                      <span
-                        className="text-sm font-bold"
-                        style={
-                          vowelsAverage
-                            ? getGradientColorStyle(vowelsAverage)
-                            : {}
-                        }
-                      >
-                        {vowelsAverage || 0}%
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span
+                          className="text-sm font-bold"
+                          style={
+                            vowelsAverage
+                              ? getGradientColorStyle(vowelsAverage)
+                              : {}
+                          }
+                        >
+                          {vowelsAverage || 0}%
+                        </span>
+                        {quizStats?.vowels?.totalTrials > 0 && (
+                          <span className="text-sm text-muted-foreground">
+                            ({quizStats.vowels.correctTrials}/
+                            {quizStats.vowels.totalTrials})
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -1904,16 +1986,24 @@ export default function Quiz() {
                     />
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Average Score</span>
-                      <span
-                        className="text-sm font-bold"
-                        style={
-                          consonantsAverage
-                            ? getGradientColorStyle(consonantsAverage)
-                            : {}
-                        }
-                      >
-                        {consonantsAverage || 0}%
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span
+                          className="text-sm font-bold"
+                          style={
+                            consonantsAverage
+                              ? getGradientColorStyle(consonantsAverage)
+                              : {}
+                          }
+                        >
+                          {consonantsAverage || 0}%
+                        </span>
+                        {quizStats?.consonants?.totalTrials > 0 && (
+                          <span className="text-sm text-muted-foreground">
+                            ({quizStats.consonants.correctTrials}/
+                            {quizStats.consonants.totalTrials})
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
