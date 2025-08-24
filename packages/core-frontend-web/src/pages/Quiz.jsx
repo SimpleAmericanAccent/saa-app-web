@@ -398,20 +398,34 @@ export default function Quiz() {
   // Load audio for current question
   useEffect(() => {
     if (currentQuestion) {
+      let isCancelled = false;
+
       const loadAudio = async () => {
         setIsLoading(true);
         try {
           const audioSources = await getAudioForWord(currentQuestion.word);
-          setAudioUrls(audioSources);
+          // Only update if this effect hasn't been cancelled (question hasn't changed)
+          if (!isCancelled) {
+            setAudioUrls(audioSources);
+          }
         } catch (error) {
           console.error("Error fetching audio:", error);
-          setAudioUrls({ dictionary: null });
+          if (!isCancelled) {
+            setAudioUrls({ dictionary: null });
+          }
         } finally {
-          setIsLoading(false);
+          if (!isCancelled) {
+            setIsLoading(false);
+          }
         }
       };
 
       loadAudio();
+
+      // Cleanup function to cancel the audio loading if the question changes
+      return () => {
+        isCancelled = true;
+      };
     }
   }, [currentQuestion]);
 
@@ -543,28 +557,6 @@ export default function Quiz() {
     }
   };
 
-  // Load audio for the first question only
-  useEffect(() => {
-    if (currentQuestionIndex === 0 && shuffledQuestions.length > 0) {
-      const firstQuestion = shuffledQuestions[0];
-      if (firstQuestion) {
-        // Load audio for the first question (non-blocking)
-        setAudioUrls({ dictionary: null });
-        getAudioForWord(firstQuestion.word).then((audioSources) => {
-          if (audioSources.dictionary) {
-            setAudioUrls({ dictionary: audioSources.dictionary });
-          }
-        });
-
-        // Preload audio for the second question
-        if (shuffledQuestions.length > 1) {
-          const secondQuestion = shuffledQuestions[1];
-          preloadNextAudio(secondQuestion.word);
-        }
-      }
-    }
-  }, [shuffledQuestions]);
-
   // Auto-play audio when URLs are loaded
   useEffect(() => {
     if (
@@ -577,8 +569,13 @@ export default function Quiz() {
       currentQuestion && // Only autoplay if we have a current question
       audioRef.current // Only autoplay if audio element is available
     ) {
-      setHasAutoPlayed(true);
-      playAudio("dictionary", true); // Pass isAutoPlay = true
+      // Use a small delay to ensure the audio element is ready
+      const timeoutId = setTimeout(() => {
+        setHasAutoPlayed(true);
+        playAudio("dictionary", true); // Pass isAutoPlay = true
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
     }
   }, [
     audioUrls.dictionary,
@@ -587,6 +584,7 @@ export default function Quiz() {
     hasAutoPlayed,
     hasStartedQuiz,
     quizSettings.autoPlayAudio,
+    currentQuestion,
   ]);
 
   // Handle settings changes
@@ -1249,12 +1247,6 @@ export default function Quiz() {
               {/* Start Quiz Button */}
               <Button
                 onClick={() => {
-                  // Force regenerate questions by temporarily clearing and resetting selectedQuizType
-                  const currentQuizType = selectedQuizType;
-                  setSelectedQuizType(null);
-                  setTimeout(() => {
-                    setSelectedQuizType(currentQuizType);
-                  }, 0);
                   handleSettingsComplete();
                   setHasStartedQuiz(true);
                 }}
