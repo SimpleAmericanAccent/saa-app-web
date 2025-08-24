@@ -1310,7 +1310,7 @@ export default function Quiz() {
                         <>
                           <div className="text-[10px] sm:text-xs text-muted-foreground">
                             {vowelsCompletion?.completed || 0}/
-                            {vowelsCompletion?.total || 0} Completed
+                            {vowelsCompletion?.total || 0} Attempted
                           </div>
                           {vowelsAverage && (
                             <div
@@ -1353,7 +1353,7 @@ export default function Quiz() {
                         <>
                           <div className="text-[10px] sm:text-xs text-muted-foreground">
                             {consonantsCompletion?.completed || 0}/
-                            {consonantsCompletion?.total || 0} Completed
+                            {consonantsCompletion?.total || 0} Attempted
                           </div>
                           {consonantsAverage && (
                             <div
@@ -1423,7 +1423,7 @@ export default function Quiz() {
               <div className="flex flex-col gap-0 items-center">
                 <div className="text-sm text-muted-foreground">
                   {quizStats?.overall?.completed || 0}/
-                  {quizStats?.overall?.total || 0} Completed
+                  {quizStats?.overall?.total || 0} Attempted
                 </div>
                 {quizStats?.overall?.average && (
                   <div
@@ -1794,7 +1794,7 @@ export default function Quiz() {
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {quizStats?.overall?.completed || 0} of{" "}
-                      {quizStats?.overall?.total || 0} quizzes completed
+                      {quizStats?.overall?.total || 0} quizzes attempted
                     </div>
                   </CardContent>
                 </Card>
