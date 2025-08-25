@@ -1942,8 +1942,8 @@ export default function Quiz() {
         currentQuizData &&
         shuffledQuestions.length > 0 && (
           <div className="h-[calc(100vh-var(--navbar-height))] sm:h-screen bg-background flex items-center justify-center p-2 sm:p-4 overflow-hidden">
-            <Card className="w-full max-w-lg">
-              <CardHeader className="pb-2">
+            <Card className="w-full max-w-lg gap-0">
+              <CardHeader className="pb-0">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base sm:text-lg">
                     {currentQuizData?.name || "Quiz"}
@@ -1955,12 +1955,156 @@ export default function Quiz() {
                     }}
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                    className="h-8 w-8 p-0 hover:bg-destructive hover:text-destructive-foreground cursor-pointer"
                     title="End Quiz"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
+                {/* Baseline stats - only show when baseline is established */}
+                {(() => {
+                  const previousResult = previousResults[selectedQuizType];
+                  const previousTotal = previousResult?.totalTrials || 0;
+                  const combinedTotal = previousTotal + questionsAnswered;
+
+                  if (combinedTotal >= 30) {
+                    // Use first 30 trials stats from API
+                    const first30Total =
+                      previousResult?.first30TotalTrials || 0;
+                    const first30Correct =
+                      previousResult?.first30CorrectTrials || 0;
+                    const first30Percentage =
+                      previousResult?.first30Percentage || 0;
+
+                    // Debug logging
+                    console.log("Baseline debug:", {
+                      previousResult,
+                      first30Total,
+                      first30Correct,
+                      first30Percentage,
+                      combinedTotal,
+                    });
+
+                    return (
+                      <div className="flex flex-col gap-0.5">
+                        {(() => {
+                          // Calculate current last 30 stats (same logic as the main display)
+                          const recentCorrect =
+                            previousResult?.recentCorrectTrials || 0;
+                          const recentTotal =
+                            previousResult?.recentTotalTrials || 0;
+
+                          let last30Correct, last30Total;
+
+                          if (questionsAnswered >= 30) {
+                            const currentSessionInLast30 = Math.min(
+                              questionsAnswered,
+                              30
+                            );
+                            const historicalInLast30 = Math.max(
+                              0,
+                              30 - currentSessionInLast30
+                            );
+                            const historicalCorrect =
+                              historicalInLast30 > 0 && recentTotal > 0
+                                ? Math.round(
+                                    (recentCorrect / recentTotal) *
+                                      historicalInLast30
+                                  )
+                                : 0;
+                            const currentSessionTrialsInLast30 =
+                              currentSessionTrials.slice(
+                                -currentSessionInLast30
+                              );
+                            const currentSessionCorrect =
+                              currentSessionTrialsInLast30.filter(
+                                (trial) => trial.isCorrect
+                              ).length;
+                            last30Correct =
+                              historicalCorrect + currentSessionCorrect;
+                            last30Total = 30;
+                          } else {
+                            const availableRecentSlots = 30 - questionsAnswered;
+                            const usedRecentCorrect = Math.min(
+                              recentCorrect,
+                              availableRecentSlots
+                            );
+                            const usedRecentTotal = Math.min(
+                              recentTotal,
+                              availableRecentSlots
+                            );
+                            last30Correct = usedRecentCorrect + score;
+                            last30Total = usedRecentTotal + questionsAnswered;
+                          }
+
+                          const last30Percentage =
+                            last30Total > 0
+                              ? Math.round((last30Correct / last30Total) * 100)
+                              : 0;
+
+                          // Calculate deltas
+                          const percentageDelta =
+                            last30Percentage - first30Percentage;
+                          const correctDelta = last30Correct - first30Correct;
+
+                          return (
+                            <div className="flex justify-center">
+                              {/* Label column */}
+                              <div className="flex flex-col items-end pr-3">
+                                <div className="text-xs text-muted-foreground">
+                                  First 30:
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  Change:
+                                </div>
+                              </div>
+                              {/* Percentage column */}
+                              <div className="flex flex-col items-end pr-2">
+                                <div className="text-xs text-muted-foreground">
+                                  {first30Percentage}%
+                                </div>
+                                <div
+                                  className={`text-xs ${
+                                    percentageDelta >= 0
+                                      ? "text-green-600"
+                                      : "text-red-600"
+                                  }`}
+                                >
+                                  {percentageDelta >= 0 ? "+" : ""}
+                                  {percentageDelta}%
+                                </div>
+                              </div>
+
+                              {/* Correct count column */}
+                              <div className="flex flex-col items-end">
+                                <div className="text-xs text-muted-foreground">
+                                  ({first30Correct}
+                                </div>
+                                <div
+                                  className={`text-xs ${
+                                    correctDelta >= 0
+                                      ? "text-green-600"
+                                      : "text-red-600"
+                                  }`}
+                                >
+                                  {correctDelta >= 0 ? "+" : ""}
+                                  {correctDelta}
+                                </div>
+                              </div>
+                              {/* Correct count column */}
+                              <div className="flex flex-col items-end">
+                                <div className="text-xs text-muted-foreground">
+                                  /{first30Total})
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Progress - Show progress toward 30 trials using ScoreBar */}
@@ -2069,7 +2213,7 @@ export default function Quiz() {
                                 : {}
                             }
                           >
-                            {hasData ? displayPercentage : "N/A"}% (
+                            Last 30: {hasData ? displayPercentage : "N/A"}% (
                             {displayCorrect}/{displayTotal}){showRecent}
                           </span>
                         </div>

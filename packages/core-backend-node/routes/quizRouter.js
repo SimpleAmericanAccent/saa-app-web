@@ -331,6 +331,32 @@ router.get("/results", async (req, res) => {
             )
           : 0;
 
+      // Calculate first 30 trials stats
+      // Since trials are ordered by presentedAt desc (newest first),
+      // we need to reverse to get chronological order, then take first 30
+      const chronologicalTrials = [...result.allTrials].reverse();
+      const first30Trials = chronologicalTrials.slice(0, 30);
+      result.first30TotalTrials = Math.min(first30Trials.length, 30);
+      result.first30CorrectTrials = first30Trials.filter(
+        (trial) => trial.isCorrect
+      ).length;
+      result.first30Percentage =
+        result.first30TotalTrials > 0
+          ? Math.round(
+              (result.first30CorrectTrials / result.first30TotalTrials) * 100
+            )
+          : 0;
+
+      // Debug logging
+      console.log("First 30 trials debug:", {
+        contrastKey: result.contrastKey,
+        totalTrials: result.allTrials.length,
+        first30TrialsLength: first30Trials.length,
+        first30TotalTrials: result.first30TotalTrials,
+        first30CorrectTrials: result.first30CorrectTrials,
+        first30Percentage: result.first30Percentage,
+      });
+
       // Clean up - remove the trial arrays to reduce response size
       delete result.allTrials;
       delete result.recentTrials;
