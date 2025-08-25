@@ -19,17 +19,36 @@ export function PWAInstallPrompt() {
   const [isStandalone, setIsStandalone] = useState(false);
   const [hasShownPrompt, setHasShownPrompt] = useState(false);
 
+  // Function to check if PWA is already installed
+  const checkIfPWAInstalled = () => {
+    // Check for standalone mode (most reliable indicator)
+    const isStandaloneMode =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    // Check for other PWA indicators
+    const isInAppBrowser =
+      window.navigator.userAgent.includes("wv") || // Android WebView
+      window.navigator.userAgent.includes("FBAN") || // Facebook in-app browser
+      window.navigator.userAgent.includes("FBAV"); // Facebook app
+
+    // Check if running from home screen (iOS)
+    const isFromHomeScreen =
+      window.navigator.standalone === true ||
+      document.referrer.includes("android-app://");
+
+    return isStandaloneMode || isInAppBrowser || isFromHomeScreen;
+  };
+
   useEffect(() => {
     // Only run the effect if we're on mobile
     if (!isMobile) {
       return;
     }
+
     // Check if already installed as PWA
     const checkStandalone = () => {
-      return (
-        window.matchMedia("(display-mode: standalone)").matches ||
-        window.navigator.standalone === true
-      );
+      return checkIfPWAInstalled();
     };
 
     // Check if iOS Safari
@@ -46,6 +65,12 @@ export function PWAInstallPrompt() {
 
     setIsStandalone(standalone);
     setIsIOS(ios);
+
+    // If already installed as PWA, don't show anything
+    if (standalone) {
+      console.log("PWA already installed - not showing install prompt");
+      return;
+    }
 
     // Check if we've already shown the prompt recently
     const lastShown = localStorage.getItem("pwa-prompt-last-shown");
@@ -70,11 +95,14 @@ export function PWAInstallPrompt() {
       e.preventDefault();
       setDeferredPrompt(e);
 
-      // Show prompt after a delay if not already shown
+      // Show prompt after a delay if not already shown and not in standalone mode
       if (!hasShownRecently && !standalone) {
         setTimeout(() => {
-          setShowPrompt(true);
-          setTimeout(() => setIsOpening(true), 10);
+          // Double-check if still not in standalone mode before showing
+          if (!checkIfPWAInstalled()) {
+            setShowPrompt(true);
+            setTimeout(() => setIsOpening(true), 10);
+          }
         }, 3000); // 3 second delay
       }
     };
@@ -82,8 +110,11 @@ export function PWAInstallPrompt() {
     // Show iOS prompt after delay if not already shown
     if (ios && !standalone && !hasShownRecently) {
       setTimeout(() => {
-        setShowPrompt(true);
-        setTimeout(() => setIsOpening(true), 10);
+        // Double-check if still not in standalone mode before showing
+        if (!checkIfPWAInstalled()) {
+          setShowPrompt(true);
+          setTimeout(() => setIsOpening(true), 10);
+        }
       }, 3000); // 3 second delay
     }
 
@@ -95,7 +126,28 @@ export function PWAInstallPrompt() {
         handleBeforeInstallPrompt
       );
     };
-  }, []); // Empty dependency array - only run once on mount
+  }, [isMobile]); // Add isMobile as dependency
+
+  // Additional effect to monitor for PWA installation
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const checkInstallationStatus = () => {
+      const isInstalled = checkIfPWAInstalled();
+      if (isInstalled && (showPrompt || !isStandalone)) {
+        console.log("PWA detected as installed - hiding prompt");
+        setIsStandalone(true);
+        setShowPrompt(false);
+        setIsClosing(false);
+        setIsOpening(false);
+      }
+    };
+
+    // Check periodically for installation status changes
+    const interval = setInterval(checkInstallationStatus, 2000);
+
+    return () => clearInterval(interval);
+  }, [isMobile, showPrompt, isStandalone]);
 
   const handleInstall = async () => {
     if (deferredPrompt) {
@@ -147,25 +199,23 @@ export function PWAInstallPrompt() {
   // For development/testing - show a test button
   const isDev = import.meta.env.DEV;
 
-  // Don't render anything if not on mobile
-  if (!isMobile) {
+  // Don't render anything if not on mobile or if PWA is already installed
+  if (!isMobile || isStandalone) {
     return null;
   }
 
   // Show persistent install icon when prompt is not shown
   if (!showPrompt) {
-    // Don't show if already in standalone mode
-    if (isStandalone) {
-      return null;
-    }
-
     return (
       <div className="fixed bottom-4 right-4 z-50">
         <Button
           onClick={() => {
-            setShowPrompt(true);
-            // Delay the opening animation to allow initial render
-            setTimeout(() => setIsOpening(true), 10);
+            // Double-check if not installed before showing prompt
+            if (!checkIfPWAInstalled()) {
+              setShowPrompt(true);
+              // Delay the opening animation to allow initial render
+              setTimeout(() => setIsOpening(true), 10);
+            }
           }}
           className={`w-8 h-8 rounded-full shadow-lg bg-blue-500 hover:bg-blue-600 text-white transition-all duration-500 ease-in-out hover:scale-110 ${
             isClosing ? "opacity-0 scale-0" : "opacity-70 scale-100"
@@ -178,10 +228,6 @@ export function PWAInstallPrompt() {
         </Button>
       </div>
     );
-  }
-
-  if (isStandalone) {
-    return null;
   }
 
   return (
