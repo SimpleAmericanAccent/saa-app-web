@@ -21,6 +21,8 @@ import {
   getGradientNumberLineLegend,
   getGradientColorStyle,
   getGradientBorderStyle,
+  getSubduedGradientBorderStyle,
+  getSubduedGradientColorStyle,
   getQuizCardTextProps,
 } from "../utils/performanceColors";
 import { Button } from "core-frontend-web/src/components/ui/button";
@@ -46,6 +48,95 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProgressModal from "../components/ProgressModal";
+
+// ScoreBar component for visual progress display
+const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
+  const wrong = Math.max(0, total - correct);
+  const missing = Math.max(0, target - total);
+  const attempted = Math.min(total, target); // cap within target for the bar
+  const pct = (n) =>
+    `${((100 * Math.max(0, Math.min(n, target))) / target).toFixed(3)}%`;
+
+  const overflow = Math.max(0, total - target);
+  const percentageCorrect = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  if (!hasData) {
+    return (
+      <div className="w-full">
+        {/* Stacked bar - grayed out */}
+        <div
+          className="relative h-2 w-full overflow-hidden rounded-full bg-neutral-200"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={target}
+          aria-valuenow={0}
+          aria-label="No attempts yet"
+          title="No attempts yet"
+        >
+          {/* Full gray bar for no data */}
+          <div
+            className="absolute left-0 top-0 h-full bg-neutral-300"
+            style={{ width: "100%" }}
+          />
+        </div>
+
+        {/* Numbers below bar - grayed out */}
+        <div className="text-[9px] sm:text-[11px] text-muted-foreground mt-1">
+          <span>⚠️ Not started</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full">
+      {/* Stacked bar */}
+      <div
+        className="relative h-2 w-full overflow-hidden rounded-full bg-neutral-200"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={target}
+        aria-valuenow={Math.min(total, target)}
+        aria-label={`Attempts ${Math.min(
+          total,
+          target
+        )} of ${target}. Correct ${correct}, wrong ${wrong}, missing ${missing}.`}
+        title={`Correct ${correct} • Wrong ${wrong} • Missing ${missing} • ${total}/${target} attempted`}
+      >
+        {/* Correct segment */}
+        <div
+          className="absolute left-0 top-0 h-full bg-green-500"
+          style={{ width: pct(correct) }}
+        />
+        {/* Wrong segment (starts after correct) */}
+        <div
+          className="absolute top-0 h-full bg-amber-500"
+          style={{ left: pct(correct), width: pct(wrong) }}
+        />
+        {/* Missing segment fills the rest up to target */}
+        <div
+          className="absolute top-0 h-full bg-neutral-300"
+          style={{ left: pct(attempted), width: pct(missing) }}
+        />
+        {/* Optional overflow tick if attempts > target */}
+        {overflow > 0 && (
+          <div
+            className="absolute -right-0.5 top-1/2 h-3 w-0.5 -translate-y-1/2 rotate-0 bg-neutral-700"
+            title={`Over target by ${overflow}`}
+          />
+        )}
+      </div>
+
+      {/* Numbers below bar */}
+      <div className="text-[9px] sm:text-[11px] text-muted-foreground mt-1">
+        <span>
+          {total >= target ? "✅ " : "⚠️ "}
+          {target - total} left to {target}
+        </span>
+      </div>
+    </div>
+  );
+};
 
 // Quiz type IDs for easy reference
 export const QUIZ_TYPE_IDS = {
@@ -318,6 +409,44 @@ export default function Quiz() {
   const vowelsCompletion = quizStats?.vowels?.completion;
   const consonantsCompletion = quizStats?.consonants?.completion;
 
+  // Count quizzes with at least 30 trials for each category
+  const getQuizzesWithMinTrials = (category) => {
+    if (!previousResults || !quizDataFromApi) return { completed: 0, total: 0 };
+
+    const categoryQuizzes = Object.values(quizDataFromApi).filter(
+      (quizData) => quizData.category === category
+    );
+
+    const quizzesWithMinTrials = categoryQuizzes.filter((quizData) => {
+      const result = previousResults[quizData.id];
+      return result && (result.recentTotalTrials || result.totalTrials) >= 30;
+    });
+
+    return {
+      completed: quizzesWithMinTrials.length,
+      total: categoryQuizzes.length,
+    };
+  };
+
+  const vowelsWithMinTrials = getQuizzesWithMinTrials("vowels");
+  const consonantsWithMinTrials = getQuizzesWithMinTrials("consonants");
+
+  // Helper function to get appropriate border style based on trial count
+  const getBorderStyleForQuiz = (previousResult) => {
+    if (!previousResult) return {};
+
+    const totalTrials =
+      previousResult.recentTotalTrials || previousResult.totalTrials || 0;
+    const percentage =
+      previousResult.recentPercentage || previousResult.percentage;
+
+    if (totalTrials >= 30) {
+      return getGradientBorderStyle(percentage);
+    } else {
+      return getSubduedGradientBorderStyle(percentage);
+    }
+  };
+
   // Initialize shuffled questions when quiz type is selected
   useEffect(() => {
     const initializeQuiz = async () => {
@@ -382,15 +511,15 @@ export default function Quiz() {
   // Set presentedAt timestamp when question is shown
   useEffect(() => {
     if (currentQuestion) {
-      // Store in ref to prevent race conditions
-      currentQuestionRef.current = currentQuestion;
-
       // Add presentedAt timestamp if it doesn't exist (but don't update the array)
       if (!currentQuestion.presentedAt) {
         currentQuestionRef.current = {
           ...currentQuestion,
           presentedAt: new Date(), // Store as Date object
         };
+      } else {
+        // Store in ref to prevent race conditions (without updating timestamp)
+        currentQuestionRef.current = currentQuestion;
       }
     }
   }, [currentQuestionIndex, currentQuestion]);
@@ -760,6 +889,17 @@ export default function Quiz() {
         return;
       }
 
+      // Calculate latency with safety checks
+      const latencyMs = questionData.presentedAt
+        ? Math.max(
+            0,
+            respondedAt.getTime() - questionData.presentedAt.getTime()
+          )
+        : 0;
+
+      // Cap latency at 5 minutes (300,000 ms) to prevent unreasonable values
+      const cappedLatencyMs = Math.min(latencyMs, 300000);
+
       const trialData = {
         trialId: crypto.randomUUID(), // Generate client-side UUID for idempotency
         // userId is now provided by server middleware - don't send it
@@ -769,12 +909,18 @@ export default function Quiz() {
         isCorrect: isCorrect,
         presentedAt: questionData.presentedAt, // When question was shown (from questionData)
         respondedAt: respondedAt, // When they answered (captured in this function)
-        latencyMs: respondedAt.getTime() - questionData.presentedAt.getTime(), // Response time in ms
+        latencyMs: cappedLatencyMs, // Response time in ms (capped at 5 minutes)
       };
 
       // Debug: Log the trial data being sent
       console.log("Sending trial data:", trialData);
       console.log("Question data:", questionData);
+      console.log("Latency calculation:", {
+        presentedAt: questionData.presentedAt,
+        respondedAt: respondedAt,
+        rawLatency: latencyMs,
+        cappedLatency: cappedLatencyMs,
+      });
 
       await saveTrial(trialData);
 
@@ -1304,8 +1450,8 @@ export default function Quiz() {
                       ) : (
                         <>
                           <div className="text-[10px] sm:text-xs text-muted-foreground">
-                            {vowelsCompletion?.completed || 0}/
-                            {vowelsCompletion?.total || 0} quizzes
+                            {vowelsWithMinTrials.completed}/
+                            {vowelsWithMinTrials.total} quizzes
                           </div>
                           {vowelsAverage && (
                             <div
@@ -1353,8 +1499,8 @@ export default function Quiz() {
                       ) : (
                         <>
                           <div className="text-[10px] sm:text-xs text-muted-foreground">
-                            {consonantsCompletion?.completed || 0}/
-                            {consonantsCompletion?.total || 0} quizzes
+                            {consonantsWithMinTrials.completed}/
+                            {consonantsWithMinTrials.total} quizzes
                           </div>
                           {consonantsAverage && (
                             <div
@@ -1429,8 +1575,10 @@ export default function Quiz() {
             <div className="flex items-center justify-center gap-0 p-0 m-0 text-sm text-muted-foreground">
               <div className="flex flex-col gap-0 items-center">
                 <div className="text-sm text-muted-foreground">
-                  {quizStats?.overall?.completed || 0}/
-                  {quizStats?.overall?.total || 0} quizzes
+                  {vowelsWithMinTrials.completed +
+                    consonantsWithMinTrials.completed}
+                  /{vowelsWithMinTrials.total + consonantsWithMinTrials.total}{" "}
+                  quizzes
                 </div>
                 {quizStats?.overall?.average && (
                   <div
@@ -1497,14 +1645,7 @@ export default function Quiz() {
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
                               previousResult ? "" : "border-gray"
                             }`}
-                            style={
-                              previousResult
-                                ? getGradientBorderStyle(
-                                    previousResult.recentPercentage ||
-                                      previousResult.percentage
-                                  )
-                                : {}
-                            }
+                            style={getBorderStyleForQuiz(previousResult)}
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -1514,29 +1655,31 @@ export default function Quiz() {
                                 {quizData.description}
                               </div>
                               <div {...getQuizCardTextProps(previousResult)}>
-                                {previousResult ? (
+                                <div className="flex flex-col items-center justify-center gap-1">
                                   <div className="flex items-center justify-center gap-1">
                                     <span>
-                                      {previousResult.recentPercentage ||
-                                        previousResult.percentage}
+                                      {previousResult
+                                        ? previousResult.recentPercentage ||
+                                          previousResult.percentage
+                                        : "N/A"}
                                       %
                                     </span>
-                                    {(previousResult.recentTotalTrials ||
-                                      previousResult.totalTrials) > 0 && (
-                                      <span className="text-muted-foreground font-normal">
-                                        (
-                                        {previousResult.recentCorrectTrials ||
-                                          previousResult.correctTrials}
-                                        /
-                                        {previousResult.recentTotalTrials ||
-                                          previousResult.totalTrials}
-                                        )
-                                      </span>
-                                    )}
                                   </div>
-                                ) : (
-                                  "No Result Yet"
-                                )}
+                                  <ScoreBar
+                                    correct={
+                                      previousResult?.recentCorrectTrials ||
+                                      previousResult?.correctTrials ||
+                                      0
+                                    }
+                                    total={
+                                      previousResult?.recentTotalTrials ||
+                                      previousResult?.totalTrials ||
+                                      0
+                                    }
+                                    target={30}
+                                    hasData={!!previousResult}
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1562,14 +1705,7 @@ export default function Quiz() {
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
                               previousResult ? "" : "border-gray"
                             }`}
-                            style={
-                              previousResult
-                                ? getGradientBorderStyle(
-                                    previousResult.recentPercentage ||
-                                      previousResult.percentage
-                                  )
-                                : {}
-                            }
+                            style={getBorderStyleForQuiz(previousResult)}
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -1579,29 +1715,31 @@ export default function Quiz() {
                                 {quizData.description}
                               </div>
                               <div {...getQuizCardTextProps(previousResult)}>
-                                {previousResult ? (
+                                <div className="flex flex-col items-center justify-center gap-1">
                                   <div className="flex items-center justify-center gap-1">
                                     <span>
-                                      {previousResult.recentPercentage ||
-                                        previousResult.percentage}
+                                      {previousResult
+                                        ? previousResult.recentPercentage ||
+                                          previousResult.percentage
+                                        : "N/A"}
                                       %
                                     </span>
-                                    {(previousResult.recentTotalTrials ||
-                                      previousResult.totalTrials) > 0 && (
-                                      <span className="text-muted-foreground font-normal">
-                                        (
-                                        {previousResult.recentCorrectTrials ||
-                                          previousResult.correctTrials}
-                                        /
-                                        {previousResult.recentTotalTrials ||
-                                          previousResult.totalTrials}
-                                        )
-                                      </span>
-                                    )}
                                   </div>
-                                ) : (
-                                  "No Result Yet"
-                                )}
+                                  <ScoreBar
+                                    correct={
+                                      previousResult?.recentCorrectTrials ||
+                                      previousResult?.correctTrials ||
+                                      0
+                                    }
+                                    total={
+                                      previousResult?.recentTotalTrials ||
+                                      previousResult?.totalTrials ||
+                                      0
+                                    }
+                                    target={30}
+                                    hasData={!!previousResult}
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1633,14 +1771,7 @@ export default function Quiz() {
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
                               previousResult ? "" : "border-gray"
                             }`}
-                            style={
-                              previousResult
-                                ? getGradientBorderStyle(
-                                    previousResult.recentPercentage ||
-                                      previousResult.percentage
-                                  )
-                                : {}
-                            }
+                            style={getBorderStyleForQuiz(previousResult)}
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -1652,29 +1783,31 @@ export default function Quiz() {
                               <div
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
-                                {previousResult ? (
+                                <div className="flex flex-col items-center justify-center gap-1">
                                   <div className="flex items-center justify-center gap-1">
                                     <span>
-                                      {previousResult.recentPercentage ||
-                                        previousResult.percentage}
+                                      {previousResult
+                                        ? previousResult.recentPercentage ||
+                                          previousResult.percentage
+                                        : "N/A"}
                                       %
                                     </span>
-                                    {(previousResult.recentTotalTrials ||
-                                      previousResult.totalTrials) > 0 && (
-                                      <span className="text-muted-foreground font-normal">
-                                        (
-                                        {previousResult.recentCorrectTrials ||
-                                          previousResult.correctTrials}
-                                        /
-                                        {previousResult.recentTotalTrials ||
-                                          previousResult.totalTrials}
-                                        )
-                                      </span>
-                                    )}
                                   </div>
-                                ) : (
-                                  "No Result Yet"
-                                )}
+                                  <ScoreBar
+                                    correct={
+                                      previousResult?.recentCorrectTrials ||
+                                      previousResult?.correctTrials ||
+                                      0
+                                    }
+                                    total={
+                                      previousResult?.recentTotalTrials ||
+                                      previousResult?.totalTrials ||
+                                      0
+                                    }
+                                    target={30}
+                                    hasData={!!previousResult}
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1702,14 +1835,7 @@ export default function Quiz() {
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
                               previousResult ? "" : "border-gray"
                             }`}
-                            style={
-                              previousResult
-                                ? getGradientBorderStyle(
-                                    previousResult.recentPercentage ||
-                                      previousResult.percentage
-                                  )
-                                : {}
-                            }
+                            style={getBorderStyleForQuiz(previousResult)}
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -1721,29 +1847,31 @@ export default function Quiz() {
                               <div
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
-                                {previousResult ? (
+                                <div className="flex flex-col items-center justify-center gap-1">
                                   <div className="flex items-center justify-center gap-1">
                                     <span>
-                                      {previousResult.recentPercentage ||
-                                        previousResult.percentage}
+                                      {previousResult
+                                        ? previousResult.recentPercentage ||
+                                          previousResult.percentage
+                                        : "N/A"}
                                       %
                                     </span>
-                                    {(previousResult.recentTotalTrials ||
-                                      previousResult.totalTrials) > 0 && (
-                                      <span className="text-muted-foreground font-normal">
-                                        (
-                                        {previousResult.recentCorrectTrials ||
-                                          previousResult.correctTrials}
-                                        /
-                                        {previousResult.recentTotalTrials ||
-                                          previousResult.totalTrials}
-                                        )
-                                      </span>
-                                    )}
                                   </div>
-                                ) : (
-                                  "No Result Yet"
-                                )}
+                                  <ScoreBar
+                                    correct={
+                                      previousResult?.recentCorrectTrials ||
+                                      previousResult?.correctTrials ||
+                                      0
+                                    }
+                                    total={
+                                      previousResult?.recentTotalTrials ||
+                                      previousResult?.totalTrials ||
+                                      0
+                                    }
+                                    target={30}
+                                    hasData={!!previousResult}
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1770,14 +1898,7 @@ export default function Quiz() {
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
                               previousResult ? "" : "border-gray"
                             }`}
-                            style={
-                              previousResult
-                                ? getGradientBorderStyle(
-                                    previousResult.recentPercentage ||
-                                      previousResult.percentage
-                                  )
-                                : {}
-                            }
+                            style={getBorderStyleForQuiz(previousResult)}
                           >
                             <div className="relative z-10 flex flex-col items-center justify-center text-center">
                               <div className="font-semibold text-xs">
@@ -1789,29 +1910,31 @@ export default function Quiz() {
                               <div
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
-                                {previousResult ? (
+                                <div className="flex flex-col items-center justify-center gap-1">
                                   <div className="flex items-center justify-center gap-1">
                                     <span>
-                                      {previousResult.recentPercentage ||
-                                        previousResult.percentage}
+                                      {previousResult
+                                        ? previousResult.recentPercentage ||
+                                          previousResult.percentage
+                                        : "N/A"}
                                       %
                                     </span>
-                                    {(previousResult.recentTotalTrials ||
-                                      previousResult.totalTrials) > 0 && (
-                                      <span className="text-muted-foreground font-normal">
-                                        (
-                                        {previousResult.recentCorrectTrials ||
-                                          previousResult.correctTrials}
-                                        /
-                                        {previousResult.recentTotalTrials ||
-                                          previousResult.totalTrials}
-                                        )
-                                      </span>
-                                    )}
                                   </div>
-                                ) : (
-                                  "No Result Yet"
-                                )}
+                                  <ScoreBar
+                                    correct={
+                                      previousResult?.recentCorrectTrials ||
+                                      previousResult?.correctTrials ||
+                                      0
+                                    }
+                                    total={
+                                      previousResult?.recentTotalTrials ||
+                                      previousResult?.totalTrials ||
+                                      0
+                                    }
+                                    target={30}
+                                    hasData={!!previousResult}
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>

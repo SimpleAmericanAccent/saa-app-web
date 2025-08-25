@@ -117,6 +117,56 @@ export const getGradientBorderStyle = (percentage) => {
   return { borderColor: color };
 };
 
+// Get subdued gradient border style for a percentage (when fewer than 30 trials)
+export const getSubduedGradientBorderStyle = (percentage) => {
+  const color = getGradientColor(percentage);
+  // Convert to HSL to make it more subdued
+  const rgb = color.match(/\d+/g).map(Number);
+  const [r, g, b] = rgb;
+
+  // Convert RGB to HSL
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+
+  // Make it more subdued by reducing lightness and saturation
+  const subduedL = Math.max(0.3, (l / 255) * 0.6); // Reduce lightness to 60%
+  const subduedS = 0.3; // Reduce saturation to 30%
+
+  // Convert back to RGB (simplified conversion)
+  const factor = 0.3; // Overall reduction factor
+  const subduedR = Math.round(r * factor);
+  const subduedG = Math.round(g * factor);
+  const subduedB = Math.round(b * factor);
+
+  return { borderColor: `rgb(${subduedR}, ${subduedG}, ${subduedB})` };
+};
+
+// Get subdued gradient color style for a percentage (when fewer than 30 trials)
+export const getSubduedGradientColorStyle = (percentage) => {
+  const color = getGradientColor(percentage);
+  // Convert to HSL to make it more subdued
+  const rgb = color.match(/\d+/g).map(Number);
+  const [r, g, b] = rgb;
+
+  // Convert RGB to HSL
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+
+  // Make it more subdued by reducing lightness and saturation
+  const subduedL = Math.max(0.3, (l / 255) * 0.6); // Reduce lightness to 60%
+  const subduedS = 0.3; // Reduce saturation to 30%
+
+  // Convert back to RGB (simplified conversion)
+  const factor = 0.5; // Overall reduction factor
+  const subduedR = Math.round(r * factor);
+  const subduedG = Math.round(g * factor);
+  const subduedB = Math.round(b * factor);
+
+  return { color: `rgb(${subduedR}, ${subduedG}, ${subduedB})` };
+};
+
 // Get gradient background style for a percentage
 export const getGradientBgStyle = (percentage) => {
   const color = getGradientColor(percentage);
@@ -196,8 +246,21 @@ export const getQuizCardTextProps = (previousResult, isConsonant = false) => {
     };
   }
 
-  return {
-    className: baseClass,
-    style: getGradientColorStyle(previousResult.percentage),
-  };
+  // Check if we have enough trials for reliable statistics
+  const totalTrials =
+    previousResult.recentTotalTrials || previousResult.totalTrials || 0;
+  const percentage =
+    previousResult.recentPercentage || previousResult.percentage;
+
+  if (totalTrials >= 30) {
+    return {
+      className: baseClass,
+      style: getGradientColorStyle(percentage),
+    };
+  } else {
+    return {
+      className: baseClass,
+      style: getSubduedGradientColorStyle(percentage),
+    };
+  }
 };
