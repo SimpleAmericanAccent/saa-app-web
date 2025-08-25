@@ -62,10 +62,10 @@ const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
 
   if (!hasData) {
     return (
-      <div className="w-full">
+      <div className="">
         {/* Stacked bar - grayed out */}
         <div
-          className="relative h-2 w-full overflow-hidden rounded-full bg-neutral-200"
+          className="relative h-2 w-full overflow-hidden rounded-full bg-neutral-800"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={target}
@@ -75,13 +75,13 @@ const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
         >
           {/* Full gray bar for no data */}
           <div
-            className="absolute left-0 top-0 h-full bg-neutral-300"
+            className="absolute left- top-0 h-full bg-neutral-800"
             style={{ width: "100%" }}
           />
         </div>
 
         {/* Numbers below bar - grayed out */}
-        <div className="text-[9px] sm:text-[11px] text-muted-foreground mt-1">
+        <div className="text-[9px] sm:text-[11px] text-muted-foreground mt-1 text-center">
           <span>⚠️ Not started</span>
         </div>
       </div>
@@ -89,10 +89,10 @@ const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
   }
 
   return (
-    <div className="w-full">
+    <div className="">
       {/* Stacked bar */}
       <div
-        className="relative h-2 w-full overflow-hidden rounded-full bg-neutral-200"
+        className="relative h-2 w-full overflow-hidden rounded-full bg-neutral-800"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={target}
@@ -115,7 +115,7 @@ const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
         />
         {/* Missing segment fills the rest up to target */}
         <div
-          className="absolute top-0 h-full bg-neutral-300"
+          className="absolute top-0 h-full bg-neutral-800"
           style={{ left: pct(attempted), width: pct(missing) }}
         />
         {/* Optional overflow tick if attempts > target */}
@@ -128,10 +128,11 @@ const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
       </div>
 
       {/* Numbers below bar */}
-      <div className="text-[9px] sm:text-[11px] text-muted-foreground mt-1">
+      <div className="text-[9px] sm:text-[11px] text-muted-foreground mt-1 text-center">
         <span>
-          {total >= target ? "✅ " : "⚠️ "}
-          {target - total} left to {target}
+          {total >= target
+            ? "✅ 30 done"
+            : `⚠️ ${target - total} left to ${target}`}
         </span>
       </div>
     </div>
@@ -1692,16 +1693,16 @@ export default function Quiz() {
                             }`}
                             style={getBorderStyleForQuiz(previousResult)}
                           >
-                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                              <div className="font-semibold text-xs">
+                            <div className="relative z-10 flex flex-col">
+                              <div className="font-semibold text-xs mx-auto">
                                 {quizData.name}
                               </div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-muted-foreground mx-auto">
                                 {quizData.description}
                               </div>
                               <div {...getQuizCardTextProps(previousResult)}>
-                                <div className="flex flex-col items-center justify-center gap-1">
-                                  <div className="flex items-center justify-center gap-1">
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex gap-1 mx-auto">
                                     <span>
                                       {previousResult
                                         ? previousResult.recentPercentage ||
@@ -1752,16 +1753,16 @@ export default function Quiz() {
                             }`}
                             style={getBorderStyleForQuiz(previousResult)}
                           >
-                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                              <div className="font-semibold text-xs">
+                            <div className="relative z-10 flex flex-col">
+                              <div className="font-semibold text-xs mx-auto">
                                 {quizData.name}
                               </div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-muted-foreground mx-auto">
                                 {quizData.description}
                               </div>
                               <div {...getQuizCardTextProps(previousResult)}>
-                                <div className="flex flex-col items-center justify-center gap-1">
-                                  <div className="flex items-center justify-center gap-1">
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex gap-1 mx-auto">
                                     <span>
                                       {previousResult
                                         ? previousResult.recentPercentage ||
@@ -1818,18 +1819,18 @@ export default function Quiz() {
                             }`}
                             style={getBorderStyleForQuiz(previousResult)}
                           >
-                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                              <div className="font-semibold text-xs">
+                            <div className="relative z-10 flex flex-col">
+                              <div className="font-semibold text-xs mx-auto">
                                 {quizData.name}
                               </div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-muted-foreground mx-auto">
                                 {quizData.description}
                               </div>
                               <div
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
-                                <div className="flex flex-col items-center justify-center gap-1">
-                                  <div className="flex items-center justify-center gap-1">
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex gap-1 mx-auto">
                                     <span>
                                       {previousResult
                                         ? previousResult.recentPercentage ||
@@ -1882,18 +1883,18 @@ export default function Quiz() {
                             }`}
                             style={getBorderStyleForQuiz(previousResult)}
                           >
-                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                              <div className="font-semibold text-xs">
+                            <div className="relative z-10 flex flex-col">
+                              <div className="font-semibold text-xs mx-auto">
                                 {quizData.name}
                               </div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-muted-foreground mx-auto">
                                 {quizData.description}
                               </div>
                               <div
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
-                                <div className="flex flex-col items-center justify-center gap-1">
-                                  <div className="flex items-center justify-center gap-1">
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex gap-1 mx-auto">
                                     <span>
                                       {previousResult
                                         ? previousResult.recentPercentage ||
@@ -1945,18 +1946,18 @@ export default function Quiz() {
                             }`}
                             style={getBorderStyleForQuiz(previousResult)}
                           >
-                            <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                              <div className="font-semibold text-xs">
+                            <div className="relative z-10 flex flex-col">
+                              <div className="font-semibold text-xs mx-auto">
                                 {quizData.name}
                               </div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-muted-foreground mx-auto">
                                 {quizData.description}
                               </div>
                               <div
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
-                                <div className="flex flex-col items-center justify-center gap-1">
-                                  <div className="flex items-center justify-center gap-1">
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex gap-1 mx-auto">
                                     <span>
                                       {previousResult
                                         ? previousResult.recentPercentage ||
