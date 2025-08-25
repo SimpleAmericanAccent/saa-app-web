@@ -1,6 +1,8 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useNavigate } from "react-router-dom";
+import { Button } from "core-frontend-web/src/components/ui/button";
 
 const markdownContent = `
 # 🧩 Understanding Lexical Sets
@@ -79,40 +81,55 @@ If you want to master the American accent, you can't trust spelling alone.
 You need to train your ear to recognize the actual sounds — and lexical sets (with their helpful keywords) give you a reliable, consistent way to do that.
 
 Speaking of which, I created a quiz to help you test & train your ability to hear the differences between lexical sets.
-
-Check it out [here.](/quiz)
 `;
 
 export default function LexicalSets() {
+  const navigate = useNavigate();
+
   return (
-    <div className="container mx-auto p-4 prose prose-invert max-w-3xl">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 prose prose-invert w-screen">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ node, ...props }) => (
-            <h1 className="text-3xl font-bold mb-8" {...props} />
+            <h1
+              className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8"
+              {...props}
+            />
           ),
           h2: ({ node, ...props }) => (
-            <h2 className="text-2xl font-semibold mb-4 mt-8" {...props} />
+            <h2
+              className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 mt-6 sm:mt-8"
+              {...props}
+            />
           ),
           h3: ({ node, ...props }) => (
-            <h3 className="text-xl font-medium mb-3 mt-6" {...props} />
+            <h3
+              className="text-lg sm:text-xl font-medium mb-2 sm:mb-3 mt-4 sm:mt-6"
+              {...props}
+            />
           ),
           p: ({ node, ...props }) => (
             <p
-              className="text-muted-foreground mb-4 leading-relaxed"
+              className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4 leading-relaxed"
               {...props}
             />
           ),
           ul: ({ node, ...props }) => (
-            <ul className="list-disc list-inside space-y-2 mb-6" {...props} />
+            <ul
+              className="list-disc list-inside space-y-1 sm:space-y-2 mb-4 sm:mb-6"
+              {...props}
+            />
           ),
           li: ({ node, ...props }) => (
-            <li className="text-muted-foreground" {...props} />
+            <li
+              className="text-sm sm:text-base text-muted-foreground"
+              {...props}
+            />
           ),
           blockquote: ({ node, ...props }) => (
             <blockquote
-              className="border-l-4 border-primary pl-4 my-4 italic text-muted-foreground"
+              className="border-l-4 border-primary pl-3 sm:pl-4 my-3 sm:my-4 italic text-sm sm:text-base text-muted-foreground"
               {...props}
             />
           ),
@@ -124,7 +141,7 @@ export default function LexicalSets() {
               />
             ) : (
               <code
-                className="block bg-muted p-4 rounded-lg my-4 text-sm"
+                className="block bg-muted p-2 sm:p-4 rounded-lg my-4 text-xs sm:text-sm overflow-x-auto"
                 {...props}
               />
             ),
@@ -135,6 +152,17 @@ export default function LexicalSets() {
       >
         {markdownContent}
       </ReactMarkdown>
+
+      <div className="flex justify-center mt-4">
+        <Button
+          variant="outline"
+          size="lg"
+          className="text-base px-8 py-3 cursor-pointer"
+          onClick={() => navigate("/quiz")}
+        >
+          Take the Lexical Sets Quiz →
+        </Button>
+      </div>
     </div>
   );
 }
