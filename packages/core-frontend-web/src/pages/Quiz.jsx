@@ -266,6 +266,22 @@ export default function Quiz() {
   // View mode for quiz type cards: "first30", "last30", "delta"
   const [quizCardViewMode, setQuizCardViewMode] = useState("last30");
 
+  // Force view mode to "first30" if no quiz has 30+ trials
+  useEffect(() => {
+    if (!hasAnyQuizWith30PlusTrials() && quizCardViewMode !== "first30") {
+      setQuizCardViewMode("first30");
+    }
+  }, [previousResults, quizCardViewMode]);
+
+  // Helper function to check if any quiz has 30+ trials
+  const hasAnyQuizWith30PlusTrials = () => {
+    return Object.values(previousResults).some((result) => {
+      if (!result) return false;
+      const totalTrials = result.totalTrials || 0;
+      return totalTrials >= 30;
+    });
+  };
+
   // Helper functions for quiz card view modes
   const getQuizCardData = (previousResult, viewMode) => {
     if (!previousResult) {
@@ -1663,22 +1679,24 @@ export default function Quiz() {
               <CardTitle className="text-center text-sm sm:text-base">
                 Choose Quiz Type
               </CardTitle>
-              {/* View Mode Toggle */}
-              <Button
-                onClick={() => {
-                  const modes = ["first30", "last30", "delta"];
-                  const currentIndex = modes.indexOf(quizCardViewMode);
-                  const nextIndex = (currentIndex + 1) % modes.length;
-                  setQuizCardViewMode(modes[nextIndex]);
-                }}
-                variant="outline"
-                size="sm"
-                className="text-xs px-3 py-1 h-6 absolute right-2 top-0 w-16 cursor-pointer"
-              >
-                {quizCardViewMode === "last30" && "Last 30"}
-                {quizCardViewMode === "first30" && "First 30"}
-                {quizCardViewMode === "delta" && "Delta"}
-              </Button>
+              {/* View Mode Toggle - Only show if any quiz has 30+ trials */}
+              {hasAnyQuizWith30PlusTrials() && (
+                <Button
+                  onClick={() => {
+                    const modes = ["first30", "last30", "delta"];
+                    const currentIndex = modes.indexOf(quizCardViewMode);
+                    const nextIndex = (currentIndex + 1) % modes.length;
+                    setQuizCardViewMode(modes[nextIndex]);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs px-3 py-1 h-6 absolute right-2 top-0 w-16 cursor-pointer"
+                >
+                  {quizCardViewMode === "last30" && "Last 30"}
+                  {quizCardViewMode === "first30" && "First 30"}
+                  {quizCardViewMode === "delta" && "Delta"}
+                </Button>
+              )}
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto px-2 sm:px-3">
               {isLoadingQuizData ? (
@@ -2526,7 +2544,8 @@ export default function Quiz() {
                                 : {}
                             }
                           >
-                            Last 30: {hasData ? displayPercentage : "N/A"}% (
+                            {displayTotal >= 30 ? "Last 30: " : ""}
+                            {hasData ? displayPercentage : "N/A"}% (
                             {displayCorrect}/{displayTotal}){showRecent}
                           </span>
                         </div>
