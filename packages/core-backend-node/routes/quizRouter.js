@@ -347,16 +347,6 @@ router.get("/results", async (req, res) => {
             )
           : 0;
 
-      // Debug logging
-      console.log("First 30 trials debug:", {
-        contrastKey: result.contrastKey,
-        totalTrials: result.allTrials.length,
-        first30TrialsLength: first30Trials.length,
-        first30TotalTrials: result.first30TotalTrials,
-        first30CorrectTrials: result.first30CorrectTrials,
-        first30Percentage: result.first30Percentage,
-      });
-
       // Clean up - remove the trial arrays to reduce response size
       delete result.allTrials;
       delete result.recentTrials;

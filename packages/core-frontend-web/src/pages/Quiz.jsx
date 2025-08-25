@@ -56,6 +56,7 @@ const ScoreBar = ({
   target = 30,
   hasData = true,
   isQuiz = false,
+  hideText = false,
 }) => {
   const wrong = Math.max(0, total - correct);
   const missing = Math.max(0, target - total);
@@ -148,19 +149,21 @@ const ScoreBar = ({
       </div>
 
       {/* Numbers below bar */}
-      <div
-        className={`${
-          isQuiz ? "text-sm" : "text-[9px] sm:text-[11px]"
-        } text-muted-foreground mt-1 text-center`}
-      >
-        <span>
-          {total >= target
-            ? isQuiz
-              ? "✅ Baseline set! (showing last 30)"
-              : "✅ 30 done"
-            : `⚠️ ${target - total} left to ${target}`}
-        </span>
-      </div>
+      {!hideText && (
+        <div
+          className={`${
+            isQuiz ? "text-sm" : "text-[9px] sm:text-[11px]"
+          } text-muted-foreground mt-1 text-center`}
+        >
+          <span>
+            {total >= target
+              ? isQuiz
+                ? "✅ Baseline set! (showing last 30)"
+                : "✅ 30 done"
+              : `⚠️ ${target - total} left to ${target}`}
+          </span>
+        </div>
+      )}
     </div>
   );
 };
@@ -259,6 +262,111 @@ export default function Quiz() {
   const [questionsUsed, setQuestionsUsed] = useState(new Set());
   const [questionsPresented, setQuestionsPresented] = useState(0); // Track actual questions presented
   const [currentSessionTrials, setCurrentSessionTrials] = useState([]); // Track current session trial results
+
+  // View mode for quiz type cards: "first30", "last30", "delta"
+  const [quizCardViewMode, setQuizCardViewMode] = useState("last30");
+
+  // Helper functions for quiz card view modes
+  const getQuizCardData = (previousResult, viewMode) => {
+    if (!previousResult) {
+      return {
+        percentage: "N/A",
+        correct: 0,
+        total: 0,
+        hasData: false,
+        percentageColor: null,
+        borderStyle: null,
+      };
+    }
+
+    switch (viewMode) {
+      case "first30":
+        const first30Percentage = previousResult.first30Percentage || 0;
+        const first30Correct = previousResult.first30CorrectTrials || 0;
+        const first30Total = previousResult.first30TotalTrials || 0;
+        return {
+          percentage: first30Percentage,
+          correct: first30Correct,
+          total: first30Total,
+          hasData: first30Total > 0,
+          percentageColor:
+            first30Total >= 30
+              ? getGradientColorStyle(first30Percentage)
+              : getSubduedGradientColorStyle(first30Percentage),
+          borderStyle:
+            first30Total >= 30
+              ? getBorderStyleForQuiz({
+                  recentTotalTrials: first30Total,
+                  recentCorrectTrials: first30Correct,
+                  recentPercentage: first30Percentage,
+                })
+              : {},
+        };
+
+      case "last30":
+        const last30Percentage =
+          previousResult.recentPercentage || previousResult.percentage || 0;
+        const last30Correct =
+          previousResult.recentCorrectTrials ||
+          previousResult.correctTrials ||
+          0;
+        const last30Total =
+          previousResult.recentTotalTrials || previousResult.totalTrials || 0;
+        return {
+          percentage: last30Percentage,
+          correct: last30Correct,
+          total: last30Total,
+          hasData: last30Total > 0,
+          percentageColor:
+            last30Total >= 30
+              ? getGradientColorStyle(last30Percentage)
+              : getSubduedGradientColorStyle(last30Percentage),
+          borderStyle: getBorderStyleForQuiz(previousResult),
+        };
+
+      case "delta":
+        const first30Pct = previousResult.first30Percentage || 0;
+        const first30Cor = previousResult.first30CorrectTrials || 0;
+        const first30Tot = previousResult.first30TotalTrials || 0;
+        const last30Pct =
+          previousResult.recentPercentage || previousResult.percentage || 0;
+        const last30Cor =
+          previousResult.recentCorrectTrials ||
+          previousResult.correctTrials ||
+          0;
+        const last30Tot =
+          previousResult.recentTotalTrials || previousResult.totalTrials || 0;
+        const deltaPercentage = last30Pct - first30Pct;
+
+        return {
+          first30Percentage: first30Pct,
+          last30Percentage: last30Pct,
+          deltaPercentage: deltaPercentage,
+          correct: last30Cor,
+          total: last30Tot,
+          hasData: last30Tot > 0,
+          percentageColor:
+            last30Tot >= 30
+              ? getGradientColorStyle(last30Pct)
+              : getSubduedGradientColorStyle(last30Pct),
+          borderStyle: getBorderStyleForQuiz(previousResult),
+          first30Color:
+            first30Tot >= 30
+              ? getGradientColorStyle(first30Pct)
+              : getSubduedGradientColorStyle(first30Pct),
+        };
+
+      default:
+        return {
+          percentage: "N/A",
+          correct: 0,
+          total: 0,
+          hasData: false,
+          percentageColor: null,
+          borderStyle: {},
+        };
+    }
+  };
 
   // Utility functions for quiz history
   const formatDate = (dateString) => {
@@ -1551,10 +1659,26 @@ export default function Quiz() {
       {currentStep === "quizType" && (
         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-2 sm:p-4 overflow-hidden">
           <Card className="w-full gap-0 py-3 max-w-md max-h-[95vh] sm:max-h-[80vh] flex flex-col">
-            <CardHeader className="pb-1 flex-shrink-0">
+            <CardHeader className="pb-1 flex-shrink-0 relative">
               <CardTitle className="text-center text-sm sm:text-base">
                 Choose Quiz Type
               </CardTitle>
+              {/* View Mode Toggle */}
+              <Button
+                onClick={() => {
+                  const modes = ["first30", "last30", "delta"];
+                  const currentIndex = modes.indexOf(quizCardViewMode);
+                  const nextIndex = (currentIndex + 1) % modes.length;
+                  setQuizCardViewMode(modes[nextIndex]);
+                }}
+                variant="outline"
+                size="sm"
+                className="text-xs px-3 py-1 h-6 absolute right-2 top-0 w-16 cursor-pointer"
+              >
+                {quizCardViewMode === "last30" && "Last 30"}
+                {quizCardViewMode === "first30" && "First 30"}
+                {quizCardViewMode === "delta" && "Delta"}
+              </Button>
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto px-2 sm:px-3">
               {isLoadingQuizData ? (
@@ -1585,14 +1709,18 @@ export default function Quiz() {
                       )
                       .map((quizData) => {
                         const previousResult = previousResults[quizData.id];
+                        const cardData = getQuizCardData(
+                          previousResult,
+                          quizCardViewMode
+                        );
                         return (
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
-                              previousResult ? "" : "border-gray"
+                              cardData.hasData ? "" : "border-gray"
                             }`}
-                            style={getBorderStyleForQuiz(previousResult)}
+                            style={cardData.borderStyle}
                           >
                             <div className="relative z-10 flex flex-col">
                               <div className="font-semibold text-xs mx-auto">
@@ -1603,29 +1731,61 @@ export default function Quiz() {
                               </div>
                               <div {...getQuizCardTextProps(previousResult)}>
                                 <div className="flex flex-col gap-1">
-                                  <div className="flex gap-1 mx-auto">
-                                    <span>
-                                      {previousResult
-                                        ? previousResult.recentPercentage ||
-                                          previousResult.percentage
-                                        : "N/A"}
-                                      %
-                                    </span>
-                                  </div>
+                                  {quizCardViewMode === "delta" ? (
+                                    // Delta view: delta above, first/last below
+                                    <>
+                                      {/* Delta percentage above the bar */}
+                                      <div className="flex justify-center">
+                                        <span
+                                          className={`text-xs font-bold ${
+                                            cardData.deltaPercentage >= 0
+                                              ? "text-green-600"
+                                              : "text-red-600"
+                                          }`}
+                                        >
+                                          {cardData.deltaPercentage >= 0
+                                            ? "+"
+                                            : ""}
+                                          {cardData.deltaPercentage}%
+                                        </span>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    // Single view: show just the percentage
+                                    <div className="flex gap-1 mx-auto">
+                                      <span style={cardData.percentageColor}>
+                                        {cardData.percentage}%
+                                      </span>
+                                    </div>
+                                  )}
                                   <ScoreBar
-                                    correct={
-                                      previousResult?.recentCorrectTrials ||
-                                      previousResult?.correctTrials ||
-                                      0
-                                    }
-                                    total={
-                                      previousResult?.recentTotalTrials ||
-                                      previousResult?.totalTrials ||
-                                      0
-                                    }
+                                    correct={cardData.correct}
+                                    total={cardData.total}
                                     target={30}
-                                    hasData={!!previousResult}
+                                    hasData={cardData.hasData}
+                                    hideText={quizCardViewMode === "delta"}
                                   />
+                                  {/* First and last percentages below the bar */}
+                                  {quizCardViewMode === "delta" && (
+                                    <div className="flex justify-between items-center gap-0">
+                                      <div className="flex flex-col items-center">
+                                        <span
+                                          className="text-[9px] sm:text-xs"
+                                          style={cardData.first30Color}
+                                        >
+                                          {cardData.first30Percentage}%
+                                        </span>
+                                      </div>
+                                      <div className="flex flex-col items-center">
+                                        <span
+                                          className="text-[9px] sm:text-xs"
+                                          style={cardData.percentageColor}
+                                        >
+                                          {cardData.last30Percentage}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1645,14 +1805,18 @@ export default function Quiz() {
                       )
                       .map((quizData) => {
                         const previousResult = previousResults[quizData.id];
+                        const cardData = getQuizCardData(
+                          previousResult,
+                          quizCardViewMode
+                        );
                         return (
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
-                              previousResult ? "" : "border-gray"
+                              cardData.hasData ? "" : "border-gray"
                             }`}
-                            style={getBorderStyleForQuiz(previousResult)}
+                            style={cardData.borderStyle}
                           >
                             <div className="relative z-10 flex flex-col">
                               <div className="font-semibold text-xs mx-auto">
@@ -1663,29 +1827,61 @@ export default function Quiz() {
                               </div>
                               <div {...getQuizCardTextProps(previousResult)}>
                                 <div className="flex flex-col gap-1">
-                                  <div className="flex gap-1 mx-auto">
-                                    <span>
-                                      {previousResult
-                                        ? previousResult.recentPercentage ||
-                                          previousResult.percentage
-                                        : "N/A"}
-                                      %
-                                    </span>
-                                  </div>
+                                  {quizCardViewMode === "delta" ? (
+                                    // Delta view: delta above, first/last below
+                                    <>
+                                      {/* Delta percentage above the bar */}
+                                      <div className="flex justify-center">
+                                        <span
+                                          className={`text-xs font-bold ${
+                                            cardData.deltaPercentage >= 0
+                                              ? "text-green-600"
+                                              : "text-red-600"
+                                          }`}
+                                        >
+                                          {cardData.deltaPercentage >= 0
+                                            ? "+"
+                                            : ""}
+                                          {cardData.deltaPercentage}%
+                                        </span>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    // Single view: show just the percentage
+                                    <div className="flex gap-1 mx-auto">
+                                      <span style={cardData.percentageColor}>
+                                        {cardData.percentage}%
+                                      </span>
+                                    </div>
+                                  )}
                                   <ScoreBar
-                                    correct={
-                                      previousResult?.recentCorrectTrials ||
-                                      previousResult?.correctTrials ||
-                                      0
-                                    }
-                                    total={
-                                      previousResult?.recentTotalTrials ||
-                                      previousResult?.totalTrials ||
-                                      0
-                                    }
+                                    correct={cardData.correct}
+                                    total={cardData.total}
                                     target={30}
-                                    hasData={!!previousResult}
+                                    hasData={cardData.hasData}
+                                    hideText={quizCardViewMode === "delta"}
                                   />
+                                  {/* First and last percentages below the bar */}
+                                  {quizCardViewMode === "delta" && (
+                                    <div className="flex justify-between items-center gap-0">
+                                      <div className="flex flex-col items-center">
+                                        <span
+                                          className="text-[9px] sm:text-xs"
+                                          style={cardData.first30Color}
+                                        >
+                                          {cardData.first30Percentage}%
+                                        </span>
+                                      </div>
+                                      <div className="flex flex-col items-center">
+                                        <span
+                                          className="text-[9px] sm:text-xs"
+                                          style={cardData.percentageColor}
+                                        >
+                                          {cardData.last30Percentage}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1711,14 +1907,18 @@ export default function Quiz() {
                       )
                       .map((quizData) => {
                         const previousResult = previousResults[quizData.id];
+                        const cardData = getQuizCardData(
+                          previousResult,
+                          quizCardViewMode
+                        );
                         return (
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
-                              previousResult ? "" : "border-gray"
+                              cardData.hasData ? "" : "border-gray"
                             }`}
-                            style={getBorderStyleForQuiz(previousResult)}
+                            style={cardData.borderStyle}
                           >
                             <div className="relative z-10 flex flex-col">
                               <div className="font-semibold text-xs mx-auto">
@@ -1731,29 +1931,67 @@ export default function Quiz() {
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
                                 <div className="flex flex-col gap-1">
-                                  <div className="flex gap-1 mx-auto">
-                                    <span>
-                                      {previousResult
-                                        ? previousResult.recentPercentage ||
-                                          previousResult.percentage
-                                        : "N/A"}
-                                      %
-                                    </span>
-                                  </div>
-                                  <ScoreBar
-                                    correct={
-                                      previousResult?.recentCorrectTrials ||
-                                      previousResult?.correctTrials ||
-                                      0
-                                    }
-                                    total={
-                                      previousResult?.recentTotalTrials ||
-                                      previousResult?.totalTrials ||
-                                      0
-                                    }
-                                    target={30}
-                                    hasData={!!previousResult}
-                                  />
+                                  {quizCardViewMode === "delta" ? (
+                                    // Delta view: delta above, first/last below
+                                    <>
+                                      {/* Delta percentage above the bar */}
+                                      <div className="flex justify-center">
+                                        <span
+                                          className={`text-xs font-bold ${
+                                            cardData.deltaPercentage >= 0
+                                              ? "text-green-600"
+                                              : "text-red-600"
+                                          }`}
+                                        >
+                                          {cardData.deltaPercentage >= 0
+                                            ? "+"
+                                            : ""}
+                                          {cardData.deltaPercentage}%
+                                        </span>
+                                      </div>
+                                      <ScoreBar
+                                        correct={cardData.correct}
+                                        total={cardData.total}
+                                        target={30}
+                                        hasData={cardData.hasData}
+                                        hideText={quizCardViewMode === "delta"}
+                                      />
+                                      {/* First and last percentages below the bar */}
+                                      <div className="flex justify-between items-center gap-0">
+                                        <div className="flex flex-col items-center">
+                                          <span
+                                            className="text-[9px] sm:text-xs"
+                                            style={cardData.first30Color}
+                                          >
+                                            {cardData.first30Percentage}%
+                                          </span>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                          <span
+                                            className="text-[9px] sm:text-xs"
+                                            style={cardData.percentageColor}
+                                          >
+                                            {cardData.last30Percentage}%
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    // Single view: show just the percentage
+                                    <>
+                                      <div className="flex gap-1 mx-auto">
+                                        <span style={cardData.percentageColor}>
+                                          {cardData.percentage}%
+                                        </span>
+                                      </div>
+                                      <ScoreBar
+                                        correct={cardData.correct}
+                                        total={cardData.total}
+                                        target={30}
+                                        hasData={cardData.hasData}
+                                      />
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1775,14 +2013,18 @@ export default function Quiz() {
                       )
                       .map((quizData) => {
                         const previousResult = previousResults[quizData.id];
+                        const cardData = getQuizCardData(
+                          previousResult,
+                          quizCardViewMode
+                        );
                         return (
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
-                              previousResult ? "" : "border-gray"
+                              cardData.hasData ? "" : "border-gray"
                             }`}
-                            style={getBorderStyleForQuiz(previousResult)}
+                            style={cardData.borderStyle}
                           >
                             <div className="relative z-10 flex flex-col">
                               <div className="font-semibold text-xs mx-auto">
@@ -1795,29 +2037,67 @@ export default function Quiz() {
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
                                 <div className="flex flex-col gap-1">
-                                  <div className="flex gap-1 mx-auto">
-                                    <span>
-                                      {previousResult
-                                        ? previousResult.recentPercentage ||
-                                          previousResult.percentage
-                                        : "N/A"}
-                                      %
-                                    </span>
-                                  </div>
-                                  <ScoreBar
-                                    correct={
-                                      previousResult?.recentCorrectTrials ||
-                                      previousResult?.correctTrials ||
-                                      0
-                                    }
-                                    total={
-                                      previousResult?.recentTotalTrials ||
-                                      previousResult?.totalTrials ||
-                                      0
-                                    }
-                                    target={30}
-                                    hasData={!!previousResult}
-                                  />
+                                  {quizCardViewMode === "delta" ? (
+                                    // Delta view: delta above, first/last below
+                                    <>
+                                      {/* Delta percentage above the bar */}
+                                      <div className="flex justify-center">
+                                        <span
+                                          className={`text-xs font-bold ${
+                                            cardData.deltaPercentage >= 0
+                                              ? "text-green-600"
+                                              : "text-red-600"
+                                          }`}
+                                        >
+                                          {cardData.deltaPercentage >= 0
+                                            ? "+"
+                                            : ""}
+                                          {cardData.deltaPercentage}%
+                                        </span>
+                                      </div>
+                                      <ScoreBar
+                                        correct={cardData.correct}
+                                        total={cardData.total}
+                                        target={30}
+                                        hasData={cardData.hasData}
+                                        hideText={quizCardViewMode === "delta"}
+                                      />
+                                      {/* First and last percentages below the bar */}
+                                      <div className="flex justify-between items-center gap-0">
+                                        <div className="flex flex-col items-center">
+                                          <span
+                                            className="text-[9px] sm:text-xs"
+                                            style={cardData.first30Color}
+                                          >
+                                            {cardData.first30Percentage}%
+                                          </span>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                          <span
+                                            className="text-[9px] sm:text-xs"
+                                            style={cardData.percentageColor}
+                                          >
+                                            {cardData.last30Percentage}%
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    // Single view: show just the percentage
+                                    <>
+                                      <div className="flex gap-1 mx-auto">
+                                        <span style={cardData.percentageColor}>
+                                          {cardData.percentage}%
+                                        </span>
+                                      </div>
+                                      <ScoreBar
+                                        correct={cardData.correct}
+                                        total={cardData.total}
+                                        target={30}
+                                        hasData={cardData.hasData}
+                                      />
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1838,14 +2118,18 @@ export default function Quiz() {
                       )
                       .map((quizData) => {
                         const previousResult = previousResults[quizData.id];
+                        const cardData = getQuizCardData(
+                          previousResult,
+                          quizCardViewMode
+                        );
                         return (
                           <div
                             key={quizData.id}
                             onClick={() => handleQuizTypeSelect(quizData.id)}
                             className={`relative w-full cursor-pointer rounded-lg p-2 sm:p-3 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
-                              previousResult ? "" : "border-gray"
+                              cardData.hasData ? "" : "border-gray"
                             }`}
-                            style={getBorderStyleForQuiz(previousResult)}
+                            style={cardData.borderStyle}
                           >
                             <div className="relative z-10 flex flex-col">
                               <div className="font-semibold text-xs mx-auto">
@@ -1858,29 +2142,67 @@ export default function Quiz() {
                                 {...getQuizCardTextProps(previousResult, true)}
                               >
                                 <div className="flex flex-col gap-1">
-                                  <div className="flex gap-1 mx-auto">
-                                    <span>
-                                      {previousResult
-                                        ? previousResult.recentPercentage ||
-                                          previousResult.percentage
-                                        : "N/A"}
-                                      %
-                                    </span>
-                                  </div>
-                                  <ScoreBar
-                                    correct={
-                                      previousResult?.recentCorrectTrials ||
-                                      previousResult?.correctTrials ||
-                                      0
-                                    }
-                                    total={
-                                      previousResult?.recentTotalTrials ||
-                                      previousResult?.totalTrials ||
-                                      0
-                                    }
-                                    target={30}
-                                    hasData={!!previousResult}
-                                  />
+                                  {quizCardViewMode === "delta" ? (
+                                    // Delta view: delta above, first/last below
+                                    <>
+                                      {/* Delta percentage above the bar */}
+                                      <div className="flex justify-center">
+                                        <span
+                                          className={`text-xs font-bold ${
+                                            cardData.deltaPercentage >= 0
+                                              ? "text-green-600"
+                                              : "text-red-600"
+                                          }`}
+                                        >
+                                          {cardData.deltaPercentage >= 0
+                                            ? "+"
+                                            : ""}
+                                          {cardData.deltaPercentage}%
+                                        </span>
+                                      </div>
+                                      <ScoreBar
+                                        correct={cardData.correct}
+                                        total={cardData.total}
+                                        target={30}
+                                        hasData={cardData.hasData}
+                                        hideText={quizCardViewMode === "delta"}
+                                      />
+                                      {/* First and last percentages below the bar */}
+                                      <div className="flex justify-between items-center gap-0">
+                                        <div className="flex flex-col items-center">
+                                          <span
+                                            className="text-[9px] sm:text-xs"
+                                            style={cardData.first30Color}
+                                          >
+                                            {cardData.first30Percentage}%
+                                          </span>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                          <span
+                                            className="text-[9px] sm:text-xs"
+                                            style={cardData.percentageColor}
+                                          >
+                                            {cardData.last30Percentage}%
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    // Single view: show just the percentage
+                                    <>
+                                      <div className="flex gap-1 mx-auto">
+                                        <span style={cardData.percentageColor}>
+                                          {cardData.percentage}%
+                                        </span>
+                                      </div>
+                                      <ScoreBar
+                                        correct={cardData.correct}
+                                        total={cardData.total}
+                                        target={30}
+                                        hasData={cardData.hasData}
+                                      />
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1975,15 +2297,6 @@ export default function Quiz() {
                       previousResult?.first30CorrectTrials || 0;
                     const first30Percentage =
                       previousResult?.first30Percentage || 0;
-
-                    // Debug logging
-                    console.log("Baseline debug:", {
-                      previousResult,
-                      first30Total,
-                      first30Correct,
-                      first30Percentage,
-                      combinedTotal,
-                    });
 
                     return (
                       <div className="flex flex-col gap-0.5">
