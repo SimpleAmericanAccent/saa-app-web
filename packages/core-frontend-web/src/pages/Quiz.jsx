@@ -60,6 +60,9 @@ const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
   const overflow = Math.max(0, total - target);
   const percentageCorrect = total > 0 ? Math.round((correct / total) * 100) : 0;
 
+  // Use subdued colors if less than target trials
+  const useSubduedColors = total < target;
+
   if (!hasData) {
     return (
       <div className="">
@@ -105,13 +108,24 @@ const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
       >
         {/* Correct segment */}
         <div
-          className="absolute left-0 top-0 h-full bg-green-500"
-          style={{ width: pct(correct) }}
+          className="absolute left-0 top-0 h-full"
+          style={{
+            width: pct(correct),
+            backgroundColor: useSubduedColors
+              ? getSubduedGradientColorStyle(percentageCorrect).color
+              : "#22c55e", // green-500
+          }}
         />
         {/* Wrong segment (starts after correct) */}
         <div
-          className="absolute top-0 h-full bg-amber-500"
-          style={{ left: pct(correct), width: pct(wrong) }}
+          className="absolute top-0 h-full"
+          style={{
+            left: pct(correct),
+            width: pct(wrong),
+            backgroundColor: useSubduedColors
+              ? "#7f1d1d" // more subdued red-900 for <30 trials
+              : "#b91c1c", // less subdued red-700 for >=30 trials
+          }}
         />
         {/* Missing segment fills the rest up to target */}
         <div
