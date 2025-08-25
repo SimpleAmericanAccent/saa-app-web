@@ -132,15 +132,28 @@ const QuizAudioAdmin = () => {
 
   // Helper function to get the appropriate audio URL for a word from a question (same as quiz)
   const getAudioUrlFromQuestion = (word, question) => {
-    if (!question) return null;
+    if (!question) {
+      console.log(`❌ No question data provided for word: "${word}"`);
+      return null;
+    }
+
+    console.log(`🔍 Looking for audio URL for word: "${word}"`);
+    console.log(
+      `📋 Question wordA: "${question.wordA}", wordB: "${question.wordB}"`
+    );
+    console.log(`🔗 audioAUrl: "${question.audioAUrl}"`);
+    console.log(`🔗 audioBUrl: "${question.audioBUrl}"`);
 
     // Determine which audio URL to use based on which word is being presented
     if (word === question.wordA && question.audioAUrl) {
+      console.log(`✅ Found audioAUrl for wordA: "${question.audioAUrl}"`);
       return question.audioAUrl;
     } else if (word === question.wordB && question.audioBUrl) {
+      console.log(`✅ Found audioBUrl for wordB: "${question.audioBUrl}"`);
       return question.audioBUrl;
     }
 
+    console.log(`❌ No matching audio URL found for word: "${word}"`);
     return null;
   };
 
@@ -246,16 +259,26 @@ const QuizAudioAdmin = () => {
       primarySource: null,
     };
 
+    console.log(`🔍 Checking audio for word: "${word}"`);
+    console.log(`📋 Question data:`, question);
+
     // Check database audio URL first
     const databaseAudioUrl = getAudioUrlFromQuestion(word, question);
+    console.log(`🗄️ Database audio URL:`, databaseAudioUrl);
+
     if (databaseAudioUrl && databaseAudioUrl.trim() !== "") {
       result.sources.push("database");
       result.primaryUrl = databaseAudioUrl;
       result.primarySource = "database";
+      console.log(`✅ Database audio found:`, databaseAudioUrl);
+    } else {
+      console.log(`❌ No database audio URL found`);
     }
 
     // Always check dictionary API (for comparison)
     const dictionaryAudio = await getDictionaryAudio(word);
+    console.log(`🌐 Dictionary API audio:`, dictionaryAudio);
+
     if (dictionaryAudio) {
       result.sources.push("dictionary");
       // Only use API as primary if no database URL exists
@@ -263,8 +286,12 @@ const QuizAudioAdmin = () => {
         result.primaryUrl = dictionaryAudio;
         result.primarySource = "dictionary";
       }
+      console.log(`✅ Dictionary API audio found:`, dictionaryAudio);
+    } else {
+      console.log(`❌ No dictionary API audio found`);
     }
 
+    console.log(`📊 Final result:`, result);
     return result.sources.length > 0 ? result : null;
   };
 
@@ -839,6 +866,43 @@ const QuizAudioAdmin = () => {
                                           </Badge>
                                         )}
                                       </div>
+                                      {/* Recheck button for individual words */}
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          checkWordAudio(pair.word, quizId)
+                                        }
+                                        disabled={checkingWord === pair.word}
+                                        title="Recheck audio for this word"
+                                      >
+                                        {checkingWord === pair.word ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          <RefreshCw className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                      {/* Debug button to show raw data */}
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          console.log(
+                                            `🔍 Debug data for word: "${pair.word}"`
+                                          );
+                                          console.log(
+                                            `📋 Raw pair data:`,
+                                            pair
+                                          );
+                                          console.log(
+                                            `🗄️ Current audio log:`,
+                                            wordLog
+                                          );
+                                        }}
+                                        title="Show debug info in console"
+                                      >
+                                        🐛
+                                      </Button>
                                     </>
                                   ) : (
                                     <>
