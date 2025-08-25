@@ -50,7 +50,13 @@ import { Link } from "react-router-dom";
 import ProgressModal from "../components/ProgressModal";
 
 // ScoreBar component for visual progress display
-const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
+const ScoreBar = ({
+  correct,
+  total,
+  target = 30,
+  hasData = true,
+  isQuiz = false,
+}) => {
   const wrong = Math.max(0, total - correct);
   const missing = Math.max(0, target - total);
   const attempted = Math.min(total, target); // cap within target for the bar
@@ -142,10 +148,16 @@ const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
       </div>
 
       {/* Numbers below bar */}
-      <div className="text-[9px] sm:text-[11px] text-muted-foreground mt-1 text-center">
+      <div
+        className={`${
+          isQuiz ? "text-sm" : "text-[9px] sm:text-[11px]"
+        } text-muted-foreground mt-1 text-center`}
+      >
         <span>
           {total >= target
-            ? "✅ 30 done"
+            ? isQuiz
+              ? "✅ Baseline established!"
+              : "✅ 30 done"
             : `⚠️ ${target - total} left to ${target}`}
         </span>
       </div>
@@ -2109,22 +2121,8 @@ export default function Quiz() {
                         return combinedTotal > 0;
                       }
                     })()}
+                    isQuiz={true}
                   />
-                  {(() => {
-                    const previousResult = previousResults[selectedQuizType];
-                    const previousTotal =
-                      previousResult?.totalTrials ||
-                      previousResult?.recentTotalTrials ||
-                      0;
-                    const combinedTotal = previousTotal + questionsAnswered;
-                    return combinedTotal >= 30 ? (
-                      <div className="text-center">
-                        <div className="text-sm text-muted-foreground">
-                          ✅ Baseline established!
-                        </div>
-                      </div>
-                    ) : null;
-                  })()}
                 </div>
 
                 <div className="space-y-4">
