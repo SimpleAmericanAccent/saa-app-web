@@ -58,6 +58,7 @@ import useAuthStore from "core-frontend-web/src/stores/authStore";
 import { useIsMobile } from "core-frontend-web/src/hooks/use-mobile";
 import { User, LogOut, Settings } from "lucide-react";
 import { useQuizStatsStore } from "../stores/quizStatsStore";
+import { fetchQuizResults, getAllQuizMetadata } from "../utils/quizApi";
 
 import {
   getTextColorClass,
@@ -66,11 +67,69 @@ import {
 
 // Quiz statistics component for sidebar
 function QuizStats() {
-  const { stats, isLoading, loadStats } = useQuizStatsStore();
+  const [stats, setStats] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
+    const loadStats = async () => {
+      try {
+        setIsLoading(true);
+        const [previousResults, quizDataFromApi] = await Promise.all([
+          fetchQuizResults(),
+          getAllQuizMetadata(),
+        ]);
+
+        // Count quizzes with at least 30 trials for each category
+        const getQuizzesWithMinTrials = (category) => {
+          if (!previousResults || !quizDataFromApi)
+            return { completed: 0, total: 0 };
+
+          const categoryQuizzes = Object.values(quizDataFromApi).filter(
+            (quizData) => quizData.category === category
+          );
+
+          const quizzesWithMinTrials = categoryQuizzes.filter((quizData) => {
+            const result = previousResults[quizData.id];
+            return (
+              result && (result.recentTotalTrials || result.totalTrials) >= 30
+            );
+          });
+
+          return {
+            completed: quizzesWithMinTrials.length,
+            total: categoryQuizzes.length,
+          };
+        };
+
+        const vowelsWithMinTrials = getQuizzesWithMinTrials("vowels");
+        const consonantsWithMinTrials = getQuizzesWithMinTrials("consonants");
+
+        // Calculate overall stats using the same logic as Quiz.jsx
+        const totalCompleted =
+          vowelsWithMinTrials.completed + consonantsWithMinTrials.completed;
+        const totalQuizzes =
+          vowelsWithMinTrials.total + consonantsWithMinTrials.total;
+
+        // Calculate average from quizStatsStore for consistency
+        const { stats: quizStats } = useQuizStatsStore.getState();
+        const overallAverage = quizStats?.overall?.average;
+
+        setStats({
+          completed: totalCompleted,
+          total: totalQuizzes,
+          average: overallAverage,
+          totalTrials: quizStats?.overall?.totalTrials || 0,
+          correctTrials: quizStats?.overall?.correctTrials || 0,
+        });
+      } catch (error) {
+        console.error("Error loading quiz stats for sidebar:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     loadStats();
-  }, [loadStats]);
+  }, []);
 
   if (isLoading || !stats) {
     return null;
@@ -79,19 +138,19 @@ function QuizStats() {
   return (
     <div className="flex items-center gap-0 text-xs text-muted-foreground m-auto whitespace-nowrap">
       <span>
-        {stats.overall.completed}/{stats.overall.total} quizzes
+        {stats.completed}/{stats.total} quizzes
       </span>
-      {stats.overall.average && (
+      {stats.average && (
         <span
           className="font-medium"
-          style={getGradientColorStyle(stats.overall.average)}
+          style={getGradientColorStyle(stats.average)}
         >
-          &nbsp;@&nbsp;{stats.overall.average}%
+          &nbsp;@&nbsp;{stats.average}%
         </span>
       )}
-      {stats.overall.totalTrials > 0 && (
+      {stats.totalTrials > 0 && (
         <span className="text-muted-foreground">
-          &nbsp;({stats.overall.correctTrials}/{stats.overall.totalTrials})
+          &nbsp;({stats.correctTrials}/{stats.totalTrials})
         </span>
       )}
     </div>
