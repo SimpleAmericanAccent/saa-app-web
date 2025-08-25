@@ -156,7 +156,7 @@ const ScoreBar = ({
         <span>
           {total >= target
             ? isQuiz
-              ? "✅ Baseline established!"
+              ? "✅ Baseline set! (showing last 30)"
               : "✅ 30 done"
             : `⚠️ ${target - total} left to ${target}`}
         </span>
@@ -258,6 +258,7 @@ export default function Quiz() {
   const [currentQuestionPool, setCurrentQuestionPool] = useState([]);
   const [questionsUsed, setQuestionsUsed] = useState(new Set());
   const [questionsPresented, setQuestionsPresented] = useState(0); // Track actual questions presented
+  const [currentSessionTrials, setCurrentSessionTrials] = useState([]); // Track current session trial results
 
   // Utility functions for quiz history
   const formatDate = (dateString) => {
@@ -914,6 +915,12 @@ export default function Quiz() {
       }
     }
 
+    // Track trial result in current session
+    setCurrentSessionTrials((prev) => [
+      ...prev,
+      { isCorrect, timestamp: new Date() },
+    ]);
+
     // Always save trial to database
     try {
       // Check if user is logged in (for UI feedback)
@@ -1079,6 +1086,7 @@ export default function Quiz() {
     setCurrentQuestionPool([]);
     setQuestionsUsed(new Set());
     setQuestionsPresented(0);
+    setCurrentSessionTrials([]);
   };
 
   if (showResults) {
@@ -1978,32 +1986,68 @@ export default function Quiz() {
                       const recentTotal =
                         previousResult?.recentTotalTrials || 0;
 
-                      // Calculate recent + current, but cap at 30 total trials
-                      const availableRecentSlots = Math.max(
-                        0,
-                        30 - questionsAnswered
-                      );
-                      const usedRecentCorrect = Math.min(
-                        recentCorrect,
-                        availableRecentSlots
-                      );
-                      const usedRecentTotal = Math.min(
-                        recentTotal,
-                        availableRecentSlots
-                      );
+                      // Calculate the actual last 30 trials (recent + current, capped at 30)
+                      let last30Correct, last30Total;
 
-                      const recentPlusCurrentCorrect =
-                        usedRecentCorrect + score;
-                      const recentPlusCurrentTotal =
-                        usedRecentTotal + questionsAnswered;
+                      if (questionsAnswered >= 30) {
+                        // If current session has 30+ trials, calculate from actual last 30 trials
+                        const recentCorrect =
+                          previousResult?.recentCorrectTrials || 0;
+                        const recentTotal =
+                          previousResult?.recentTotalTrials || 0;
+
+                        // Calculate how many of the current session trials are in the last 30
+                        const currentSessionInLast30 = Math.min(
+                          questionsAnswered,
+                          30
+                        );
+                        const historicalInLast30 = Math.max(
+                          0,
+                          30 - currentSessionInLast30
+                        );
+
+                        // Get correct count from historical trials (proportional to how many we're using)
+                        const historicalCorrect =
+                          historicalInLast30 > 0 && recentTotal > 0
+                            ? Math.round(
+                                (recentCorrect / recentTotal) *
+                                  historicalInLast30
+                              )
+                            : 0;
+
+                        // Get correct count from current session (last 30 trials)
+                        const currentSessionTrialsInLast30 =
+                          currentSessionTrials.slice(-currentSessionInLast30);
+                        const currentSessionCorrect =
+                          currentSessionTrialsInLast30.filter(
+                            (trial) => trial.isCorrect
+                          ).length;
+
+                        last30Correct =
+                          historicalCorrect + currentSessionCorrect;
+                        last30Total = 30;
+                      } else {
+                        // Combine recent trials with current session, but cap at 30 total
+                        const availableRecentSlots = 30 - questionsAnswered;
+                        const usedRecentCorrect = Math.min(
+                          recentCorrect,
+                          availableRecentSlots
+                        );
+                        const usedRecentTotal = Math.min(
+                          recentTotal,
+                          availableRecentSlots
+                        );
+                        last30Correct = usedRecentCorrect + score;
+                        last30Total = usedRecentTotal + questionsAnswered;
+                      }
 
                       // Determine which stats to show
                       const showRecent = combinedTotal >= 30;
                       const displayCorrect = showRecent
-                        ? recentPlusCurrentCorrect
+                        ? last30Correct
                         : combinedCorrect;
                       const displayTotal = showRecent
-                        ? recentPlusCurrentTotal
+                        ? last30Total
                         : combinedTotal;
                       const displayPercentage =
                         displayTotal > 0
@@ -2048,19 +2092,49 @@ export default function Quiz() {
                       // Use same logic as percentage display
                       if (combinedTotal >= 30) {
                         // Use most recent 30 trials
-                        const recentCorrect =
-                          previousResult?.recentCorrectTrials || 0;
-                        const recentTotal =
-                          previousResult?.recentTotalTrials || 0;
-                        const availableRecentSlots = Math.max(
-                          0,
-                          30 - questionsAnswered
-                        );
-                        const usedRecentCorrect = Math.min(
-                          recentCorrect,
-                          availableRecentSlots
-                        );
-                        return usedRecentCorrect + score;
+                        if (questionsAnswered >= 30) {
+                          // If current session has 30+ trials, calculate from actual last 30 trials
+                          const recentCorrect =
+                            previousResult?.recentCorrectTrials || 0;
+                          const recentTotal =
+                            previousResult?.recentTotalTrials || 0;
+
+                          const currentSessionInLast30 = Math.min(
+                            questionsAnswered,
+                            30
+                          );
+                          const historicalInLast30 = Math.max(
+                            0,
+                            30 - currentSessionInLast30
+                          );
+
+                          const historicalCorrect =
+                            historicalInLast30 > 0 && recentTotal > 0
+                              ? Math.round(
+                                  (recentCorrect / recentTotal) *
+                                    historicalInLast30
+                                )
+                              : 0;
+
+                          const currentSessionTrialsInLast30 =
+                            currentSessionTrials.slice(-currentSessionInLast30);
+                          const currentSessionCorrect =
+                            currentSessionTrialsInLast30.filter(
+                              (trial) => trial.isCorrect
+                            ).length;
+
+                          return historicalCorrect + currentSessionCorrect;
+                        } else {
+                          // Combine recent trials with current session, but cap at 30 total
+                          const recentCorrect =
+                            previousResult?.recentCorrectTrials || 0;
+                          const availableRecentSlots = 30 - questionsAnswered;
+                          const usedRecentCorrect = Math.min(
+                            recentCorrect,
+                            availableRecentSlots
+                          );
+                          return usedRecentCorrect + score;
+                        }
                       } else {
                         // Use combined total
                         return previousCorrect + score;
@@ -2077,17 +2151,20 @@ export default function Quiz() {
                       // Use same logic as percentage display
                       if (combinedTotal >= 30) {
                         // Use most recent 30 trials
-                        const recentTotal =
-                          previousResult?.recentTotalTrials || 0;
-                        const availableRecentSlots = Math.max(
-                          0,
-                          30 - questionsAnswered
-                        );
-                        const usedRecentTotal = Math.min(
-                          recentTotal,
-                          availableRecentSlots
-                        );
-                        return usedRecentTotal + questionsAnswered;
+                        if (questionsAnswered >= 30) {
+                          // If current session has 30+ trials, only use the most recent 30 from current session
+                          return 30;
+                        } else {
+                          // Otherwise, combine recent trials with current session, capped at 30
+                          const recentTotal =
+                            previousResult?.recentTotalTrials || 0;
+                          const availableRecentSlots = 30 - questionsAnswered;
+                          const usedRecentTotal = Math.min(
+                            recentTotal,
+                            availableRecentSlots
+                          );
+                          return usedRecentTotal + questionsAnswered;
+                        }
                       } else {
                         // Use combined total
                         return previousTotal + questionsAnswered;
@@ -2105,17 +2182,20 @@ export default function Quiz() {
                       // Use same logic as percentage display
                       if (combinedTotal >= 30) {
                         // Use most recent 30 trials
-                        const recentTotal =
-                          previousResult?.recentTotalTrials || 0;
-                        const availableRecentSlots = Math.max(
-                          0,
-                          30 - questionsAnswered
-                        );
-                        const usedRecentTotal = Math.min(
-                          recentTotal,
-                          availableRecentSlots
-                        );
-                        return usedRecentTotal + questionsAnswered > 0;
+                        if (questionsAnswered >= 30) {
+                          // If current session has 30+ trials, only use the most recent 30 from current session
+                          return true;
+                        } else {
+                          // Otherwise, combine recent trials with current session, capped at 30
+                          const recentTotal =
+                            previousResult?.recentTotalTrials || 0;
+                          const availableRecentSlots = 30 - questionsAnswered;
+                          const usedRecentTotal = Math.min(
+                            recentTotal,
+                            availableRecentSlots
+                          );
+                          return usedRecentTotal + questionsAnswered > 0;
+                        }
                       } else {
                         // Use combined total
                         return combinedTotal > 0;

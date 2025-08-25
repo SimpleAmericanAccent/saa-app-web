@@ -9,6 +9,9 @@ import {
   ResponsiveContainer,
   Area,
   AreaChart,
+  ReferenceLine,
+  ReferenceArea,
+  ReferenceDot,
 } from "recharts";
 
 // Custom tooltip component
@@ -39,7 +42,12 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 // Progress chart component
-export function ProgressChart({ data, isLoading, error }) {
+export function ProgressChart({
+  data,
+  isLoading,
+  error,
+  comparisonStats = null,
+}) {
   if (isLoading) {
     return (
       <div className="w-full h-48 md:h-64 flex items-center justify-center">
@@ -127,11 +135,47 @@ export function ProgressChart({ data, isLoading, error }) {
             }}
           />
           <Tooltip content={<CustomTooltip />} />
+
+          {/* First 30 trials marker (left side) */}
+          {comparisonStats && (
+            <>
+              <ReferenceDot
+                x={30}
+                y={comparisonStats.first30.accuracy}
+                shape="circle"
+                r={4}
+                fill="#ef4444"
+                stroke="#ef4444"
+                label={{
+                  value: `${comparisonStats.first30.accuracy}%`,
+                  position: "right",
+                  fill: "#ef4444",
+                  fontSize: 15,
+                }}
+              />
+              <ReferenceDot
+                x={data.rollingAverages.length + 29}
+                y={comparisonStats.last30.accuracy}
+                r={4}
+                shape="circle"
+                fill="#ef4444"
+                stroke="#ef4444"
+                label={{
+                  value: `${comparisonStats.last30.accuracy}%`,
+                  position: "left",
+                  fill: "#ef4444",
+                  fontSize: 15,
+                }}
+              />
+            </>
+          )}
+
           <Area
             type="monotone"
             dataKey="accuracy"
             stroke="#3b82f6"
             strokeWidth={4}
+            strokeOpacity={0}
             fill="#3b82f6"
             fillOpacity={0.4}
             className="cursor-pointer"

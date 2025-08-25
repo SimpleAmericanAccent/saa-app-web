@@ -10,14 +10,7 @@ import {
 } from "./ui/select";
 import { ProgressChart } from "./ProgressChart";
 import { fetchProgressData, fetchContrasts } from "../utils/quizApi";
-import {
-  TrendingUp,
-  Target,
-  Clock,
-  X,
-  BarChart3,
-  RefreshCw,
-} from "lucide-react";
+import { TrendingUp, Target, Clock, X, RefreshCw } from "lucide-react";
 
 export default function ProgressModal({
   isOpen,
@@ -216,7 +209,51 @@ export default function ProgressModal({
     return null;
   };
 
+  // Calculate comparison stats (first 30 vs last 30 trials)
+  const getComparisonStats = () => {
+    if (
+      !progressData ||
+      !progressData.trials ||
+      progressData.trials.length < 31
+    ) {
+      return null;
+    }
+
+    const trials = progressData.trials;
+    const first30Trials = trials.slice(0, 30);
+    const last30Trials = trials.slice(-30);
+
+    const first30Correct = first30Trials.filter(
+      (trial) => trial.isCorrect
+    ).length;
+    const last30Correct = last30Trials.filter(
+      (trial) => trial.isCorrect
+    ).length;
+
+    const first30Accuracy = Math.round((first30Correct / 30) * 100);
+    const last30Accuracy = Math.round((last30Correct / 30) * 100);
+    const improvement = last30Accuracy - first30Accuracy;
+
+    return {
+      first30: {
+        correct: first30Correct,
+        total: 30,
+        accuracy: first30Accuracy,
+      },
+      last30: {
+        correct: last30Correct,
+        total: 30,
+        accuracy: last30Accuracy,
+      },
+      improvement,
+      hasImproved: improvement > 0,
+      hasDeclined: improvement < 0,
+      isStable: improvement === 0,
+    };
+  };
+
   const summaryStats = getSummaryStats();
+  const comparisonStats = getComparisonStats();
 
   if (!isOpen) return null;
 
@@ -453,11 +490,13 @@ export default function ProgressModal({
                 {getViewDisplayName()}
               </h3>
             </div>
+
             <div className="-mx-6 max-w-4xl mx-auto">
               <ProgressChart
                 data={progressData}
                 isLoading={isLoading}
                 error={error}
+                comparisonStats={comparisonStats}
               />
             </div>
             <div className="text-sm text-muted-foreground mt-2 max-w-xl m-auto">
