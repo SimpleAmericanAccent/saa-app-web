@@ -347,23 +347,6 @@ export default function ProgressModal({
               </div>
             )}
 
-            {/* <div className="flex items-center gap-2">
-              <Select
-                value={windowSize.toString()}
-                onValueChange={(value) => setWindowSize(parseInt(value))}
-              >
-                <SelectTrigger className="cursor-pointer">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10 trials</SelectItem>
-                  <SelectItem value="20">20 trials</SelectItem>
-                  <SelectItem value="30">30 trials</SelectItem>
-                  <SelectItem value="50">50 trials</SelectItem>
-                </SelectContent>
-              </Select>
-            </div> */}
-
             <Button
               onClick={handleRefresh}
               variant="outline"
@@ -374,120 +357,63 @@ export default function ProgressModal({
             </Button>
           </div>
 
-          {/* Summary Stats */}
-          {summaryStats && (
-            <>
-              {/* Mobile: Simple text layout */}
-              <div className="md:hidden flex justify-between text-center">
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">
-                    Accuracy
-                  </span>
-                  <span className="text-lg font-bold text-foreground">
-                    {summaryStats.currentAccuracy}%
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Trials</span>
-                  <span className="text-lg font-bold text-foreground">
-                    {summaryStats.totalTrials}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  {summaryStats.trend === "insufficient data" ? (
-                    <>
-                      <span className="text-xs text-muted-foreground">
-                        Improvement
-                      </span>
-                      <span className="text-lg font-bold text-muted-foreground">
-                        TBD
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-xs text-muted-foreground">
-                        Improvement
-                      </span>
-                      <span
+          {/* Chart */}
+          <div className="w-full">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                {getViewDisplayName()} {/* Summary Stats */}
+                {summaryStats && (
+                  <>
+                    {/* Mobile: Simple text layout */}
+                    <div className="md:hidden justify-between text-center">
+                      <div className="flex">
+                        {summaryStats.trend === "insufficient data" ? (
+                          <>
+                            <span className="text-lg font-bold text-muted-foreground">
+                              TBD
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span
+                              className={`text-lg font-bold ${
+                                summaryStats.improvement > 0
+                                  ? "text-green-600"
+                                  : summaryStats.improvement < 0
+                                  ? "text-red-600"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {summaryStats.improvement >= 0 ? "+" : ""}
+                              {summaryStats.improvement}%
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Desktop: Card layout */}
+                    <div className="hidden md:block gap-3 text-center">
+                      <div
                         className={`text-lg font-bold ${
-                          summaryStats.improvement > 0
+                          summaryStats.trend === "insufficient data"
+                            ? "text-muted-foreground"
+                            : summaryStats.improvement > 0
                             ? "text-green-600"
                             : summaryStats.improvement < 0
                             ? "text-red-600"
                             : "text-muted-foreground"
                         }`}
                       >
-                        {summaryStats.improvement > 0 ? "+" : ""}
-                        {summaryStats.improvement}%
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Desktop: Card layout */}
-              <div className="hidden md:grid md:grid-cols-3 gap-3 text-center">
-                <div className="flex flex-col items-center p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-1 mb-1">
-                    <Target className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      Accuracy
-                    </span>
-                  </div>
-                  <div className="text-lg font-bold">
-                    {summaryStats.currentAccuracy}%
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-1 mb-1">
-                    <TrendingUp className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      Trials
-                    </span>
-                  </div>
-                  <div className="text-lg font-bold">
-                    {summaryStats.totalTrials}
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-1 mb-1">
-                    <TrendingUp className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {summaryStats.trend === "insufficient data"
-                        ? "Status"
-                        : "Improvement"}
-                    </span>
-                  </div>
-                  <div
-                    className={`text-lg font-bold ${
-                      summaryStats.trend === "insufficient data"
-                        ? "text-muted-foreground"
-                        : summaryStats.improvement > 0
-                        ? "text-green-600"
-                        : summaryStats.improvement < 0
-                        ? "text-red-600"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {summaryStats.trend === "insufficient data"
-                      ? "Need more data"
-                      : `${summaryStats.improvement > 0 ? "+" : ""}${
-                          summaryStats.improvement
-                        }%`}
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Chart */}
-          <div className="w-full">
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                {getViewDisplayName()}
+                        {summaryStats.trend === "insufficient data"
+                          ? "Need more data"
+                          : `${summaryStats.improvement >= 0 ? "+" : ""}${
+                              summaryStats.improvement
+                            }%`}
+                      </div>
+                    </div>
+                  </>
+                )}
               </h3>
             </div>
 

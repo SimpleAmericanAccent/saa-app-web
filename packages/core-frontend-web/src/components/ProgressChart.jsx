@@ -146,6 +146,7 @@ export function ProgressChart({
                 r={4}
                 fill="#ef4444"
                 stroke="#ef4444"
+                ifOverflow="visible"
                 label={{
                   value: `${comparisonStats.first30.accuracy}%`,
                   position: "right",
