@@ -637,6 +637,20 @@ export default function Quiz() {
     }
   };
 
+  // Helper function to get the appropriate audio URL for a word from a question
+  const getAudioUrlFromQuestion = (word, question) => {
+    if (!question) return null;
+
+    // Determine which audio URL to use based on which word is being presented
+    if (word === question.wordA && question.audioAUrl) {
+      return question.audioAUrl;
+    } else if (word === question.wordB && question.audioBUrl) {
+      return question.audioBUrl;
+    }
+
+    return null;
+  };
+
   // Function to get all audio sources for a word
   const getAudioForWord = async (word) => {
     const audioSources = {};
@@ -648,7 +662,20 @@ export default function Quiz() {
       return audioSources;
     }
 
-    // Try to get dictionary audio
+    // First, check if we have a database audio URL for this word
+    const databaseAudioUrl = getAudioUrlFromQuestion(word, currentQuestion);
+
+    // If we have a valid database audio URL, use it
+    if (databaseAudioUrl && databaseAudioUrl.trim() !== "") {
+      // Cache the database audio for future use
+      setPreloadedAudioCache((prev) =>
+        new Map(prev).set(word, databaseAudioUrl)
+      );
+      audioSources.dictionary = databaseAudioUrl;
+      return audioSources;
+    }
+
+    // Fallback to dictionary API if no database URL exists or is empty
     const dictionaryAudio = await getDictionaryAudio(word);
     if (dictionaryAudio) {
       // Cache the audio for future use
@@ -673,6 +700,24 @@ export default function Quiz() {
     }
 
     try {
+      // Find the next question to get its database audio URLs
+      const nextQuestionIndex = currentQuestionIndex + 1;
+      const nextQuestion = shuffledQuestions[nextQuestionIndex];
+
+      // Check for database audio URL first
+      const databaseAudioUrl = getAudioUrlFromQuestion(word, nextQuestion);
+
+      // If we have a valid database audio URL, use it
+      if (databaseAudioUrl && databaseAudioUrl.trim() !== "") {
+        // Cache the database audio for future use
+        setPreloadedAudioCache((prev) =>
+          new Map(prev).set(word, databaseAudioUrl)
+        );
+        setNextAudioUrls({ dictionary: databaseAudioUrl });
+        return;
+      }
+
+      // Fallback to dictionary API if no database URL exists or is empty
       const dictionaryAudio = await getDictionaryAudio(word);
       if (dictionaryAudio) {
         // Cache the audio

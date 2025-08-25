@@ -15,10 +15,76 @@ import {
   XCircle,
   RefreshCw,
   Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import { QUIZ_TYPE_IDS } from "./Quiz";
 import useAuthStore from "../stores/authStore";
 import { fetchContrasts, fetchPairs } from "../utils/quizApi";
+
+// Rate limiting configuration
+const RATE_LIMIT_CONFIG = {
+  maxRequestsPerMinute: 120, // Conservative limit
+  baseDelayMs: 500, // 2 seconds between requests
+  maxDelayMs: 10000, // Max 10 seconds delay
+  retryAttempts: 3,
+};
+
+// Rate limiter class
+class RateLimiter {
+  constructor() {
+    this.requestTimes = [];
+    this.currentDelay = RATE_LIMIT_CONFIG.baseDelayMs;
+    this.consecutiveFailures = 0;
+  }
+
+  async waitForNextRequest() {
+    const now = Date.now();
+
+    // Remove requests older than 1 minute
+    this.requestTimes = this.requestTimes.filter((time) => now - time < 60000);
+
+    // Check if we're at the rate limit
+    if (this.requestTimes.length >= RATE_LIMIT_CONFIG.maxRequestsPerMinute) {
+      const oldestRequest = this.requestTimes[0];
+      const waitTime = 60000 - (now - oldestRequest);
+      console.log(`Rate limit reached. Waiting ${waitTime}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
+    }
+
+    // Add current request time
+    this.requestTimes.push(now);
+
+    // Apply current delay
+    if (this.currentDelay > 0) {
+      console.log(`Waiting ${this.currentDelay}ms before next request...`);
+      await new Promise((resolve) => setTimeout(resolve, this.currentDelay));
+    }
+  }
+
+  onSuccess() {
+    // Reduce delay on success
+    this.currentDelay = Math.max(
+      RATE_LIMIT_CONFIG.baseDelayMs,
+      this.currentDelay * 0.8
+    );
+    this.consecutiveFailures = 0;
+  }
+
+  onFailure() {
+    // Increase delay on failure (exponential backoff)
+    this.consecutiveFailures++;
+    this.currentDelay = Math.min(
+      RATE_LIMIT_CONFIG.maxDelayMs,
+      this.currentDelay * Math.pow(2, this.consecutiveFailures)
+    );
+    console.log(`Request failed. Increased delay to ${this.currentDelay}ms`);
+  }
+
+  reset() {
+    this.currentDelay = RATE_LIMIT_CONFIG.baseDelayMs;
+    this.consecutiveFailures = 0;
+  }
+}
 
 const QuizAudioAdmin = () => {
   const { isAdmin, isLoading: authLoading } = useAuthStore();
@@ -32,7 +98,13 @@ const QuizAudioAdmin = () => {
   const [isLoadingQuizData, setIsLoadingQuizData] = useState(false);
   const [quizWords, setQuizWords] = useState({}); // Store word pairs for each quiz
   const [loadingWords, setLoadingWords] = useState(new Set()); // Track which quizzes are loading words
+  const [rateLimitStatus, setRateLimitStatus] = useState({
+    isLimited: false,
+    message: "",
+    remainingRequests: RATE_LIMIT_CONFIG.maxRequestsPerMinute,
+  });
   const audioRef = useRef(null);
+  const rateLimiter = useRef(new RateLimiter());
 
   // Load audio logs from localStorage
   useEffect(() => {
@@ -58,15 +130,67 @@ const QuizAudioAdmin = () => {
     loadQuizData();
   }, []);
 
-  // Function to get US audio from Free Dictionary API
-  const getDictionaryAudio = async (word) => {
+  // Helper function to get the appropriate audio URL for a word from a question (same as quiz)
+  const getAudioUrlFromQuestion = (word, question) => {
+    if (!question) return null;
+
+    // Determine which audio URL to use based on which word is being presented
+    if (word === question.wordA && question.audioAUrl) {
+      return question.audioAUrl;
+    } else if (word === question.wordB && question.audioBUrl) {
+      return question.audioBUrl;
+    }
+
+    return null;
+  };
+
+  // Function to get US audio from Free Dictionary API with rate limiting
+  const getDictionaryAudio = async (word, retryCount = 0) => {
     if (!word) return null;
 
     try {
+      // Wait for rate limiter
+      await rateLimiter.current.waitForNextRequest();
+
       const response = await fetch(
         `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
       );
+
+      // Check for rate limiting
+      if (response.status === 429) {
+        rateLimiter.current.onFailure();
+        setRateLimitStatus({
+          isLimited: true,
+          message: "Rate limit exceeded. Waiting before retry...",
+          remainingRequests: 0,
+        });
+
+        if (retryCount < RATE_LIMIT_CONFIG.retryAttempts) {
+          console.log(
+            `Rate limited. Retrying in ${rateLimiter.current.currentDelay}ms...`
+          );
+          await new Promise((resolve) =>
+            setTimeout(resolve, rateLimiter.current.currentDelay)
+          );
+          return getDictionaryAudio(word, retryCount + 1);
+        } else {
+          console.error("Max retry attempts reached for rate limiting");
+          return null;
+        }
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
+
+      // Check for API error responses
+      if (data && data.title && data.title.includes("No Definitions Found")) {
+        console.log(`No audio found for word: ${word}`);
+        rateLimiter.current.onSuccess();
+        return null;
+      }
 
       if (
         data &&
@@ -85,26 +209,80 @@ const QuizAudioAdmin = () => {
 
         // Only return US audio, no fallback
         if (usPhonetic && usPhonetic.audio) {
+          rateLimiter.current.onSuccess();
           return usPhonetic.audio;
         }
       }
+
+      rateLimiter.current.onSuccess();
       return null;
     } catch (error) {
-      console.error("Error fetching dictionary audio:", error);
+      console.error(`Error fetching dictionary audio for "${word}":`, error);
+      rateLimiter.current.onFailure();
+
+      // Retry on network errors
+      if (
+        retryCount < RATE_LIMIT_CONFIG.retryAttempts &&
+        (error.name === "TypeError" || error.message.includes("fetch"))
+      ) {
+        console.log(
+          `Network error. Retrying in ${rateLimiter.current.currentDelay}ms...`
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, rateLimiter.current.currentDelay)
+        );
+        return getDictionaryAudio(word, retryCount + 1);
+      }
+
       return null;
     }
+  };
+
+  // Function to get all audio sources for a word (check both sources)
+  const getAudioForWord = async (word, question) => {
+    const result = {
+      sources: [],
+      primaryUrl: null,
+      primarySource: null,
+    };
+
+    // Check database audio URL first
+    const databaseAudioUrl = getAudioUrlFromQuestion(word, question);
+    if (databaseAudioUrl && databaseAudioUrl.trim() !== "") {
+      result.sources.push("database");
+      result.primaryUrl = databaseAudioUrl;
+      result.primarySource = "database";
+    }
+
+    // Always check dictionary API (for comparison)
+    const dictionaryAudio = await getDictionaryAudio(word);
+    if (dictionaryAudio) {
+      result.sources.push("dictionary");
+      // Only use API as primary if no database URL exists
+      if (!result.primaryUrl) {
+        result.primaryUrl = dictionaryAudio;
+        result.primarySource = "dictionary";
+      }
+    }
+
+    return result.sources.length > 0 ? result : null;
   };
 
   // Check audio for a single word
   const checkWordAudio = async (word, quizType) => {
     setCheckingWord(word);
     try {
-      const audioUrl = await getDictionaryAudio(word);
+      // Find the question that contains this word to get database audio URLs
+      const question = quizWords[quizType]?.find((pair) => pair.word === word);
+
+      const audioResult = await getAudioForWord(word, question);
       const audioStatus = {
         word,
         quizType,
-        hasAudio: !!audioUrl,
-        audioUrl: audioUrl || null,
+        hasAudio: !!audioResult,
+        audioUrl: audioResult?.primaryUrl || null,
+        audioSource: audioResult?.primarySource || null,
+        audioSources: audioResult?.sources || [],
         timestamp: new Date().toISOString(),
       };
 
@@ -124,9 +302,14 @@ const QuizAudioAdmin = () => {
     }
   };
 
-  // Check audio for all words in a quiz
+  // Check audio for all words in a quiz with better progress tracking
   const checkQuizAudio = async (quizType) => {
     setCheckingQuiz(quizType);
+    setRateLimitStatus({
+      isLimited: false,
+      message: "",
+      remainingRequests: RATE_LIMIT_CONFIG.maxRequestsPerMinute,
+    });
 
     try {
       // Fetch pairs from API (or use cached words if available)
@@ -147,29 +330,47 @@ const QuizAudioAdmin = () => {
         newLogs[quizType] = {};
       }
 
-      // Check each word in the quiz
+      // Check each word in the quiz with progress updates
       for (let i = 0; i < pairs.length; i++) {
         const pair = pairs[i];
-        const audioUrl = await getDictionaryAudio(pair.word);
+
+        // Update progress message
+        setRateLimitStatus((prev) => ({
+          ...prev,
+          message: `Checking ${i + 1}/${pairs.length}: ${pair.word}`,
+        }));
+
+        const audioResult = await getAudioForWord(pair.word, pair);
 
         newLogs[quizType][pair.word] = {
           word: pair.word,
           quizType,
-          hasAudio: !!audioUrl,
-          audioUrl: audioUrl || null,
+          hasAudio: !!audioResult,
+          audioUrl: audioResult?.primaryUrl || null,
+          audioSource: audioResult?.primarySource || null,
+          audioSources: audioResult?.sources || [],
           timestamp: new Date().toISOString(),
         };
 
-        // Add a small delay to avoid overwhelming the API
-        if (i < pairs.length - 1) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
+        // Update logs after each word
+        setAudioLogs({ ...newLogs });
+        localStorage.setItem("quizAudioLogs", JSON.stringify(newLogs));
+
+        // No additional delay needed - rate limiter handles timing
       }
 
-      setAudioLogs(newLogs);
-      localStorage.setItem("quizAudioLogs", JSON.stringify(newLogs));
+      setRateLimitStatus({
+        isLimited: false,
+        message: `Completed checking ${pairs.length} words`,
+        remainingRequests: RATE_LIMIT_CONFIG.maxRequestsPerMinute,
+      });
     } catch (error) {
       console.error("Error checking quiz audio:", error);
+      setRateLimitStatus({
+        isLimited: false,
+        message: `Error: ${error.message}`,
+        remainingRequests: RATE_LIMIT_CONFIG.maxRequestsPerMinute,
+      });
     } finally {
       setCheckingQuiz(null);
     }
@@ -179,6 +380,12 @@ const QuizAudioAdmin = () => {
   const clearAllLogs = () => {
     localStorage.removeItem("quizAudioLogs");
     setAudioLogs({});
+    rateLimiter.current.reset();
+    setRateLimitStatus({
+      isLimited: false,
+      message: "",
+      remainingRequests: RATE_LIMIT_CONFIG.maxRequestsPerMinute,
+    });
   };
 
   // Play audio for a word
@@ -202,8 +409,9 @@ const QuizAudioAdmin = () => {
     const wordLog = audioLogs[quizType]?.[word];
     if (!wordLog || !wordLog.hasAudio) {
       // Try to get audio if not logged or no audio available
-      const audioUrl = await getDictionaryAudio(word);
-      if (audioUrl) {
+      const question = quizWords[quizType]?.find((pair) => pair.word === word);
+      const audioResult = await getAudioForWord(word, question);
+      if (audioResult) {
         // Update the log with the audio URL
         const newLogs = { ...audioLogs };
         if (!newLogs[quizType]) {
@@ -212,14 +420,16 @@ const QuizAudioAdmin = () => {
         newLogs[quizType][word] = {
           ...wordLog,
           hasAudio: true,
-          audioUrl: audioUrl,
+          audioUrl: audioResult.primaryUrl,
+          audioSource: audioResult.primarySource,
+          audioSources: audioResult.sources,
           timestamp: new Date().toISOString(),
         };
         setAudioLogs(newLogs);
         localStorage.setItem("quizAudioLogs", JSON.stringify(newLogs));
 
         // Play the audio
-        playAudioUrl(audioUrl, word);
+        playAudioUrl(audioResult.primaryUrl, word);
       }
       return;
     }
@@ -229,9 +439,10 @@ const QuizAudioAdmin = () => {
       playAudioUrl(wordLog.audioUrl, word);
     } else {
       // Fallback: try to get audio again
-      const audioUrl = await getDictionaryAudio(word);
-      if (audioUrl) {
-        playAudioUrl(audioUrl, word);
+      const question = quizWords[quizType]?.find((pair) => pair.word === word);
+      const audioResult = await getAudioForWord(word, question);
+      if (audioResult) {
+        playAudioUrl(audioResult.primaryUrl, word);
       }
     }
   };
@@ -386,6 +597,20 @@ const QuizAudioAdmin = () => {
           automatically collected when admin users take quizzes.
         </p>
 
+        {/* Rate Limit Status */}
+        {rateLimitStatus.message && (
+          <Card className="mb-4 border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
+            <CardContent className="pt-4">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <span className="text-sm text-orange-800 dark:text-orange-200">
+                  {rateLimitStatus.message}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Overall Stats */}
         <Card className="mb-6">
           <CardHeader>
@@ -429,6 +654,37 @@ const QuizAudioAdmin = () => {
             Clear All Logs
           </Button>
         </div>
+
+        {/* Audio Source Legend */}
+        <Card className="mb-6">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-4 text-sm">
+              <span className="font-medium">Audio Sources:</span>
+              <div className="flex items-center gap-2">
+                <Badge className="text-xs bg-green-500 hover:bg-green-600 text-white border-green-500">
+                  DB
+                </Badge>
+                <span className="text-muted-foreground">
+                  PostgreSQL Database
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge className="text-xs bg-yellow-500 hover:bg-yellow-600 text-black border-yellow-500">
+                  API
+                </Badge>
+                <span className="text-muted-foreground">Dictionary API</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="destructive" className="text-xs">
+                  Missing
+                </Badge>
+                <span className="text-muted-foreground">
+                  No Audio Available
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quiz List */}
@@ -544,23 +800,50 @@ const QuizAudioAdmin = () => {
                                       ) : (
                                         <VolumeX className="h-4 w-4 text-red-500" />
                                       )}
-                                      <Badge
-                                        variant={
-                                          wordLog.hasAudio
-                                            ? "default"
-                                            : "destructive"
-                                        }
-                                        className="text-xs"
-                                      >
-                                        {wordLog.hasAudio
-                                          ? "Available"
-                                          : "Missing"}
-                                      </Badge>
+                                      <div className="flex gap-1">
+                                        {wordLog.hasAudio ? (
+                                          <>
+                                            {/* Handle both new format (audioSources array) and legacy format (audioSource string) */}
+                                            {(wordLog.audioSources?.includes(
+                                              "database"
+                                            ) ||
+                                              wordLog.audioSource ===
+                                                "database") && (
+                                              <Badge
+                                                className="text-xs bg-green-500 hover:bg-green-600 text-white border-green-500"
+                                                title="Audio from PostgreSQL database"
+                                              >
+                                                DB
+                                              </Badge>
+                                            )}
+                                            {(wordLog.audioSources?.includes(
+                                              "dictionary"
+                                            ) ||
+                                              wordLog.audioSource ===
+                                                "dictionary") && (
+                                              <Badge
+                                                className="text-xs bg-yellow-500 hover:bg-yellow-600 text-black border-yellow-500"
+                                                title="Audio from Dictionary API"
+                                              >
+                                                API
+                                              </Badge>
+                                            )}
+                                          </>
+                                        ) : (
+                                          <Badge
+                                            variant="destructive"
+                                            className="text-xs"
+                                            title="No audio available"
+                                          >
+                                            Missing
+                                          </Badge>
+                                        )}
+                                      </div>
                                     </>
                                   ) : (
                                     <>
                                       <Button
-                                        variant="outline"
+                                        variant="ghost"
                                         size="sm"
                                         onClick={() =>
                                           checkWordAudio(pair.word, quizId)
@@ -570,7 +853,7 @@ const QuizAudioAdmin = () => {
                                         {isChecking ? (
                                           <Loader2 className="h-4 w-4 animate-spin" />
                                         ) : (
-                                          "Check"
+                                          <RefreshCw className="h-4 w-4" />
                                         )}
                                       </Button>
                                       <Badge
