@@ -113,7 +113,7 @@ const ScoreBar = ({ correct, total, target = 30, hasData = true }) => {
             width: pct(correct),
             backgroundColor: useSubduedColors
               ? getSubduedGradientColorStyle(percentageCorrect).color
-              : "#22c55e", // green-500
+              : getGradientColorStyle(percentageCorrect).color,
           }}
         />
         {/* Wrong segment (starts after correct) */}
@@ -189,7 +189,6 @@ export default function Quiz() {
     autoPlayAudio: true,
     showSoundSymbols: true,
     soundEffects: true,
-    endlessMode: true, // Default to endless mode
   });
 
   // Load previous quiz results from API
@@ -328,14 +327,10 @@ export default function Quiz() {
     const loadQuizSettings = async () => {
       try {
         const apiSettings = await fetchQuizSettings();
-        // Merge API settings with defaults to ensure endlessMode defaults to true
+        // Merge API settings with defaults
         setQuizSettings((prevSettings) => ({
           ...prevSettings,
           ...apiSettings,
-          endlessMode:
-            apiSettings.endlessMode !== undefined
-              ? apiSettings.endlessMode
-              : true,
         }));
       } catch (error) {
         console.error("Failed to load quiz settings from API:", error);
@@ -470,39 +465,21 @@ export default function Quiz() {
           // Always fetch pairs from API
           const pairsFromApi = await fetchPairs(selectedQuizType);
 
-          if (quizSettings.endlessMode) {
-            // For endless mode, store all questions and create initial pool
-            setAllAvailableQuestions(pairsFromApi);
-            const initialPool = shuffleArray(pairsFromApi);
-            setCurrentQuestionPool(initialPool);
-            setQuestionsUsed(new Set());
-            setQuestionsPresented(0); // Reset counter for new quiz
+          // Always use endless mode behavior - store all questions and create initial pool
+          setAllAvailableQuestions(pairsFromApi);
+          const initialPool = shuffleArray(pairsFromApi);
+          setCurrentQuestionPool(initialPool);
+          setQuestionsUsed(new Set());
+          setQuestionsPresented(0); // Reset counter for new quiz
 
-            // Start with first few questions
-            const initialQuestions = initialPool.slice(0, 10);
-            setShuffledQuestions(initialQuestions);
+          // Start with first few questions
+          const initialQuestions = initialPool.slice(0, 10);
+          setShuffledQuestions(initialQuestions);
 
-            // Preload audio for the second question if available
-            if (initialQuestions.length > 1) {
-              const secondQuestion = initialQuestions[1];
-              preloadNextAudio(secondQuestion.word);
-            }
-          } else {
-            // Regular mode - use existing logic
-            const allQuestions = shuffleArray(pairsFromApi);
-
-            // Limit questions based on settings
-            const limitedQuestions =
-              quizSettings.numberOfQuestions === "all"
-                ? allQuestions
-                : allQuestions.slice(0, quizSettings.numberOfQuestions);
-            setShuffledQuestions(limitedQuestions);
-
-            // Preload audio for the second question if available
-            if (limitedQuestions.length > 1) {
-              const secondQuestion = limitedQuestions[1];
-              preloadNextAudio(secondQuestion.word);
-            }
+          // Preload audio for the second question if available
+          if (initialQuestions.length > 1) {
+            const secondQuestion = initialQuestions[1];
+            preloadNextAudio(secondQuestion.word);
           }
         } catch (error) {
           console.error("Failed to fetch pairs from API:", error);
@@ -512,12 +489,7 @@ export default function Quiz() {
     };
 
     initializeQuiz();
-  }, [
-    selectedQuizType,
-    currentQuizData,
-    quizSettings.numberOfQuestions,
-    quizSettings.endlessMode,
-  ]);
+  }, [selectedQuizType, currentQuizData]);
 
   const currentQuestion = shuffledQuestions[currentQuestionIndex];
   const progress =
@@ -911,10 +883,8 @@ export default function Quiz() {
     setIsAnswered(true);
     setQuestionsAnswered(questionsAnswered + 1);
 
-    // Increment questions presented counter for endless mode
-    if (quizSettings.endlessMode) {
-      setQuestionsPresented(questionsPresented + 1);
-    }
+    // Increment questions presented counter
+    setQuestionsPresented(questionsPresented + 1);
 
     // Check if answer matches the word or any of its alternates
     const isCorrect =
@@ -993,110 +963,56 @@ export default function Quiz() {
 
     // Auto-advance after a short delay for better flow
     setTimeout(() => {
-      if (quizSettings.endlessMode) {
-        // In endless mode, always continue to next question
-        handleNext();
-      } else if (currentQuestionIndex < shuffledQuestions.length - 1) {
-        handleNext();
-      } else {
-        // This is the last question, show results (only for fixed mode)
-        setShowResults(true);
-      }
+      // Always continue to next question (endless mode behavior)
+      handleNext();
     }, 1000); // 1 second delay
   };
 
   const handleNext = () => {
-    if (quizSettings.endlessMode) {
-      // Endless mode logic
-      const nextQuestionIndex = currentQuestionIndex + 1;
+    // Always use endless mode logic
+    const nextQuestionIndex = currentQuestionIndex + 1;
 
-      // If we're running out of questions in the current pool, add more
-      if (nextQuestionIndex >= shuffledQuestions.length - 2) {
-        addMoreQuestionsToPool();
-      }
+    // If we're running out of questions in the current pool, add more
+    if (nextQuestionIndex >= shuffledQuestions.length - 2) {
+      addMoreQuestionsToPool();
+    }
 
-      // Stop any currently playing audio
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-      setPlayingSource(null);
+    // Stop any currently playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setPlayingSource(null);
 
-      // Update the previous question index ref
-      previousQuestionIndexRef.current = currentQuestionIndex;
+    // Update the previous question index ref
+    previousQuestionIndexRef.current = currentQuestionIndex;
 
-      // Load audio for the next question
-      const nextQuestion = shuffledQuestions[nextQuestionIndex];
-      if (nextAudioUrls.dictionary) {
-        // Use preloaded audio
-        setAudioUrls(nextAudioUrls);
-        setNextAudioUrls({ dictionary: null });
-      } else {
-        // Load audio normally (non-blocking)
-        setAudioUrls({ dictionary: null });
-        getAudioForWord(nextQuestion.word).then((audioSources) => {
-          if (audioSources.dictionary) {
-            setAudioUrls({ dictionary: audioSources.dictionary });
-          }
-        });
-      }
-
-      setCurrentQuestionIndex(nextQuestionIndex);
-      setSelectedAnswer(null);
-      setIsAnswered(false);
-      setHasAutoPlayed(false); // Reset auto-play flag for next question
-
-      // Start preloading the next question's audio immediately
-      const nextNextQuestionIndex = nextQuestionIndex + 1;
-      if (nextNextQuestionIndex < shuffledQuestions.length) {
-        const nextNextQuestion = shuffledQuestions[nextNextQuestionIndex];
-        preloadNextAudio(nextNextQuestion.word);
-      }
+    // Load audio for the next question
+    const nextQuestion = shuffledQuestions[nextQuestionIndex];
+    if (nextAudioUrls.dictionary) {
+      // Use preloaded audio
+      setAudioUrls(nextAudioUrls);
+      setNextAudioUrls({ dictionary: null });
     } else {
-      // Regular mode logic (existing code)
-      if (currentQuestionIndex < shuffledQuestions.length - 1) {
-        const nextQuestionIndex = currentQuestionIndex + 1;
-        const nextQuestion = shuffledQuestions[nextQuestionIndex];
-
-        // Stop any currently playing audio
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
+      // Load audio normally (non-blocking)
+      setAudioUrls({ dictionary: null });
+      getAudioForWord(nextQuestion.word).then((audioSources) => {
+        if (audioSources.dictionary) {
+          setAudioUrls({ dictionary: audioSources.dictionary });
         }
-        setPlayingSource(null);
+      });
+    }
 
-        // Update the previous question index ref
-        previousQuestionIndexRef.current = currentQuestionIndex;
+    setCurrentQuestionIndex(nextQuestionIndex);
+    setSelectedAnswer(null);
+    setIsAnswered(false);
+    setHasAutoPlayed(false); // Reset auto-play flag for next question
 
-        // Load audio for the next question
-        if (nextAudioUrls.dictionary) {
-          // Use preloaded audio
-          setAudioUrls(nextAudioUrls);
-          setNextAudioUrls({ dictionary: null });
-        } else {
-          // Load audio normally (non-blocking)
-          setAudioUrls({ dictionary: null });
-          getAudioForWord(nextQuestion.word).then((audioSources) => {
-            if (audioSources.dictionary) {
-              setAudioUrls({ dictionary: audioSources.dictionary });
-            }
-          });
-        }
-
-        setCurrentQuestionIndex(nextQuestionIndex);
-        setSelectedAnswer(null);
-        setIsAnswered(false);
-        setHasAutoPlayed(false); // Reset auto-play flag for next question
-
-        // Start preloading the next question's audio immediately
-        const nextNextQuestionIndex = nextQuestionIndex + 1;
-        if (nextNextQuestionIndex < shuffledQuestions.length) {
-          const nextNextQuestion = shuffledQuestions[nextNextQuestionIndex];
-          preloadNextAudio(nextNextQuestion.word);
-        }
-      } else {
-        setShowResults(true);
-      }
+    // Start preloading the next question's audio immediately
+    const nextNextQuestionIndex = nextQuestionIndex + 1;
+    if (nextNextQuestionIndex < shuffledQuestions.length) {
+      const nextNextQuestion = shuffledQuestions[nextNextQuestionIndex];
+      preloadNextAudio(nextNextQuestion.word);
     }
   };
 
@@ -1330,65 +1246,16 @@ export default function Quiz() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Quiz Mode Selection */}
+              {/* Quiz Mode Info */}
               <div className="space-y-2 text-center">
-                <label className="text-md font-medium">Quiz Mode</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    variant={quizSettings.endlessMode ? "default" : "outline"}
-                    onClick={() => handleSettingsChange("endlessMode", true)}
-                    className="w-full cursor-pointer"
-                  >
-                    Endless Mode
-                  </Button>
-                  <Button
-                    variant={!quizSettings.endlessMode ? "default" : "outline"}
-                    onClick={() => handleSettingsChange("endlessMode", false)}
-                    className="w-full cursor-pointer"
-                  >
-                    Fixed Length
-                  </Button>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Complete 30 trials to establish your baseline</li>
+                    <li>• Continue practicing to improve</li>
+                    <li>• Stats show most recent 30 trials</li>
+                  </ul>
                 </div>
               </div>
-
-              {/* Number of Questions - Only show for fixed mode */}
-              {!quizSettings.endlessMode && (
-                <div className="space-y-2 text-center">
-                  <label className="text-md font-medium">
-                    Number of Questions
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {[10, 20, 30, "all"].map((num) => (
-                      <Button
-                        key={num}
-                        variant={
-                          quizSettings.numberOfQuestions === num
-                            ? "default"
-                            : "outline"
-                        }
-                        onClick={() =>
-                          handleSettingsChange("numberOfQuestions", num)
-                        }
-                        className="w-full cursor-pointer mt-2"
-                      >
-                        {num === "all" ? "All" : num}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Endless Mode Info */}
-              {quizSettings.endlessMode && (
-                <div className="space-y-2 text-center">
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">
-                      Practice continuously with unlimited questions. Questions
-                      will cycle through all available pairs.
-                    </p>
-                  </div>
-                </div>
-              )}
 
               {/* Auto-play Audio */}
               {/* <div className="space-y-2">
@@ -2060,11 +1927,6 @@ export default function Quiz() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base sm:text-lg">
                     {currentQuizData?.name || "Quiz"}
-                    {quizSettings.endlessMode && (
-                      <span className="text-sm text-muted-foreground ml-2">
-                        (Endless)
-                      </span>
-                    )}
                   </CardTitle>
                   <Button
                     onClick={() => {
@@ -2081,39 +1943,189 @@ export default function Quiz() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Progress - Show differently for endless mode */}
-                {quizSettings.endlessMode ? (
-                  <div className="space-y-2">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">
-                        {score}/{questionsAnswered}
-                      </div>
-                      <div className="text-lg text-muted-foreground">
-                        {questionsAnswered > 0
-                          ? Math.round((score / questionsAnswered) * 100)
-                          : 0}
-                        % accuracy
-                      </div>
-                    </div>
+                {/* Progress - Show progress toward 30 trials using ScoreBar */}
+                <div className="space-y-2">
+                  {/* Colored percentage and x/y display */}
+                  <div className="flex flex-col gap-1">
+                    {(() => {
+                      const previousResult = previousResults[selectedQuizType];
+                      const previousCorrect =
+                        previousResult?.correctTrials ||
+                        previousResult?.recentCorrectTrials ||
+                        0;
+                      const previousTotal =
+                        previousResult?.totalTrials ||
+                        previousResult?.recentTotalTrials ||
+                        0;
+                      const combinedCorrect = previousCorrect + score;
+                      const combinedTotal = previousTotal + questionsAnswered;
+
+                      // Use most recent 30 trials if above 30, otherwise use combined total
+                      const recentCorrect =
+                        previousResult?.recentCorrectTrials || 0;
+                      const recentTotal =
+                        previousResult?.recentTotalTrials || 0;
+
+                      // Calculate recent + current, but cap at 30 total trials
+                      const availableRecentSlots = Math.max(
+                        0,
+                        30 - questionsAnswered
+                      );
+                      const usedRecentCorrect = Math.min(
+                        recentCorrect,
+                        availableRecentSlots
+                      );
+                      const usedRecentTotal = Math.min(
+                        recentTotal,
+                        availableRecentSlots
+                      );
+
+                      const recentPlusCurrentCorrect =
+                        usedRecentCorrect + score;
+                      const recentPlusCurrentTotal =
+                        usedRecentTotal + questionsAnswered;
+
+                      // Determine which stats to show
+                      const showRecent = combinedTotal >= 30;
+                      const displayCorrect = showRecent
+                        ? recentPlusCurrentCorrect
+                        : combinedCorrect;
+                      const displayTotal = showRecent
+                        ? recentPlusCurrentTotal
+                        : combinedTotal;
+                      const displayPercentage =
+                        displayTotal > 0
+                          ? Math.round((displayCorrect / displayTotal) * 100)
+                          : 0;
+                      const hasData = displayTotal > 0;
+
+                      return (
+                        <div className="flex gap-1 mx-auto">
+                          <span
+                            className="text-sm font-bold"
+                            style={
+                              hasData
+                                ? displayTotal >= 30
+                                  ? getGradientColorStyle(displayPercentage)
+                                  : getSubduedGradientColorStyle(
+                                      displayPercentage
+                                    )
+                                : {}
+                            }
+                          >
+                            {hasData ? displayPercentage : "N/A"}% (
+                            {displayCorrect}/{displayTotal}){showRecent}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </div>
-                ) : (
-                  <>
-                    <Progress value={progress} className="w-full" />
-                    <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>
-                        Question {currentQuestionIndex + 1} of{" "}
-                        {shuffledQuestions.length}
-                      </span>
-                      <span className="text-right">
-                        {score}/{questionsAnswered} (
-                        {questionsAnswered > 0
-                          ? Math.round((score / questionsAnswered) * 100)
-                          : 0}
-                        %)
-                      </span>
-                    </div>
-                  </>
-                )}
+                  <ScoreBar
+                    correct={(() => {
+                      const previousResult = previousResults[selectedQuizType];
+                      const previousCorrect =
+                        previousResult?.correctTrials ||
+                        previousResult?.recentCorrectTrials ||
+                        0;
+                      const previousTotal =
+                        previousResult?.totalTrials ||
+                        previousResult?.recentTotalTrials ||
+                        0;
+                      const combinedTotal = previousTotal + questionsAnswered;
+
+                      // Use same logic as percentage display
+                      if (combinedTotal >= 30) {
+                        // Use most recent 30 trials
+                        const recentCorrect =
+                          previousResult?.recentCorrectTrials || 0;
+                        const recentTotal =
+                          previousResult?.recentTotalTrials || 0;
+                        const availableRecentSlots = Math.max(
+                          0,
+                          30 - questionsAnswered
+                        );
+                        const usedRecentCorrect = Math.min(
+                          recentCorrect,
+                          availableRecentSlots
+                        );
+                        return usedRecentCorrect + score;
+                      } else {
+                        // Use combined total
+                        return previousCorrect + score;
+                      }
+                    })()}
+                    total={(() => {
+                      const previousResult = previousResults[selectedQuizType];
+                      const previousTotal =
+                        previousResult?.totalTrials ||
+                        previousResult?.recentTotalTrials ||
+                        0;
+                      const combinedTotal = previousTotal + questionsAnswered;
+
+                      // Use same logic as percentage display
+                      if (combinedTotal >= 30) {
+                        // Use most recent 30 trials
+                        const recentTotal =
+                          previousResult?.recentTotalTrials || 0;
+                        const availableRecentSlots = Math.max(
+                          0,
+                          30 - questionsAnswered
+                        );
+                        const usedRecentTotal = Math.min(
+                          recentTotal,
+                          availableRecentSlots
+                        );
+                        return usedRecentTotal + questionsAnswered;
+                      } else {
+                        // Use combined total
+                        return previousTotal + questionsAnswered;
+                      }
+                    })()}
+                    target={30}
+                    hasData={(() => {
+                      const previousResult = previousResults[selectedQuizType];
+                      const previousTotal =
+                        previousResult?.totalTrials ||
+                        previousResult?.recentTotalTrials ||
+                        0;
+                      const combinedTotal = previousTotal + questionsAnswered;
+
+                      // Use same logic as percentage display
+                      if (combinedTotal >= 30) {
+                        // Use most recent 30 trials
+                        const recentTotal =
+                          previousResult?.recentTotalTrials || 0;
+                        const availableRecentSlots = Math.max(
+                          0,
+                          30 - questionsAnswered
+                        );
+                        const usedRecentTotal = Math.min(
+                          recentTotal,
+                          availableRecentSlots
+                        );
+                        return usedRecentTotal + questionsAnswered > 0;
+                      } else {
+                        // Use combined total
+                        return combinedTotal > 0;
+                      }
+                    })()}
+                  />
+                  {(() => {
+                    const previousResult = previousResults[selectedQuizType];
+                    const previousTotal =
+                      previousResult?.totalTrials ||
+                      previousResult?.recentTotalTrials ||
+                      0;
+                    const combinedTotal = previousTotal + questionsAnswered;
+                    return combinedTotal >= 30 ? (
+                      <div className="text-center">
+                        <div className="text-sm text-muted-foreground">
+                          ✅ Baseline established!
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
 
                 <div className="space-y-4">
                   <p className="text-lg font-medium text-center">
