@@ -66,6 +66,18 @@ router.get("/users/:userId/trials", async (req, res) => {
     const { userId } = req.params;
     const { limit = 100, offset = 0 } = req.query;
 
+    // Safety check: limit maximum request size
+    const maxLimit = 10000;
+    const actualLimit = Math.min(parseInt(limit), maxLimit);
+    const actualOffset = parseInt(offset);
+
+    // Get total count for pagination info
+    const totalCount = await prisma.trial.count({
+      where: {
+        userId: userId,
+      },
+    });
+
     const trials = await prisma.trial.findMany({
       where: {
         userId: userId,
@@ -76,6 +88,7 @@ router.get("/users/:userId/trials", async (req, res) => {
             contrast: {
               select: {
                 name: true,
+                category: true,
               },
             },
           },
@@ -84,8 +97,8 @@ router.get("/users/:userId/trials", async (req, res) => {
       orderBy: {
         presentedAt: "desc",
       },
-      take: parseInt(limit),
-      skip: parseInt(offset),
+      take: actualLimit,
+      skip: actualOffset,
     });
 
     const formattedTrials = trials.map((trial) => ({
@@ -99,9 +112,18 @@ router.get("/users/:userId/trials", async (req, res) => {
       wordA: trial.pair.wordA,
       wordB: trial.pair.wordB,
       contrastName: trial.pair.contrast.name,
+      contrastCategory: trial.pair.contrast.category,
     }));
 
-    res.json({ trials: formattedTrials });
+    res.json({
+      trials: formattedTrials,
+      pagination: {
+        total: totalCount,
+        limit: actualLimit,
+        offset: actualOffset,
+        hasMore: actualOffset + actualLimit < totalCount,
+      },
+    });
   } catch (error) {
     console.error("Error fetching user trials:", error);
     res.status(500).json({ error: "Failed to fetch user trials" });

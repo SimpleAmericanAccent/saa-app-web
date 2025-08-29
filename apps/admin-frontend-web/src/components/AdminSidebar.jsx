@@ -13,7 +13,7 @@ export default function AdminSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-background border-r h-screen p-4 space-y-2">
+    <aside className="w-32 bg-background border-r h-screen p-4 space-y-2">
       <div className="font-bold text-lg mb-6">Admin</div>
       <nav className="flex flex-col gap-2">
         {navItems.map(({ label, path }) => {
