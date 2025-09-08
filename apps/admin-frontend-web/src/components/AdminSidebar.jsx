@@ -6,6 +6,7 @@ export default function AdminSidebar() {
 
   const navItems = [
     { label: "Overview", path: "/overview" },
+    { label: "Acquisition Dashboard", path: "/acquisition-dashboard" },
     { label: "User App", path: "/user" },
     { label: "Coaching", path: "/coaching" },
     { label: "Ops", path: "/ops" },

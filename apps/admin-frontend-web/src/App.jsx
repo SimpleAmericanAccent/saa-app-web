@@ -7,6 +7,7 @@ import CoachingView from "./views/CoachingView";
 import OpsView from "./views/OpsView";
 import UserTrialsAdmin from "./pages/user-trials";
 import AdminOverview from "./pages/admin-overview";
+import ClientAcquisitionDashboard from "./pages/client-acquisition-dashboard";
 
 const adminRoutes = (
   <>
@@ -15,6 +16,10 @@ const adminRoutes = (
     <Route path="/ops/*" element={<OpsView />} />
     <Route path="/user-trials" element={<UserTrialsAdmin />} />
     <Route path="/overview" element={<AdminOverview />} />
+    <Route
+      path="/acquisition-dashboard"
+      element={<ClientAcquisitionDashboard />}
+    />
     <Route path="*" element={<AdminOverview />} />
   </>
 );
