@@ -1688,7 +1688,14 @@ const ClientAcquisitionDashboard = () => {
 
       // Combine data from all three endpoints
       const combinedData = {
-        ig: instagramResult.success ? instagramResult.data.ig : { views: null, reach: null, profileVisits: null, bioLinkClicks: null }, // Instagram data (views, reach, profileVisits, bioLinkClicks)
+        ig: instagramResult.success
+          ? instagramResult.data.ig
+          : {
+              views: null,
+              reach: null,
+              profileVisits: null,
+              bioLinkClicks: null,
+            }, // Instagram data (views, reach, profileVisits, bioLinkClicks)
         email: { opens: null }, // No email data from Plausible
         mgSalesPageVisits: plausibleResult.data.mgSalesPageVisits,
         mgApplication: {
