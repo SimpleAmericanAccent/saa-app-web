@@ -2621,7 +2621,7 @@ const ClientAcquisitionDashboard = () => {
         <div className="p-6 space-y-6">
           {/* Header */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-0">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   MG Client Acquisition Dashboard
