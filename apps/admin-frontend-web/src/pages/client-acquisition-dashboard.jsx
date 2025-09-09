@@ -2667,27 +2667,46 @@ const ClientAcquisitionDashboard = () => {
                   MG Client Acquisition Dashboard
                 </h1>
               </div>
-              <Button
-                onClick={handleLoadData}
-                disabled={isLoading || isCompareLoading}
-                variant="outline"
-              >
-                {isLoading || isCompareLoading ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    {isLoading && isCompareLoading
-                      ? "Loading..."
-                      : isLoading
-                      ? "Loading..."
-                      : "Loading..."}
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh Data
-                  </>
-                )}
-              </Button>
+              <div className="flex items-center gap-3">
+                {/* Data Gap Warnings */}
+                {getDataGapWarnings().map((warning, index) => (
+                  <div
+                    key={index}
+                    className="p-2 border rounded bg-gray-800 border-yellow-400 "
+                  >
+                    <div className="flex items-center">
+                      <span className="text-sm mr-1">⚠️</span>
+                      <div className="text-xs">
+                        <strong className="block">{warning.title}</strong>
+                        <div className="whitespace-pre-line text-xs">
+                          {warning.message}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  onClick={handleLoadData}
+                  disabled={isLoading || isCompareLoading}
+                  variant="outline"
+                >
+                  {isLoading || isCompareLoading ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      {isLoading && isCompareLoading
+                        ? "Loading..."
+                        : isLoading
+                        ? "Loading..."
+                        : "Loading..."}
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Refresh Data
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
 
             {/* Date Range Presets */}
@@ -3095,24 +3114,6 @@ const ClientAcquisitionDashboard = () => {
                 </div>
               </div>
             )}
-
-            {/* Data Gap Warnings */}
-            {getDataGapWarnings().map((warning, index) => (
-              <div
-                key={index}
-                className="mt-4 p-3 border rounded bg-gray-800 border-yellow-400"
-              >
-                <div className="flex items-center">
-                  <span className="text-lg mr-2">⚠️</span>
-                  <div>
-                    <strong>{warning.title}</strong>
-                    <div className="text-sm mt-1 whitespace-pre-line">
-                      {warning.message}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
 
           {/* Summary Line */}
