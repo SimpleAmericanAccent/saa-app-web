@@ -114,6 +114,14 @@ internalStatsRouter.get("/airtable", async (req, res) => {
         );
         acc.tbd += sumArray(fields["TBD"]);
 
+        // Revenue fields
+        acc.mgPaymentsApp += sumArray(fields["mg_pay_app_attribution"]);
+        acc.mgRefundsApp += sumArray(fields["mg_refund_app_attribution"]);
+        acc.mgNetPayApp += sumArray(fields["mg_netpay_app_attribution"]);
+        acc.mgPaymentsDay += sumArray(fields["mg_pay_day_attribution"]);
+        acc.mgRefundsDay += sumArray(fields["mg_refund_day_attribution"]);
+        acc.mgNetPayDay += sumArray(fields["mg_netpay_day_attribution"]);
+
         return acc;
       },
       {
@@ -130,12 +138,20 @@ internalStatsRouter.get("/airtable", async (req, res) => {
         becameUnresponsive: 0,
         acceptedThenRejected: 0,
         tbd: 0,
+        mgPaymentsApp: 0,
+        mgRefundsApp: 0,
+        mgNetPayApp: 0,
+        mgPaymentsDay: 0,
+        mgRefundsDay: 0,
+        mgNetPayDay: 0,
       }
     );
 
     // Calculate derived values
     const appCompletions =
-      airtableStats.completed > 0 ? airtableStats.completed : null;
+      airtableStats.completed !== null && airtableStats.completed !== undefined
+        ? airtableStats.completed
+        : null;
     // SEQUENTIAL FLOW LOGIC:
     // Each person can only be in ONE state, but states imply previous states
     //
@@ -211,11 +227,15 @@ internalStatsRouter.get("/airtable", async (req, res) => {
 
     const qualifiedApps = totalQualifiedApps;
     const nonQualifiedApps =
-      airtableStats.completed > 0 && qualifiedApps !== null
+      airtableStats.completed !== null &&
+      airtableStats.completed !== undefined &&
+      qualifiedApps !== null
         ? Math.max(0, airtableStats.completed - qualifiedApps)
         : null;
     const appAbandons =
-      airtableStats.appStarts > 0 && appCompletions !== null
+      airtableStats.appStarts > 0 &&
+      appCompletions !== null &&
+      appCompletions !== undefined
         ? Math.max(0, airtableStats.appStarts - appCompletions)
         : null;
 
@@ -257,12 +277,8 @@ internalStatsRouter.get("/airtable", async (req, res) => {
         ? airtableStats.appStarts
         : null;
 
-    // "Accepted but not paid" = only those accepted but not yet paid (excludes those who paid)
-    const acceptedButNotPaid =
-      airtableStats.acceptedButNotPaid !== null &&
-      airtableStats.acceptedButNotPaid !== undefined
-        ? airtableStats.acceptedButNotPaid
-        : null;
+    // "Accepted but not paid" = total accepted (includes all accepted regardless of payment status)
+    const acceptedButNotPaid = totalAccepted;
 
     // ADDITIONAL STATES (not in Airtable) - to account for gaps/WIP
     // These represent people who are in transition or waiting states
@@ -443,6 +459,14 @@ internalStatsRouter.get("/airtable", async (req, res) => {
       acceptedThenRejected: airtableStats.acceptedThenRejected,
       tbd: airtableStats.tbd,
     });
+    console.log("Revenue fields:", {
+      mgPaymentsApp: airtableStats.mgPaymentsApp,
+      mgRefundsApp: airtableStats.mgRefundsApp,
+      mgNetPayApp: airtableStats.mgNetPayApp,
+      mgPaymentsDay: airtableStats.mgPaymentsDay,
+      mgRefundsDay: airtableStats.mgRefundsDay,
+      mgNetPayDay: airtableStats.mgNetPayDay,
+    });
 
     const airtableResponseData = {
       mgApplication: {
@@ -471,6 +495,15 @@ internalStatsRouter.get("/airtable", async (req, res) => {
       },
       // Sankey interface validation
       interfaceValidation: interfaceValidation,
+      // Revenue data
+      revenue: {
+        mgPaymentsApp: airtableStats.mgPaymentsApp,
+        mgRefundsApp: airtableStats.mgRefundsApp,
+        mgNetPayApp: airtableStats.mgNetPayApp,
+        mgPaymentsDay: airtableStats.mgPaymentsDay,
+        mgRefundsDay: airtableStats.mgRefundsDay,
+        mgNetPayDay: airtableStats.mgNetPayDay,
+      },
     };
 
     res.json({
@@ -551,9 +584,93 @@ internalStatsRouter.get("/plausible", async (req, res) => {
       return await response.json();
     };
 
+    // Helper function to check if date range overlaps with Plausible inactive periods
+    const getPlausibleInactivePeriods = (startDate, endDate) => {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      // Known inactive periods:
+      // 1. Before July 3, 2025 (not using Plausible yet)
+      // 2. Aug 17, 2025 to Aug 29, 2025 (subscription paused)
+      const plausibleStartDate = new Date("2025-07-03");
+      const subscriptionPauseStart = new Date("2025-08-17");
+      const subscriptionPauseEnd = new Date("2025-08-29");
+
+      const inactivePeriods = [];
+
+      // Check if range includes pre-Plausible period (before July 3, 2025)
+      if (start < plausibleStartDate) {
+        const prePlausibleEnd =
+          end < plausibleStartDate ? end : new Date("2025-07-02");
+        inactivePeriods.push({
+          start: start.toISOString().split("T")[0],
+          end: prePlausibleEnd.toISOString().split("T")[0],
+          reason: "Plausible tracking not yet active",
+        });
+      }
+
+      // Check if range includes subscription pause period (Aug 17-29, 2025)
+      if (start <= subscriptionPauseEnd && end >= subscriptionPauseStart) {
+        const pauseStart =
+          start > subscriptionPauseStart ? start : subscriptionPauseStart;
+        const pauseEnd =
+          end < subscriptionPauseEnd ? end : subscriptionPauseEnd;
+        inactivePeriods.push({
+          start: pauseStart.toISOString().split("T")[0],
+          end: pauseEnd.toISOString().split("T")[0],
+          reason: "Plausible subscription paused",
+        });
+      }
+
+      return inactivePeriods;
+    };
+
     // Get total visitors
     const totalVisitorsData = await fetchPlausibleData([]);
     console.log("Total visitors response:", totalVisitorsData);
+
+    // Get Plausible inactive periods based on known tracking gaps
+    const plausibleInactivePeriods = getPlausibleInactivePeriods(start, end);
+
+    // Convert inactive periods to data gap format for consistency
+    const totalVisitorsGaps =
+      plausibleInactivePeriods.length > 0
+        ? (() => {
+            const totalDays =
+              Math.ceil(
+                (new Date(end).getTime() - new Date(start).getTime()) /
+                  (1000 * 3600 * 24)
+              ) + 1;
+            const gapDays = plausibleInactivePeriods.reduce((total, period) => {
+              const periodStart = new Date(period.start);
+              const periodEnd = new Date(period.end);
+              const days =
+                Math.ceil(
+                  (periodEnd.getTime() - periodStart.getTime()) /
+                    (1000 * 3600 * 24)
+                ) + 1;
+              return total + days;
+            }, 0);
+            const availableDays = totalDays - gapDays;
+            const completeness = Math.round((availableDays / totalDays) * 100);
+
+            return {
+              gapCount: gapDays,
+              completeness: completeness,
+              gaps: plausibleInactivePeriods,
+            };
+          })()
+        : null;
+
+    // Use same gaps for all Plausible metrics since they all use the same tracking
+    const salesPageGaps = totalVisitorsGaps;
+    const appFormGaps = totalVisitorsGaps;
+
+    console.log("Data gap analysis:", {
+      totalVisitors: totalVisitorsGaps,
+      salesPage: salesPageGaps,
+      appForm: appFormGaps,
+    });
 
     // Try to get page-specific data using dimensions
     const pageData = await fetchPlausibleData([], ["event:page"]);
@@ -773,6 +890,11 @@ internalStatsRouter.get("/plausible", async (req, res) => {
           fromEmail,
           fromUnknown,
         },
+        dataGaps: {
+          totalVisitors: totalVisitorsGaps,
+          salesPage: salesPageGaps,
+          appForm: appFormGaps,
+        },
       },
     });
   } catch (e) {
@@ -842,6 +964,12 @@ internalStatsRouter.get("/instagram", async (req, res) => {
     });
   }
 
+  // Check if this is a "today" request (same start and end date)
+  const isTodayRequest = start === end;
+  const today = new Date().toISOString().split("T")[0];
+  const isTodayDate = start === today && end === today;
+  const isEndDateToday = end === today;
+
   const INSTAGRAM_ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN;
   const INSTAGRAM_BUSINESS_ACCOUNT_ID =
     process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
@@ -874,18 +1002,17 @@ internalStatsRouter.get("/instagram", async (req, res) => {
   try {
     // Extract totals from the data
     const extractTotal = (data, metricName) => {
-      console.log(
-        `Extracting total for ${metricName}:`,
-        JSON.stringify(data, null, 2)
-      );
+      console.log(`=== EXTRACTING TOTAL FOR ${metricName.toUpperCase()} ===`);
+      console.log(`Raw data:`, JSON.stringify(data, null, 2));
 
       if (!data) {
-        console.log(`${metricName}: No data received`);
+        console.log(`❌ ${metricName}: No data received`);
         return null;
       }
 
       if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
-        console.log(`${metricName}: No data array or empty array`);
+        console.log(`❌ ${metricName}: No data array or empty array`);
+        console.log(`Data structure:`, data);
         return null;
       }
 
@@ -901,7 +1028,7 @@ internalStatsRouter.get("/instagram", async (req, res) => {
         typeof firstDataItem.total_value.value === "number"
       ) {
         console.log(
-          `${metricName} found total_value:`,
+          `✅ ${metricName} found total_value:`,
           firstDataItem.total_value.value
         );
         return firstDataItem.total_value.value;
@@ -913,11 +1040,15 @@ internalStatsRouter.get("/instagram", async (req, res) => {
           (sum, day) => sum + (day.value || 0),
           0
         );
-        console.log(`${metricName} calculated total from values array:`, total);
+        console.log(
+          `✅ ${metricName} calculated total from values array:`,
+          total
+        );
         return total;
       }
 
-      console.log(`${metricName}: No total_value or values array found`);
+      console.log(`❌ ${metricName}: No total_value or values array found`);
+      console.log(`Available properties:`, Object.keys(firstDataItem));
       return null;
     };
 
@@ -960,6 +1091,22 @@ internalStatsRouter.get("/instagram", async (req, res) => {
     ) => {
       const url = `https://graph.facebook.com/v23.0/${INSTAGRAM_BUSINESS_ACCOUNT_ID}/insights`;
 
+      // For Instagram API, use special handling for today requests
+      let instagramStart, instagramEnd;
+      if (isTodayDate) {
+        // For same-day requests (Today button), use since=today and omit until
+        instagramStart = "today";
+        instagramEnd = null; // Don't send until parameter
+      } else if (isEndDateToday) {
+        // For ranges ending today, use actual start date and until=today
+        instagramStart = start;
+        instagramEnd = "today";
+      } else {
+        // For other ranges, use normal date format
+        instagramStart = start;
+        instagramEnd = end;
+      }
+
       // Calculate if we need chunking (more than 30 days)
       const startDate = new Date(start);
       const endDate = new Date(end);
@@ -969,9 +1116,13 @@ internalStatsRouter.get("/instagram", async (req, res) => {
       console.log(`Instagram API request for ${metric}:`, {
         start,
         end,
+        instagramStart,
+        instagramEnd,
         daysDiff,
         useChunking,
         needsChunking,
+        isTodayDate,
+        isEndDateToday,
       });
 
       if (needsChunking) {
@@ -1008,6 +1159,16 @@ internalStatsRouter.get("/instagram", async (req, res) => {
               `Instagram API error for ${metric} chunk:`,
               errorText
             );
+
+            // Check for token expiration
+            if (
+              response.status === 401 ||
+              errorText.includes("access_token") ||
+              errorText.includes("expired")
+            ) {
+              throw new Error(`INSTAGRAM_TOKEN_EXPIRED: ${errorText}`);
+            }
+
             throw new Error(
               `Instagram API error: ${response.status} - ${errorText}`
             );
@@ -1018,6 +1179,10 @@ internalStatsRouter.get("/instagram", async (req, res) => {
 
           // Extract value from this chunk and add to total
           const chunkValue = extractTotal(chunkData, `${metric}_chunk`);
+          console.log(
+            `DEBUG: ${metric} chunk ${chunk.since} to ${chunk.until} value:`,
+            chunkValue
+          );
           if (chunkValue !== null) {
             totalValue += chunkValue;
           }
@@ -1043,10 +1208,14 @@ internalStatsRouter.get("/instagram", async (req, res) => {
         const params = new URLSearchParams({
           metric: metric,
           period: period,
-          since: start,
-          until: end,
+          since: instagramStart,
           access_token: INSTAGRAM_ACCESS_TOKEN,
         });
+
+        // Only add until parameter if instagramEnd is not null
+        if (instagramEnd !== null) {
+          params.append("until", instagramEnd);
+        }
 
         // Add metric_type parameter if specified
         if (metricType) {
@@ -1063,12 +1232,27 @@ internalStatsRouter.get("/instagram", async (req, res) => {
         if (!response.ok) {
           const errorText = await response.text();
           console.error(`Instagram API error for ${metric}:`, errorText);
+
+          // Check for token expiration
+          if (
+            response.status === 401 ||
+            errorText.includes("access_token") ||
+            errorText.includes("expired")
+          ) {
+            throw new Error(`INSTAGRAM_TOKEN_EXPIRED: ${errorText}`);
+          }
+
           throw new Error(
             `Instagram API error: ${response.status} - ${errorText}`
           );
         }
 
-        return await response.json();
+        const responseData = await response.json();
+        console.log(
+          `DEBUG: ${metric} single request response:`,
+          JSON.stringify(responseData, null, 2)
+        );
+        return responseData;
       }
     };
 
@@ -1115,23 +1299,34 @@ internalStatsRouter.get("/instagram", async (req, res) => {
       websiteClicks: websiteClicksData,
     });
 
+    // Debug: Log the raw data structure for views specifically
+    console.log(
+      "DEBUG: Views data structure:",
+      JSON.stringify(viewsData, null, 2)
+    );
+
     const views = extractTotal(viewsData, "views");
     const reach = extractTotal(reachData, "reach");
     const profileVisits = extractTotal(profileViewsData, "profile_views");
     const bioLinkClicks = extractTotal(websiteClicksData, "website_clicks");
 
-    console.log("Extracted Instagram metrics:", {
-      views,
-      reach,
-      profileVisits,
-      bioLinkClicks,
+    console.log("🎯 FINAL EXTRACTED INSTAGRAM METRICS:", {
+      views: views,
+      reach: reach,
+      profileVisits: profileVisits,
+      bioLinkClicks: bioLinkClicks,
     });
+    console.log("🔍 Views specifically:", views, typeof views);
 
     // Check if reach was excluded due to >30 day range
     const startDate = new Date(start);
     const endDate = new Date(end);
     const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
     const reachExcluded = daysDiff > 30;
+
+    // Check if date range includes dates before Feb 23, 2025 (when Instagram views data became available)
+    const instagramViewsCutoffDate = new Date("2025-02-23");
+    const hasPreCutoffDates = startDate < instagramViewsCutoffDate;
 
     res.json({
       success: true,
@@ -1141,6 +1336,66 @@ internalStatsRouter.get("/instagram", async (req, res) => {
           reach,
           profileVisits,
           bioLinkClicks,
+        },
+        dataGaps: {
+          instagramViews: hasPreCutoffDates
+            ? {
+                gapCount: (() => {
+                  const gapStartDate = new Date(start);
+                  const gapEndDate = new Date(
+                    endDate < instagramViewsCutoffDate ? end : "2025-02-22"
+                  );
+                  const timeDiff =
+                    gapEndDate.getTime() - gapStartDate.getTime();
+                  return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end dates
+                })(),
+                completeness: (() => {
+                  const totalStartDate = new Date(start);
+                  const totalEndDate = new Date(end);
+                  const totalDays =
+                    Math.ceil(
+                      (totalEndDate.getTime() - totalStartDate.getTime()) /
+                        (1000 * 3600 * 24)
+                    ) + 1;
+
+                  // Calculate how many days in the range are before Feb 23, 2025 (gap days)
+                  const rangeStartDate = new Date(start);
+                  const rangeEndDate = new Date(end);
+                  const cutoffDate = new Date("2025-02-23");
+
+                  let gapDays = 0;
+
+                  // If the entire range is before the cutoff, all days are gap days
+                  if (rangeEndDate < cutoffDate) {
+                    gapDays = totalDays;
+                  }
+                  // If the range starts before the cutoff, count days from start to Feb 22, 2025
+                  else if (rangeStartDate < cutoffDate) {
+                    const gapEndDate = new Date("2025-02-22");
+                    gapDays =
+                      Math.ceil(
+                        (gapEndDate.getTime() - rangeStartDate.getTime()) /
+                          (1000 * 3600 * 24)
+                      ) + 1;
+                  }
+                  // If the range starts after the cutoff, no gap days
+                  else {
+                    gapDays = 0;
+                  }
+
+                  const availableDays = totalDays - gapDays;
+                  const completeness = Math.round(
+                    (availableDays / totalDays) * 100
+                  );
+
+                  return completeness;
+                })(),
+                affectedDateRange: {
+                  start: start,
+                  end: endDate < instagramViewsCutoffDate ? end : "2025-02-22",
+                },
+              }
+            : null,
         },
       },
       dateRange: { start, end },
@@ -1154,7 +1409,27 @@ internalStatsRouter.get("/instagram", async (req, res) => {
   } catch (e) {
     console.error("Error fetching Instagram data:", e);
 
-    // Return fallback data with null values
+    // Check if it's a token expiration error
+    if (e.message.includes("INSTAGRAM_TOKEN_EXPIRED")) {
+      return res.json({
+        success: false,
+        error: "INSTAGRAM_TOKEN_EXPIRED",
+        message:
+          "Instagram access token has expired. Please update the token in the environment variables.",
+        data: {
+          ig: {
+            views: null,
+            reach: null,
+            profileVisits: null,
+            bioLinkClicks: null,
+          },
+        },
+        dateRange: { start, end },
+        source: "instagram-error",
+      });
+    }
+
+    // Return fallback data with null values for other errors
     res.json({
       success: true,
       data: {

@@ -60,16 +60,41 @@ const defaultFunnelData = {
     noDecisionYet: null,
     noOutcomeYet: null,
   },
+
+  // Revenue data
+  revenue: {
+    mgPaymentsApp: null,
+    mgRefundsApp: null,
+    mgNetPayApp: null,
+    mgPaymentsDay: null,
+    mgRefundsDay: null,
+    mgNetPayDay: null,
+  },
+
+  // Data gap analysis
+  dataGaps: {
+    totalVisitors: null,
+    salesPage: null,
+    appForm: null,
+  },
 };
 
 // Color scheme for different categories
 const categoryColors = {
-  ig: "#E91E63", // Pink
-  "ig-funnel": "#E91E63", // Pink (same as ig)
-  email: "#9C27B0", // Purple
+  Instagram: "#E91E63", // Pink
+  Email: "#9C27B0", // Purple
   "mg-funnel": "#3F51B5", // Indigo
   "mg-selection": "#FF9800", // Orange
   "mg-sales": "#4CAF50", // Green
+};
+
+// Human-friendly names for categories
+const categoryNames = {
+  Instagram: "Instagram",
+  Email: "Email",
+  "mg-funnel": "MG Funnel",
+  "mg-selection": "MG Selection",
+  "mg-sales": "MG Sales",
 };
 
 // Sankey Diagram Component
@@ -181,6 +206,14 @@ const SankeyDiagram = ({
           nodeValue = data.mgSalesPageVisits?.total
             ? Math.round(Math.log10(data.mgSalesPageVisits.total))
             : null;
+        } else if (node.id === "mg-app-form-visits") {
+          nodeValue = data.mgApplication?.appFormPageVisits;
+        } else if (node.id === "app-starts") {
+          nodeValue = data.mgApplication?.appStarts;
+        } else if (node.id === "mg-app-completions") {
+          nodeValue = data.mgApplication?.appCompletions;
+        } else if (node.id === "mg-qualified-apps") {
+          nodeValue = data.mgApplication?.qualifiedApps;
         }
 
         return {
@@ -603,11 +636,28 @@ const SankeyDiagram = ({
           displayValue = d.value;
         }
 
-        return displayValue !== null &&
-          displayValue !== undefined &&
-          displayValue > 0
-          ? `${d.name} (${displayValue.toLocaleString()})`
-          : `${d.name} (N/A)`;
+        // Add caution emoji for data gaps
+        let gapEmoji = "";
+        if (
+          d.id === "ig-views" &&
+          originalData?.dataGaps?.instagramViews?.gapCount > 0
+        ) {
+          gapEmoji = "⚠️ ";
+        } else if (
+          d.id === "mg-sales-page-visits" &&
+          originalData?.dataGaps?.totalVisitors?.gapCount > 0
+        ) {
+          gapEmoji = "⚠️ ";
+        } else if (
+          d.id === "mg-app-form-visits" &&
+          originalData?.dataGaps?.totalVisitors?.gapCount > 0
+        ) {
+          gapEmoji = "⚠️ ";
+        }
+
+        return displayValue !== null && displayValue !== undefined
+          ? `${gapEmoji}${d.name} (${displayValue.toLocaleString()})`
+          : `${gapEmoji}${d.name} (N/A)`;
       })
       .style("fill", "#ffffff")
       .style("font-weight", "500")
@@ -862,6 +912,18 @@ const buildSankeyData = (data) => {
     reachValue: data.ig?.reach,
   });
 
+  // Debug: Log specific values for Sankey 2
+  console.log("Sankey 2 Debug Values:", {
+    appFormPageVisits: data.mgApplication?.appFormPageVisits,
+    appStarts: data.mgApplication?.appStarts,
+    appCompletions: data.mgApplication?.appCompletions,
+    qualifiedApps: data.mgApplication?.qualifiedApps,
+    salesPageTotal: data.mgSalesPageVisits?.total,
+  });
+
+  // Debug: Log the full mgApplication object to see what's actually there
+  console.log("Full mgApplication object:", data.mgApplication);
+
   // Debug: Check for discrepancies between source of truth and Sankey data
   console.log("Data Consistency Check:", {
     sourceOfTruth: {
@@ -892,25 +954,30 @@ const buildSankeyData = (data) => {
   // 1. Traffic Funnel: Instagram Engagement → MG Sales Page Visits
   const trafficFunnelData = {
     nodes: [
-      {
-        id: "ig-views",
-        name: "IG Views",
-        category: "ig-funnel",
-        value: data.ig?.views,
-      },
+      // Only include IG Views node if views > 0
+      ...(data.ig?.views > 0
+        ? [
+            {
+              id: "ig-views",
+              name: "IG Views",
+              category: "Instagram",
+              value: data.ig.views,
+            },
+          ]
+        : []),
       // Only include extra views and reach nodes if reach data is available
       ...(hasReachData
         ? [
             {
               id: "ig-extra-views",
               name: "IG Extra Views",
-              category: "ig-funnel",
+              category: "Instagram",
               value: data.ig.views - data.ig.reach,
             },
             {
               id: "ig-reach",
               name: "IG Reach",
-              category: "ig-funnel",
+              category: "Instagram",
               value: data.ig.reach,
             },
           ]
@@ -918,19 +985,19 @@ const buildSankeyData = (data) => {
       {
         id: "ig-profile-visits",
         name: "IG Profile Visits",
-        category: "ig-funnel",
+        category: "Instagram",
         value: data.ig?.profileVisits,
       },
       {
         id: "ig-bio-link-clicks",
         name: "IG Bio Link Clicks",
-        category: "ig-funnel",
+        category: "Instagram",
         value: data.ig?.bioLinkClicks,
       },
       {
         id: "ig-profile-visits-no-bio-click",
         name: "No Bio Click",
-        category: "ig-funnel",
+        category: "Instagram",
         value:
           data.ig?.profileVisits && data.ig?.bioLinkClicks
             ? data.ig.profileVisits - data.ig.bioLinkClicks
@@ -942,7 +1009,7 @@ const buildSankeyData = (data) => {
             {
               id: "ig-reach-no-profile-visit",
               name: "No Profile Visit",
-              category: "ig-funnel",
+              category: "Instagram",
               value:
                 data.ig?.reach && data.ig?.profileVisits
                   ? data.ig.reach - data.ig.profileVisits
@@ -953,7 +1020,7 @@ const buildSankeyData = (data) => {
             {
               id: "ig-views-no-profile-visit",
               name: "No Profile Visit",
-              category: "ig-funnel",
+              category: "Instagram",
               value:
                 data.ig?.views && data.ig?.profileVisits
                   ? data.ig.views - data.ig.profileVisits
@@ -1010,8 +1077,8 @@ const buildSankeyData = (data) => {
       },
     ],
     links: [
-      // Instagram engagement funnel - conditional based on reach data availability
-      ...(hasReachData
+      // Instagram engagement funnel - conditional based on reach data availability and views > 0
+      ...(data.ig?.views > 0 && hasReachData
         ? [
             // With reach data: views -> extra views + reach -> profile visits -> bio link clicks -> MG SP via IG Bio
             {
@@ -1042,7 +1109,8 @@ const buildSankeyData = (data) => {
                   : null,
             },
           ]
-        : [
+        : data.ig?.views > 0
+        ? [
             // Without reach data: views -> profile visits -> bio link clicks -> MG SP via IG Bio
             {
               source: "ig-views",
@@ -1061,7 +1129,8 @@ const buildSankeyData = (data) => {
                     )
                   : null,
             },
-          ]),
+          ]
+        : []),
       {
         source: "ig-profile-visits",
         target: "ig-bio-link-clicks",
@@ -1193,30 +1262,53 @@ const buildSankeyData = (data) => {
   // 2. Application Funnel: MG Sales Page Visits → MG Qualified Apps
   const applicationFunnelData = {
     nodes: [
-      {
-        id: "mg-sales-page-visits",
-        name: "MG Sales Page Visits",
-        category: "mg-funnel",
-      },
-      {
-        id: "exited-sales-page",
-        name: "MG Sales Page Exits",
-        category: "mg-selection",
-      },
-      {
-        id: "mg-app-form-visits",
-        name: "MG App Form Visits",
-        category: "mg-funnel",
-      },
-      {
-        id: "mg-app-non-starts",
-        name: "MG App Non-Starts",
-        category: "mg-selection",
-      },
+      // Only include MG Sales Page Visits if value > 0
+      ...(data.mgSalesPageVisits?.total > 0
+        ? [
+            {
+              id: "mg-sales-page-visits",
+              name: "MG Sales Page Visits",
+              category: "mg-funnel",
+              value: data.mgSalesPageVisits.total,
+            },
+          ]
+        : []),
+      // Only include MG Sales Page Exits if sales page visits > 0
+      ...(data.mgSalesPageVisits?.total > 0
+        ? [
+            {
+              id: "exited-sales-page",
+              name: "MG Sales Page Exits",
+              category: "mg-selection",
+            },
+          ]
+        : []),
+      // Only include MG App Form Visits if value > 0
+      ...(data.mgApplication?.appFormPageVisits > 0
+        ? [
+            {
+              id: "mg-app-form-visits",
+              name: "MG App Form Visits",
+              category: "mg-funnel",
+              value: data.mgApplication.appFormPageVisits,
+            },
+          ]
+        : []),
+      // Only include MG App Non-Starts if app form visits > 0
+      ...(data.mgApplication?.appFormPageVisits > 0
+        ? [
+            {
+              id: "mg-app-non-starts",
+              name: "MG App Non-Starts",
+              category: "mg-selection",
+            },
+          ]
+        : []),
       {
         id: "app-starts",
         name: "MG App Starts",
         category: "mg-funnel",
+        value: data.mgApplication.appStarts,
       },
       {
         id: "app-abandons",
@@ -1227,6 +1319,7 @@ const buildSankeyData = (data) => {
         id: "mg-app-completions",
         name: "MG App Completions",
         category: "mg-funnel",
+        value: data.mgApplication.appCompletions,
       },
       {
         id: "mg-non-qualified-apps",
@@ -1237,42 +1330,57 @@ const buildSankeyData = (data) => {
         id: "mg-qualified-apps",
         name: "MG Qualified Apps",
         category: "mg-funnel",
+        value: data.mgApplication.qualifiedApps,
       },
     ],
     links: [
-      {
-        source: "mg-sales-page-visits",
-        target: "exited-sales-page",
-        value:
-          data.mgSalesPageVisits.total !== null &&
-          data.mgApplication.appFormPageVisits !== null
-            ? data.mgSalesPageVisits.total -
-              data.mgApplication.appFormPageVisits
-            : null,
-      },
-      {
-        source: "mg-sales-page-visits",
-        target: "mg-app-form-visits",
-        value: data.mgApplication.appFormPageVisits,
-      },
-      {
-        source: "mg-app-form-visits",
-        target: "mg-app-non-starts",
-        value:
-          data.mgApplication.appFormPageVisits !== null &&
-          data.mgApplication.appStarts !== null
-            ? Math.max(
-                0,
-                data.mgApplication.appFormPageVisits -
-                  data.mgApplication.appStarts
-              )
-            : null,
-      },
-      {
-        source: "mg-app-form-visits",
-        target: "app-starts",
-        value: data.mgApplication.appStarts,
-      },
+      // Only include sales page related flows if sales page visits > 0
+      ...(data.mgSalesPageVisits?.total > 0
+        ? [
+            {
+              source: "mg-sales-page-visits",
+              target: "exited-sales-page",
+              value:
+                data.mgSalesPageVisits.total !== null &&
+                data.mgApplication.appFormPageVisits !== null
+                  ? data.mgSalesPageVisits.total -
+                    data.mgApplication.appFormPageVisits
+                  : null,
+            },
+            ...(data.mgApplication?.appFormPageVisits > 0
+              ? [
+                  {
+                    source: "mg-sales-page-visits",
+                    target: "mg-app-form-visits",
+                    value: data.mgApplication.appFormPageVisits,
+                  },
+                ]
+              : []),
+          ]
+        : []),
+      // Only include app form visits related flows if app form visits > 0
+      ...(data.mgApplication?.appFormPageVisits > 0
+        ? [
+            {
+              source: "mg-app-form-visits",
+              target: "mg-app-non-starts",
+              value:
+                data.mgApplication.appFormPageVisits !== null &&
+                data.mgApplication.appStarts !== null
+                  ? Math.max(
+                      0,
+                      data.mgApplication.appFormPageVisits -
+                        data.mgApplication.appStarts
+                    )
+                  : null,
+            },
+            {
+              source: "mg-app-form-visits",
+              target: "app-starts",
+              value: data.mgApplication.appStarts,
+            },
+          ]
+        : []),
       {
         source: "app-starts",
         target: "app-abandons",
@@ -1295,6 +1403,20 @@ const buildSankeyData = (data) => {
       },
     ],
   };
+
+  // Debug: Log the built Sankey 2 data structure
+  console.log("Built Sankey 2 Data:", {
+    nodes: applicationFunnelData.nodes.map((node) => ({
+      id: node.id,
+      name: node.name,
+      value: node.value,
+    })),
+    links: applicationFunnelData.links.map((link) => ({
+      source: link.source,
+      target: link.target,
+      value: link.value,
+    })),
+  });
 
   // 3. Selection Funnel: MG Qualified Apps → Sales Outcomes
   const selectionFunnelData = {
@@ -1455,6 +1577,7 @@ const ClientAcquisitionDashboard = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [instagramTokenExpired, setInstagramTokenExpired] = useState(false);
   const [dateRange, setDateRange] = useState({
     start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
@@ -1465,8 +1588,12 @@ const ClientAcquisitionDashboard = () => {
   const fetchAcquisitionData = async (startDate, endDate) => {
     setIsLoading(true);
     setError(null);
+    setInstagramTokenExpired(false);
 
     try {
+      console.log(`Fetching acquisition data for ${startDate} to ${endDate}`);
+      console.log("Starting API calls...");
+
       // Fetch data from all three endpoints in parallel
       const [plausibleResponse, airtableResponse, instagramResponse] =
         await Promise.all([
@@ -1480,6 +1607,12 @@ const ClientAcquisitionDashboard = () => {
             `/api/internalstats/instagram?start=${startDate}&end=${endDate}`
           ),
         ]);
+
+      console.log("API responses received:", {
+        plausible: plausibleResponse.status,
+        airtable: airtableResponse.status,
+        instagram: instagramResponse.status,
+      });
 
       if (!plausibleResponse.ok) {
         throw new Error(
@@ -1519,9 +1652,15 @@ const ClientAcquisitionDashboard = () => {
       }
 
       if (!instagramResult.success) {
-        throw new Error(
-          instagramResult.error || "Failed to fetch Instagram data"
-        );
+        // Check if it's a token expiration error
+        if (instagramResult.error === "INSTAGRAM_TOKEN_EXPIRED") {
+          setInstagramTokenExpired(true);
+          // Continue with null Instagram data instead of throwing error
+        } else {
+          throw new Error(
+            instagramResult.error || "Failed to fetch Instagram data"
+          );
+        }
       }
 
       // Debug the API responses
@@ -1580,7 +1719,12 @@ const ClientAcquisitionDashboard = () => {
           ...airtableResult.data.mgApplication, // Airtable data (appStarts, appCompletions, etc.)
         },
         mgSelection: airtableResult.data.mgSelection, // All Airtable data
+        revenue: airtableResult.data.revenue, // Revenue data from Airtable
         interfaceValidation: interfaceValidation, // Calculated interface validation
+        dataGaps: {
+          ...plausibleResult.rawData?.dataGaps, // Data gap analysis from Plausible
+          ...instagramResult.data?.dataGaps, // Instagram data gaps
+        },
       };
 
       console.log("Final combined funnelData:", combinedData);
@@ -1588,10 +1732,25 @@ const ClientAcquisitionDashboard = () => {
         "Final mgSalesPageVisits in state:",
         combinedData.mgSalesPageVisits
       );
+      console.log("Revenue data from Airtable:", airtableResult.data.revenue);
+      console.log("Combined revenue data:", combinedData.revenue);
+
+      // Debug: Log the data being set in funnelData
+      console.log("Setting funnelData with:", {
+        appFormPageVisits: combinedData.mgApplication?.appFormPageVisits,
+        appStarts: combinedData.mgApplication?.appStarts,
+        salesPageTotal: combinedData.mgSalesPageVisits?.total,
+        timestamp: new Date().toISOString(),
+      });
 
       setFunnelData(combinedData);
     } catch (err) {
       console.error("Error fetching acquisition data:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+      });
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -1609,11 +1768,215 @@ const ClientAcquisitionDashboard = () => {
     fetchAcquisitionData(dateRange.start, dateRange.end);
   };
 
+  // Helper function to check if a metric has data gaps
+  const hasDataGaps = (metricType) => {
+    if (!funnelData.dataGaps) return false;
+
+    switch (metricType) {
+      case "salesPage":
+        return (
+          funnelData.dataGaps.salesPage &&
+          funnelData.dataGaps.salesPage.gapCount > 0
+        );
+      case "appForm":
+        return (
+          funnelData.dataGaps.appForm &&
+          funnelData.dataGaps.appForm.gapCount > 0
+        );
+      case "instagramViews":
+        return (
+          funnelData.dataGaps.instagramViews &&
+          funnelData.dataGaps.instagramViews.gapCount > 0
+        );
+      default:
+        return false;
+    }
+  };
+
+  // Helper function to get gap severity for a metric
+  const getGapSeverity = (metricType) => {
+    if (!funnelData.dataGaps) return null;
+
+    let completeness = 1;
+    switch (metricType) {
+      case "salesPage":
+        if (funnelData.dataGaps.salesPage) {
+          completeness = funnelData.dataGaps.salesPage.completeness;
+        }
+        break;
+      case "appForm":
+        if (funnelData.dataGaps.appForm) {
+          completeness = funnelData.dataGaps.appForm.completeness;
+        }
+        break;
+      default:
+        return null;
+    }
+
+    return completeness < 0.9 ? "high" : "medium";
+  };
+
+  // Helper component to display metrics with gap indicators
+  const MetricWithGapIndicator = ({ value, metricType, className = "" }) => {
+    const hasGaps = hasDataGaps(metricType);
+    const severity = getGapSeverity(metricType);
+
+    if (!hasGaps) {
+      return <span className={className}>{value}</span>;
+    }
+
+    const indicatorColor = "text-yellow-600";
+    const indicatorEmoji = "⚠️";
+
+    return (
+      <span className={`${className} relative`}>
+        {value}
+        <span
+          className={`ml-1 ${indicatorColor}`}
+          title={`Data gaps detected in ${metricType} metric`}
+        >
+          {indicatorEmoji}
+        </span>
+      </span>
+    );
+  };
+
+  // Helper function to generate data gap warnings
+  const getDataGapWarnings = () => {
+    const warnings = [];
+
+    if (!funnelData.dataGaps) return warnings;
+
+    // Helper function to format date ranges
+    const formatDateRanges = (gaps) => {
+      if (!gaps || gaps.length === 0) return [];
+
+      // Sort dates
+      const sortedGaps = [...gaps].sort();
+      const ranges = [];
+      let start = sortedGaps[0];
+      let end = start;
+
+      for (let i = 1; i < sortedGaps.length; i++) {
+        const current = sortedGaps[i];
+        const prev = sortedGaps[i - 1];
+
+        // Check if dates are consecutive
+        const currentDate = new Date(current);
+        const prevDate = new Date(prev);
+        const diffDays = (currentDate - prevDate) / (1000 * 60 * 60 * 24);
+
+        if (diffDays === 1) {
+          // Consecutive date, extend range
+          end = current;
+        } else {
+          // Gap in dates, save current range and start new one
+          ranges.push({ start, end });
+          start = current;
+          end = current;
+        }
+      }
+
+      // Add the last range
+      ranges.push({ start, end });
+
+      // Format ranges
+      return ranges.map((range) => {
+        if (range.start === range.end) {
+          return range.start;
+        } else {
+          return `${range.start} to ${range.end}`;
+        }
+      });
+    };
+
+    // Collect all data gaps
+    const gapMetrics = [];
+    let totalGapCount = 0;
+
+    // Check Plausible data gaps (all three metrics share the same gaps since they use the same tracking)
+    if (
+      funnelData.dataGaps.totalVisitors &&
+      funnelData.dataGaps.totalVisitors.gapCount > 0
+    ) {
+      const completeness = funnelData.dataGaps.totalVisitors.completeness; // Backend already sends as percentage
+      const dateRanges = funnelData.dataGaps.totalVisitors.gaps.map((gap) =>
+        gap.start === gap.end ? gap.start : `${gap.start} to ${gap.end}`
+      );
+      const rangesText =
+        dateRanges.length <= 3
+          ? dateRanges.join(", ")
+          : `${dateRanges.slice(0, 3).join(", ")} and ${
+              dateRanges.length - 3
+            } more`;
+
+      gapMetrics.push({
+        name: "Total Visitors, Sales Page Visits, App Form Visits",
+        gapCount: funnelData.dataGaps.totalVisitors.gapCount,
+        completeness: completeness,
+        rangesText: rangesText,
+        severity: "medium",
+      });
+
+      totalGapCount += funnelData.dataGaps.totalVisitors.gapCount;
+    }
+
+    // Check Instagram views gaps
+    if (
+      funnelData.dataGaps.instagramViews &&
+      funnelData.dataGaps.instagramViews.gapCount > 0
+    ) {
+      const affectedRange =
+        funnelData.dataGaps.instagramViews.affectedDateRange;
+      const rangesText = `${affectedRange.start} to ${affectedRange.end}`;
+
+      gapMetrics.push({
+        name: "Instagram Views",
+        gapCount: funnelData.dataGaps.instagramViews.gapCount,
+        completeness: funnelData.dataGaps.instagramViews.completeness,
+        rangesText: rangesText,
+        severity: "medium",
+      });
+
+      totalGapCount += funnelData.dataGaps.instagramViews.gapCount;
+    }
+
+    // Create consolidated warning if any gaps exist
+    if (gapMetrics.length > 0) {
+      const metricsText = gapMetrics
+        .map(
+          (metric) =>
+            `${metric.name}: Missing ${metric.gapCount} days: ${metric.rangesText}. ${metric.completeness}% complete.`
+        )
+        .join("\n");
+
+      warnings.push({
+        type: "warning",
+        title: "Data Gaps Detected",
+        message: `${metricsText}`,
+        details: gapMetrics.map((metric) => ({
+          name: metric.name,
+          gapCount: metric.gapCount,
+          completeness: metric.completeness,
+          rangesText: metric.rangesText,
+        })),
+        metric: "",
+        severity: "medium",
+      });
+    }
+
+    return warnings;
+  };
+
   const getDateRangePresets = () => {
     const today = new Date();
     const formatDate = (date) => date.toISOString().split("T")[0];
 
     return {
+      Today: {
+        start: formatDate(today),
+        end: formatDate(today),
+      },
       "Last 7 days": {
         start: formatDate(new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)),
         end: formatDate(today),
@@ -1662,8 +2025,17 @@ const ClientAcquisitionDashboard = () => {
 
   // Load data on component mount
   useEffect(() => {
+    console.log("Component mounted, fetching data with dateRange:", dateRange);
     fetchAcquisitionData(dateRange.start, dateRange.end);
   }, []);
+
+  // Debug: Log funnelData before building Sankey
+  console.log("About to build Sankey with funnelData:", {
+    appFormPageVisits: funnelData.mgApplication?.appFormPageVisits,
+    appStarts: funnelData.mgApplication?.appStarts,
+    salesPageTotal: funnelData.mgSalesPageVisits?.total,
+    timestamp: new Date().toISOString(),
+  });
 
   const { trafficFunnelData, applicationFunnelData, selectionFunnelData } =
     buildSankeyData(funnelData);
@@ -1673,18 +2045,61 @@ const ClientAcquisitionDashboard = () => {
   const emailOpens = funnelData.email.opens;
   const paidConversions = funnelData.mgSelection.paid;
 
-  // Only calculate if we have real data
-  const totalTraffic =
-    igViews !== null && emailOpens !== null ? igViews + emailOpens : null;
+  // Only calculate if we have real data (email data not available, so just use IG views)
+  const totalTraffic = igViews !== null ? igViews : null;
 
   const summaryStats = {
     totalViews: totalTraffic !== null ? totalTraffic : "N/A",
-    totalConversions: paidConversions !== null ? paidConversions : "N/A",
-    conversionRate:
-      totalTraffic !== null && paidConversions !== null && totalTraffic > 0
-        ? ((paidConversions / totalTraffic) * 100).toFixed(1) + "%"
+    salesPageVisits:
+      funnelData.mgSalesPageVisits?.total !== null &&
+      funnelData.mgSalesPageVisits?.total !== undefined
+        ? funnelData.mgSalesPageVisits.total
         : "N/A",
-    revenue: paidConversions !== null ? paidConversions * 1000 : "N/A",
+    appFormVisits:
+      funnelData.mgApplication?.appFormPageVisits !== null &&
+      funnelData.mgApplication?.appFormPageVisits !== undefined
+        ? funnelData.mgApplication.appFormPageVisits
+        : "N/A",
+    completedApps:
+      funnelData.mgApplication?.appCompletions !== null &&
+      funnelData.mgApplication?.appCompletions !== undefined
+        ? funnelData.mgApplication.appCompletions
+        : "N/A",
+    qualifiedApps:
+      funnelData.mgApplication?.qualifiedApps !== null &&
+      funnelData.mgApplication?.qualifiedApps !== undefined
+        ? funnelData.mgApplication.qualifiedApps
+        : "N/A",
+    contacted:
+      funnelData.mgSelection?.contacted !== null &&
+      funnelData.mgSelection?.contacted !== undefined
+        ? funnelData.mgSelection.contacted
+        : "N/A",
+    accepted:
+      funnelData.mgSelection?.acceptedNotPaid !== null &&
+      funnelData.mgSelection?.acceptedNotPaid !== undefined
+        ? funnelData.mgSelection.acceptedNotPaid
+        : "N/A",
+    paid:
+      funnelData.mgSelection?.paid !== null &&
+      funnelData.mgSelection?.paid !== undefined
+        ? funnelData.mgSelection.paid
+        : "N/A",
+    sales:
+      funnelData.revenue?.mgPaymentsDay !== null &&
+      funnelData.revenue?.mgPaymentsDay !== undefined
+        ? funnelData.revenue.mgPaymentsDay
+        : "N/A",
+    refunded:
+      funnelData.revenue?.mgRefundsDay !== null &&
+      funnelData.revenue?.mgRefundsDay !== undefined
+        ? funnelData.revenue.mgRefundsDay
+        : "N/A",
+    netSales:
+      funnelData.revenue?.mgNetPayDay !== null &&
+      funnelData.revenue?.mgNetPayDay !== undefined
+        ? funnelData.revenue.mgNetPayDay
+        : "N/A",
   };
 
   return (
@@ -1824,67 +2239,204 @@ const ClientAcquisitionDashboard = () => {
             <div className="mt-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
               <div className="flex items-center">
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                Loading acquisition data from Plausible Analytics...
+                Loading acquisition data...
               </div>
             </div>
           )}
+
+          {/* Instagram Token Expiration Warning */}
+          {instagramTokenExpired && (
+            <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+              <div className="flex items-center">
+                <span className="text-lg mr-2">⚠️</span>
+                <div>
+                  <strong>Instagram Access Token Expired</strong>
+                  <p className="text-sm mt-1">
+                    The Instagram access token has expired. Instagram data is
+                    not available. Please update the{" "}
+                    <code>INSTAGRAM_ACCESS_TOKEN</code> environment variable
+                    with a fresh token from the Instagram Graph API.
+                  </p>
+                  <p className="text-sm mt-2">
+                    <a
+                      href="https://developers.facebook.com/tools/explorer/2213645562127704/?method=GET&path=17841409362793429%2Finsights%3Fpretty%3D1%26since%3Dtoday%26metric%3Dviews%26metric_type%3Dtotal_value%26period%3Dday&version=v23.0"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline font-medium"
+                    >
+                      🔗 Get New Token from Facebook Graph API Explorer
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Data Gap Warnings */}
+          {getDataGapWarnings().map((warning, index) => (
+            <div
+              key={index}
+              className="mt-4 p-3 border rounded bg-gray-800 border-yellow-400"
+            >
+              <div className="flex items-center">
+                <span className="text-lg mr-2">⚠️</span>
+                <div>
+                  <strong>{warning.title}</strong>
+                  <div className="text-sm mt-1 whitespace-pre-line">
+                    {warning.message}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
 
           {/* Data Source Info */}
           {!isLoading && !error && (
             <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
               <div className="flex items-center">
                 <span className="text-sm">
-                  📊 Data sources: <strong>Plausible Analytics</strong> (page
-                  visits) + <strong>Airtable</strong> (app completions &
-                  outcomes) | Date range: {dateRange.start} to {dateRange.end}
+                  📊 Data sources: <strong>Instagram </strong> (traffic),{" "}
+                  <strong>Plausible </strong> (page visits),{" "}
+                  <strong>Airtable</strong> (application & outcomes)
                 </span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total Views
-            </h3>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              {typeof summaryStats.totalViews === "number"
-                ? summaryStats.totalViews.toLocaleString()
-                : summaryStats.totalViews}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total Conversions
-            </h3>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              {summaryStats.totalConversions}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Conversion Rate
-            </h3>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              {summaryStats.conversionRate}%
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Revenue
-            </h3>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-              {typeof summaryStats.revenue === "number"
-                ? `$${summaryStats.revenue.toLocaleString()}`
-                : summaryStats.revenue}
-            </p>
+        {/* Summary Line */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+          <div className="flex flex-wrap gap-8 items-center justify-between">
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Total Views
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                <MetricWithGapIndicator
+                  value={
+                    typeof summaryStats.totalViews === "number"
+                      ? summaryStats.totalViews.toLocaleString()
+                      : summaryStats.totalViews
+                  }
+                  metricType="instagramViews"
+                />
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Sales Page Visits
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                <MetricWithGapIndicator
+                  value={
+                    typeof summaryStats.salesPageVisits === "number"
+                      ? summaryStats.salesPageVisits.toLocaleString()
+                      : summaryStats.salesPageVisits
+                  }
+                  metricType="salesPage"
+                />
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                App Form Visits
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                <MetricWithGapIndicator
+                  value={
+                    typeof summaryStats.appFormVisits === "number"
+                      ? summaryStats.appFormVisits.toLocaleString()
+                      : summaryStats.appFormVisits
+                  }
+                  metricType="appForm"
+                />
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Completed Apps
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                {typeof summaryStats.completedApps === "number"
+                  ? summaryStats.completedApps.toLocaleString()
+                  : summaryStats.completedApps}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Qualified Apps
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                {typeof summaryStats.qualifiedApps === "number"
+                  ? summaryStats.qualifiedApps.toLocaleString()
+                  : summaryStats.qualifiedApps}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Contacted
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                {typeof summaryStats.contacted === "number"
+                  ? summaryStats.contacted.toLocaleString()
+                  : summaryStats.contacted}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Accepted
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                {typeof summaryStats.accepted === "number"
+                  ? summaryStats.accepted.toLocaleString()
+                  : summaryStats.accepted}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Paid
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                {typeof summaryStats.paid === "number"
+                  ? summaryStats.paid.toLocaleString()
+                  : summaryStats.paid}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Sales
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                {typeof summaryStats.sales === "number"
+                  ? `$${summaryStats.sales.toLocaleString()}`
+                  : summaryStats.sales}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Refunded
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                {typeof summaryStats.refunded === "number"
+                  ? `$${(0 - summaryStats.refunded).toLocaleString()}`
+                  : summaryStats.refunded}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Net Sales
+              </div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">
+                {typeof summaryStats.netSales === "number"
+                  ? `$${summaryStats.netSales.toLocaleString()}`
+                  : summaryStats.netSales}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Sankey Interface Validation */}
-        {funnelData.interfaceValidation && (
+        {/* Sankey Interface Validation - HIDDEN */}
+        {false && funnelData.interfaceValidation && (
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Sankey Interface Validation
@@ -1900,14 +2452,24 @@ const ClientAcquisitionDashboard = () => {
                     <span>Sankey 1 Output:</span>
                     <span>
                       {funnelData.interfaceValidation.salesPageVisits
-                        .sankey1Output || "N/A"}
+                        .sankey1Output !== null &&
+                      funnelData.interfaceValidation.salesPageVisits
+                        .sankey1Output !== undefined
+                        ? funnelData.interfaceValidation.salesPageVisits
+                            .sankey1Output
+                        : "N/A"}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Sankey 2 Input:</span>
                     <span>
                       {funnelData.interfaceValidation.salesPageVisits
-                        .sankey2Input || "N/A"}
+                        .sankey2Input !== null &&
+                      funnelData.interfaceValidation.salesPageVisits
+                        .sankey2Input !== undefined
+                        ? funnelData.interfaceValidation.salesPageVisits
+                            .sankey2Input
+                        : "N/A"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -1945,14 +2507,24 @@ const ClientAcquisitionDashboard = () => {
                     <span>Sankey 2 Output:</span>
                     <span>
                       {funnelData.interfaceValidation.qualifiedApps
-                        .sankey2Output || "N/A"}
+                        .sankey2Output !== null &&
+                      funnelData.interfaceValidation.qualifiedApps
+                        .sankey2Output !== undefined
+                        ? funnelData.interfaceValidation.qualifiedApps
+                            .sankey2Output
+                        : "N/A"}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Sankey 3 Input:</span>
                     <span>
                       {funnelData.interfaceValidation.qualifiedApps
-                        .sankey3Input || "N/A"}
+                        .sankey3Input !== null &&
+                      funnelData.interfaceValidation.qualifiedApps
+                        .sankey3Input !== undefined
+                        ? funnelData.interfaceValidation.qualifiedApps
+                            .sankey3Input
+                        : "N/A"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -2003,82 +2575,118 @@ const ClientAcquisitionDashboard = () => {
           </div>
         )}
 
-        {/* Data Consistency Check */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Data Consistency Check
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Qualified Apps Consistency */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-900 dark:text-white">
-                Qualified Apps Consistency
-              </h4>
-              <div className="text-sm space-y-1">
-                <div className="flex justify-between">
-                  <span>Source of Truth:</span>
-                  <span>
-                    {funnelData.mgApplication?.qualifiedApps || "N/A"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Sankey 2 Output:</span>
-                  <span>
-                    {funnelData.mgApplication?.qualifiedApps || "N/A"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Sankey 3 Input:</span>
-                  <span>
-                    {funnelData.mgApplication?.qualifiedApps || "N/A"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Status:</span>
-                  <span className="font-medium text-green-600">
-                    ✅ Consistent
-                  </span>
+        {/* Data Consistency Check - HIDDEN */}
+        {false && (
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Data Consistency Check
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Qualified Apps Consistency */}
+              <div className="space-y-2">
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  Qualified Apps Consistency
+                </h4>
+                <div className="text-sm space-y-1">
+                  <div className="flex justify-between">
+                    <span>Source of Truth:</span>
+                    <span>
+                      {funnelData.mgApplication?.qualifiedApps !== null &&
+                      funnelData.mgApplication?.qualifiedApps !== undefined
+                        ? funnelData.mgApplication.qualifiedApps
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Sankey 2 Output:</span>
+                    <span>
+                      {funnelData.mgApplication?.qualifiedApps !== null &&
+                      funnelData.mgApplication?.qualifiedApps !== undefined
+                        ? funnelData.mgApplication.qualifiedApps
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Sankey 3 Input:</span>
+                    <span>
+                      {funnelData.mgApplication?.qualifiedApps !== null &&
+                      funnelData.mgApplication?.qualifiedApps !== undefined
+                        ? funnelData.mgApplication.qualifiedApps
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Status:</span>
+                    <span className="font-medium text-green-600">
+                      ✅ Consistent
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Selection States Sum Check */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-900 dark:text-white">
-                Selection States Sum Check
-              </h4>
-              <div className="text-sm space-y-1">
-                <div className="flex justify-between">
-                  <span>Qualified Apps:</span>
-                  <span>
-                    {funnelData.mgApplication?.qualifiedApps || "N/A"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Sum of Selection States:</span>
-                  <span>
-                    {funnelData.mgSelection
-                      ? (funnelData.mgSelection.rejectedWoCovo || 0) +
-                        (funnelData.mgSelection.contacted || 0) +
-                        (funnelData.mgSelection.unresponsive || 0) +
-                        (funnelData.mgSelection.begunConversation || 0) +
-                        (funnelData.mgSelection.becameUnresponsive || 0) +
-                        (funnelData.mgSelection.rejectedBasedOnConvo || 0) +
-                        (funnelData.mgSelection.acceptedNotPaid || 0) +
-                        (funnelData.mgSelection.rejectedAfterAcceptance || 0) +
-                        (funnelData.mgSelection.paid || 0) +
-                        (funnelData.mgSelection.notContactedOrRejected || 0) +
-                        (funnelData.mgSelection.noResponseYet || 0) +
-                        (funnelData.mgSelection.noDecisionYet || 0) +
-                        (funnelData.mgSelection.noOutcomeYet || 0)
-                      : "N/A"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Status:</span>
-                  <span
-                    className={`font-medium ${
-                      funnelData.mgApplication?.qualifiedApps ===
+              {/* Selection States Sum Check */}
+              <div className="space-y-2">
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  Selection States Sum Check
+                </h4>
+                <div className="text-sm space-y-1">
+                  <div className="flex justify-between">
+                    <span>Qualified Apps:</span>
+                    <span>
+                      {funnelData.mgApplication?.qualifiedApps !== null &&
+                      funnelData.mgApplication?.qualifiedApps !== undefined
+                        ? funnelData.mgApplication.qualifiedApps
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Sum of Selection States:</span>
+                    <span>
+                      {funnelData.mgSelection
+                        ? (funnelData.mgSelection.rejectedWoCovo || 0) +
+                          (funnelData.mgSelection.contacted || 0) +
+                          (funnelData.mgSelection.unresponsive || 0) +
+                          (funnelData.mgSelection.begunConversation || 0) +
+                          (funnelData.mgSelection.becameUnresponsive || 0) +
+                          (funnelData.mgSelection.rejectedBasedOnConvo || 0) +
+                          (funnelData.mgSelection.acceptedNotPaid || 0) +
+                          (funnelData.mgSelection.rejectedAfterAcceptance ||
+                            0) +
+                          (funnelData.mgSelection.paid || 0) +
+                          (funnelData.mgSelection.notContactedOrRejected || 0) +
+                          (funnelData.mgSelection.noResponseYet || 0) +
+                          (funnelData.mgSelection.noDecisionYet || 0) +
+                          (funnelData.mgSelection.noOutcomeYet || 0)
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Status:</span>
+                    <span
+                      className={`font-medium ${
+                        funnelData.mgApplication?.qualifiedApps ===
+                        (funnelData.mgSelection
+                          ? (funnelData.mgSelection.rejectedWoCovo || 0) +
+                            (funnelData.mgSelection.contacted || 0) +
+                            (funnelData.mgSelection.unresponsive || 0) +
+                            (funnelData.mgSelection.begunConversation || 0) +
+                            (funnelData.mgSelection.becameUnresponsive || 0) +
+                            (funnelData.mgSelection.rejectedBasedOnConvo || 0) +
+                            (funnelData.mgSelection.acceptedNotPaid || 0) +
+                            (funnelData.mgSelection.rejectedAfterAcceptance ||
+                              0) +
+                            (funnelData.mgSelection.paid || 0) +
+                            (funnelData.mgSelection.notContactedOrRejected ||
+                              0) +
+                            (funnelData.mgSelection.noResponseYet || 0) +
+                            (funnelData.mgSelection.noDecisionYet || 0) +
+                            (funnelData.mgSelection.noOutcomeYet || 0)
+                          : null)
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {funnelData.mgApplication?.qualifiedApps ===
                       (funnelData.mgSelection
                         ? (funnelData.mgSelection.rejectedWoCovo || 0) +
                           (funnelData.mgSelection.contacted || 0) +
@@ -2095,34 +2703,15 @@ const ClientAcquisitionDashboard = () => {
                           (funnelData.mgSelection.noDecisionYet || 0) +
                           (funnelData.mgSelection.noOutcomeYet || 0)
                         : null)
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {funnelData.mgApplication?.qualifiedApps ===
-                    (funnelData.mgSelection
-                      ? (funnelData.mgSelection.rejectedWoCovo || 0) +
-                        (funnelData.mgSelection.contacted || 0) +
-                        (funnelData.mgSelection.unresponsive || 0) +
-                        (funnelData.mgSelection.begunConversation || 0) +
-                        (funnelData.mgSelection.becameUnresponsive || 0) +
-                        (funnelData.mgSelection.rejectedBasedOnConvo || 0) +
-                        (funnelData.mgSelection.acceptedNotPaid || 0) +
-                        (funnelData.mgSelection.rejectedAfterAcceptance || 0) +
-                        (funnelData.mgSelection.paid || 0) +
-                        (funnelData.mgSelection.notContactedOrRejected || 0) +
-                        (funnelData.mgSelection.noResponseYet || 0) +
-                        (funnelData.mgSelection.noDecisionYet || 0) +
-                        (funnelData.mgSelection.noOutcomeYet || 0)
-                      : null)
-                      ? "✅ Consistent"
-                      : "❌ Discrepancy"}
-                  </span>
+                        ? "✅ Consistent"
+                        : "❌ Discrepancy"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Data Source of Truth */}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
@@ -2138,9 +2727,14 @@ const ClientAcquisitionDashboard = () => {
               <div className="text-sm space-y-1">
                 <div>
                   IG Views:{" "}
-                  {funnelData.ig.views !== null
-                    ? funnelData.ig.views.toLocaleString()
-                    : "N/A"}
+                  <MetricWithGapIndicator
+                    value={
+                      funnelData.ig.views !== null
+                        ? funnelData.ig.views.toLocaleString()
+                        : "N/A"
+                    }
+                    metricType="instagramViews"
+                  />
                 </div>
                 <div>
                   IG Reach:{" "}
@@ -2175,7 +2769,13 @@ const ClientAcquisitionDashboard = () => {
                 MG Sales Page Visits
               </h4>
               <div className="text-sm space-y-0">
-                <div>Visits: {funnelData.mgSalesPageVisits.total}</div>
+                <div>
+                  Visits:{" "}
+                  <MetricWithGapIndicator
+                    value={funnelData.mgSalesPageVisits.total}
+                    metricType="salesPage"
+                  />
+                </div>
                 <div className="pl-2">
                   IG:{" "}
                   {funnelData.mgSalesPageVisits.fromIgBio !== null ||
@@ -2235,25 +2835,24 @@ const ClientAcquisitionDashboard = () => {
                 MG Application
               </h4>
               <div className="text-sm space-y-1">
-                <div>Visits: {funnelData.mgApplication.appFormPageVisits}</div>
+                <div>
+                  Visits:{" "}
+                  <MetricWithGapIndicator
+                    value={funnelData.mgApplication.appFormPageVisits}
+                    metricType="appForm"
+                  />
+                </div>
                 <div className="pl-2">
                   Non-Starts:{" "}
                   {funnelData.mgApplication.appFormPageVisits !== null &&
                   funnelData.mgApplication.appStarts !== null
-                    ? funnelData.mgApplication.appFormPageVisits -
-                      funnelData.mgApplication.appStarts
+                    ? (() => {
+                        const nonStarts =
+                          funnelData.mgApplication.appFormPageVisits -
+                          funnelData.mgApplication.appStarts;
+                        return nonStarts < 0 ? "?" : nonStarts;
+                      })()
                     : "N/A"}
-                  {funnelData.mgApplication.appFormPageVisits !== null &&
-                    funnelData.mgApplication.appStarts !== null &&
-                    funnelData.mgApplication.appStarts >
-                      funnelData.mgApplication.appFormPageVisits && (
-                      <>
-                        <br />
-                        <span className="text-orange-600 text-xs ml-1">
-                          (⚠️ missing data?)
-                        </span>
-                      </>
-                    )}
                 </div>
                 <div>Starts: {funnelData.mgApplication.appStarts}</div>
                 <div>Abandons: {funnelData.mgApplication.appAbandons}</div>
@@ -2560,7 +3159,7 @@ const ClientAcquisitionDashboard = () => {
               width={1200}
               height={300}
               title="Application Funnel: MG Sales Page Visits → MG Qualified Apps"
-              leftPadding={150}
+              leftPadding={160}
               useLogarithmicScaling={false}
             />
           </div>
@@ -2579,19 +3178,19 @@ const ClientAcquisitionDashboard = () => {
         </div>
 
         {/* Legend */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             Channel Legend
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 px-60">
             {Object.entries(categoryColors).map(([category, color]) => (
               <div key={category} className="flex items-center space-x-2">
                 <div
                   className="w-4 h-4 rounded"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">
-                  {category.replace("-", " ")}
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  {categoryNames[category]}
                 </span>
               </div>
             ))}
