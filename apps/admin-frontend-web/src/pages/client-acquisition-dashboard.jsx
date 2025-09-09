@@ -2652,11 +2652,6 @@ const ClientAcquisitionDashboard = () => {
 
             {/* Date Range Presets */}
             <div className="mb-4">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                Quick Date Ranges: 💡 Left click: Set main date range | Right
-                click: Set comparison (or previous period if already selected)
-              </label>
-
               {/* Quick Presets */}
               <div className="mb-3">
                 <div className="flex flex-wrap gap-2">
