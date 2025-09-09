@@ -2258,8 +2258,8 @@ const ClientAcquisitionDashboard = () => {
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 underline font-medium"
                     >
-                      Update the Instagram access token in the Render
-                      Environment Variables.
+                      If prod, update the Instagram access token in the Render
+                      Environment Variables. (If dev, update .env file)
                     </a>
                   </p>
                 </div>
