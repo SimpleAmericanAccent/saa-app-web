@@ -80,6 +80,7 @@ const SankeyDiagram = ({
   height = 400,
   title = "",
   leftPadding = 1,
+  useLogarithmicScaling = false,
 }) => {
   const svgRef = useRef();
 
@@ -214,78 +215,127 @@ const SankeyDiagram = ({
       .attr("fill", (d) => colorScale(d.category))
       .append("title")
       .text((d) => {
-        // Use the original data values directly for display
         let displayValue = null;
-
-        if (d.id === "ig-views") displayValue = originalData?.ig?.views;
-        else if (d.id === "ig-extra-views")
-          displayValue =
-            originalData?.ig?.views && originalData?.ig?.reach
-              ? originalData.ig.views - originalData.ig.reach
-              : null;
-        else if (d.id === "ig-reach") displayValue = originalData?.ig?.reach;
-        else if (d.id === "ig-profile-visits")
-          displayValue = originalData?.ig?.profileVisits;
-        else if (d.id === "ig-bio-link-clicks")
-          displayValue = originalData?.ig?.bioLinkClicks;
-        else if (d.id === "mg-sp-via-ig-bio")
-          displayValue = originalData?.mgSalesPageVisits?.fromIgBio;
-        else if (d.id === "mg-sp-via-ig-story")
-          displayValue = originalData?.mgSalesPageVisits?.fromIgStory;
-        else if (d.id === "mg-sp-via-ig-manychat")
-          displayValue = originalData?.mgSalesPageVisits?.fromIgManychat;
-        else if (d.id === "mg-sp-via-ig-dm")
-          displayValue = originalData?.mgSalesPageVisits?.fromIgDm;
-        else if (d.id === "mg-sp-via-email-broadcast")
-          displayValue = originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
-        else if (d.id === "mg-sp-via-email-automation")
-          displayValue = originalData?.mgSalesPageVisits?.fromEmailAutomations;
-        else if (d.id === "mg-sp-via-unknown")
-          displayValue = originalData?.mgSalesPageVisits?.fromUnknown;
-        else if (d.id === "mg-sales-page-visits")
-          displayValue = originalData?.mgSalesPageVisits?.total;
-        else displayValue = d.value; // fallback to node value
-
-        if (displayValue === null || displayValue === undefined) {
-          return `${d.name}\nCount: N/A\nPercentage: N/A`;
-        }
-
-        // Calculate percentage based on the most relevant parent node
         let totalValue = 1;
         let percentageLabel = "Percentage";
 
-        // For Instagram funnel nodes, calculate relative to ig-views
-        if (
-          [
-            "ig-views",
-            "ig-extra-views",
-            "ig-reach",
-            "ig-profile-visits",
-            "ig-bio-link-clicks",
-          ].includes(d.id)
-        ) {
-          totalValue = originalData?.ig?.views || 1;
-          percentageLabel = "of IG Views";
+        if (useLogarithmicScaling) {
+          // For Sankey 1 (logarithmic scaling): Use originalData for display values
+          if (d.id === "ig-views") displayValue = originalData?.ig?.views;
+          else if (d.id === "ig-extra-views")
+            displayValue =
+              originalData?.ig?.views && originalData?.ig?.reach
+                ? originalData.ig.views - originalData.ig.reach
+                : null;
+          else if (d.id === "ig-reach") displayValue = originalData?.ig?.reach;
+          else if (d.id === "ig-profile-visits")
+            displayValue = originalData?.ig?.profileVisits;
+          else if (d.id === "ig-bio-link-clicks")
+            displayValue = originalData?.ig?.bioLinkClicks;
+          else if (d.id === "ig-profile-visits-no-bio-click")
+            displayValue =
+              originalData?.ig?.profileVisits && originalData?.ig?.bioLinkClicks
+                ? originalData.ig.profileVisits - originalData.ig.bioLinkClicks
+                : null;
+          else if (d.id === "ig-reach-no-profile-visit")
+            displayValue =
+              originalData?.ig?.reach && originalData?.ig?.profileVisits
+                ? originalData.ig.reach - originalData.ig.profileVisits
+                : null;
+          else if (d.id === "ig-views-no-profile-visit")
+            displayValue =
+              originalData?.ig?.views && originalData?.ig?.profileVisits
+                ? originalData.ig.views - originalData.ig.profileVisits
+                : null;
+          else if (d.id === "mg-sp-via-ig-bio")
+            displayValue = originalData?.mgSalesPageVisits?.fromIgBio;
+          else if (d.id === "mg-sp-via-ig-story")
+            displayValue = originalData?.mgSalesPageVisits?.fromIgStory;
+          else if (d.id === "mg-sp-via-ig-manychat")
+            displayValue = originalData?.mgSalesPageVisits?.fromIgManychat;
+          else if (d.id === "mg-sp-via-ig-dm")
+            displayValue = originalData?.mgSalesPageVisits?.fromIgDm;
+          else if (d.id === "mg-sp-via-email-broadcast")
+            displayValue = originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
+          else if (d.id === "mg-sp-via-email-automation")
+            displayValue =
+              originalData?.mgSalesPageVisits?.fromEmailAutomations;
+          else if (d.id === "mg-sp-via-unknown")
+            displayValue = originalData?.mgSalesPageVisits?.fromUnknown;
+          else if (d.id === "mg-sales-page-visits")
+            displayValue = originalData?.mgSalesPageVisits?.total;
+          else displayValue = d.value; // fallback to node value
+
+          // Calculate percentage based on the most relevant parent node for Sankey 1
+          if (
+            [
+              "ig-views",
+              "ig-extra-views",
+              "ig-reach",
+              "ig-profile-visits",
+              "ig-bio-link-clicks",
+            ].includes(d.id)
+          ) {
+            totalValue = originalData?.ig?.views || 1;
+            percentageLabel = "of IG Views";
+          } else if (
+            [
+              "mg-sp-via-ig-bio",
+              "mg-sp-via-ig-story",
+              "mg-sp-via-ig-manychat",
+              "mg-sp-via-ig-dm",
+              "mg-sp-via-email-broadcast",
+              "mg-sp-via-email-automation",
+              "mg-sp-via-unknown",
+            ].includes(d.id)
+          ) {
+            totalValue = originalData?.mgSalesPageVisits?.total || 1;
+            percentageLabel = "of Total SP Visits";
+          } else if (d.id === "mg-sales-page-visits") {
+            totalValue = originalData?.mgSalesPageVisits?.total || 1;
+            percentageLabel = "of Total SP Visits";
+          }
+        } else {
+          // For Sankey 2 & 3 (regular values): Use d.value directly
+          displayValue = d.value;
+
+          // Calculate percentage based on the most relevant parent node for Sankey 2 & 3
+          if (d.id === "mg-sales-page-visits") {
+            totalValue = originalData?.mgSalesPageVisits?.total || 1;
+            percentageLabel = "of Total SP Visits";
+          } else if (
+            [
+              "exited-sales-page",
+              "mg-app-form-visits",
+              "mg-app-non-starts",
+            ].includes(d.id)
+          ) {
+            totalValue = originalData?.mgSalesPageVisits?.total || 1;
+            percentageLabel = "of Total SP Visits";
+          } else if (d.id === "mg-qualified-apps") {
+            totalValue = originalData?.mgApplication?.qualifiedApps || 1;
+            percentageLabel = "of Qualified Apps";
+          } else if (
+            [
+              "not-contacted-or-rejected",
+              "contacted",
+              "rejected-w-o-convo",
+              "unresponsive",
+              "begun-conversation",
+              "became-unresponsive",
+              "rejected-based-on-convo",
+              "accepted",
+              "rejected-after-acceptance",
+              "paid",
+            ].includes(d.id)
+          ) {
+            totalValue = originalData?.mgApplication?.qualifiedApps || 1;
+            percentageLabel = "of Qualified Apps";
+          }
         }
-        // For MG sales page sources, calculate relative to total sales page visits
-        else if (
-          [
-            "mg-sp-via-ig-bio",
-            "mg-sp-via-ig-story",
-            "mg-sp-via-ig-manychat",
-            "mg-sp-via-ig-dm",
-            "mg-sp-via-email-broadcast",
-            "mg-sp-via-email-automation",
-            "mg-sp-via-unknown",
-          ].includes(d.id)
-        ) {
-          totalValue = originalData?.mgSalesPageVisits?.total || 1;
-          percentageLabel = "of Total SP Visits";
-        }
-        // For total sales page visits, show 100%
-        else if (d.id === "mg-sales-page-visits") {
-          totalValue = originalData?.mgSalesPageVisits?.total || 1;
-          percentageLabel = "of Total SP Visits";
+
+        if (displayValue === null || displayValue === undefined) {
+          return `${d.name}\nCount: N/A\nPercentage: N/A`;
         }
 
         return `${
@@ -346,87 +396,100 @@ const SankeyDiagram = ({
       })
       .append("title")
       .text((d) => {
-        // Get original values for accurate percentage calculation
-        let sourceOriginalValue = null;
-        let flowOriginalValue = null;
+        let sourceValue = null;
+        let flowValue = null;
 
-        // Get source original value
-        if (d.source.id === "ig-views")
-          sourceOriginalValue = originalData?.ig?.views;
-        else if (d.source.id === "ig-extra-views")
-          sourceOriginalValue =
-            originalData?.ig?.views && originalData?.ig?.reach
-              ? originalData.ig.views - originalData.ig.reach
-              : null;
-        else if (d.source.id === "ig-reach")
-          sourceOriginalValue = originalData?.ig?.reach;
-        else if (d.source.id === "ig-profile-visits")
-          sourceOriginalValue = originalData?.ig?.profileVisits;
-        else if (d.source.id === "ig-bio-link-clicks")
-          sourceOriginalValue = originalData?.ig?.bioLinkClicks;
-        else if (d.source.id === "mg-sp-via-ig-bio")
-          sourceOriginalValue = originalData?.mgSalesPageVisits?.fromIgBio;
-        else if (d.source.id === "mg-sp-via-ig-story")
-          sourceOriginalValue = originalData?.mgSalesPageVisits?.fromIgStory;
-        else if (d.source.id === "mg-sp-via-ig-manychat")
-          sourceOriginalValue = originalData?.mgSalesPageVisits?.fromIgManychat;
-        else if (d.source.id === "mg-sp-via-ig-dm")
-          sourceOriginalValue = originalData?.mgSalesPageVisits?.fromIgDm;
-        else if (d.source.id === "mg-sp-via-email-broadcast")
-          sourceOriginalValue =
-            originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
-        else if (d.source.id === "mg-sp-via-email-automation")
-          sourceOriginalValue =
-            originalData?.mgSalesPageVisits?.fromEmailAutomations;
-        else if (d.source.id === "mg-sp-via-unknown")
-          sourceOriginalValue = originalData?.mgSalesPageVisits?.fromUnknown;
-        else if (d.source.id === "mg-sales-page-visits")
-          sourceOriginalValue = originalData?.mgSalesPageVisits?.total;
+        if (useLogarithmicScaling) {
+          // For Sankey 1 (logarithmic scaling): Use originalData for accurate values
+          // Get source original value
+          if (d.source.id === "ig-views") sourceValue = originalData?.ig?.views;
+          else if (d.source.id === "ig-extra-views")
+            sourceValue =
+              originalData?.ig?.views && originalData?.ig?.reach
+                ? originalData.ig.views - originalData.ig.reach
+                : null;
+          else if (d.source.id === "ig-reach")
+            sourceValue = originalData?.ig?.reach;
+          else if (d.source.id === "ig-profile-visits")
+            sourceValue = originalData?.ig?.profileVisits;
+          else if (d.source.id === "ig-bio-link-clicks")
+            sourceValue = originalData?.ig?.bioLinkClicks;
+          else if (d.source.id === "mg-sp-via-ig-bio")
+            sourceValue = originalData?.mgSalesPageVisits?.fromIgBio;
+          else if (d.source.id === "mg-sp-via-ig-story")
+            sourceValue = originalData?.mgSalesPageVisits?.fromIgStory;
+          else if (d.source.id === "mg-sp-via-ig-manychat")
+            sourceValue = originalData?.mgSalesPageVisits?.fromIgManychat;
+          else if (d.source.id === "mg-sp-via-ig-dm")
+            sourceValue = originalData?.mgSalesPageVisits?.fromIgDm;
+          else if (d.source.id === "mg-sp-via-email-broadcast")
+            sourceValue = originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
+          else if (d.source.id === "mg-sp-via-email-automation")
+            sourceValue = originalData?.mgSalesPageVisits?.fromEmailAutomations;
+          else if (d.source.id === "mg-sp-via-unknown")
+            sourceValue = originalData?.mgSalesPageVisits?.fromUnknown;
+          else if (d.source.id === "mg-sales-page-visits")
+            sourceValue = originalData?.mgSalesPageVisits?.total;
 
-        // Get target original value (same as flow value)
-        if (d.target.id === "ig-views")
-          flowOriginalValue = originalData?.ig?.views;
-        else if (d.target.id === "ig-extra-views")
-          flowOriginalValue =
-            originalData?.ig?.views && originalData?.ig?.reach
-              ? originalData.ig.views - originalData.ig.reach
-              : null;
-        else if (d.target.id === "ig-reach")
-          flowOriginalValue = originalData?.ig?.reach;
-        else if (d.target.id === "ig-profile-visits")
-          flowOriginalValue = originalData?.ig?.profileVisits;
-        else if (d.target.id === "ig-bio-link-clicks")
-          flowOriginalValue = originalData?.ig?.bioLinkClicks;
-        else if (d.target.id === "mg-sp-via-ig-bio")
-          flowOriginalValue = originalData?.mgSalesPageVisits?.fromIgBio;
-        else if (d.target.id === "mg-sp-via-ig-story")
-          flowOriginalValue = originalData?.mgSalesPageVisits?.fromIgStory;
-        else if (d.target.id === "mg-sp-via-ig-manychat")
-          flowOriginalValue = originalData?.mgSalesPageVisits?.fromIgManychat;
-        else if (d.target.id === "mg-sp-via-ig-dm")
-          flowOriginalValue = originalData?.mgSalesPageVisits?.fromIgDm;
-        else if (d.target.id === "mg-sp-via-email-broadcast")
-          flowOriginalValue =
-            originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
-        else if (d.target.id === "mg-sp-via-email-automation")
-          flowOriginalValue =
-            originalData?.mgSalesPageVisits?.fromEmailAutomations;
-        else if (d.target.id === "mg-sp-via-unknown")
-          flowOriginalValue = originalData?.mgSalesPageVisits?.fromUnknown;
-        else if (d.target.id === "mg-sales-page-visits")
-          flowOriginalValue = originalData?.mgSalesPageVisits?.total;
+          // Get target original value (same as flow value)
+          if (d.target.id === "ig-views") flowValue = originalData?.ig?.views;
+          else if (d.target.id === "ig-extra-views")
+            flowValue =
+              originalData?.ig?.views && originalData?.ig?.reach
+                ? originalData.ig.views - originalData.ig.reach
+                : null;
+          else if (d.target.id === "ig-reach")
+            flowValue = originalData?.ig?.reach;
+          else if (d.target.id === "ig-profile-visits")
+            flowValue = originalData?.ig?.profileVisits;
+          else if (d.target.id === "ig-bio-link-clicks")
+            flowValue = originalData?.ig?.bioLinkClicks;
+          else if (d.target.id === "ig-profile-visits-no-bio-click")
+            flowValue =
+              originalData?.ig?.profileVisits && originalData?.ig?.bioLinkClicks
+                ? originalData.ig.profileVisits - originalData.ig.bioLinkClicks
+                : null;
+          else if (d.target.id === "ig-reach-no-profile-visit")
+            flowValue =
+              originalData?.ig?.reach && originalData?.ig?.profileVisits
+                ? originalData.ig.reach - originalData.ig.profileVisits
+                : null;
+          else if (d.target.id === "ig-views-no-profile-visit")
+            flowValue =
+              originalData?.ig?.views && originalData?.ig?.profileVisits
+                ? originalData.ig.views - originalData.ig.profileVisits
+                : null;
+          else if (d.target.id === "mg-sp-via-ig-bio")
+            flowValue = originalData?.mgSalesPageVisits?.fromIgBio;
+          else if (d.target.id === "mg-sp-via-ig-story")
+            flowValue = originalData?.mgSalesPageVisits?.fromIgStory;
+          else if (d.target.id === "mg-sp-via-ig-manychat")
+            flowValue = originalData?.mgSalesPageVisits?.fromIgManychat;
+          else if (d.target.id === "mg-sp-via-ig-dm")
+            flowValue = originalData?.mgSalesPageVisits?.fromIgDm;
+          else if (d.target.id === "mg-sp-via-email-broadcast")
+            flowValue = originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
+          else if (d.target.id === "mg-sp-via-email-automation")
+            flowValue = originalData?.mgSalesPageVisits?.fromEmailAutomations;
+          else if (d.target.id === "mg-sp-via-unknown")
+            flowValue = originalData?.mgSalesPageVisits?.fromUnknown;
+          else if (d.target.id === "mg-sales-page-visits")
+            flowValue = originalData?.mgSalesPageVisits?.total;
+        } else {
+          // For Sankey 2 & 3 (regular values): Use d.value and d.source.value directly
+          sourceValue = d.source.value;
+          flowValue = d.value;
+        }
 
-        if (flowOriginalValue === null || flowOriginalValue === undefined) {
+        if (flowValue === null || flowValue === undefined) {
           return `${d.source.name} → ${d.target.name}\nFlow: N/A\nConversion: N/A`;
         }
 
         const conversionRate =
-          sourceOriginalValue > 0
-            ? ((flowOriginalValue / sourceOriginalValue) * 100).toFixed(1)
-            : 0;
+          sourceValue > 0 ? ((flowValue / sourceValue) * 100).toFixed(1) : 0;
         return `${d.source.name} → ${
           d.target.name
-        }\nFlow: ${flowOriginalValue.toLocaleString()}\nConversion: ${conversionRate}%`;
+        }\nFlow: ${flowValue.toLocaleString()}\nConversion: ${conversionRate}%`;
       });
 
     // Label positioning overrides - define once, use in both x and text-anchor
@@ -436,6 +499,8 @@ const SankeyDiagram = ({
       "ig-extra-views": "left",
       "ig-reach": "left",
       "ig-profile-visits": "left",
+      "ig-reach-no-profile-visit": "left",
+      "ig-views-no-profile-visit": "left",
       "ig-bio-link-clicks": "left",
       "mg-sp-via-ig-bio": "left",
       "mg-sp-via-ig-story": "left",
@@ -487,34 +552,56 @@ const SankeyDiagram = ({
         // Use the original data values directly for display
         let displayValue = null;
 
-        if (d.id === "ig-views") displayValue = originalData?.ig?.views;
-        else if (d.id === "ig-extra-views")
-          displayValue =
-            originalData?.ig?.views && originalData?.ig?.reach
-              ? originalData.ig.views - originalData.ig.reach
-              : null;
-        else if (d.id === "ig-reach") displayValue = originalData?.ig?.reach;
-        else if (d.id === "ig-profile-visits")
-          displayValue = originalData?.ig?.profileVisits;
-        else if (d.id === "ig-bio-link-clicks")
-          displayValue = originalData?.ig?.bioLinkClicks;
-        else if (d.id === "mg-sp-via-ig-bio")
-          displayValue = originalData?.mgSalesPageVisits?.fromIgBio;
-        else if (d.id === "mg-sp-via-ig-story")
-          displayValue = originalData?.mgSalesPageVisits?.fromIgStory;
-        else if (d.id === "mg-sp-via-ig-manychat")
-          displayValue = originalData?.mgSalesPageVisits?.fromIgManychat;
-        else if (d.id === "mg-sp-via-ig-dm")
-          displayValue = originalData?.mgSalesPageVisits?.fromIgDm;
-        else if (d.id === "mg-sp-via-email-broadcast")
-          displayValue = originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
-        else if (d.id === "mg-sp-via-email-automation")
-          displayValue = originalData?.mgSalesPageVisits?.fromEmailAutomations;
-        else if (d.id === "mg-sp-via-unknown")
-          displayValue = originalData?.mgSalesPageVisits?.fromUnknown;
-        else if (d.id === "mg-sales-page-visits")
-          displayValue = originalData?.mgSalesPageVisits?.total;
-        else displayValue = d.value; // fallback to node value
+        if (useLogarithmicScaling) {
+          // For Sankey 1 (logarithmic scaling): Use originalData for display values
+          if (d.id === "ig-views") displayValue = originalData?.ig?.views;
+          else if (d.id === "ig-extra-views")
+            displayValue =
+              originalData?.ig?.views && originalData?.ig?.reach
+                ? originalData.ig.views - originalData.ig.reach
+                : null;
+          else if (d.id === "ig-reach") displayValue = originalData?.ig?.reach;
+          else if (d.id === "ig-profile-visits")
+            displayValue = originalData?.ig?.profileVisits;
+          else if (d.id === "ig-bio-link-clicks")
+            displayValue = originalData?.ig?.bioLinkClicks;
+          else if (d.id === "ig-profile-visits-no-bio-click")
+            displayValue =
+              originalData?.ig?.profileVisits && originalData?.ig?.bioLinkClicks
+                ? originalData.ig.profileVisits - originalData.ig.bioLinkClicks
+                : null;
+          else if (d.id === "ig-reach-no-profile-visit")
+            displayValue =
+              originalData?.ig?.reach && originalData?.ig?.profileVisits
+                ? originalData.ig.reach - originalData.ig.profileVisits
+                : null;
+          else if (d.id === "ig-views-no-profile-visit")
+            displayValue =
+              originalData?.ig?.views && originalData?.ig?.profileVisits
+                ? originalData.ig.views - originalData.ig.profileVisits
+                : null;
+          else if (d.id === "mg-sp-via-ig-bio")
+            displayValue = originalData?.mgSalesPageVisits?.fromIgBio;
+          else if (d.id === "mg-sp-via-ig-story")
+            displayValue = originalData?.mgSalesPageVisits?.fromIgStory;
+          else if (d.id === "mg-sp-via-ig-manychat")
+            displayValue = originalData?.mgSalesPageVisits?.fromIgManychat;
+          else if (d.id === "mg-sp-via-ig-dm")
+            displayValue = originalData?.mgSalesPageVisits?.fromIgDm;
+          else if (d.id === "mg-sp-via-email-broadcast")
+            displayValue = originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
+          else if (d.id === "mg-sp-via-email-automation")
+            displayValue =
+              originalData?.mgSalesPageVisits?.fromEmailAutomations;
+          else if (d.id === "mg-sp-via-unknown")
+            displayValue = originalData?.mgSalesPageVisits?.fromUnknown;
+          else if (d.id === "mg-sales-page-visits")
+            displayValue = originalData?.mgSalesPageVisits?.total;
+          else displayValue = d.value; // fallback to node value
+        } else {
+          // For Sankey 2 & 3 (regular values): Use d.value directly
+          displayValue = d.value;
+        }
 
         return displayValue !== null &&
           displayValue !== undefined &&
@@ -524,6 +611,215 @@ const SankeyDiagram = ({
       })
       .style("fill", "#ffffff")
       .style("font-weight", "500")
+      .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.8)")
+      .style("pointer-events", "none");
+
+    // Add flow percentage labels
+    const flowLabels = svg
+      .append("g")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 10)
+      .attr("font-weight", "bold")
+      .selectAll("text")
+      .data(links)
+      .join("text")
+      .attr("x", (d) => {
+        // Position at the middle of the flow path
+        const sourceX = d.source.x1;
+        const targetX = d.target.x0;
+        return sourceX + 30;
+      })
+      .attr("y", (d) => {
+        // Position at the middle of the flow path vertically
+        return d.y0;
+      })
+      .attr("text-anchor", "middle")
+      .attr("dy", "0.35em")
+      .text((d) => {
+        let sourceValue = null;
+        let flowValue = null;
+
+        if (useLogarithmicScaling) {
+          // For Sankey 1 (logarithmic scaling): Use originalData for accurate values
+          // Get source original value
+          if (d.source.id === "ig-views") sourceValue = originalData?.ig?.views;
+          else if (d.source.id === "ig-extra-views")
+            sourceValue =
+              originalData?.ig?.views && originalData?.ig?.reach
+                ? originalData.ig.views - originalData.ig.reach
+                : null;
+          else if (d.source.id === "ig-reach")
+            sourceValue = originalData?.ig?.reach;
+          else if (d.source.id === "ig-profile-visits")
+            sourceValue = originalData?.ig?.profileVisits;
+          else if (d.source.id === "ig-bio-link-clicks")
+            sourceValue = originalData?.ig?.bioLinkClicks;
+          else if (d.source.id === "mg-sp-via-ig-bio")
+            sourceValue = originalData?.mgSalesPageVisits?.fromIgBio;
+          else if (d.source.id === "mg-sp-via-ig-story")
+            sourceValue = originalData?.mgSalesPageVisits?.fromIgStory;
+          else if (d.source.id === "mg-sp-via-ig-manychat")
+            sourceValue = originalData?.mgSalesPageVisits?.fromIgManychat;
+          else if (d.source.id === "mg-sp-via-ig-dm")
+            sourceValue = originalData?.mgSalesPageVisits?.fromIgDm;
+          else if (d.source.id === "mg-sp-via-email-broadcast")
+            sourceValue = originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
+          else if (d.source.id === "mg-sp-via-email-automation")
+            sourceValue = originalData?.mgSalesPageVisits?.fromEmailAutomations;
+          else if (d.source.id === "mg-sp-via-unknown")
+            sourceValue = originalData?.mgSalesPageVisits?.fromUnknown;
+          else if (d.source.id === "mg-sales-page-visits")
+            sourceValue = originalData?.mgSalesPageVisits?.total;
+
+          // Get target original value (same as flow value)
+          if (d.target.id === "ig-views") flowValue = originalData?.ig?.views;
+          else if (d.target.id === "ig-extra-views")
+            flowValue =
+              originalData?.ig?.views && originalData?.ig?.reach
+                ? originalData.ig.views - originalData.ig.reach
+                : null;
+          else if (d.target.id === "ig-reach")
+            flowValue = originalData?.ig?.reach;
+          else if (d.target.id === "ig-profile-visits")
+            flowValue = originalData?.ig?.profileVisits;
+          else if (d.target.id === "ig-bio-link-clicks")
+            flowValue = originalData?.ig?.bioLinkClicks;
+          else if (d.target.id === "ig-profile-visits-no-bio-click")
+            flowValue =
+              originalData?.ig?.profileVisits && originalData?.ig?.bioLinkClicks
+                ? originalData.ig.profileVisits - originalData.ig.bioLinkClicks
+                : null;
+          else if (d.target.id === "ig-reach-no-profile-visit")
+            flowValue =
+              originalData?.ig?.reach && originalData?.ig?.profileVisits
+                ? originalData.ig.reach - originalData.ig.profileVisits
+                : null;
+          else if (d.target.id === "ig-views-no-profile-visit")
+            flowValue =
+              originalData?.ig?.views && originalData?.ig?.profileVisits
+                ? originalData.ig.views - originalData.ig.profileVisits
+                : null;
+          else if (d.target.id === "mg-sp-via-ig-bio")
+            flowValue = originalData?.mgSalesPageVisits?.fromIgBio;
+          else if (d.target.id === "mg-sp-via-ig-story")
+            flowValue = originalData?.mgSalesPageVisits?.fromIgStory;
+          else if (d.target.id === "mg-sp-via-ig-manychat")
+            flowValue = originalData?.mgSalesPageVisits?.fromIgManychat;
+          else if (d.target.id === "mg-sp-via-ig-dm")
+            flowValue = originalData?.mgSalesPageVisits?.fromIgDm;
+          else if (d.target.id === "mg-sp-via-email-broadcast")
+            flowValue = originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
+          else if (d.target.id === "mg-sp-via-email-automation")
+            flowValue = originalData?.mgSalesPageVisits?.fromEmailAutomations;
+          else if (d.target.id === "mg-sp-via-unknown")
+            flowValue = originalData?.mgSalesPageVisits?.fromUnknown;
+          else if (d.target.id === "mg-sales-page-visits")
+            flowValue = originalData?.mgSalesPageVisits?.total;
+        } else {
+          // For Sankey 2 & 3 (regular values): Use d.value and d.source.value directly
+          sourceValue = d.source.value;
+          flowValue = d.value;
+        }
+
+        // Calculate percentage based on flow pattern
+        if (sourceValue && flowValue && sourceValue > 0) {
+          // Detect flow pattern: one-to-many vs many-to-one
+          const sourceOutgoingFlows = links.filter(
+            (link) => link.source.id === d.source.id
+          );
+          const targetIncomingFlows = links.filter(
+            (link) => link.target.id === d.target.id
+          );
+
+          let percentage;
+
+          if (
+            sourceOutgoingFlows.length > 1 &&
+            targetIncomingFlows.length === 1
+          ) {
+            // One-to-Many: Source splits to multiple targets
+            // Show what percentage of the source goes to this target
+            percentage = Math.round((flowValue / sourceValue) * 100);
+          } else if (
+            sourceOutgoingFlows.length === 1 &&
+            targetIncomingFlows.length > 1
+          ) {
+            // Many-to-One: Multiple sources feed into one target
+            // Show what percentage of the target comes from this source
+            let targetTotalValue = null;
+
+            if (useLogarithmicScaling) {
+              // Get target total from originalData
+              if (d.target.id === "ig-views")
+                targetTotalValue = originalData?.ig?.views;
+              else if (d.target.id === "ig-extra-views")
+                targetTotalValue =
+                  originalData?.ig?.views && originalData?.ig?.reach
+                    ? originalData.ig.views - originalData.ig.reach
+                    : null;
+              else if (d.target.id === "ig-reach")
+                targetTotalValue = originalData?.ig?.reach;
+              else if (d.target.id === "ig-profile-visits")
+                targetTotalValue = originalData?.ig?.profileVisits;
+              else if (d.target.id === "ig-bio-link-clicks")
+                targetTotalValue = originalData?.ig?.bioLinkClicks;
+              else if (d.target.id === "ig-profile-visits-no-bio-click")
+                targetTotalValue =
+                  originalData?.ig?.profileVisits &&
+                  originalData?.ig?.bioLinkClicks
+                    ? originalData.ig.profileVisits -
+                      originalData.ig.bioLinkClicks
+                    : null;
+              else if (d.target.id === "ig-reach-no-profile-visit")
+                targetTotalValue =
+                  originalData?.ig?.reach && originalData?.ig?.profileVisits
+                    ? originalData.ig.reach - originalData.ig.profileVisits
+                    : null;
+              else if (d.target.id === "ig-views-no-profile-visit")
+                targetTotalValue =
+                  originalData?.ig?.views && originalData?.ig?.profileVisits
+                    ? originalData.ig.views - originalData.ig.profileVisits
+                    : null;
+              else if (d.target.id === "mg-sp-via-ig-bio")
+                targetTotalValue = originalData?.mgSalesPageVisits?.fromIgBio;
+              else if (d.target.id === "mg-sp-via-ig-story")
+                targetTotalValue = originalData?.mgSalesPageVisits?.fromIgStory;
+              else if (d.target.id === "mg-sp-via-ig-manychat")
+                targetTotalValue =
+                  originalData?.mgSalesPageVisits?.fromIgManychat;
+              else if (d.target.id === "mg-sp-via-ig-dm")
+                targetTotalValue = originalData?.mgSalesPageVisits?.fromIgDm;
+              else if (d.target.id === "mg-sp-via-email-broadcast")
+                targetTotalValue =
+                  originalData?.mgSalesPageVisits?.fromEmailBroadcasts;
+              else if (d.target.id === "mg-sp-via-email-automation")
+                targetTotalValue =
+                  originalData?.mgSalesPageVisits?.fromEmailAutomations;
+              else if (d.target.id === "mg-sp-via-unknown")
+                targetTotalValue = originalData?.mgSalesPageVisits?.fromUnknown;
+              else if (d.target.id === "mg-sales-page-visits")
+                targetTotalValue = originalData?.mgSalesPageVisits?.total;
+            } else {
+              // For Sankey 2 & 3, use target node value
+              targetTotalValue = d.target.value;
+            }
+
+            if (targetTotalValue && targetTotalValue > 0) {
+              percentage = Math.round((flowValue / targetTotalValue) * 100);
+            } else {
+              percentage = Math.round((flowValue / sourceValue) * 100);
+            }
+          } else {
+            // Default: One-to-One or complex pattern
+            // Show conversion rate from source to target
+            percentage = Math.round((flowValue / sourceValue) * 100);
+          }
+
+          return `${percentage}%`;
+        }
+        return "";
+      })
+      .style("fill", "#ffffff")
       .style("text-shadow", "1px 1px 2px rgba(0,0,0,0.8)")
       .style("pointer-events", "none");
   }, [data, width, height]);
@@ -632,6 +928,39 @@ const buildSankeyData = (data) => {
         value: data.ig?.bioLinkClicks,
       },
       {
+        id: "ig-profile-visits-no-bio-click",
+        name: "No Bio Click",
+        category: "ig-funnel",
+        value:
+          data.ig?.profileVisits && data.ig?.bioLinkClicks
+            ? data.ig.profileVisits - data.ig.bioLinkClicks
+            : null,
+      },
+      // Only include "No Profile Visit" node if we have reach data
+      ...(hasReachData
+        ? [
+            {
+              id: "ig-reach-no-profile-visit",
+              name: "No Profile Visit",
+              category: "ig-funnel",
+              value:
+                data.ig?.reach && data.ig?.profileVisits
+                  ? data.ig.reach - data.ig.profileVisits
+                  : null,
+            },
+          ]
+        : [
+            {
+              id: "ig-views-no-profile-visit",
+              name: "No Profile Visit",
+              category: "ig-funnel",
+              value:
+                data.ig?.views && data.ig?.profileVisits
+                  ? data.ig.views - data.ig.profileVisits
+                  : null,
+            },
+          ]),
+      {
         id: "mg-sp-via-ig-bio",
         name: "MG SP via IG Bio",
         category: "mg-funnel",
@@ -702,6 +1031,16 @@ const buildSankeyData = (data) => {
                 ? Math.round(Math.log10(data.ig.profileVisits))
                 : null,
             },
+            {
+              source: "ig-reach",
+              target: "ig-reach-no-profile-visit",
+              value:
+                data.ig?.reach && data.ig?.profileVisits
+                  ? Math.round(
+                      Math.log10(data.ig.reach - data.ig.profileVisits)
+                    )
+                  : null,
+            },
           ]
         : [
             // Without reach data: views -> profile visits -> bio link clicks -> MG SP via IG Bio
@@ -712,6 +1051,16 @@ const buildSankeyData = (data) => {
                 ? Math.round(Math.log10(data.ig.profileVisits))
                 : null,
             },
+            {
+              source: "ig-views",
+              target: "ig-views-no-profile-visit",
+              value:
+                data.ig?.views && data.ig?.profileVisits
+                  ? Math.round(
+                      Math.log10(data.ig.views - data.ig.profileVisits)
+                    )
+                  : null,
+            },
           ]),
       {
         source: "ig-profile-visits",
@@ -719,6 +1068,16 @@ const buildSankeyData = (data) => {
         value: data.ig?.bioLinkClicks
           ? Math.round(Math.log10(data.ig.bioLinkClicks))
           : null,
+      },
+      {
+        source: "ig-profile-visits",
+        target: "ig-profile-visits-no-bio-click",
+        value:
+          data.ig?.profileVisits && data.ig?.bioLinkClicks
+            ? Math.round(
+                Math.log10(data.ig.profileVisits - data.ig.bioLinkClicks)
+              )
+            : null,
       },
       {
         source: "ig-bio-link-clicks",
@@ -2190,26 +2549,31 @@ const ClientAcquisitionDashboard = () => {
               height={400}
               title="Traffic Funnel: MG Sales Page Visit Sources → MG Sales Page Visits"
               leftPadding={180}
+              useLogarithmicScaling={true}
             />
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <SankeyDiagram
               data={applicationFunnelData}
+              originalData={funnelData}
               width={1200}
               height={300}
               title="Application Funnel: MG Sales Page Visits → MG Qualified Apps"
               leftPadding={150}
+              useLogarithmicScaling={false}
             />
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <SankeyDiagram
               data={selectionFunnelData}
+              originalData={funnelData}
               width={1200}
               height={400}
               title="Selection Funnel: MG Qualified Apps → Sales Outcomes"
               leftPadding={130}
+              useLogarithmicScaling={false}
             />
           </div>
         </div>
