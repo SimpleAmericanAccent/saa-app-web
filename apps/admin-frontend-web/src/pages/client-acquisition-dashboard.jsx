@@ -5,6 +5,7 @@ import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import { Input } from "core-frontend-web/src/components/ui/input";
 import { DateRangePicker } from "core-frontend-web/src/components/date-range-picker";
+import { Skeleton } from "core-frontend-web/src/components/ui/skeleton";
 import { RefreshCw } from "lucide-react";
 
 // Default funnel data structure (used as initial state) - null until real data loads
@@ -1554,6 +1555,7 @@ const ClientAcquisitionDashboard = () => {
   const [funnelData, setFunnelData] = useState(defaultFunnelData);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isCompareLoading, setIsCompareLoading] = useState(false);
   const [error, setError] = useState(null);
   const [instagramTokenExpired, setInstagramTokenExpired] = useState(false);
   const [dateRange, setDateRange] = useState({
@@ -1576,6 +1578,7 @@ const ClientAcquisitionDashboard = () => {
       return;
     }
 
+    setIsCompareLoading(true);
     try {
       // Fetch data from all three endpoints in parallel
       const [plausibleResponse, airtableResponse, instagramResponse] =
@@ -1664,6 +1667,8 @@ const ClientAcquisitionDashboard = () => {
     } catch (err) {
       console.error("Error fetching comparison data:", err);
       setCompareData(null);
+    } finally {
+      setIsCompareLoading(false);
     }
   };
 
@@ -1855,6 +1860,10 @@ const ClientAcquisitionDashboard = () => {
 
   const handleLoadData = () => {
     fetchAcquisitionData(dateRange.start, dateRange.end);
+    // Also refresh comparison data if comparison date range is set
+    if (compareDateRange.start && compareDateRange.end) {
+      fetchCompareData(compareDateRange.start, compareDateRange.end);
+    }
   };
 
   // Helper function to check if a metric has data gaps
@@ -2499,92 +2508,380 @@ const ClientAcquisitionDashboard = () => {
     return null;
   };
 
-  return (
-    <ScrollArea className="h-screen">
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                MG Client Acquisition Dashboard
-              </h1>
-            </div>
-            <Button
-              onClick={handleLoadData}
-              disabled={isLoading}
-              variant="outline"
-            >
-              {isLoading ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh Data
-                </>
-              )}
-            </Button>
+  // Helper component for summary metrics with skeleton loading
+  const SummaryMetric = ({
+    label,
+    value,
+    isLoading,
+    isCompareLoading,
+    compareValue,
+    formatValue = (val) => val,
+    formatCompareValue = (val) => val,
+    metricType = null,
+  }) => {
+    if (isLoading) {
+      return (
+        <div className="text-center">
+          <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {label}
           </div>
+          <div className="flex justify-center">
+            <Skeleton className="h-6 w-16" />
+          </div>
+          {isCompareLoading && (
+            <div className="mt-1">
+              <div className="flex justify-center mb-1">
+                <Skeleton className="h-6 w-16" />
+              </div>
+              <div className="flex justify-center mb-1">
+                <Skeleton className="h-3 w-8" />
+              </div>
+              <div className="flex justify-center">
+                <Skeleton className="h-3 w-10" />
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
 
-          {/* Date Range Presets */}
-          <div className="mb-4">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-              Quick Date Ranges: 💡 Left click: Set main date range | Right
-              click: Set comparison (or previous period if already selected)
-            </label>
+    return (
+      <div className="text-center">
+        <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          {label}
+        </div>
+        <div className="flex justify-center">
+          <div className="text-lg font-bold text-gray-900 dark:text-white text-right ">
+            {metricType ? (
+              <MetricWithGapIndicator
+                value={formatValue(value)}
+                metricType={metricType}
+              />
+            ) : (
+              formatValue(value)
+            )}
+          </div>
+        </div>
+        {compareValue &&
+          (() => {
+            const comparison = formatComparisonValue(value, compareValue);
+            return comparison ? (
+              <div className="mt-0">
+                <div className="flex justify-center">
+                  <div className="text-lg font-bold text-gray-900 dark:text-white text-right">
+                    {formatCompareValue(comparison.value)}
+                  </div>
+                </div>
+                <div className="flex justify-center">
+                  <div
+                    className={`text-xs text-right ${
+                      comparison.isPositive ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {comparison.isPositive ? "+" : ""}
+                    {formatCompareValue(comparison.change)}
+                  </div>
+                </div>
+                <div className="flex justify-center">
+                  <div
+                    className={`text-xs text-right ${
+                      comparison.isPositive ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    ({comparison.isPositive ? "+" : ""}
+                    {comparison.percentChange.toFixed(0)}%)
+                  </div>
+                </div>
+              </div>
+            ) : null;
+          })()}
+      </div>
+    );
+  };
 
-            {/* Quick Presets */}
-            <div className="mb-3">
-              <div className="flex flex-wrap gap-2">
-                {["Today", "Last 7 days", "Last 30 days", "Last 90 days"].map(
-                  (presetName) => (
+  return (
+    <>
+      {/* Floating Loading Indicator */}
+      {(isLoading || isCompareLoading) && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+            <RefreshCw className="h-4 w-4 animate-spin" />
+            <span className="text-sm font-medium">
+              {isLoading && isCompareLoading
+                ? "Loading main data & comparison data..."
+                : isLoading
+                ? "Loading main data..."
+                : "Loading comparison data..."}
+            </span>
+          </div>
+        </div>
+      )}
+
+      <ScrollArea className="h-screen">
+        <div className="p-6 space-y-6">
+          {/* Header */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  MG Client Acquisition Dashboard
+                </h1>
+              </div>
+              <Button
+                onClick={handleLoadData}
+                disabled={isLoading || isCompareLoading}
+                variant="outline"
+              >
+                {isLoading || isCompareLoading ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    {isLoading && isCompareLoading
+                      ? "Loading..."
+                      : isLoading
+                      ? "Loading..."
+                      : "Loading..."}
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh Data
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Date Range Presets */}
+            <div className="mb-4">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                Quick Date Ranges: 💡 Left click: Set main date range | Right
+                click: Set comparison (or previous period if already selected)
+              </label>
+
+              {/* Quick Presets */}
+              <div className="mb-3">
+                <div className="flex flex-wrap gap-2">
+                  {["Today", "Last 7 days", "Last 30 days", "Last 90 days"].map(
+                    (presetName) => (
+                      <Button
+                        key={presetName}
+                        onMouseDown={(e) => handlePresetClick(e, presetName)}
+                        onContextMenu={(e) => e.preventDefault()}
+                        disabled={isLoading}
+                        variant={
+                          isCurrentPreset(presetName)
+                            ? "default"
+                            : isCurrentComparePreset(presetName)
+                            ? "secondary"
+                            : "outline"
+                        }
+                        size="sm"
+                        className="text-xs"
+                        title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
+                      >
+                        {presetName}
+                      </Button>
+                    )
+                  )}
+                </div>
+              </div>
+
+              {/* Month Presets */}
+              <div className="mb-3">
+                {/* Recent Days Row */}
+                <div className="mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 w-12">
+                      Days:
+                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {(() => {
+                        const today = new Date();
+                        const dayButtons = [];
+
+                        // Generate buttons for today minus 14 through today
+                        for (let i = 14; i >= 0; i--) {
+                          const dayDate = new Date(today);
+                          dayDate.setDate(today.getDate() - i);
+                          const dayOfMonth = dayDate.getDate();
+                          const presetName = dayDate
+                            .toISOString()
+                            .split("T")[0]; // YYYY-MM-DD format
+
+                          dayButtons.push(
+                            <Button
+                              key={presetName}
+                              onMouseDown={(e) =>
+                                handlePresetClick(e, presetName)
+                              }
+                              onContextMenu={(e) => e.preventDefault()}
+                              disabled={isLoading}
+                              variant={
+                                isCurrentPreset(presetName)
+                                  ? "default"
+                                  : isCurrentComparePreset(presetName)
+                                  ? "secondary"
+                                  : "outline"
+                              }
+                              size="sm"
+                              className="text-xs w-8 h-8"
+                              title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
+                            >
+                              {dayOfMonth}
+                            </Button>
+                          );
+                        }
+
+                        return dayButtons;
+                      })()}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2025 Row */}
+                <div className="mb-2">
+                  <div className="flex items-center gap-2">
                     <Button
-                      key={presetName}
-                      onMouseDown={(e) => handlePresetClick(e, presetName)}
+                      onMouseDown={(e) => handlePresetClick(e, "YTD")}
                       onContextMenu={(e) => e.preventDefault()}
                       disabled={isLoading}
                       variant={
-                        isCurrentPreset(presetName)
+                        isCurrentPreset("YTD")
                           ? "default"
-                          : isCurrentComparePreset(presetName)
+                          : isCurrentComparePreset("YTD")
                           ? "secondary"
                           : "outline"
                       }
                       size="sm"
-                      className="text-xs"
+                      className="text-xs w-12 h-8 font-medium"
                       title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
                     >
-                      {presetName}
+                      2025
                     </Button>
-                  )
-                )}
-              </div>
-            </div>
+                    <div className="flex flex-wrap gap-1">
+                      {[
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                      ].map((monthAbbr, index) => {
+                        const monthNames = [
+                          "January",
+                          "February",
+                          "March",
+                          "April",
+                          "May",
+                          "June",
+                          "July",
+                          "August",
+                          "September",
+                          "October",
+                          "November",
+                          "December",
+                        ];
+                        const monthName = monthNames[index];
+                        const today = new Date();
+                        const currentYear = today.getFullYear();
+                        const currentMonth = today.getMonth();
+                        const isCurrentMonth =
+                          currentYear === 2025 && index === currentMonth;
+                        const isFutureMonth =
+                          currentYear === 2025 && index > currentMonth;
+                        const presetName = isCurrentMonth
+                          ? `${monthName} MTD`
+                          : `${monthName} 2025`;
 
-            {/* Month Presets */}
-            <div className="mb-3">
-              {/* Recent Days Row */}
-              <div className="mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 w-12">
-                    Days:
-                  </span>
-                  <div className="flex flex-wrap gap-1">
-                    {(() => {
-                      const today = new Date();
-                      const dayButtons = [];
+                        return (
+                          <Button
+                            key={presetName}
+                            onMouseDown={(e) =>
+                              handlePresetClick(e, presetName)
+                            }
+                            onContextMenu={(e) => e.preventDefault()}
+                            disabled={isLoading || isFutureMonth}
+                            variant={
+                              isCurrentPreset(presetName)
+                                ? "default"
+                                : isCurrentComparePreset(presetName)
+                                ? "secondary"
+                                : "outline"
+                            }
+                            size="sm"
+                            className="text-xs w-10 h-8"
+                            title={
+                              isFutureMonth
+                                ? "Future month - not available"
+                                : `Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`
+                            }
+                          >
+                            {monthAbbr}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
 
-                      // Generate buttons for today minus 14 through today
-                      for (let i = 14; i >= 0; i--) {
-                        const dayDate = new Date(today);
-                        dayDate.setDate(today.getDate() - i);
-                        const dayOfMonth = dayDate.getDate();
-                        const presetName = dayDate.toISOString().split("T")[0]; // YYYY-MM-DD format
+                {/* 2024 Row */}
+                <div className="mb-2">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onMouseDown={(e) => handlePresetClick(e, "Previous Year")}
+                      onContextMenu={(e) => e.preventDefault()}
+                      disabled={isLoading}
+                      variant={
+                        isCurrentPreset("Previous Year")
+                          ? "default"
+                          : isCurrentComparePreset("Previous Year")
+                          ? "secondary"
+                          : "outline"
+                      }
+                      size="sm"
+                      className="text-xs w-12 h-8 font-medium"
+                      title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
+                    >
+                      2024
+                    </Button>
+                    <div className="flex flex-wrap gap-1">
+                      {[
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                      ].map((monthAbbr, index) => {
+                        const monthNames = [
+                          "January",
+                          "February",
+                          "March",
+                          "April",
+                          "May",
+                          "June",
+                          "July",
+                          "August",
+                          "September",
+                          "October",
+                          "November",
+                          "December",
+                        ];
+                        const monthName = monthNames[index];
+                        const presetName = `${monthName} 2024`;
 
-                        dayButtons.push(
+                        return (
                           <Button
                             key={presetName}
                             onMouseDown={(e) =>
@@ -2600,1035 +2897,532 @@ const ClientAcquisitionDashboard = () => {
                                 : "outline"
                             }
                             size="sm"
-                            className="text-xs w-8 h-8"
+                            className="text-xs w-10 h-8"
                             title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
                           >
-                            {dayOfMonth}
+                            {monthAbbr}
                           </Button>
                         );
-                      }
-
-                      return dayButtons;
-                    })()}
-                  </div>
-                </div>
-              </div>
-
-              {/* 2025 Row */}
-              <div className="mb-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    onMouseDown={(e) => handlePresetClick(e, "YTD")}
-                    onContextMenu={(e) => e.preventDefault()}
-                    disabled={isLoading}
-                    variant={
-                      isCurrentPreset("YTD")
-                        ? "default"
-                        : isCurrentComparePreset("YTD")
-                        ? "secondary"
-                        : "outline"
-                    }
-                    size="sm"
-                    className="text-xs w-12 h-8 font-medium"
-                    title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
-                  >
-                    2025
-                  </Button>
-                  <div className="flex flex-wrap gap-1">
-                    {[
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ].map((monthAbbr, index) => {
-                      const monthNames = [
-                        "January",
-                        "February",
-                        "March",
-                        "April",
-                        "May",
-                        "June",
-                        "July",
-                        "August",
-                        "September",
-                        "October",
-                        "November",
-                        "December",
-                      ];
-                      const monthName = monthNames[index];
-                      const today = new Date();
-                      const currentYear = today.getFullYear();
-                      const currentMonth = today.getMonth();
-                      const isCurrentMonth =
-                        currentYear === 2025 && index === currentMonth;
-                      const isFutureMonth =
-                        currentYear === 2025 && index > currentMonth;
-                      const presetName = isCurrentMonth
-                        ? `${monthName} MTD`
-                        : `${monthName} 2025`;
-
-                      return (
-                        <Button
-                          key={presetName}
-                          onMouseDown={(e) => handlePresetClick(e, presetName)}
-                          onContextMenu={(e) => e.preventDefault()}
-                          disabled={isLoading || isFutureMonth}
-                          variant={
-                            isCurrentPreset(presetName)
-                              ? "default"
-                              : isCurrentComparePreset(presetName)
-                              ? "secondary"
-                              : "outline"
-                          }
-                          size="sm"
-                          className="text-xs w-10 h-8"
-                          title={
-                            isFutureMonth
-                              ? "Future month - not available"
-                              : `Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`
-                          }
-                        >
-                          {monthAbbr}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* 2024 Row */}
-              <div className="mb-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    onMouseDown={(e) => handlePresetClick(e, "Previous Year")}
-                    onContextMenu={(e) => e.preventDefault()}
-                    disabled={isLoading}
-                    variant={
-                      isCurrentPreset("Previous Year")
-                        ? "default"
-                        : isCurrentComparePreset("Previous Year")
-                        ? "secondary"
-                        : "outline"
-                    }
-                    size="sm"
-                    className="text-xs w-12 h-8 font-medium"
-                    title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
-                  >
-                    2024
-                  </Button>
-                  <div className="flex flex-wrap gap-1">
-                    {[
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ].map((monthAbbr, index) => {
-                      const monthNames = [
-                        "January",
-                        "February",
-                        "March",
-                        "April",
-                        "May",
-                        "June",
-                        "July",
-                        "August",
-                        "September",
-                        "October",
-                        "November",
-                        "December",
-                      ];
-                      const monthName = monthNames[index];
-                      const presetName = `${monthName} 2024`;
-
-                      return (
-                        <Button
-                          key={presetName}
-                          onMouseDown={(e) => handlePresetClick(e, presetName)}
-                          onContextMenu={(e) => e.preventDefault()}
-                          disabled={isLoading}
-                          variant={
-                            isCurrentPreset(presetName)
-                              ? "default"
-                              : isCurrentComparePreset(presetName)
-                              ? "secondary"
-                              : "outline"
-                          }
-                          size="sm"
-                          className="text-xs w-10 h-8"
-                          title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
-                        >
-                          {monthAbbr}
-                        </Button>
-                      );
-                    })}
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Date Range Picker */}
-          <div className="flex items-center gap-4">
-            <DateRangePicker
-              dateRange={{ from: dateRange.start, to: dateRange.end }}
-              onDateRangeChange={(newRange) => {
-                setDateRange({ start: newRange.from, end: newRange.to });
-                if (newRange.from && newRange.to) {
-                  fetchAcquisitionData(newRange.from, newRange.to);
-                }
-              }}
-              placeholder="Select date range"
-            />
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Compare to:
-              </label>
+            {/* Date Range Picker */}
+            <div className="flex items-center gap-4">
+              <DateRangePicker
+                dateRange={{ from: dateRange.start, to: dateRange.end }}
+                onDateRangeChange={(newRange) => {
+                  setDateRange({ start: newRange.from, end: newRange.to });
+                  if (newRange.from && newRange.to) {
+                    fetchAcquisitionData(newRange.from, newRange.to);
+                  }
+                }}
+                placeholder="Select date range"
+              />
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Compare to:
+                </label>
+              </div>
+              <DateRangePicker
+                dateRange={{
+                  from: compareDateRange.start || "",
+                  to: compareDateRange.end || "",
+                }}
+                onDateRangeChange={(newRange) => {
+                  setCompareDateRange({
+                    start: newRange.from,
+                    end: newRange.to,
+                  });
+                }}
+                placeholder="Select comparison range"
+              />
             </div>
-            <DateRangePicker
-              dateRange={{
-                from: compareDateRange.start || "",
-                to: compareDateRange.end || "",
-              }}
-              onDateRangeChange={(newRange) => {
-                setCompareDateRange({ start: newRange.from, end: newRange.to });
-              }}
-              placeholder="Select comparison range"
-            />
-          </div>
 
-          {/* Error Display */}
-          {error && (
-            <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              <strong>Error:</strong> {error}
-              {error.includes("Plausible API key not configured") && (
-                <div className="mt-2 text-sm">
-                  <p>
-                    To use real data, you need to configure Plausible Analytics:
-                  </p>
-                  <ol className="list-decimal list-inside mt-1 space-y-1">
-                    <li>
-                      Get your API key from{" "}
+            {/* Error Display */}
+            {error && (
+              <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                <strong>Error:</strong> {error}
+                {error.includes("Plausible API key not configured") && (
+                  <div className="mt-2 text-sm">
+                    <p>
+                      To use real data, you need to configure Plausible
+                      Analytics:
+                    </p>
+                    <ol className="list-decimal list-inside mt-1 space-y-1">
+                      <li>
+                        Get your API key from{" "}
+                        <a
+                          href="https://plausible.io/settings#api-keys"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          Plausible Settings
+                        </a>
+                      </li>
+                      <li>
+                        Set the <code>PLAUSIBLE_API_KEY</code> environment
+                        variable
+                      </li>
+                      <li>
+                        Update the page URLs in the backend to match your actual
+                        URLs
+                      </li>
+                    </ol>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Instagram Token Expiration Warning */}
+            {instagramTokenExpired && (
+              <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+                <div className="flex items-center">
+                  <span className="text-lg mr-2">⚠️</span>
+                  <div>
+                    <strong>Instagram Access Token Expired</strong>
+                    <p className="text-sm mt-1">
+                      The Instagram access token has expired. Instagram data is
+                      not available. Please update the{" "}
+                      <code>INSTAGRAM_ACCESS_TOKEN</code> environment variable
+                      with a fresh token from the Instagram Graph API.
+                    </p>
+                    <p className="text-sm mt-2">
                       <a
-                        href="https://plausible.io/settings#api-keys"
+                        href="https://developers.facebook.com/tools/explorer/2213645562127704/?method=GET&path=17841409362793429%2Finsights%3Fpretty%3D1%26since%3Dtoday%26metric%3Dviews%26metric_type%3Dtotal_value%26period%3Dday&version=v23.0"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline"
+                        className="text-blue-600 hover:text-blue-800 underline font-medium"
                       >
-                        Plausible Settings
+                        🔗 Get New Token from Facebook Graph API Explorer
                       </a>
-                    </li>
-                    <li>
-                      Set the <code>PLAUSIBLE_API_KEY</code> environment
-                      variable
-                    </li>
-                    <li>
-                      Update the page URLs in the backend to match your actual
-                      URLs
-                    </li>
-                  </ol>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Loading State */}
-          {isLoading && (
-            <div className="mt-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
-              <div className="flex items-center">
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                Loading acquisition data...
-              </div>
-            </div>
-          )}
-
-          {/* Instagram Token Expiration Warning */}
-          {instagramTokenExpired && (
-            <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-              <div className="flex items-center">
-                <span className="text-lg mr-2">⚠️</span>
-                <div>
-                  <strong>Instagram Access Token Expired</strong>
-                  <p className="text-sm mt-1">
-                    The Instagram access token has expired. Instagram data is
-                    not available. Please update the{" "}
-                    <code>INSTAGRAM_ACCESS_TOKEN</code> environment variable
-                    with a fresh token from the Instagram Graph API.
-                  </p>
-                  <p className="text-sm mt-2">
-                    <a
-                      href="https://developers.facebook.com/tools/explorer/2213645562127704/?method=GET&path=17841409362793429%2Finsights%3Fpretty%3D1%26since%3Dtoday%26metric%3Dviews%26metric_type%3Dtotal_value%26period%3Dday&version=v23.0"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline font-medium"
-                    >
-                      🔗 Get New Token from Facebook Graph API Explorer
-                    </a>
-                  </p>
-                  <p className="text-sm mt-2">
-                    <a
-                      href="https://dashboard.render.com/web/srv-d0a2qdh5pdvs73bkhcpg/env"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline font-medium"
-                    >
-                      🔗 If prod, update the Instagram access token in the
-                      Render Environment Variables.
-                    </a>{" "}
-                    If dev, update .env file.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Data Gap Warnings */}
-          {getDataGapWarnings().map((warning, index) => (
-            <div
-              key={index}
-              className="mt-4 p-3 border rounded bg-gray-800 border-yellow-400"
-            >
-              <div className="flex items-center">
-                <span className="text-lg mr-2">⚠️</span>
-                <div>
-                  <strong>{warning.title}</strong>
-                  <div className="text-sm mt-1 whitespace-pre-line">
-                    {warning.message}
+                    </p>
+                    <p className="text-sm mt-2">
+                      <a
+                        href="https://dashboard.render.com/web/srv-d0a2qdh5pdvs73bkhcpg/env"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline font-medium"
+                      >
+                        🔗 If prod, update the Instagram access token in the
+                        Render Environment Variables.
+                      </a>{" "}
+                      If dev, update .env file.
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            )}
 
-        {/* Summary Line */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <div className="flex flex-wrap gap-8 items-center justify-between">
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Total Views
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                <MetricWithGapIndicator
-                  value={
-                    typeof summaryStats.totalViews === "number"
-                      ? summaryStats.totalViews.toLocaleString()
-                      : summaryStats.totalViews
-                  }
-                  metricType="instagramViews"
-                />
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.totalViews,
-                    compareSummaryStats.totalViews
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: {comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
+            {/* Data Gap Warnings */}
+            {getDataGapWarnings().map((warning, index) => (
+              <div
+                key={index}
+                className="mt-4 p-3 border rounded bg-gray-800 border-yellow-400"
+              >
+                <div className="flex items-center">
+                  <span className="text-lg mr-2">⚠️</span>
+                  <div>
+                    <strong>{warning.title}</strong>
+                    <div className="text-sm mt-1 whitespace-pre-line">
+                      {warning.message}
                     </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Sales Page Visits
+                  </div>
+                </div>
               </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                <MetricWithGapIndicator
-                  value={
-                    typeof summaryStats.salesPageVisits === "number"
-                      ? summaryStats.salesPageVisits.toLocaleString()
-                      : summaryStats.salesPageVisits
-                  }
-                  metricType="salesPage"
-                />
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.salesPageVisits,
-                    compareSummaryStats.salesPageVisits
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: {comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                App Form Visits
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                <MetricWithGapIndicator
-                  value={
-                    typeof summaryStats.appFormVisits === "number"
-                      ? summaryStats.appFormVisits.toLocaleString()
-                      : summaryStats.appFormVisits
-                  }
-                  metricType="appForm"
-                />
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.appFormVisits,
-                    compareSummaryStats.appFormVisits
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: {comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Completed Apps
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                {typeof summaryStats.completedApps === "number"
-                  ? summaryStats.completedApps.toLocaleString()
-                  : summaryStats.completedApps}
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.completedApps,
-                    compareSummaryStats.completedApps
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: {comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Qualified Apps
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                {typeof summaryStats.qualifiedApps === "number"
-                  ? summaryStats.qualifiedApps.toLocaleString()
-                  : summaryStats.qualifiedApps}
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.qualifiedApps,
-                    compareSummaryStats.qualifiedApps
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: {comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Contacted
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                {typeof summaryStats.contacted === "number"
-                  ? summaryStats.contacted.toLocaleString()
-                  : summaryStats.contacted}
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.contacted,
-                    compareSummaryStats.contacted
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: {comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Accepted
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                {typeof summaryStats.accepted === "number"
-                  ? summaryStats.accepted.toLocaleString()
-                  : summaryStats.accepted}
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.accepted,
-                    compareSummaryStats.accepted
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: {comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Paid
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                {typeof summaryStats.paid === "number"
-                  ? summaryStats.paid.toLocaleString()
-                  : summaryStats.paid}
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.paid,
-                    compareSummaryStats.paid
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: {comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Sales
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                {typeof summaryStats.sales === "number"
-                  ? `$${summaryStats.sales.toLocaleString()}`
-                  : summaryStats.sales}
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.sales,
-                    compareSummaryStats.sales
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: ${comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}$
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Refunded
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                {typeof summaryStats.refunded === "number"
-                  ? `$${(0 - summaryStats.refunded).toLocaleString()}`
-                  : summaryStats.refunded}
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.refunded,
-                    compareSummaryStats.refunded
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: -${(0 - comparison.value).toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : ""}$
-                        {comparison.change.toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {(0 - comparison.percentChange).toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Net Sales
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">
-                {typeof summaryStats.netSales === "number"
-                  ? `$${summaryStats.netSales.toLocaleString()}`
-                  : summaryStats.netSales}
-              </div>
-              {compareSummaryStats &&
-                (() => {
-                  const comparison = formatComparisonValue(
-                    summaryStats.netSales,
-                    compareSummaryStats.netSales
-                  );
-                  return comparison ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <div>vs: ${comparison.value.toLocaleString()}</div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {comparison.isPositive ? "+" : "-"}$
-                        {(0 - comparison.change).toLocaleString()}
-                      </div>
-                      <div
-                        className={
-                          comparison.isPositive
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        ({comparison.isPositive ? "+" : ""}
-                        {comparison.percentChange.toFixed(0)}%)
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
+            ))}
+          </div>
+
+          {/* Summary Line */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <div className="flex flex-wrap gap-8 items-center justify-between">
+              <SummaryMetric
+                label="Total Views"
+                value={summaryStats.totalViews}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.totalViews}
+                formatValue={(val) =>
+                  typeof val === "number" ? val.toLocaleString() : val
+                }
+                formatCompareValue={(val) => val.toLocaleString()}
+                metricType="instagramViews"
+              />
+              <SummaryMetric
+                label="Sales Page Visits"
+                value={summaryStats.salesPageVisits}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.salesPageVisits}
+                formatValue={(val) =>
+                  typeof val === "number" ? val.toLocaleString() : val
+                }
+                formatCompareValue={(val) => val.toLocaleString()}
+                metricType="salesPage"
+              />
+              <SummaryMetric
+                label="App Form Visits"
+                value={summaryStats.appFormVisits}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.appFormVisits}
+                formatValue={(val) =>
+                  typeof val === "number" ? val.toLocaleString() : val
+                }
+                formatCompareValue={(val) => val.toLocaleString()}
+                metricType="appForm"
+              />
+              <SummaryMetric
+                label="Completed Apps"
+                value={summaryStats.completedApps}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.completedApps}
+                formatValue={(val) =>
+                  typeof val === "number" ? val.toLocaleString() : val
+                }
+                formatCompareValue={(val) => val.toLocaleString()}
+              />
+              <SummaryMetric
+                label="Qualified Apps"
+                value={summaryStats.qualifiedApps}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.qualifiedApps}
+                formatValue={(val) =>
+                  typeof val === "number" ? val.toLocaleString() : val
+                }
+                formatCompareValue={(val) => val.toLocaleString()}
+              />
+              <SummaryMetric
+                label="Contacted"
+                value={summaryStats.contacted}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.contacted}
+                formatValue={(val) =>
+                  typeof val === "number" ? val.toLocaleString() : val
+                }
+                formatCompareValue={(val) => val.toLocaleString()}
+              />
+              <SummaryMetric
+                label="Accepted"
+                value={summaryStats.accepted}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.accepted}
+                formatValue={(val) =>
+                  typeof val === "number" ? val.toLocaleString() : val
+                }
+                formatCompareValue={(val) => val.toLocaleString()}
+              />
+              <SummaryMetric
+                label="Paid"
+                value={summaryStats.paid}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.paid}
+                formatValue={(val) =>
+                  typeof val === "number" ? val.toLocaleString() : val
+                }
+                formatCompareValue={(val) => val.toLocaleString()}
+              />
+              <SummaryMetric
+                label="Sales"
+                value={summaryStats.sales}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.sales}
+                formatValue={(val) =>
+                  typeof val === "number" ? `$${val.toLocaleString()}` : val
+                }
+                formatCompareValue={(val) => `$${val.toLocaleString()}`}
+              />
+              <SummaryMetric
+                label="Refunded"
+                value={summaryStats.refunded}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.refunded}
+                formatValue={(val) =>
+                  typeof val === "number"
+                    ? `$${(0 - val).toLocaleString()}`
+                    : val
+                }
+                formatCompareValue={(val) => `-$${(0 - val).toLocaleString()}`}
+              />
+              <SummaryMetric
+                label="Net Sales"
+                value={summaryStats.netSales}
+                isLoading={isLoading}
+                isCompareLoading={isCompareLoading}
+                compareValue={compareSummaryStats?.netSales}
+                formatValue={(val) =>
+                  typeof val === "number" ? `$${val.toLocaleString()}` : val
+                }
+                formatCompareValue={(val) => `$${val.toLocaleString()}`}
+              />
             </div>
           </div>
-        </div>
 
-        {/* Sankey Interface Validation - HIDDEN */}
-        {false && funnelData.interfaceValidation && (
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Sankey Interface Validation
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Sales Page Visits Interface */}
-              <div className="space-y-2">
-                <h4 className="font-medium text-gray-900 dark:text-white">
-                  Sales Page Visits Interface
-                </h4>
-                <div className="text-sm space-y-1">
-                  <div className="flex justify-between">
-                    <span>Sankey 1 Output:</span>
-                    <span>
-                      {funnelData.interfaceValidation.salesPageVisits
-                        .sankey1Output !== null &&
-                      funnelData.interfaceValidation.salesPageVisits
-                        .sankey1Output !== undefined
-                        ? funnelData.interfaceValidation.salesPageVisits
-                            .sankey1Output
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Sankey 2 Input:</span>
-                    <span>
-                      {funnelData.interfaceValidation.salesPageVisits
-                        .sankey2Input !== null &&
-                      funnelData.interfaceValidation.salesPageVisits
-                        .sankey2Input !== undefined
-                        ? funnelData.interfaceValidation.salesPageVisits
-                            .sankey2Input
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Status:</span>
-                    <span
-                      className={`font-medium ${
-                        funnelData.interfaceValidation.salesPageVisits.match
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {funnelData.interfaceValidation.salesPageVisits.match
-                        ? "✅ Match"
-                        : "❌ Gap"}
-                    </span>
-                  </div>
-                  {!funnelData.interfaceValidation.salesPageVisits.match && (
-                    <div className="flex justify-between text-red-600">
-                      <span>Gap:</span>
+          {/* Sankey Interface Validation - HIDDEN */}
+          {false && funnelData.interfaceValidation && (
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Sankey Interface Validation
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Sales Page Visits Interface */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-900 dark:text-white">
+                    Sales Page Visits Interface
+                  </h4>
+                  <div className="text-sm space-y-1">
+                    <div className="flex justify-between">
+                      <span>Sankey 1 Output:</span>
                       <span>
-                        {funnelData.interfaceValidation.salesPageVisits.gap}
+                        {funnelData.interfaceValidation.salesPageVisits
+                          .sankey1Output !== null &&
+                        funnelData.interfaceValidation.salesPageVisits
+                          .sankey1Output !== undefined
+                          ? funnelData.interfaceValidation.salesPageVisits
+                              .sankey1Output
+                          : "N/A"}
                       </span>
                     </div>
-                  )}
+                    <div className="flex justify-between">
+                      <span>Sankey 2 Input:</span>
+                      <span>
+                        {funnelData.interfaceValidation.salesPageVisits
+                          .sankey2Input !== null &&
+                        funnelData.interfaceValidation.salesPageVisits
+                          .sankey2Input !== undefined
+                          ? funnelData.interfaceValidation.salesPageVisits
+                              .sankey2Input
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Status:</span>
+                      <span
+                        className={`font-medium ${
+                          funnelData.interfaceValidation.salesPageVisits.match
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {funnelData.interfaceValidation.salesPageVisits.match
+                          ? "✅ Match"
+                          : "❌ Gap"}
+                      </span>
+                    </div>
+                    {!funnelData.interfaceValidation.salesPageVisits.match && (
+                      <div className="flex justify-between text-red-600">
+                        <span>Gap:</span>
+                        <span>
+                          {funnelData.interfaceValidation.salesPageVisits.gap}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Qualified Apps Interface */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-900 dark:text-white">
+                    Qualified Apps Interface
+                  </h4>
+                  <div className="text-sm space-y-1">
+                    <div className="flex justify-between">
+                      <span>Sankey 2 Output:</span>
+                      <span>
+                        {funnelData.interfaceValidation.qualifiedApps
+                          .sankey2Output !== null &&
+                        funnelData.interfaceValidation.qualifiedApps
+                          .sankey2Output !== undefined
+                          ? funnelData.interfaceValidation.qualifiedApps
+                              .sankey2Output
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Sankey 3 Input:</span>
+                      <span>
+                        {funnelData.interfaceValidation.qualifiedApps
+                          .sankey3Input !== null &&
+                        funnelData.interfaceValidation.qualifiedApps
+                          .sankey3Input !== undefined
+                          ? funnelData.interfaceValidation.qualifiedApps
+                              .sankey3Input
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Status:</span>
+                      <span
+                        className={`font-medium ${
+                          funnelData.interfaceValidation.qualifiedApps.match
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {funnelData.interfaceValidation.qualifiedApps.match
+                          ? "✅ Match"
+                          : "❌ Gap"}
+                      </span>
+                    </div>
+                    {!funnelData.interfaceValidation.qualifiedApps.match && (
+                      <div className="flex justify-between text-red-600">
+                        <span>Gap:</span>
+                        <span>
+                          {funnelData.interfaceValidation.qualifiedApps.gap}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Qualified Apps Interface */}
-              <div className="space-y-2">
-                <h4 className="font-medium text-gray-900 dark:text-white">
-                  Qualified Apps Interface
-                </h4>
-                <div className="text-sm space-y-1">
-                  <div className="flex justify-between">
-                    <span>Sankey 2 Output:</span>
-                    <span>
-                      {funnelData.interfaceValidation.qualifiedApps
-                        .sankey2Output !== null &&
-                      funnelData.interfaceValidation.qualifiedApps
-                        .sankey2Output !== undefined
-                        ? funnelData.interfaceValidation.qualifiedApps
-                            .sankey2Output
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Sankey 3 Input:</span>
-                    <span>
-                      {funnelData.interfaceValidation.qualifiedApps
-                        .sankey3Input !== null &&
-                      funnelData.interfaceValidation.qualifiedApps
-                        .sankey3Input !== undefined
-                        ? funnelData.interfaceValidation.qualifiedApps
-                            .sankey3Input
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Status:</span>
-                    <span
-                      className={`font-medium ${
-                        funnelData.interfaceValidation.qualifiedApps.match
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {funnelData.interfaceValidation.qualifiedApps.match
-                        ? "✅ Match"
-                        : "❌ Gap"}
-                    </span>
-                  </div>
-                  {!funnelData.interfaceValidation.qualifiedApps.match && (
-                    <div className="flex justify-between text-red-600">
-                      <span>Gap:</span>
-                      <span>
-                        {funnelData.interfaceValidation.qualifiedApps.gap}
-                      </span>
-                    </div>
-                  )}
+              {/* Overall Status */}
+              <div className="mt-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    Overall Interface Status:
+                  </span>
+                  <span
+                    className={`font-bold ${
+                      funnelData.interfaceValidation.overallValid
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {funnelData.interfaceValidation.overallValid
+                      ? "✅ All Interfaces Match"
+                      : "❌ Interface Gaps Detected"}
+                  </span>
                 </div>
               </div>
             </div>
+          )}
 
-            {/* Overall Status */}
-            <div className="mt-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-900 dark:text-white">
-                  Overall Interface Status:
-                </span>
-                <span
-                  className={`font-bold ${
-                    funnelData.interfaceValidation.overallValid
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {funnelData.interfaceValidation.overallValid
-                    ? "✅ All Interfaces Match"
-                    : "❌ Interface Gaps Detected"}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Data Consistency Check - HIDDEN */}
-        {false && (
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Data Consistency Check
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Qualified Apps Consistency */}
-              <div className="space-y-2">
-                <h4 className="font-medium text-gray-900 dark:text-white">
-                  Qualified Apps Consistency
-                </h4>
-                <div className="text-sm space-y-1">
-                  <div className="flex justify-between">
-                    <span>Source of Truth:</span>
-                    <span>
-                      {funnelData.mgApplication?.qualifiedApps !== null &&
-                      funnelData.mgApplication?.qualifiedApps !== undefined
-                        ? funnelData.mgApplication.qualifiedApps
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Sankey 2 Output:</span>
-                    <span>
-                      {funnelData.mgApplication?.qualifiedApps !== null &&
-                      funnelData.mgApplication?.qualifiedApps !== undefined
-                        ? funnelData.mgApplication.qualifiedApps
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Sankey 3 Input:</span>
-                    <span>
-                      {funnelData.mgApplication?.qualifiedApps !== null &&
-                      funnelData.mgApplication?.qualifiedApps !== undefined
-                        ? funnelData.mgApplication.qualifiedApps
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Status:</span>
-                    <span className="font-medium text-green-600">
-                      ✅ Consistent
-                    </span>
+          {/* Data Consistency Check - HIDDEN */}
+          {false && (
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Data Consistency Check
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Qualified Apps Consistency */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-900 dark:text-white">
+                    Qualified Apps Consistency
+                  </h4>
+                  <div className="text-sm space-y-1">
+                    <div className="flex justify-between">
+                      <span>Source of Truth:</span>
+                      <span>
+                        {funnelData.mgApplication?.qualifiedApps !== null &&
+                        funnelData.mgApplication?.qualifiedApps !== undefined
+                          ? funnelData.mgApplication.qualifiedApps
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Sankey 2 Output:</span>
+                      <span>
+                        {funnelData.mgApplication?.qualifiedApps !== null &&
+                        funnelData.mgApplication?.qualifiedApps !== undefined
+                          ? funnelData.mgApplication.qualifiedApps
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Sankey 3 Input:</span>
+                      <span>
+                        {funnelData.mgApplication?.qualifiedApps !== null &&
+                        funnelData.mgApplication?.qualifiedApps !== undefined
+                          ? funnelData.mgApplication.qualifiedApps
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Status:</span>
+                      <span className="font-medium text-green-600">
+                        ✅ Consistent
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Selection States Sum Check */}
-              <div className="space-y-2">
-                <h4 className="font-medium text-gray-900 dark:text-white">
-                  Selection States Sum Check
-                </h4>
-                <div className="text-sm space-y-1">
-                  <div className="flex justify-between">
-                    <span>Qualified Apps:</span>
-                    <span>
-                      {funnelData.mgApplication?.qualifiedApps !== null &&
-                      funnelData.mgApplication?.qualifiedApps !== undefined
-                        ? funnelData.mgApplication.qualifiedApps
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Sum of Selection States:</span>
-                    <span>
-                      {funnelData.mgSelection
-                        ? (funnelData.mgSelection.rejectedWoCovo || 0) +
-                          (funnelData.mgSelection.contacted || 0) +
-                          (funnelData.mgSelection.unresponsive || 0) +
-                          (funnelData.mgSelection.begunConversation || 0) +
-                          (funnelData.mgSelection.becameUnresponsive || 0) +
-                          (funnelData.mgSelection.rejectedBasedOnConvo || 0) +
-                          (funnelData.mgSelection.acceptedNotPaid || 0) +
-                          (funnelData.mgSelection.rejectedAfterAcceptance ||
-                            0) +
-                          (funnelData.mgSelection.paid || 0) +
-                          (funnelData.mgSelection.notContactedOrRejected || 0) +
-                          (funnelData.mgSelection.noResponseYet || 0) +
-                          (funnelData.mgSelection.noDecisionYet || 0) +
-                          (funnelData.mgSelection.noOutcomeYet || 0)
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Status:</span>
-                    <span
-                      className={`font-medium ${
-                        funnelData.mgApplication?.qualifiedApps ===
+                {/* Selection States Sum Check */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-gray-900 dark:text-white">
+                    Selection States Sum Check
+                  </h4>
+                  <div className="text-sm space-y-1">
+                    <div className="flex justify-between">
+                      <span>Qualified Apps:</span>
+                      <span>
+                        {funnelData.mgApplication?.qualifiedApps !== null &&
+                        funnelData.mgApplication?.qualifiedApps !== undefined
+                          ? funnelData.mgApplication.qualifiedApps
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Sum of Selection States:</span>
+                      <span>
+                        {funnelData.mgSelection
+                          ? (funnelData.mgSelection.rejectedWoCovo || 0) +
+                            (funnelData.mgSelection.contacted || 0) +
+                            (funnelData.mgSelection.unresponsive || 0) +
+                            (funnelData.mgSelection.begunConversation || 0) +
+                            (funnelData.mgSelection.becameUnresponsive || 0) +
+                            (funnelData.mgSelection.rejectedBasedOnConvo || 0) +
+                            (funnelData.mgSelection.acceptedNotPaid || 0) +
+                            (funnelData.mgSelection.rejectedAfterAcceptance ||
+                              0) +
+                            (funnelData.mgSelection.paid || 0) +
+                            (funnelData.mgSelection.notContactedOrRejected ||
+                              0) +
+                            (funnelData.mgSelection.noResponseYet || 0) +
+                            (funnelData.mgSelection.noDecisionYet || 0) +
+                            (funnelData.mgSelection.noOutcomeYet || 0)
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Status:</span>
+                      <span
+                        className={`font-medium ${
+                          funnelData.mgApplication?.qualifiedApps ===
+                          (funnelData.mgSelection
+                            ? (funnelData.mgSelection.rejectedWoCovo || 0) +
+                              (funnelData.mgSelection.contacted || 0) +
+                              (funnelData.mgSelection.unresponsive || 0) +
+                              (funnelData.mgSelection.begunConversation || 0) +
+                              (funnelData.mgSelection.becameUnresponsive || 0) +
+                              (funnelData.mgSelection.rejectedBasedOnConvo ||
+                                0) +
+                              (funnelData.mgSelection.acceptedNotPaid || 0) +
+                              (funnelData.mgSelection.rejectedAfterAcceptance ||
+                                0) +
+                              (funnelData.mgSelection.paid || 0) +
+                              (funnelData.mgSelection.notContactedOrRejected ||
+                                0) +
+                              (funnelData.mgSelection.noResponseYet || 0) +
+                              (funnelData.mgSelection.noDecisionYet || 0) +
+                              (funnelData.mgSelection.noOutcomeYet || 0)
+                            : null)
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {funnelData.mgApplication?.qualifiedApps ===
                         (funnelData.mgSelection
                           ? (funnelData.mgSelection.rejectedWoCovo || 0) +
                             (funnelData.mgSelection.contacted || 0) +
@@ -3646,522 +3440,508 @@ const ClientAcquisitionDashboard = () => {
                             (funnelData.mgSelection.noDecisionYet || 0) +
                             (funnelData.mgSelection.noOutcomeYet || 0)
                           : null)
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {funnelData.mgApplication?.qualifiedApps ===
-                      (funnelData.mgSelection
-                        ? (funnelData.mgSelection.rejectedWoCovo || 0) +
-                          (funnelData.mgSelection.contacted || 0) +
-                          (funnelData.mgSelection.unresponsive || 0) +
-                          (funnelData.mgSelection.begunConversation || 0) +
-                          (funnelData.mgSelection.becameUnresponsive || 0) +
-                          (funnelData.mgSelection.rejectedBasedOnConvo || 0) +
-                          (funnelData.mgSelection.acceptedNotPaid || 0) +
-                          (funnelData.mgSelection.rejectedAfterAcceptance ||
-                            0) +
-                          (funnelData.mgSelection.paid || 0) +
-                          (funnelData.mgSelection.notContactedOrRejected || 0) +
-                          (funnelData.mgSelection.noResponseYet || 0) +
-                          (funnelData.mgSelection.noDecisionYet || 0) +
-                          (funnelData.mgSelection.noOutcomeYet || 0)
-                        : null)
-                        ? "✅ Consistent"
-                        : "❌ Discrepancy"}
-                    </span>
+                          ? "✅ Consistent"
+                          : "❌ Discrepancy"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Data Source of Truth */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Data Source of Truth
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+              {/* Traffic Sources */}
+              <div className="space-y-2">
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  Traffic Sources
+                </h4>
+                <div className="text-sm space-y-1">
+                  <div>
+                    IG Views:{" "}
+                    <MetricWithGapIndicator
+                      value={
+                        funnelData.ig.views !== null
+                          ? funnelData.ig.views.toLocaleString()
+                          : "N/A"
+                      }
+                      metricType="instagramViews"
+                    />
+                  </div>
+                  <div>
+                    IG Reach:{" "}
+                    {funnelData.ig.reach !== null
+                      ? funnelData.ig.reach.toLocaleString()
+                      : "N/A"}
+                  </div>
+                  <div>
+                    IG Profile Visits:{" "}
+                    {funnelData.ig.profileVisits !== null
+                      ? funnelData.ig.profileVisits.toLocaleString()
+                      : "N/A"}
+                  </div>
+                  <div>
+                    IG Bio Link Clicks:{" "}
+                    {funnelData.ig.bioLinkClicks !== null
+                      ? funnelData.ig.bioLinkClicks.toLocaleString()
+                      : "N/A"}
+                  </div>
+                  <div>
+                    Email Opens:{" "}
+                    {funnelData.email.opens !== null
+                      ? funnelData.email.opens.toLocaleString()
+                      : "N/A"}
+                  </div>
+                </div>
+              </div>
+
+              {/* MG Sales Page Visits */}
+              <div className="space-y-2">
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  MG Sales Page Visits
+                </h4>
+                <div className="text-sm space-y-0">
+                  <div>
+                    Visits:{" "}
+                    <MetricWithGapIndicator
+                      value={funnelData.mgSalesPageVisits.total}
+                      metricType="salesPage"
+                    />
+                  </div>
+                  <div className="pl-2">
+                    IG:{" "}
+                    {funnelData.mgSalesPageVisits.fromIgBio !== null ||
+                    funnelData.mgSalesPageVisits.fromIgStory !== null ||
+                    funnelData.mgSalesPageVisits.fromIgManychat !== null ||
+                    funnelData.mgSalesPageVisits.fromIgDm !== null
+                      ? (funnelData.mgSalesPageVisits.fromIgBio || 0) +
+                        (funnelData.mgSalesPageVisits.fromIgStory || 0) +
+                        (funnelData.mgSalesPageVisits.fromIgManychat || 0) +
+                        (funnelData.mgSalesPageVisits.fromIgDm || 0)
+                      : null}
+                  </div>
+                  <div className="pl-4">
+                    Bio: {funnelData.mgSalesPageVisits.fromIgBio}
+                  </div>
+                  <div className="pl-4">
+                    Story: {funnelData.mgSalesPageVisits.fromIgStory}
+                  </div>
+                  <div className="pl-4">
+                    Manychat: {funnelData.mgSalesPageVisits.fromIgManychat}
+                  </div>
+                  <div className="pl-4">
+                    DM: {funnelData.mgSalesPageVisits.fromIgDm}
+                  </div>
+                  <div className="pl-2">
+                    Email:{" "}
+                    {funnelData.mgSalesPageVisits.fromEmailBroadcasts !==
+                      null ||
+                    funnelData.mgSalesPageVisits.fromEmailAutomations !== null
+                      ? (funnelData.mgSalesPageVisits.fromEmailBroadcasts ||
+                          0) +
+                        (funnelData.mgSalesPageVisits.fromEmailAutomations || 0)
+                      : null}
+                  </div>
+                  <div className="pl-4">
+                    Broadcast:{" "}
+                    {funnelData.mgSalesPageVisits.fromEmailBroadcasts}
+                  </div>
+                  <div className="pl-4">
+                    Automation:{" "}
+                    {funnelData.mgSalesPageVisits.fromEmailAutomations}
+                  </div>
+                  <div className="pl-2">
+                    Unknown: {funnelData.mgSalesPageVisits.fromUnknown}
+                  </div>
+                  <div>
+                    Exits:{" "}
+                    {funnelData.mgSalesPageVisits.total !== null &&
+                    funnelData.mgApplication.appFormPageVisits !== null
+                      ? funnelData.mgSalesPageVisits.total -
+                        funnelData.mgApplication.appFormPageVisits
+                      : "N/A"}
+                  </div>
+                </div>
+              </div>
+
+              {/* MG Application */}
+              <div className="space-y-2">
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  MG Application
+                </h4>
+                <div className="text-sm space-y-1">
+                  <div>
+                    Visits:{" "}
+                    <MetricWithGapIndicator
+                      value={funnelData.mgApplication.appFormPageVisits}
+                      metricType="appForm"
+                    />
+                  </div>
+                  <div className="pl-2">
+                    Non-Starts:{" "}
+                    {funnelData.mgApplication.appFormPageVisits !== null &&
+                    funnelData.mgApplication.appStarts !== null
+                      ? (() => {
+                          const nonStarts =
+                            funnelData.mgApplication.appFormPageVisits -
+                            funnelData.mgApplication.appStarts;
+                          return nonStarts < 0 ? "?" : nonStarts;
+                        })()
+                      : "N/A"}
+                  </div>
+                  <div>Starts: {funnelData.mgApplication.appStarts}</div>
+                  <div>Abandons: {funnelData.mgApplication.appAbandons}</div>
+                  <div>
+                    Completions: {funnelData.mgApplication.appCompletions}
+                  </div>
+                  <div>
+                    Non-Qualified: {funnelData.mgApplication.nonQualifiedApps}
+                  </div>
+                  <div>Qualified: {funnelData.mgApplication.qualifiedApps}</div>
+                </div>
+              </div>
+
+              {/* MG Selection */}
+              <div className="space-y-2 w-full col-span-3">
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  MG Selection
+                </h4>
+                <div className="text-sm">
+                  <div className="grid grid-cols-5 gap-0 min-w-0">
+                    <div className="font-medium col-span-2">State</div>
+                    <div className="font-medium">%</div>
+                    <div className="font-medium">Total</div>
+                    <div className="font-medium">Current</div>
+
+                    <div className="col-span-2 font-medium border-b border-gray-200">
+                      MG Qualified Apps
+                    </div>
+                    <div className="border-b border-gray-200">100%</div>
+                    <div className="border-b border-gray-200">
+                      {funnelData.mgApplication.qualifiedApps}
+                    </div>
+                    <div className="border-b border-gray-200">
+                      {funnelData.mgApplication.qualifiedApps}
+                    </div>
+
+                    <div className="col-span-2 pl-2">
+                      Not Contacted or Rejected
+                    </div>
+                    <div className="pl-2">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.notContactedOrRejected ||
+                              0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-2">
+                      {funnelData.mgSelection.notContactedOrRejected}
+                    </div>
+                    <div className="pl-2">
+                      {funnelData.mgSelection.notContactedOrRejected}
+                    </div>
+
+                    <div className="col-span-2 pl-2">Rejected w/o Contact</div>
+                    <div className="pl-2">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.rejectedWoCovo || 0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-2">
+                      {funnelData.mgSelection.rejectedWoCovo}
+                    </div>
+                    <div className="pl-2">
+                      {funnelData.mgSelection.rejectedWoCovo}
+                    </div>
+
+                    <div className="col-span-2 pl-2 border-b border-gray-200">
+                      Contacted
+                    </div>
+                    <div className="pl-2 border-b border-gray-200">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.contacted || 0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-2 border-b border-gray-200">
+                      {funnelData.mgSelection.contacted}
+                    </div>
+                    <div className="pl-2 border-b border-gray-200">
+                      {funnelData.mgSelection.contacted}
+                    </div>
+
+                    <div className="col-span-2 pl-4">No Response Yet</div>
+                    <div className="pl-4">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.noResponseYet || 0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-4">
+                      {funnelData.mgSelection.noResponseYet}
+                    </div>
+                    <div className="pl-4">
+                      {funnelData.mgSelection.noResponseYet}
+                    </div>
+
+                    <div className="col-span-2 pl-4">Unresponsive</div>
+                    <div className="pl-4">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.unresponsive || 0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-4">
+                      {funnelData.mgSelection.unresponsive}
+                    </div>
+                    <div className="pl-4">
+                      {funnelData.mgSelection.unresponsive}
+                    </div>
+
+                    <div className="col-span-2 pl-4 border-b border-gray-200">
+                      Began Conversation
+                    </div>
+                    <div className="pl-4 border-b border-gray-200">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.begunConversation || 0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-4 border-b border-gray-200">
+                      {funnelData.mgSelection.begunConversation}
+                    </div>
+                    <div className="pl-4 border-b border-gray-200">
+                      {funnelData.mgSelection.begunConversation}
+                    </div>
+
+                    <div className="col-span-2 pl-6">No Decision Yet</div>
+                    <div className="pl-6">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.noDecisionYet || 0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-6">
+                      {funnelData.mgSelection.noDecisionYet}
+                    </div>
+                    <div className="pl-6">
+                      {funnelData.mgSelection.noDecisionYet}
+                    </div>
+
+                    <div className="col-span-2 pl-6">Became Unresponsive</div>
+                    <div className="pl-6">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.becameUnresponsive || 0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-6">
+                      {funnelData.mgSelection.becameUnresponsive}
+                    </div>
+                    <div className="pl-6">
+                      {funnelData.mgSelection.becameUnresponsive}
+                    </div>
+
+                    <div className="col-span-2 pl-6">
+                      Rejected Based on Convo
+                    </div>
+                    <div className="pl-6">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.rejectedBasedOnConvo ||
+                              0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-6">
+                      {funnelData.mgSelection.rejectedBasedOnConvo}
+                    </div>
+                    <div className="pl-6">
+                      {funnelData.mgSelection.rejectedBasedOnConvo}
+                    </div>
+
+                    <div className="col-span-2 pl-6 border-b border-gray-200">
+                      Accepted
+                    </div>
+                    <div className="pl-6 border-b border-gray-200">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            (((funnelData.mgSelection.acceptedNotPaid || 0) +
+                              (funnelData.mgSelection.paid || 0)) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-6 border-b border-gray-200">
+                      {(funnelData.mgSelection.acceptedNotPaid || 0) +
+                        (funnelData.mgSelection.paid || 0)}
+                    </div>
+                    <div className="pl-6 border-b border-gray-200">
+                      {funnelData.mgSelection.acceptedNotPaid}
+                    </div>
+
+                    <div className="col-span-2 pl-8">No Outcome Yet</div>
+                    <div className="pl-8">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.noOutcomeYet || 0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-8">
+                      {funnelData.mgSelection.noOutcomeYet}
+                    </div>
+                    <div className="pl-8">
+                      {funnelData.mgSelection.noOutcomeYet}
+                    </div>
+
+                    <div className="col-span-2 pl-8">
+                      Rejected After Acceptance
+                    </div>
+                    <div className="pl-8">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.rejectedAfterAcceptance ||
+                              0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-8">
+                      {funnelData.mgSelection.rejectedAfterAcceptance}
+                    </div>
+                    <div className="pl-8">
+                      {funnelData.mgSelection.rejectedAfterAcceptance}
+                    </div>
+
+                    <div className="col-span-2 pl-8">Paid</div>
+                    <div className="pl-8">
+                      {funnelData.mgApplication.qualifiedApps
+                        ? (
+                            ((funnelData.mgSelection.paid || 0) /
+                              funnelData.mgApplication.qualifiedApps) *
+                            100
+                          ).toFixed(0)
+                        : 0}
+                      %
+                    </div>
+                    <div className="pl-8">{funnelData.mgSelection.paid}</div>
+                    <div className="pl-8">{funnelData.mgSelection.paid}</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
 
-        {/* Data Source of Truth */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Data Source of Truth
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-            {/* Traffic Sources */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-900 dark:text-white">
-                Traffic Sources
-              </h4>
-              <div className="text-sm space-y-1">
-                <div>
-                  IG Views:{" "}
-                  <MetricWithGapIndicator
-                    value={
-                      funnelData.ig.views !== null
-                        ? funnelData.ig.views.toLocaleString()
-                        : "N/A"
-                    }
-                    metricType="instagramViews"
-                  />
-                </div>
-                <div>
-                  IG Reach:{" "}
-                  {funnelData.ig.reach !== null
-                    ? funnelData.ig.reach.toLocaleString()
-                    : "N/A"}
-                </div>
-                <div>
-                  IG Profile Visits:{" "}
-                  {funnelData.ig.profileVisits !== null
-                    ? funnelData.ig.profileVisits.toLocaleString()
-                    : "N/A"}
-                </div>
-                <div>
-                  IG Bio Link Clicks:{" "}
-                  {funnelData.ig.bioLinkClicks !== null
-                    ? funnelData.ig.bioLinkClicks.toLocaleString()
-                    : "N/A"}
-                </div>
-                <div>
-                  Email Opens:{" "}
-                  {funnelData.email.opens !== null
-                    ? funnelData.email.opens.toLocaleString()
-                    : "N/A"}
-                </div>
-              </div>
+          {/* Sankey Diagrams */}
+          <div className="space-y-8">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <SankeyDiagram
+                data={trafficFunnelData}
+                originalData={funnelData}
+                width={1200}
+                height={400}
+                title="Traffic Funnel: MG Sales Page Visit Sources → MG Sales Page Visits"
+                leftPadding={180}
+                useLogarithmicScaling={true}
+              />
             </div>
 
-            {/* MG Sales Page Visits */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-900 dark:text-white">
-                MG Sales Page Visits
-              </h4>
-              <div className="text-sm space-y-0">
-                <div>
-                  Visits:{" "}
-                  <MetricWithGapIndicator
-                    value={funnelData.mgSalesPageVisits.total}
-                    metricType="salesPage"
-                  />
-                </div>
-                <div className="pl-2">
-                  IG:{" "}
-                  {funnelData.mgSalesPageVisits.fromIgBio !== null ||
-                  funnelData.mgSalesPageVisits.fromIgStory !== null ||
-                  funnelData.mgSalesPageVisits.fromIgManychat !== null ||
-                  funnelData.mgSalesPageVisits.fromIgDm !== null
-                    ? (funnelData.mgSalesPageVisits.fromIgBio || 0) +
-                      (funnelData.mgSalesPageVisits.fromIgStory || 0) +
-                      (funnelData.mgSalesPageVisits.fromIgManychat || 0) +
-                      (funnelData.mgSalesPageVisits.fromIgDm || 0)
-                    : null}
-                </div>
-                <div className="pl-4">
-                  Bio: {funnelData.mgSalesPageVisits.fromIgBio}
-                </div>
-                <div className="pl-4">
-                  Story: {funnelData.mgSalesPageVisits.fromIgStory}
-                </div>
-                <div className="pl-4">
-                  Manychat: {funnelData.mgSalesPageVisits.fromIgManychat}
-                </div>
-                <div className="pl-4">
-                  DM: {funnelData.mgSalesPageVisits.fromIgDm}
-                </div>
-                <div className="pl-2">
-                  Email:{" "}
-                  {funnelData.mgSalesPageVisits.fromEmailBroadcasts !== null ||
-                  funnelData.mgSalesPageVisits.fromEmailAutomations !== null
-                    ? (funnelData.mgSalesPageVisits.fromEmailBroadcasts || 0) +
-                      (funnelData.mgSalesPageVisits.fromEmailAutomations || 0)
-                    : null}
-                </div>
-                <div className="pl-4">
-                  Broadcast: {funnelData.mgSalesPageVisits.fromEmailBroadcasts}
-                </div>
-                <div className="pl-4">
-                  Automation:{" "}
-                  {funnelData.mgSalesPageVisits.fromEmailAutomations}
-                </div>
-                <div className="pl-2">
-                  Unknown: {funnelData.mgSalesPageVisits.fromUnknown}
-                </div>
-                <div>
-                  Exits:{" "}
-                  {funnelData.mgSalesPageVisits.total !== null &&
-                  funnelData.mgApplication.appFormPageVisits !== null
-                    ? funnelData.mgSalesPageVisits.total -
-                      funnelData.mgApplication.appFormPageVisits
-                    : "N/A"}
-                </div>
-              </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <SankeyDiagram
+                data={applicationFunnelData}
+                originalData={funnelData}
+                width={1200}
+                height={300}
+                title="Application Funnel: MG Sales Page Visits → MG Qualified Apps"
+                leftPadding={160}
+                useLogarithmicScaling={false}
+              />
             </div>
 
-            {/* MG Application */}
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-900 dark:text-white">
-                MG Application
-              </h4>
-              <div className="text-sm space-y-1">
-                <div>
-                  Visits:{" "}
-                  <MetricWithGapIndicator
-                    value={funnelData.mgApplication.appFormPageVisits}
-                    metricType="appForm"
-                  />
-                </div>
-                <div className="pl-2">
-                  Non-Starts:{" "}
-                  {funnelData.mgApplication.appFormPageVisits !== null &&
-                  funnelData.mgApplication.appStarts !== null
-                    ? (() => {
-                        const nonStarts =
-                          funnelData.mgApplication.appFormPageVisits -
-                          funnelData.mgApplication.appStarts;
-                        return nonStarts < 0 ? "?" : nonStarts;
-                      })()
-                    : "N/A"}
-                </div>
-                <div>Starts: {funnelData.mgApplication.appStarts}</div>
-                <div>Abandons: {funnelData.mgApplication.appAbandons}</div>
-                <div>
-                  Completions: {funnelData.mgApplication.appCompletions}
-                </div>
-                <div>
-                  Non-Qualified: {funnelData.mgApplication.nonQualifiedApps}
-                </div>
-                <div>Qualified: {funnelData.mgApplication.qualifiedApps}</div>
-              </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+              <SankeyDiagram
+                data={selectionFunnelData}
+                originalData={funnelData}
+                width={1200}
+                height={400}
+                title="Selection Funnel: MG Qualified Apps → Sales Outcomes"
+                leftPadding={130}
+                useLogarithmicScaling={false}
+              />
             </div>
+          </div>
 
-            {/* MG Selection */}
-            <div className="space-y-2 w-full col-span-3">
-              <h4 className="font-medium text-gray-900 dark:text-white">
-                MG Selection
-              </h4>
-              <div className="text-sm">
-                <div className="grid grid-cols-5 gap-0 min-w-0">
-                  <div className="font-medium col-span-2">State</div>
-                  <div className="font-medium">%</div>
-                  <div className="font-medium">Total</div>
-                  <div className="font-medium">Current</div>
-
-                  <div className="col-span-2 font-medium border-b border-gray-200">
-                    MG Qualified Apps
-                  </div>
-                  <div className="border-b border-gray-200">100%</div>
-                  <div className="border-b border-gray-200">
-                    {funnelData.mgApplication.qualifiedApps}
-                  </div>
-                  <div className="border-b border-gray-200">
-                    {funnelData.mgApplication.qualifiedApps}
-                  </div>
-
-                  <div className="col-span-2 pl-2">
-                    Not Contacted or Rejected
-                  </div>
-                  <div className="pl-2">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.notContactedOrRejected ||
-                            0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-2">
-                    {funnelData.mgSelection.notContactedOrRejected}
-                  </div>
-                  <div className="pl-2">
-                    {funnelData.mgSelection.notContactedOrRejected}
-                  </div>
-
-                  <div className="col-span-2 pl-2">Rejected w/o Contact</div>
-                  <div className="pl-2">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.rejectedWoCovo || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-2">
-                    {funnelData.mgSelection.rejectedWoCovo}
-                  </div>
-                  <div className="pl-2">
-                    {funnelData.mgSelection.rejectedWoCovo}
-                  </div>
-
-                  <div className="col-span-2 pl-2 border-b border-gray-200">
-                    Contacted
-                  </div>
-                  <div className="pl-2 border-b border-gray-200">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.contacted || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-2 border-b border-gray-200">
-                    {funnelData.mgSelection.contacted}
-                  </div>
-                  <div className="pl-2 border-b border-gray-200">
-                    {funnelData.mgSelection.contacted}
-                  </div>
-
-                  <div className="col-span-2 pl-4">No Response Yet</div>
-                  <div className="pl-4">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.noResponseYet || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-4">
-                    {funnelData.mgSelection.noResponseYet}
-                  </div>
-                  <div className="pl-4">
-                    {funnelData.mgSelection.noResponseYet}
-                  </div>
-
-                  <div className="col-span-2 pl-4">Unresponsive</div>
-                  <div className="pl-4">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.unresponsive || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-4">
-                    {funnelData.mgSelection.unresponsive}
-                  </div>
-                  <div className="pl-4">
-                    {funnelData.mgSelection.unresponsive}
-                  </div>
-
-                  <div className="col-span-2 pl-4 border-b border-gray-200">
-                    Began Conversation
-                  </div>
-                  <div className="pl-4 border-b border-gray-200">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.begunConversation || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-4 border-b border-gray-200">
-                    {funnelData.mgSelection.begunConversation}
-                  </div>
-                  <div className="pl-4 border-b border-gray-200">
-                    {funnelData.mgSelection.begunConversation}
-                  </div>
-
-                  <div className="col-span-2 pl-6">No Decision Yet</div>
-                  <div className="pl-6">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.noDecisionYet || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-6">
-                    {funnelData.mgSelection.noDecisionYet}
-                  </div>
-                  <div className="pl-6">
-                    {funnelData.mgSelection.noDecisionYet}
-                  </div>
-
-                  <div className="col-span-2 pl-6">Became Unresponsive</div>
-                  <div className="pl-6">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.becameUnresponsive || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-6">
-                    {funnelData.mgSelection.becameUnresponsive}
-                  </div>
-                  <div className="pl-6">
-                    {funnelData.mgSelection.becameUnresponsive}
-                  </div>
-
-                  <div className="col-span-2 pl-6">Rejected Based on Convo</div>
-                  <div className="pl-6">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.rejectedBasedOnConvo || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-6">
-                    {funnelData.mgSelection.rejectedBasedOnConvo}
-                  </div>
-                  <div className="pl-6">
-                    {funnelData.mgSelection.rejectedBasedOnConvo}
-                  </div>
-
-                  <div className="col-span-2 pl-6 border-b border-gray-200">
-                    Accepted
-                  </div>
-                  <div className="pl-6 border-b border-gray-200">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          (((funnelData.mgSelection.acceptedNotPaid || 0) +
-                            (funnelData.mgSelection.paid || 0)) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-6 border-b border-gray-200">
-                    {(funnelData.mgSelection.acceptedNotPaid || 0) +
-                      (funnelData.mgSelection.paid || 0)}
-                  </div>
-                  <div className="pl-6 border-b border-gray-200">
-                    {funnelData.mgSelection.acceptedNotPaid}
-                  </div>
-
-                  <div className="col-span-2 pl-8">No Outcome Yet</div>
-                  <div className="pl-8">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.noOutcomeYet || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-8">
-                    {funnelData.mgSelection.noOutcomeYet}
-                  </div>
-                  <div className="pl-8">
-                    {funnelData.mgSelection.noOutcomeYet}
-                  </div>
-
-                  <div className="col-span-2 pl-8">
-                    Rejected After Acceptance
-                  </div>
-                  <div className="pl-8">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.rejectedAfterAcceptance ||
-                            0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-8">
-                    {funnelData.mgSelection.rejectedAfterAcceptance}
-                  </div>
-                  <div className="pl-8">
-                    {funnelData.mgSelection.rejectedAfterAcceptance}
-                  </div>
-
-                  <div className="col-span-2 pl-8">Paid</div>
-                  <div className="pl-8">
-                    {funnelData.mgApplication.qualifiedApps
-                      ? (
-                          ((funnelData.mgSelection.paid || 0) /
-                            funnelData.mgApplication.qualifiedApps) *
-                          100
-                        ).toFixed(0)
-                      : 0}
-                    %
-                  </div>
-                  <div className="pl-8">{funnelData.mgSelection.paid}</div>
-                  <div className="pl-8">{funnelData.mgSelection.paid}</div>
+          {/* Legend */}
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Channel Legend
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 px-60">
+              {Object.entries(categoryColors).map(([category, color]) => (
+                <div key={category} className="flex items-center space-x-2">
+                  <div
+                    className="w-4 h-4 rounded"
+                    style={{ backgroundColor: color }}
+                  />
+                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                    {categoryNames[category]}
+                  </span>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
-
-        {/* Sankey Diagrams */}
-        <div className="space-y-8">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <SankeyDiagram
-              data={trafficFunnelData}
-              originalData={funnelData}
-              width={1200}
-              height={400}
-              title="Traffic Funnel: MG Sales Page Visit Sources → MG Sales Page Visits"
-              leftPadding={180}
-              useLogarithmicScaling={true}
-            />
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <SankeyDiagram
-              data={applicationFunnelData}
-              originalData={funnelData}
-              width={1200}
-              height={300}
-              title="Application Funnel: MG Sales Page Visits → MG Qualified Apps"
-              leftPadding={160}
-              useLogarithmicScaling={false}
-            />
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <SankeyDiagram
-              data={selectionFunnelData}
-              originalData={funnelData}
-              width={1200}
-              height={400}
-              title="Selection Funnel: MG Qualified Apps → Sales Outcomes"
-              leftPadding={130}
-              useLogarithmicScaling={false}
-            />
-          </div>
-        </div>
-
-        {/* Legend */}
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Channel Legend
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 px-60">
-            {Object.entries(categoryColors).map(([category, color]) => (
-              <div key={category} className="flex items-center space-x-2">
-                <div
-                  className="w-4 h-4 rounded"
-                  style={{ backgroundColor: color }}
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  {categoryNames[category]}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </ScrollArea>
+      </ScrollArea>
+    </>
   );
 };
 
