@@ -2259,8 +2259,9 @@ const ClientAcquisitionDashboard = () => {
                       className="text-blue-600 hover:text-blue-800 underline font-medium"
                     >
                       🔗 If prod, update the Instagram access token in the
-                      Render Environment Variables. If dev, update .env file.
-                    </a>
+                      Render Environment Variables.
+                    </a>{" "}
+                    If dev, update .env file.
                   </p>
                 </div>
               </div>
