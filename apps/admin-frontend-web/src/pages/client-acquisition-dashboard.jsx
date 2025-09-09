@@ -1558,6 +1558,8 @@ const ClientAcquisitionDashboard = () => {
   const [isCompareLoading, setIsCompareLoading] = useState(false);
   const [error, setError] = useState(null);
   const [instagramTokenExpired, setInstagramTokenExpired] = useState(false);
+  const [showTokenInput, setShowTokenInput] = useState(false);
+  const [tempToken, setTempToken] = useState("");
   const [dateRange, setDateRange] = useState({
     start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
@@ -1572,6 +1574,24 @@ const ClientAcquisitionDashboard = () => {
 
   const [compareData, setCompareData] = useState(null);
 
+  // Handle temporary Instagram token
+  const handleTokenSubmit = () => {
+    if (tempToken.trim()) {
+      localStorage.setItem("instagram_temp_token", tempToken.trim());
+      setShowTokenInput(false);
+      setTempToken("");
+      setInstagramTokenExpired(false);
+      // Refresh data with new token
+      fetchAcquisitionData(dateRange.start, dateRange.end);
+    }
+  };
+
+  const handleTokenClear = () => {
+    localStorage.removeItem("instagram_temp_token");
+    setTempToken("");
+    setShowTokenInput(false);
+  };
+
   const fetchCompareData = async (startDate, endDate) => {
     if (!startDate || !endDate) {
       setCompareData(null);
@@ -1580,6 +1600,9 @@ const ClientAcquisitionDashboard = () => {
 
     setIsCompareLoading(true);
     try {
+      // Get temporary Instagram token if available
+      const tempToken = localStorage.getItem("instagram_temp_token");
+
       // Fetch data from all three endpoints in parallel
       const [plausibleResponse, airtableResponse, instagramResponse] =
         await Promise.all([
@@ -1590,7 +1613,14 @@ const ClientAcquisitionDashboard = () => {
             `/api/internalstats/airtable?start=${startDate}&end=${endDate}`
           ),
           fetch(
-            `/api/internalstats/instagram?start=${startDate}&end=${endDate}`
+            `/api/internalstats/instagram?start=${startDate}&end=${endDate}`,
+            tempToken
+              ? {
+                  headers: {
+                    "x-instagram-token": tempToken,
+                  },
+                }
+              : {}
           ),
         ]);
 
@@ -1681,6 +1711,9 @@ const ClientAcquisitionDashboard = () => {
       console.log(`Fetching acquisition data for ${startDate} to ${endDate}`);
       console.log("Starting API calls...");
 
+      // Get temporary Instagram token if available
+      const tempToken = localStorage.getItem("instagram_temp_token");
+
       // Fetch data from all three endpoints in parallel
       const [plausibleResponse, airtableResponse, instagramResponse] =
         await Promise.all([
@@ -1691,7 +1724,14 @@ const ClientAcquisitionDashboard = () => {
             `/api/internalstats/airtable?start=${startDate}&end=${endDate}`
           ),
           fetch(
-            `/api/internalstats/instagram?start=${startDate}&end=${endDate}`
+            `/api/internalstats/instagram?start=${startDate}&end=${endDate}`,
+            tempToken
+              ? {
+                  headers: {
+                    "x-instagram-token": tempToken,
+                  },
+                }
+              : {}
           ),
         ]);
 
@@ -2975,10 +3015,10 @@ const ClientAcquisitionDashboard = () => {
 
             {/* Instagram Token Expiration Warning */}
             {instagramTokenExpired && (
-              <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+              <div className="mt-4 p-3 bg-gray-800 border border-gray-400 rounded">
                 <div className="flex items-center">
                   <span className="text-lg mr-2">⚠️</span>
-                  <div>
+                  <div className="flex-1">
                     <strong>Instagram Access Token Expired</strong>
                     <p className="text-sm mt-1">
                       The Instagram access token has expired. Instagram data is
@@ -3008,6 +3048,49 @@ const ClientAcquisitionDashboard = () => {
                       </a>{" "}
                       If dev, update .env file.
                     </p>
+
+                    <div className="flex flex-row items-center text-sm p-2 gap-2">
+                      🔨 Quick Test: Add temporary token to localStorage
+                      {!showTokenInput ? (
+                        <button
+                          onClick={() => setShowTokenInput(true)}
+                          className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                        >
+                          Add Temporary Token
+                        </button>
+                      ) : (
+                        <>
+                          <input
+                            type="text"
+                            value={tempToken}
+                            onChange={(e) => setTempToken(e.target.value)}
+                            placeholder="Paste your Instagram access token here..."
+                            className="px-3 py-2 border border-gray-300 rounded text-sm"
+                          />
+
+                          <button
+                            onClick={handleTokenSubmit}
+                            disabled={!tempToken.trim()}
+                            className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:bg-gray-400"
+                          >
+                            Save & Test
+                          </button>
+                          <button
+                            onClick={handleTokenClear}
+                            className="px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700"
+                          >
+                            Cancel
+                          </button>
+
+                          {localStorage.getItem("instagram_temp_token") && (
+                            <div className="text-xs text-green-600">
+                              ✅ Temporary token is active. Click "Save & Test"
+                              to refresh data.
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -970,7 +970,11 @@ internalStatsRouter.get("/instagram", async (req, res) => {
   const isTodayDate = start === today && end === today;
   const isEndDateToday = end === today;
 
-  const INSTAGRAM_ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN;
+  // Check for temporary token in request headers or query params
+  const tempToken =
+    req.headers["x-instagram-token"] || req.query.instagram_token;
+  const INSTAGRAM_ACCESS_TOKEN =
+    tempToken || process.env.INSTAGRAM_ACCESS_TOKEN;
   const INSTAGRAM_BUSINESS_ACCOUNT_ID =
     process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
 
