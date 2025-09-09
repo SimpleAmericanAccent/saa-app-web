@@ -2,8 +2,9 @@ import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import { sankey, sankeyLinkHorizontal, sankeyCenter } from "d3-sankey";
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "core-frontend-web/src/components/ui/button";
+import { Input } from "core-frontend-web/src/components/ui/input";
+import { DateRangePicker } from "core-frontend-web/src/components/date-range-picker";
 import { RefreshCw } from "lucide-react";
 
 // Default funnel data structure (used as initial state) - null until real data loads
@@ -1562,6 +1563,110 @@ const ClientAcquisitionDashboard = () => {
     end: new Date().toISOString().split("T")[0], // today
   });
 
+  const [compareDateRange, setCompareDateRange] = useState({
+    start: null,
+    end: null,
+  });
+
+  const [compareData, setCompareData] = useState(null);
+
+  const fetchCompareData = async (startDate, endDate) => {
+    if (!startDate || !endDate) {
+      setCompareData(null);
+      return;
+    }
+
+    try {
+      // Fetch data from all three endpoints in parallel
+      const [plausibleResponse, airtableResponse, instagramResponse] =
+        await Promise.all([
+          fetch(
+            `/api/internalstats/plausible?start=${startDate}&end=${endDate}`
+          ),
+          fetch(
+            `/api/internalstats/airtable?start=${startDate}&end=${endDate}`
+          ),
+          fetch(
+            `/api/internalstats/instagram?start=${startDate}&end=${endDate}`
+          ),
+        ]);
+
+      if (!plausibleResponse.ok) {
+        throw new Error(
+          `Plausible API error: ${plausibleResponse.status} ${plausibleResponse.statusText}`
+        );
+      }
+
+      if (!airtableResponse.ok) {
+        throw new Error(
+          `Airtable API error: ${airtableResponse.status} ${airtableResponse.statusText}`
+        );
+      }
+
+      if (!instagramResponse.ok) {
+        throw new Error(
+          `Instagram API error: ${instagramResponse.status} ${instagramResponse.statusText}`
+        );
+      }
+
+      const plausibleResult = await plausibleResponse.json();
+      const airtableResult = await airtableResponse.json();
+      const instagramResult = await instagramResponse.json();
+
+      if (!plausibleResult.success) {
+        throw new Error(
+          plausibleResult.error || "Failed to fetch Plausible data"
+        );
+      }
+
+      if (!airtableResult.success) {
+        throw new Error(
+          airtableResult.error || "Failed to fetch Airtable data"
+        );
+      }
+
+      if (!instagramResult.success) {
+        // Check if it's a token expiration error
+        if (instagramResult.error === "INSTAGRAM_TOKEN_EXPIRED") {
+          // Continue with null Instagram data instead of throwing error
+        } else {
+          throw new Error(
+            instagramResult.error || "Failed to fetch Instagram data"
+          );
+        }
+      }
+
+      // Combine data from all three endpoints
+      const combinedData = {
+        ig: instagramResult.success
+          ? instagramResult.data.ig
+          : {
+              views: null,
+              reach: null,
+              profileVisits: null,
+              bioLinkClicks: null,
+            },
+        email: { opens: null },
+        mgSalesPageVisits: plausibleResult.data.mgSalesPageVisits,
+        mgApplication: {
+          ...plausibleResult.data.mgApplication,
+          ...airtableResult.data.mgApplication,
+        },
+        mgSelection: airtableResult.data.mgSelection,
+        revenue: airtableResult.data.revenue,
+        dataGaps: {
+          ...plausibleResult.rawData?.dataGaps,
+          ...(instagramResult.success ? instagramResult.data?.dataGaps : {}),
+        },
+      };
+
+      setCompareData(combinedData);
+    } catch (err) {
+      console.error("Error fetching comparison data:", err);
+      setCompareData(null);
+    }
+  };
+
   const fetchAcquisitionData = async (startDate, endDate) => {
     setIsLoading(true);
     setError(null);
@@ -1956,7 +2061,71 @@ const ClientAcquisitionDashboard = () => {
     const today = new Date();
     const formatDate = (date) => date.toISOString().split("T")[0];
 
+    // Generate month presets for 2024 and 2025
+    const monthPresets = {};
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    // Generate all months for 2024
+    for (let month = 0; month < 12; month++) {
+      const monthDate = new Date(2024, month, 1);
+      const monthName = monthNames[month];
+      const monthEnd = new Date(2024, month + 1, 0);
+      monthPresets[`${monthName} 2024`] = {
+        start: formatDate(monthDate),
+        end: formatDate(monthEnd),
+      };
+    }
+
+    // Generate all months for 2025
+    for (let month = 0; month < 12; month++) {
+      const monthDate = new Date(2025, month, 1);
+      const monthName = monthNames[month];
+      const monthEnd = new Date(2025, month + 1, 0);
+
+      // For current month, show "MTD" (Month to Date)
+      if (today.getFullYear() === 2025 && month === today.getMonth()) {
+        monthPresets[`${monthName} MTD`] = {
+          start: formatDate(monthDate),
+          end: formatDate(today),
+        };
+      } else {
+        // For other months, show full month
+        monthPresets[`${monthName} 2025`] = {
+          start: formatDate(monthDate),
+          end: formatDate(monthEnd),
+        };
+      }
+    }
+
+    // Generate individual day presets for the last 15 days
+    const dayPresets = {};
+    for (let i = 14; i >= 0; i--) {
+      const dayDate = new Date(today);
+      dayDate.setDate(today.getDate() - i);
+      const dayKey = formatDate(dayDate);
+      dayPresets[dayKey] = {
+        start: dayKey,
+        end: dayKey,
+      };
+    }
+
     return {
+      // Individual day presets (last 15 days)
+      ...dayPresets,
+      // Quick presets
       Today: {
         start: formatDate(today),
         end: formatDate(today),
@@ -1973,6 +2142,9 @@ const ClientAcquisitionDashboard = () => {
         start: formatDate(new Date(today.getTime() - 90 * 24 * 60 * 60 * 1000)),
         end: formatDate(today),
       },
+      // Month presets (most recent first)
+      ...monthPresets,
+      // Year presets
       YTD: {
         start: formatDate(new Date(today.getFullYear(), 0, 1)),
         end: formatDate(today),
@@ -1990,12 +2162,155 @@ const ClientAcquisitionDashboard = () => {
     };
   };
 
-  const handlePresetDateRange = (presetName) => {
+  const handlePresetDateRange = (presetName, isComparison = false) => {
     const presets = getDateRangePresets();
     const preset = presets[presetName];
     if (preset) {
-      setDateRange(preset);
-      fetchAcquisitionData(preset.start, preset.end);
+      if (isComparison) {
+        setCompareDateRange(preset);
+      } else {
+        setDateRange(preset);
+        fetchAcquisitionData(preset.start, preset.end);
+      }
+    }
+  };
+
+  const getPreviousPeriod = (presetName) => {
+    const today = new Date();
+    const formatDate = (date) => date.toISOString().split("T")[0];
+
+    switch (presetName) {
+      case "Today":
+        return {
+          start: formatDate(new Date(today.getTime() - 24 * 60 * 60 * 1000)),
+          end: formatDate(new Date(today.getTime() - 24 * 60 * 60 * 1000)),
+        };
+      case "Last 7 days":
+        return {
+          start: formatDate(
+            new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000)
+          ),
+          end: formatDate(new Date(today.getTime() - 8 * 24 * 60 * 60 * 1000)),
+        };
+      case "Last 30 days":
+        return {
+          start: formatDate(
+            new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000)
+          ),
+          end: formatDate(new Date(today.getTime() - 31 * 24 * 60 * 60 * 1000)),
+        };
+      case "Last 90 days":
+        return {
+          start: formatDate(
+            new Date(today.getTime() - 180 * 24 * 60 * 60 * 1000)
+          ),
+          end: formatDate(new Date(today.getTime() - 91 * 24 * 60 * 60 * 1000)),
+        };
+      case "YTD":
+        return {
+          start: formatDate(new Date(today.getFullYear() - 1, 0, 1)),
+          end: formatDate(new Date(today.getFullYear() - 1, 11, 31)),
+        };
+      case "Previous Year":
+        return {
+          start: formatDate(new Date(today.getFullYear() - 2, 0, 1)),
+          end: formatDate(new Date(today.getFullYear() - 2, 11, 31)),
+        };
+      case "Last 12 months":
+        return {
+          start: formatDate(
+            new Date(today.getFullYear() - 2, today.getMonth(), today.getDate())
+          ),
+          end: formatDate(
+            new Date(
+              today.getFullYear() - 1,
+              today.getMonth(),
+              today.getDate() - 1
+            )
+          ),
+        };
+      default:
+        // For month presets, get the previous month
+        if (presetName.includes("MTD")) {
+          const currentMonth = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            1
+          );
+          const prevMonth = new Date(
+            currentMonth.getFullYear(),
+            currentMonth.getMonth() - 1,
+            1
+          );
+          const prevMonthEnd = new Date(
+            prevMonth.getFullYear(),
+            prevMonth.getMonth() + 1,
+            0
+          );
+          return {
+            start: formatDate(prevMonth),
+            end: formatDate(prevMonthEnd),
+          };
+        } else if (presetName.includes("2024") || presetName.includes("2025")) {
+          // Extract month and year from preset name like "August 2025"
+          const parts = presetName.split(" ");
+          const monthName = parts[0];
+          const year = parseInt(parts[1]);
+          const monthNames = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+          const monthIndex = monthNames.indexOf(monthName);
+          const currentMonth = new Date(year, monthIndex, 1);
+          const prevMonth = new Date(
+            currentMonth.getFullYear(),
+            currentMonth.getMonth() - 1,
+            1
+          );
+          const prevMonthEnd = new Date(
+            prevMonth.getFullYear(),
+            prevMonth.getMonth() + 1,
+            0
+          );
+          return {
+            start: formatDate(prevMonth),
+            end: formatDate(prevMonthEnd),
+          };
+        }
+        return null;
+    }
+  };
+
+  const handlePresetClick = (e, presetName) => {
+    e.preventDefault();
+    if (e.button === 0) {
+      // Left click - set main date range
+      handlePresetDateRange(presetName, false);
+    } else if (e.button === 2) {
+      // Right click - set comparison date range
+      if (isCurrentPreset(presetName)) {
+        // If this preset is already selected as main, set previous period as comparison
+        const previousPeriod = getPreviousPeriod(presetName);
+        if (previousPeriod) {
+          setCompareDateRange(previousPeriod);
+        } else {
+          // Fallback to setting the same preset as comparison
+          handlePresetDateRange(presetName, true);
+        }
+      } else {
+        // Normal right click - set this preset as comparison
+        handlePresetDateRange(presetName, true);
+      }
     }
   };
 
@@ -2007,11 +2322,30 @@ const ClientAcquisitionDashboard = () => {
     );
   };
 
+  const isCurrentComparePreset = (presetName) => {
+    const presets = getDateRangePresets();
+    const preset = presets[presetName];
+    return (
+      preset &&
+      preset.start === compareDateRange.start &&
+      preset.end === compareDateRange.end
+    );
+  };
+
   // Load data on component mount
   useEffect(() => {
     console.log("Component mounted, fetching data with dateRange:", dateRange);
     fetchAcquisitionData(dateRange.start, dateRange.end);
   }, []);
+
+  // Fetch comparison data when compare date range changes
+  useEffect(() => {
+    if (compareDateRange.start && compareDateRange.end) {
+      fetchCompareData(compareDateRange.start, compareDateRange.end);
+    } else {
+      setCompareData(null);
+    }
+  }, [compareDateRange]);
 
   // Debug: Log funnelData before building Sankey
   console.log("About to build Sankey with funnelData:", {
@@ -2086,6 +2420,85 @@ const ClientAcquisitionDashboard = () => {
         : "N/A",
   };
 
+  // Calculate comparison summary statistics
+  const compareSummaryStats = compareData
+    ? {
+        totalViews:
+          compareData.ig?.views !== null ? compareData.ig.views : "N/A",
+        salesPageVisits:
+          compareData.mgSalesPageVisits?.total !== null &&
+          compareData.mgSalesPageVisits?.total !== undefined
+            ? compareData.mgSalesPageVisits.total
+            : "N/A",
+        appFormVisits:
+          compareData.mgApplication?.appFormPageVisits !== null &&
+          compareData.mgApplication?.appFormPageVisits !== undefined
+            ? compareData.mgApplication.appFormPageVisits
+            : "N/A",
+        completedApps:
+          compareData.mgApplication?.appCompletions !== null &&
+          compareData.mgApplication?.appCompletions !== undefined
+            ? compareData.mgApplication.appCompletions
+            : "N/A",
+        qualifiedApps:
+          compareData.mgApplication?.qualifiedApps !== null &&
+          compareData.mgApplication?.qualifiedApps !== undefined
+            ? compareData.mgApplication.qualifiedApps
+            : "N/A",
+        contacted:
+          compareData.mgSelection?.contacted !== null &&
+          compareData.mgSelection?.contacted !== undefined
+            ? compareData.mgSelection.contacted
+            : "N/A",
+        accepted:
+          compareData.mgSelection?.acceptedNotPaid !== null &&
+          compareData.mgSelection?.acceptedNotPaid !== undefined
+            ? compareData.mgSelection.acceptedNotPaid
+            : "N/A",
+        paid:
+          compareData.mgSelection?.paid !== null &&
+          compareData.mgSelection?.paid !== undefined
+            ? compareData.mgSelection.paid
+            : "N/A",
+        sales:
+          compareData.revenue?.mgPaymentsDay !== null &&
+          compareData.revenue?.mgPaymentsDay !== undefined
+            ? compareData.revenue.mgPaymentsDay
+            : "N/A",
+        refunded:
+          compareData.revenue?.mgRefundsDay !== null &&
+          compareData.revenue?.mgRefundsDay !== undefined
+            ? compareData.revenue.mgRefundsDay
+            : "N/A",
+        netSales:
+          compareData.revenue?.mgNetPayDay !== null &&
+          compareData.revenue?.mgNetPayDay !== undefined
+            ? compareData.revenue.mgNetPayDay
+            : "N/A",
+      }
+    : null;
+
+  // Helper function to format comparison values
+  const formatComparisonValue = (current, compare) => {
+    if (compare === "N/A" || compare === null || compare === undefined) {
+      return null;
+    }
+    if (current === "N/A" || current === null || current === undefined) {
+      return null;
+    }
+    if (typeof current === "number" && typeof compare === "number") {
+      const change = current - compare;
+      const percentChange = compare !== 0 ? (change / compare) * 100 : 0;
+      return {
+        value: compare,
+        change: change,
+        percentChange: percentChange,
+        isPositive: change > 0,
+      };
+    }
+    return null;
+  };
+
   return (
     <ScrollArea className="h-screen">
       <div className="p-6 space-y-6">
@@ -2094,11 +2507,8 @@ const ClientAcquisitionDashboard = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                Client Acquisition Dashboard
+                MG Client Acquisition Dashboard
               </h1>
-              <p className="text-gray-600 dark:text-gray-300">
-                MG (Mentorship Group) Funnel Analysis
-              </p>
             </div>
             <Button
               onClick={handleLoadData}
@@ -2122,65 +2532,284 @@ const ClientAcquisitionDashboard = () => {
           {/* Date Range Presets */}
           <div className="mb-4">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-              Quick Date Ranges:
+              Quick Date Ranges: 💡 Left click: Set main date range | Right
+              click: Set comparison (or previous period if already selected)
             </label>
-            <div className="flex flex-wrap gap-2">
-              {Object.keys(getDateRangePresets()).map((presetName) => (
-                <Button
-                  key={presetName}
-                  onClick={() => handlePresetDateRange(presetName)}
-                  disabled={isLoading}
-                  variant={isCurrentPreset(presetName) ? "default" : "outline"}
-                  size="sm"
-                  className="text-xs"
-                >
-                  {presetName}
-                </Button>
-              ))}
+
+            {/* Quick Presets */}
+            <div className="mb-3">
+              <div className="flex flex-wrap gap-2">
+                {["Today", "Last 7 days", "Last 30 days", "Last 90 days"].map(
+                  (presetName) => (
+                    <Button
+                      key={presetName}
+                      onMouseDown={(e) => handlePresetClick(e, presetName)}
+                      onContextMenu={(e) => e.preventDefault()}
+                      disabled={isLoading}
+                      variant={
+                        isCurrentPreset(presetName)
+                          ? "default"
+                          : isCurrentComparePreset(presetName)
+                          ? "secondary"
+                          : "outline"
+                      }
+                      size="sm"
+                      className="text-xs"
+                      title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
+                    >
+                      {presetName}
+                    </Button>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* Month Presets */}
+            <div className="mb-3">
+              {/* Recent Days Row */}
+              <div className="mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 w-12">
+                    Days:
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {(() => {
+                      const today = new Date();
+                      const dayButtons = [];
+
+                      // Generate buttons for today minus 14 through today
+                      for (let i = 14; i >= 0; i--) {
+                        const dayDate = new Date(today);
+                        dayDate.setDate(today.getDate() - i);
+                        const dayOfMonth = dayDate.getDate();
+                        const presetName = dayDate.toISOString().split("T")[0]; // YYYY-MM-DD format
+
+                        dayButtons.push(
+                          <Button
+                            key={presetName}
+                            onMouseDown={(e) =>
+                              handlePresetClick(e, presetName)
+                            }
+                            onContextMenu={(e) => e.preventDefault()}
+                            disabled={isLoading}
+                            variant={
+                              isCurrentPreset(presetName)
+                                ? "default"
+                                : isCurrentComparePreset(presetName)
+                                ? "secondary"
+                                : "outline"
+                            }
+                            size="sm"
+                            className="text-xs w-8 h-8"
+                            title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
+                          >
+                            {dayOfMonth}
+                          </Button>
+                        );
+                      }
+
+                      return dayButtons;
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              {/* 2025 Row */}
+              <div className="mb-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    onMouseDown={(e) => handlePresetClick(e, "YTD")}
+                    onContextMenu={(e) => e.preventDefault()}
+                    disabled={isLoading}
+                    variant={
+                      isCurrentPreset("YTD")
+                        ? "default"
+                        : isCurrentComparePreset("YTD")
+                        ? "secondary"
+                        : "outline"
+                    }
+                    size="sm"
+                    className="text-xs w-12 h-8 font-medium"
+                    title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
+                  >
+                    2025
+                  </Button>
+                  <div className="flex flex-wrap gap-1">
+                    {[
+                      "Jan",
+                      "Feb",
+                      "Mar",
+                      "Apr",
+                      "May",
+                      "Jun",
+                      "Jul",
+                      "Aug",
+                      "Sep",
+                      "Oct",
+                      "Nov",
+                      "Dec",
+                    ].map((monthAbbr, index) => {
+                      const monthNames = [
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December",
+                      ];
+                      const monthName = monthNames[index];
+                      const today = new Date();
+                      const currentYear = today.getFullYear();
+                      const currentMonth = today.getMonth();
+                      const isCurrentMonth =
+                        currentYear === 2025 && index === currentMonth;
+                      const isFutureMonth =
+                        currentYear === 2025 && index > currentMonth;
+                      const presetName = isCurrentMonth
+                        ? `${monthName} MTD`
+                        : `${monthName} 2025`;
+
+                      return (
+                        <Button
+                          key={presetName}
+                          onMouseDown={(e) => handlePresetClick(e, presetName)}
+                          onContextMenu={(e) => e.preventDefault()}
+                          disabled={isLoading || isFutureMonth}
+                          variant={
+                            isCurrentPreset(presetName)
+                              ? "default"
+                              : isCurrentComparePreset(presetName)
+                              ? "secondary"
+                              : "outline"
+                          }
+                          size="sm"
+                          className="text-xs w-10 h-8"
+                          title={
+                            isFutureMonth
+                              ? "Future month - not available"
+                              : `Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`
+                          }
+                        >
+                          {monthAbbr}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* 2024 Row */}
+              <div className="mb-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    onMouseDown={(e) => handlePresetClick(e, "Previous Year")}
+                    onContextMenu={(e) => e.preventDefault()}
+                    disabled={isLoading}
+                    variant={
+                      isCurrentPreset("Previous Year")
+                        ? "default"
+                        : isCurrentComparePreset("Previous Year")
+                        ? "secondary"
+                        : "outline"
+                    }
+                    size="sm"
+                    className="text-xs w-12 h-8 font-medium"
+                    title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
+                  >
+                    2024
+                  </Button>
+                  <div className="flex flex-wrap gap-1">
+                    {[
+                      "Jan",
+                      "Feb",
+                      "Mar",
+                      "Apr",
+                      "May",
+                      "Jun",
+                      "Jul",
+                      "Aug",
+                      "Sep",
+                      "Oct",
+                      "Nov",
+                      "Dec",
+                    ].map((monthAbbr, index) => {
+                      const monthNames = [
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December",
+                      ];
+                      const monthName = monthNames[index];
+                      const presetName = `${monthName} 2024`;
+
+                      return (
+                        <Button
+                          key={presetName}
+                          onMouseDown={(e) => handlePresetClick(e, presetName)}
+                          onContextMenu={(e) => e.preventDefault()}
+                          disabled={isLoading}
+                          variant={
+                            isCurrentPreset(presetName)
+                              ? "default"
+                              : isCurrentComparePreset(presetName)
+                              ? "secondary"
+                              : "outline"
+                          }
+                          size="sm"
+                          className="text-xs w-10 h-8"
+                          title={`Left click: Set main date range | Right click: Set comparison (or previous period if already selected)`}
+                        >
+                          {monthAbbr}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Date Range Picker */}
           <div className="flex items-center gap-4">
+            <DateRangePicker
+              dateRange={{ from: dateRange.start, to: dateRange.end }}
+              onDateRangeChange={(newRange) => {
+                setDateRange({ start: newRange.from, end: newRange.to });
+                if (newRange.from && newRange.to) {
+                  fetchAcquisitionData(newRange.from, newRange.to);
+                }
+              }}
+              placeholder="Select date range"
+            />
             <div className="flex items-center gap-2">
-              <label
-                htmlFor="startDate"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Start Date:
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Compare to:
               </label>
-              <Input
-                type="date"
-                id="startDate"
-                value={dateRange.start}
-                onChange={(e) => handleDateRangeChange("start", e.target.value)}
-                className="w-40"
-                disabled={isLoading}
-              />
             </div>
-            <div className="flex items-center gap-2">
-              <label
-                htmlFor="endDate"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                End Date:
-              </label>
-              <Input
-                type="date"
-                id="endDate"
-                value={dateRange.end}
-                onChange={(e) => handleDateRangeChange("end", e.target.value)}
-                className="w-40"
-                disabled={isLoading}
-              />
-            </div>
-            <Button
-              onClick={handleLoadData}
-              disabled={isLoading || !dateRange.start || !dateRange.end}
-              size="sm"
-            >
-              Load Data
-            </Button>
+            <DateRangePicker
+              dateRange={{
+                from: compareDateRange.start || "",
+                to: compareDateRange.end || "",
+              }}
+              onDateRangeChange={(newRange) => {
+                setCompareDateRange({ start: newRange.from, end: newRange.to });
+              }}
+              placeholder="Select comparison range"
+            />
           </div>
 
           {/* Error Display */}
@@ -2285,19 +2914,6 @@ const ClientAcquisitionDashboard = () => {
               </div>
             </div>
           ))}
-
-          {/* Data Source Info */}
-          {!isLoading && !error && (
-            <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-              <div className="flex items-center">
-                <span className="text-sm">
-                  📊 Data sources: <strong>Instagram </strong> (traffic),{" "}
-                  <strong>Plausible </strong> (page visits),{" "}
-                  <strong>Airtable</strong> (application & outcomes)
-                </span>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Summary Line */}
@@ -2317,6 +2933,38 @@ const ClientAcquisitionDashboard = () => {
                   metricType="instagramViews"
                 />
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.totalViews,
+                    compareSummaryStats.totalViews
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: {comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2332,6 +2980,38 @@ const ClientAcquisitionDashboard = () => {
                   metricType="salesPage"
                 />
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.salesPageVisits,
+                    compareSummaryStats.salesPageVisits
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: {comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2347,6 +3027,38 @@ const ClientAcquisitionDashboard = () => {
                   metricType="appForm"
                 />
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.appFormVisits,
+                    compareSummaryStats.appFormVisits
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: {comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2357,6 +3069,38 @@ const ClientAcquisitionDashboard = () => {
                   ? summaryStats.completedApps.toLocaleString()
                   : summaryStats.completedApps}
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.completedApps,
+                    compareSummaryStats.completedApps
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: {comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2367,6 +3111,38 @@ const ClientAcquisitionDashboard = () => {
                   ? summaryStats.qualifiedApps.toLocaleString()
                   : summaryStats.qualifiedApps}
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.qualifiedApps,
+                    compareSummaryStats.qualifiedApps
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: {comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2377,6 +3153,38 @@ const ClientAcquisitionDashboard = () => {
                   ? summaryStats.contacted.toLocaleString()
                   : summaryStats.contacted}
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.contacted,
+                    compareSummaryStats.contacted
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: {comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2387,6 +3195,38 @@ const ClientAcquisitionDashboard = () => {
                   ? summaryStats.accepted.toLocaleString()
                   : summaryStats.accepted}
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.accepted,
+                    compareSummaryStats.accepted
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: {comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2397,6 +3237,38 @@ const ClientAcquisitionDashboard = () => {
                   ? summaryStats.paid.toLocaleString()
                   : summaryStats.paid}
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.paid,
+                    compareSummaryStats.paid
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: {comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2407,6 +3279,38 @@ const ClientAcquisitionDashboard = () => {
                   ? `$${summaryStats.sales.toLocaleString()}`
                   : summaryStats.sales}
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.sales,
+                    compareSummaryStats.sales
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: ${comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}$
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2417,6 +3321,38 @@ const ClientAcquisitionDashboard = () => {
                   ? `$${(0 - summaryStats.refunded).toLocaleString()}`
                   : summaryStats.refunded}
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.refunded,
+                    compareSummaryStats.refunded
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: -${(0 - comparison.value).toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : ""}$
+                        {comparison.change.toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {(0 - comparison.percentChange).toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
             <div className="text-center">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -2427,6 +3363,38 @@ const ClientAcquisitionDashboard = () => {
                   ? `$${summaryStats.netSales.toLocaleString()}`
                   : summaryStats.netSales}
               </div>
+              {compareSummaryStats &&
+                (() => {
+                  const comparison = formatComparisonValue(
+                    summaryStats.netSales,
+                    compareSummaryStats.netSales
+                  );
+                  return comparison ? (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div>vs: ${comparison.value.toLocaleString()}</div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {comparison.isPositive ? "+" : "-"}$
+                        {(0 - comparison.change).toLocaleString()}
+                      </div>
+                      <div
+                        className={
+                          comparison.isPositive
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        ({comparison.isPositive ? "+" : ""}
+                        {comparison.percentChange.toFixed(0)}%)
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
             </div>
           </div>
         </div>
