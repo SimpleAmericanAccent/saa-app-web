@@ -2251,6 +2251,17 @@ const ClientAcquisitionDashboard = () => {
                       🔗 Get New Token from Facebook Graph API Explorer
                     </a>
                   </p>
+                  <p className="text-sm mt-2">
+                    <a
+                      href="https://dashboard.render.com/web/srv-d0a2qdh5pdvs73bkhcpg/env"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline font-medium"
+                    >
+                      Update the Instagram access token in the Render
+                      Environment Variables.
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>
