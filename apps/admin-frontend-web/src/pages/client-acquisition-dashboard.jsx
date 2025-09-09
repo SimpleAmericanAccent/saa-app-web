@@ -1181,30 +1181,7 @@ const buildSankeyData = (data) => {
                 : null,
             },
           ]
-        : [
-            // Without reach data: alternative paths from views to other IG sources
-            {
-              source: "ig-views",
-              target: "mg-sp-via-ig-story",
-              value: data.mgSalesPageVisits?.fromIgStory
-                ? Math.round(Math.log10(data.mgSalesPageVisits.fromIgStory))
-                : null,
-            },
-            {
-              source: "ig-views",
-              target: "mg-sp-via-ig-manychat",
-              value: data.mgSalesPageVisits?.fromIgManychat
-                ? Math.round(Math.log10(data.mgSalesPageVisits.fromIgManychat))
-                : null,
-            },
-            {
-              source: "ig-views",
-              target: "mg-sp-via-ig-dm",
-              value: data.mgSalesPageVisits?.fromIgDm
-                ? Math.round(Math.log10(data.mgSalesPageVisits.fromIgDm))
-                : null,
-            },
-          ]),
+        : []), // No Instagram links when views is 0 or null
       // Email sources (logarithmic scaling)
       {
         source: "mg-sp-via-email-broadcast",
@@ -1711,7 +1688,7 @@ const ClientAcquisitionDashboard = () => {
 
       // Combine data from all three endpoints
       const combinedData = {
-        ig: instagramResult.data.ig, // Instagram data (views, reach, profileVisits, bioLinkClicks)
+        ig: instagramResult.success ? instagramResult.data.ig : { views: null, reach: null, profileVisits: null, bioLinkClicks: null }, // Instagram data (views, reach, profileVisits, bioLinkClicks)
         email: { opens: null }, // No email data from Plausible
         mgSalesPageVisits: plausibleResult.data.mgSalesPageVisits,
         mgApplication: {
@@ -1723,7 +1700,7 @@ const ClientAcquisitionDashboard = () => {
         interfaceValidation: interfaceValidation, // Calculated interface validation
         dataGaps: {
           ...plausibleResult.rawData?.dataGaps, // Data gap analysis from Plausible
-          ...instagramResult.data?.dataGaps, // Instagram data gaps
+          ...(instagramResult.success ? instagramResult.data?.dataGaps : {}), // Instagram data gaps
         },
       };
 
