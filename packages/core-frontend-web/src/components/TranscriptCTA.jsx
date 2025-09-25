@@ -354,7 +354,7 @@ export default function TranscriptCTA({
               >
                 <a
                   href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                    "Hi Will! I'm interested in learning about your other programs (VIP, Mentorship Group, etc.). Can you tell me more about what's available?"
+                    "Hi Will! I'm interested in learning about your other programs (VIP, 6-12 month Mentorship Group, etc.). Can you tell me more about what's available?"
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
