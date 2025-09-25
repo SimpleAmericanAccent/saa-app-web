@@ -1,6 +1,5 @@
 import React from "react";
-import LiteYouTubeEmbed from "react-lite-youtube-embed";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import GatedVideo from "core-frontend-web/src/components/GatedVideo.jsx";
 
 export default function Links() {
   return (
@@ -31,8 +30,8 @@ export default function Links() {
           <h2 className="text-xl font-semibold mb-3 text-center">
             Vowels Training - June 11, 2025
           </h2>
-          <LiteYouTubeEmbed
-            id="oIL9WEaEUeI"
+          <GatedVideo
+            slug="vowels-2025-06-11"
             title="Vowels Training - June 11, 2025"
           />
         </div>
@@ -41,8 +40,8 @@ export default function Links() {
           <h2 className="text-xl font-semibold mb-3 text-center">
             Vowels Training - January 8, 2025
           </h2>
-          <LiteYouTubeEmbed
-            id="9mWuumukRXY"
+          <GatedVideo
+            slug="vowels-2025-01-08"
             title="Vowels Training - January 8, 2025"
           />
         </div>
@@ -51,8 +50,8 @@ export default function Links() {
           <h2 className="text-xl font-semibold mb-3 text-center">
             Consonants Training - January 22, 2025
           </h2>
-          <LiteYouTubeEmbed
-            id="lWbWnhOhVj0"
+          <GatedVideo
+            slug="consonants-2025-01-22"
             title="Consonants Training - January 22, 2025"
           />
         </div>
@@ -61,8 +60,8 @@ export default function Links() {
           <h2 className="text-xl font-semibold mb-3 text-center">
             Flow Training - March 19, 2025
           </h2>
-          <LiteYouTubeEmbed
-            id="CUBYOPIDDCs"
+          <GatedVideo
+            slug="flow-2025-03-19"
             title="Flow Training - March 19, 2025"
           />
         </div>
@@ -73,11 +72,10 @@ export default function Links() {
           Accent Training Exercises
         </h2>
         <div className="w-full aspect-video">
-          <iframe
-            src="https://www.loom.com/embed/4331ad9391924c219659dbbea578d9cd?sid=b5bd5864-0d86-4571-b88d-ce95b68c80e6"
+          <GatedVideo
+            slug="smart-practice-2025"
             title="Some of My Favorite Accent Training Exercises"
-            className="w-full h-full"
-          ></iframe>
+          />
         </div>
       </div>
 

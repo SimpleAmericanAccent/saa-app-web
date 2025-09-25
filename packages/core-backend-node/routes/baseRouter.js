@@ -2,6 +2,17 @@ import express from "express";
 
 const baseRouter = express.Router();
 
+// Compute canViewReplays from an already-fetched People record
+function computeCanViewReplaysFromRecord(req, currentUser) {
+  if (req.isAdmin) return true;
+  const raw =
+    currentUser?.fields?.["blockReplays"] ??
+    currentUser?.fields?.["blockreplays"] ??
+    "";
+  const blocked = String(raw).trim().toLowerCase() === "yes";
+  return !blocked;
+}
+
 baseRouter.get("/authz", async (req, res) => {
   const airtable = req.app.locals.airtable;
 
@@ -86,6 +97,7 @@ baseRouter.get("/authz", async (req, res) => {
       people: uniqueSpeakers,
       audios: uniqueAudios,
       isAdmin: req.isAdmin,
+      canViewReplays: computeCanViewReplaysFromRecord(req, currentUser),
     });
   } else {
     res.status(404).json({ error: "User not found" });
@@ -175,6 +187,93 @@ baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
     },
     airtableWords: { records: wordsData }, // Now includes ALL records
   });
+});
+
+// Gated endpoint to retrieve replay embed URL by slug without leaking IDs to unauthorized users
+baseRouter.get("/api/replays/:slug/url", async (req, res) => {
+  try {
+    const airtable = req.app.locals.airtable;
+    const user = req.oidc?.user;
+    if (!user) return res.status(401).json({ error: "Unauthorized" });
+
+    // Lookup replay by slug in Airtable table "Replays" (try lowercase then capitalized field name)
+    let replays = await airtable.fetchAirtableRecords("Replays", {
+      filterByFormula: `{slug} = "${req.params.slug}"`,
+    });
+    let replay = Array.isArray(replays) ? replays[0] : replays;
+    if (!replay) {
+      replays = await airtable.fetchAirtableRecords("Replays", {
+        filterByFormula: `{Slug} = "${req.params.slug}"`,
+      });
+      replay = Array.isArray(replays) ? replays[0] : replays;
+    }
+    if (!replay) return res.status(404).json({ error: "Replay not found" });
+
+    // Load People and find current user
+    const people = await airtable.fetchAirtableRecords("People");
+    const currentUser = people.find(
+      (r) => r.fields["auth0 user_id"] === user.sub
+    );
+
+    // Check permission after confirming replay exists
+    const canViewReplays = computeCanViewReplaysFromRecord(req, currentUser);
+    if (!canViewReplays)
+      return res.status(403).json({ error: "Replay found but not authorized" });
+
+    // Build embed URL from lowercase platform & id; also return meta including thumbUrl
+    const platform = String(replay.fields["platform"] || "").toLowerCase();
+    const id = replay.fields["id"];
+    const thumbUrl =
+      replay.fields["thumburl"] || replay.fields["thumbUrl"] || null;
+    if (!platform || !id)
+      return res.status(500).json({ error: "Missing platform or id" });
+
+    let embedUrl;
+    if (platform === "youtube") {
+      embedUrl = `https://www.youtube.com/embed/${id}`;
+    } else if (platform === "loom") {
+      embedUrl = `https://www.loom.com/embed/${id}`;
+    } else {
+      return res.status(500).json({ error: "Unknown platform" });
+    }
+
+    return res.json({ embedUrl, platform, id, thumbUrl });
+  } catch (error) {
+    console.error("/api/replays/:slug/url error", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Public (authenticated) metadata for a replay: returns non-sensitive info like thumbUrl
+baseRouter.get("/api/replays/:slug/meta", async (req, res) => {
+  try {
+    const airtable = req.app.locals.airtable;
+    const user = req.oidc?.user;
+    if (!user) return res.status(401).json({ error: "Unauthorized" });
+
+    // Lookup replay by slug (tolerate {slug} or {Slug})
+    let replays = await airtable.fetchAirtableRecords("Replays", {
+      filterByFormula: `{slug} = "${req.params.slug}"`,
+    });
+    let replay = Array.isArray(replays) ? replays[0] : replays;
+    if (!replay) {
+      replays = await airtable.fetchAirtableRecords("Replays", {
+        filterByFormula: `{Slug} = "${req.params.slug}"`,
+      });
+      replay = Array.isArray(replays) ? replays[0] : replays;
+    }
+    if (!replay) return res.status(404).json({ error: "Replay not found" });
+
+    const platform = String(replay.fields["platform"] || "").toLowerCase();
+    const id = replay.fields["id"] || null;
+    const thumbUrl =
+      replay.fields["thumburl"] || replay.fields["thumbUrl"] || null;
+
+    return res.json({ platform, id, thumbUrl });
+  } catch (error) {
+    console.error("/api/replays/:slug/meta error", error);
+    return res.status(500).json({ error: "Server error" });
+  }
 });
 
 baseRouter.get("/api/me", async (req, res) => {

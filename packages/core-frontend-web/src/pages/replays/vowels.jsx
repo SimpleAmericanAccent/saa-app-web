@@ -1,6 +1,5 @@
 import React from "react";
-import LiteYouTubeEmbed from "react-lite-youtube-embed";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import GatedVideo from "core-frontend-web/src/components/GatedVideo.jsx";
 
 export default function VowelReplays() {
   return (
@@ -14,8 +13,8 @@ export default function VowelReplays() {
           <h2 className="text-xl font-semibold mb-3 text-center">
             Vowels Training - June 11, 2025
           </h2>
-          <LiteYouTubeEmbed
-            id="oIL9WEaEUeI"
+          <GatedVideo
+            slug="vowels-2025-06-11"
             title="Vowels Training - June 11, 2025"
           />
         </div>
@@ -24,8 +23,8 @@ export default function VowelReplays() {
           <h2 className="text-xl font-semibold mb-3 text-center">
             Vowels Training - January 8, 2025
           </h2>
-          <LiteYouTubeEmbed
-            id="9mWuumukRXY"
+          <GatedVideo
+            slug="vowels-2025-01-08"
             title="Vowels Training - January 8, 2025"
           />
         </div>

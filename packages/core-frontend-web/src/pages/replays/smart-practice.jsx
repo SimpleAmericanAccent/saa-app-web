@@ -1,6 +1,5 @@
 import React from "react";
-import LiteYouTubeEmbed from "react-lite-youtube-embed";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import GatedVideo from "core-frontend-web/src/components/GatedVideo.jsx";
 
 export default function SmartPracticeReplays() {
   return (
@@ -10,11 +9,10 @@ export default function SmartPracticeReplays() {
       </h1>
 
       <div className="max-w-[800px] aspect-video mx-auto">
-        <iframe
-          src="https://www.loom.com/embed/4331ad9391924c219659dbbea578d9cd?sid=b5bd5864-0d86-4571-b88d-ce95b68c80e6"
+        <GatedVideo
+          slug="smart-practice-2025"
           title="Some of My Favorite Accent Training Exercises"
-          className="w-full h-full"
-        ></iframe>
+        />
       </div>
 
       <div className="max-w-4xl mx-auto mt-8">

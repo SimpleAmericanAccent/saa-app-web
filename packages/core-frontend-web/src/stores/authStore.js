@@ -3,6 +3,7 @@ import { fetchData } from "core-frontend-web/src/utils/api";
 
 const useAuthStore = create((set) => ({
   isAdmin: false,
+  canViewReplays: true,
   isLoading: false, // Initialize as false instead of true
   isLoggedOut: null, // Add new state
   error: null,
@@ -22,8 +23,13 @@ const useAuthStore = create((set) => ({
   fetchAdminStatus: async () => {
     try {
       set({ isLoading: true });
-      const { isAdmin } = await fetchData("/authz");
-      set({ isAdmin, isLoading: false, isLoggedOut: false });
+      const { isAdmin, canViewReplays } = await fetchData("/authz");
+      set({
+        isAdmin,
+        canViewReplays: canViewReplays !== false,
+        isLoading: false,
+        isLoggedOut: false,
+      });
     } catch (error) {
       set({ error: error.message, isLoading: false });
     }
@@ -58,7 +64,13 @@ const useAuthStore = create((set) => ({
 
   // Reset state
   reset: () => {
-    set({ isAdmin: false, isLoading: false, isLoggedOut: null, error: null });
+    set({
+      isAdmin: false,
+      canViewReplays: true,
+      isLoading: false,
+      isLoggedOut: null,
+      error: null,
+    });
   },
 }));
 

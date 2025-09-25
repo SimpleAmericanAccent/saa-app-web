@@ -1,6 +1,5 @@
 import React from "react";
-import LiteYouTubeEmbed from "react-lite-youtube-embed";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import GatedVideo from "core-frontend-web/src/components/GatedVideo.jsx";
 
 export default function FlowReplays() {
   return (
@@ -12,8 +11,8 @@ export default function FlowReplays() {
           <h2 className="text-xl font-semibold mb-3 text-center">
             Flow Training - March 19, 2025
           </h2>
-          <LiteYouTubeEmbed
-            id="CUBYOPIDDCs"
+          <GatedVideo
+            slug="flow-2025-03-19"
             title="Flow Training - March 19, 2025"
           />
         </div>

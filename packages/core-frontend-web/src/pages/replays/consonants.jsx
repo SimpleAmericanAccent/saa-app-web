@@ -1,6 +1,5 @@
 import React from "react";
-import LiteYouTubeEmbed from "react-lite-youtube-embed";
-import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
+import GatedVideo from "core-frontend-web/src/components/GatedVideo.jsx";
 
 export default function ConsonantReplays() {
   return (
@@ -14,8 +13,8 @@ export default function ConsonantReplays() {
           <h2 className="text-xl font-semibold mb-3 text-center">
             Consonants Training - January 22, 2025
           </h2>
-          <LiteYouTubeEmbed
-            id="lWbWnhOhVj0"
+          <GatedVideo
+            slug="consonants-2025-01-22"
             title="Consonants Training - January 22, 2025"
           />
         </div>

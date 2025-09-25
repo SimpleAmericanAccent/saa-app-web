@@ -17,6 +17,8 @@ import FlowReplays from "core-frontend-web/src/pages/replays/flow.jsx";
 import SmartPracticeReplays from "core-frontend-web/src/pages/replays/smart-practice.jsx";
 import Quiz from "core-frontend-web/src/pages/Quiz.jsx";
 import QuizAudioAdmin from "core-frontend-web/src/pages/QuizAudioAdmin.jsx";
+import Join from "core-frontend-web/src/pages/Join.jsx";
+import JoinThankYou from "core-frontend-web/src/pages/JoinThankYou.jsx";
 
 const coreRoutes = (
   <>
@@ -41,6 +43,9 @@ const coreRoutes = (
     <Route path="/replays/consonants" element={<ConsonantReplays />} />
     <Route path="/replays/flow" element={<FlowReplays />} />
     <Route path="/replays/smart-practice" element={<SmartPracticeReplays />} />
+
+    <Route path="/join" element={<Join />} />
+    <Route path="/join-ty" element={<JoinThankYou />} />
 
     <Route path="/onboarding/lexical-sets" element={<LexicalSets />} />
     <Route path="/onboarding/lexical-sets-quiz" element={<LexicalSetsQuiz />} />
