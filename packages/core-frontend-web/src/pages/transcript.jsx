@@ -11,7 +11,7 @@ import { setCookie, getCookie } from "core-frontend-web/src/utils/cookies";
 import { cn } from "core-frontend-web/src/lib/utils";
 
 import useVersionStore from "core-frontend-web/src/stores/versionStore";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, Keyboard, Mic } from "lucide-react";
 
 import TranscriptViewerV1 from "core-frontend-web/src/components/transcript-viewer-v1";
 import TranscriptViewerV2 from "core-frontend-web/src/components/transcript-viewer-v2";
@@ -19,6 +19,7 @@ import TranscriptStatsV1 from "core-frontend-web/src/components/transcript-stats
 import TranscriptStatsV2 from "core-frontend-web/src/components/transcript-stats-v2";
 import AudioPlayer from "core-frontend-web/src/components/AudioPlayer";
 import KeyboardShortcutsModal from "core-frontend-web/src/components/KeyboardShortcutsModal";
+import TranscriptCTA from "core-frontend-web/src/components/TranscriptCTA";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import { PersonAudioSelector } from "core-frontend-web/src/components/person-audio-selector";
 import {
@@ -297,148 +298,161 @@ export default function Transcript() {
   const hasAudioLoaded = Boolean(mp3url && annotatedTranscript?.length);
 
   return (
-    <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel id="transcript-main" order={0}>
-        <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
-          <div className="p-2 bg-background">
-            <header className="flex flex-col sticky top-0 z-0 bg-background">
-              <div
-                className={cn(
-                  "flex items-center gap-4",
-                  (!hasAudioLoaded || loadError) &&
-                    "h-[calc(100vh-var(--navbar-height))] sm:h-screen justify-center flex-col"
-                )}
-              >
-                <PersonAudioSelector
-                  people={people}
-                  filteredAudio={filteredAudio}
-                  selectedPerson={selectedPerson}
-                  selectedAudio={selectedAudio}
-                  onPersonSelect={setSelectedPerson}
-                  onAudioSelect={setSelectedAudio}
-                  size={!hasAudioLoaded || loadError ? "large" : "default"}
-                />
-
-                {(isAudioLoading || (selectedAudio && !hasAudioLoaded)) && (
-                  <div className={cn("text-muted-foreground text-center")}>
-                    {isAudioLoading
-                      ? "Loading..."
-                      : "Selected audio file appears to be empty"}
-                  </div>
-                )}
-              </div>
-
-              <Button
-                onClick={() => setIsShortcutsModalOpen(true)}
-                className="absolute right-0 top-0 rounded-full shadow-md cursor-pointer hover:bg-secondary hover:scale-105 active:scale-100"
-                variant="secondary"
-                size="icon"
-              >
-                <HelpCircle className="h-5 w-5" />
-                <span className="sr-only">Keyboard Shortcuts</span>
-              </Button>
-
-              {/* Only show these once audio is loaded */}
-              {hasAudioLoaded && (
-                <>
-                  <div>
-                    <AudioPlayer
-                      mp3url={mp3url}
-                      ref={audioRef}
-                      playbackSpeed={playbackSpeed}
-                      onPlaybackSpeedChange={setPlaybackSpeed}
-                    />
-                  </div>
-                  <div className="relative min-h-[40px]">
-                    <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
-                      {pronunciations.join(", ") || "\u00A0"}
-                    </div>
-                  </div>
-                  <div className="relative min-h-[40px]">
-                    <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
-                      {pronunciations2.join(", ") || "\u00A0"}
-                    </div>
-                  </div>
-                  <div className="relative min-h-[40px]">
-                    <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
-                      {annotations.join(", ") || "\u00A0"}
-                    </div>
-                  </div>
-                </>
-              )}
-            </header>
-            <section>
-              {/* Only show transcript viewer when audio is loaded */}
-              {hasAudioLoaded &&
-                (version === "v1" ? (
-                  <TranscriptViewerV1
-                    annotatedTranscript={annotatedTranscript}
-                    activeWordIndex={activeWordIndex}
-                    handleWordClick={(start_time) => {
-                      audioRef.current.currentTime = start_time;
-                      audioRef.current.play();
-                    }}
-                    onAnnotationHover={handleAnnotationHover}
-                    onPronunciationHover={handlePronunciationHover}
-                    onPronunciation2Hover={handlePronunciation2Hover}
-                    issuesData={issuesData}
-                    onAnnotationUpdate={handleAnnotationUpdate}
-                    activeFilters={activeFilters}
-                    hoveredWordIndices={hoveredWordIndices}
-                  />
-                ) : (
-                  <TranscriptViewerV2
-                    // Same props as v1
-                    annotatedTranscript={annotatedTranscript}
-                    activeWordIndex={activeWordIndex}
-                    handleWordClick={(start_time) => {
-                      audioRef.current.currentTime = start_time;
-                      audioRef.current.play();
-                    }}
-                    onAnnotationHover={handleAnnotationHover}
-                    issuesData={issuesData}
-                    onAnnotationUpdate={handleAnnotationUpdate}
-                    activeFilters={activeFilters}
-                  />
-                ))}
-            </section>
-            <aside>
-              <KeyboardShortcutsModal
-                isOpen={isShortcutsModalOpen}
-                onClose={() => setIsShortcutsModalOpen(false)}
-              />
-            </aside>
-          </div>
-        </ScrollArea>
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      {/* Only show right panel when audio is loaded */}
-      {hasAudioLoaded && (
-        <ResizablePanel
-          id="transcript-stats"
-          order={1}
-          className="h-[calc(100vh-var(--navbar-height))] sm:h-screen"
-        >
+    <div>
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel id="transcript-main" order={0}>
           <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
-            <div className="px-4 bg-background">
-              {version === "v1" ? (
-                <TranscriptStatsV1
-                  annotatedTranscript={annotatedTranscript}
-                  issuesData={issuesData}
-                  onFilterChange={handleFilterChange}
-                  setHoveredWordIndices={setHoveredWordIndices}
+            <div className="p-2 bg-background">
+              <header className="flex flex-col sticky top-0 z-0 bg-background">
+                <div
+                  className={cn(
+                    "flex items-center gap-4",
+                    (!hasAudioLoaded || loadError) &&
+                      "h-[calc(100vh-var(--navbar-height))] sm:h-screen justify-center flex-col"
+                  )}
+                >
+                  <PersonAudioSelector
+                    people={people}
+                    filteredAudio={filteredAudio}
+                    selectedPerson={selectedPerson}
+                    selectedAudio={selectedAudio}
+                    onPersonSelect={setSelectedPerson}
+                    onAudioSelect={setSelectedAudio}
+                    size={!hasAudioLoaded || loadError ? "large" : "default"}
+                  />
+
+                  {(isAudioLoading || (selectedAudio && !hasAudioLoaded)) && (
+                    <div className={cn("text-muted-foreground text-center")}>
+                      {isAudioLoading
+                        ? "Loading..."
+                        : "Selected audio file appears to be empty"}
+                    </div>
+                  )}
+                </div>
+
+                {/* Only show these once audio is loaded */}
+                {hasAudioLoaded && (
+                  <>
+                    <div>
+                      <AudioPlayer
+                        mp3url={mp3url}
+                        ref={audioRef}
+                        playbackSpeed={playbackSpeed}
+                        onPlaybackSpeedChange={setPlaybackSpeed}
+                      />
+                    </div>
+                    <div className="relative min-h-[40px]">
+                      <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
+                        {pronunciations.join(", ") || "\u00A0"}
+                      </div>
+                    </div>
+                    <div className="relative min-h-[40px]">
+                      <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
+                        {pronunciations2.join(", ") || "\u00A0"}
+                      </div>
+                    </div>
+                    <div className="relative min-h-[40px]">
+                      <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
+                        {annotations.join(", ") || "\u00A0"}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </header>
+              <section>
+                {/* Only show transcript viewer when audio is loaded */}
+                {hasAudioLoaded &&
+                  (version === "v1" ? (
+                    <TranscriptViewerV1
+                      annotatedTranscript={annotatedTranscript}
+                      activeWordIndex={activeWordIndex}
+                      handleWordClick={(start_time) => {
+                        audioRef.current.currentTime = start_time;
+                        audioRef.current.play();
+                      }}
+                      onAnnotationHover={handleAnnotationHover}
+                      onPronunciationHover={handlePronunciationHover}
+                      onPronunciation2Hover={handlePronunciation2Hover}
+                      issuesData={issuesData}
+                      onAnnotationUpdate={handleAnnotationUpdate}
+                      activeFilters={activeFilters}
+                      hoveredWordIndices={hoveredWordIndices}
+                    />
+                  ) : (
+                    <TranscriptViewerV2
+                      // Same props as v1
+                      annotatedTranscript={annotatedTranscript}
+                      activeWordIndex={activeWordIndex}
+                      handleWordClick={(start_time) => {
+                        audioRef.current.currentTime = start_time;
+                        audioRef.current.play();
+                      }}
+                      onAnnotationHover={handleAnnotationHover}
+                      issuesData={issuesData}
+                      onAnnotationUpdate={handleAnnotationUpdate}
+                      activeFilters={activeFilters}
+                    />
+                  ))}
+              </section>
+              <aside>
+                <KeyboardShortcutsModal
+                  isOpen={isShortcutsModalOpen}
+                  onClose={() => setIsShortcutsModalOpen(false)}
                 />
-              ) : (
-                <TranscriptStatsV2
-                  annotatedTranscript={annotatedTranscript}
-                  issuesData={issuesData}
-                  onFilterChange={handleFilterChange}
-                />
-              )}
+              </aside>
             </div>
           </ScrollArea>
         </ResizablePanel>
+        <ResizableHandle withHandle />
+        {/* Only show right panel when audio is loaded */}
+        {hasAudioLoaded && (
+          <ResizablePanel
+            id="transcript-stats"
+            order={1}
+            className="h-[calc(100vh-var(--navbar-height))] sm:h-screen"
+          >
+            <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
+              <div className="px-4 bg-background">
+                {version === "v1" ? (
+                  <TranscriptStatsV1
+                    annotatedTranscript={annotatedTranscript}
+                    issuesData={issuesData}
+                    onFilterChange={handleFilterChange}
+                    setHoveredWordIndices={setHoveredWordIndices}
+                  />
+                ) : (
+                  <TranscriptStatsV2
+                    annotatedTranscript={annotatedTranscript}
+                    issuesData={issuesData}
+                    onFilterChange={handleFilterChange}
+                  />
+                )}
+              </div>
+            </ScrollArea>
+          </ResizablePanel>
+        )}
+      </ResizablePanelGroup>
+
+      {/* Floating help buttons */}
+      {hasAudioLoaded && (
+        <div className="fixed bottom-19 right-8 z-50 flex flex-col gap-3">
+          {/* Keyboard shortcuts help */}
+          <Button
+            onClick={() => setIsShortcutsModalOpen(true)}
+            className="rounded-full w-12 h-12 bg-gray-600 hover:bg-gray-700 shadow-lg cursor-pointer"
+            size="sm"
+            title="Keyboard shortcuts and pronunciation guide"
+          >
+            <Keyboard className="!h-7 !w-7" />
+          </Button>
+
+          {/* Personal coaching CTA */}
+          <TranscriptCTA
+            variant="floating"
+            className="fixed bottom-6 right-8"
+          />
+        </div>
       )}
-    </ResizablePanelGroup>
+    </div>
   );
 }

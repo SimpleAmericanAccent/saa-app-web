@@ -28,6 +28,7 @@ import {
 } from "core-frontend-web/src/components/ui/dialog";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import { cn } from "core-frontend-web/src/lib/utils";
+import TranscriptCTA from "core-frontend-web/src/components/TranscriptCTA";
 
 export function PersonAudioSelector({
   people,
@@ -69,7 +70,7 @@ export function PersonAudioSelector({
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="p-0">
+      <DialogContent className="p-0 z-9999">
         <DialogHeader className="sr-only">
           <DialogTitle>Select Person and Audio</DialogTitle>
           <DialogDescription>
@@ -92,6 +93,7 @@ export function PersonAudioSelector({
                   .map((person) => (
                     <CommandItem
                       key={person.id}
+                      className="cursor-pointer"
                       onSelect={() => {
                         onPersonSelect(person.id);
                         setSearchValue(""); // Clear search when person selected
@@ -107,6 +109,7 @@ export function PersonAudioSelector({
               <>
                 <CommandGroup heading="Selected Person">
                   <CommandItem
+                    className="cursor-pointer"
                     onSelect={() => {
                       onPersonSelect(null); // Clear selection
                       onAudioSelect(null);
@@ -121,10 +124,11 @@ export function PersonAudioSelector({
                   </CommandItem>
                 </CommandGroup>
                 <CommandSeparator />
-                <CommandGroup heading="Available Audio Files">
+                <CommandGroup heading="Available Audio Files" className="pb-2">
                   {filteredAudio.map((audio) => (
                     <CommandItem
                       key={audio.id}
+                      className="cursor-pointer"
                       onSelect={() => {
                         onAudioSelect(audio.id);
                         setOpen(false);
@@ -135,6 +139,10 @@ export function PersonAudioSelector({
                     </CommandItem>
                   ))}
                 </CommandGroup>
+                <CommandSeparator />
+                <div className="p-2 text-center">
+                  <TranscriptCTA variant="selector" className="w-full" />
+                </div>
               </>
             )}
           </CommandList>
