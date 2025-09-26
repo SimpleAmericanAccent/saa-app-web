@@ -88,21 +88,28 @@ export function PersonAudioSelector({
             {!selectedPerson ? (
               // Show all people when none selected
               <CommandGroup heading="Select Person">
-                {[...people]
-                  .sort((a, b) => a.Name.localeCompare(b.Name))
-                  .map((person) => (
-                    <CommandItem
-                      key={person.id}
-                      className="cursor-pointer"
-                      onSelect={() => {
-                        onPersonSelect(person.id);
-                        setSearchValue(""); // Clear search when person selected
-                      }}
-                    >
-                      <User className="mr-2 h-4 w-4" />
-                      {person.Name}
-                    </CommandItem>
-                  ))}
+                {people && people.length > 0 ? (
+                  [...people]
+                    .sort((a, b) => a.Name.localeCompare(b.Name))
+                    .map((person) => (
+                      <CommandItem
+                        key={person.id}
+                        className="cursor-pointer"
+                        onSelect={() => {
+                          onPersonSelect(person.id);
+                          setSearchValue(""); // Clear search when person selected
+                        }}
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        {person.Name}
+                      </CommandItem>
+                    ))
+                ) : (
+                  <CommandItem disabled>
+                    <User className="mr-2 h-4 w-4" />
+                    No people available
+                  </CommandItem>
+                )}
               </CommandGroup>
             ) : (
               // Show selected person and their audio files
@@ -125,26 +132,33 @@ export function PersonAudioSelector({
                 </CommandGroup>
                 <CommandSeparator />
                 <CommandGroup heading="Available Audio Files" className="pb-2">
-                  {filteredAudio.map((audio) => (
-                    <CommandItem
-                      key={audio.id}
-                      className="cursor-pointer"
-                      onSelect={() => {
-                        onAudioSelect(audio.id);
-                        setOpen(false);
-                      }}
-                    >
+                  {filteredAudio && filteredAudio.length > 0 ? (
+                    filteredAudio.map((audio) => (
+                      <CommandItem
+                        key={audio.id}
+                        className="cursor-pointer"
+                        onSelect={() => {
+                          onAudioSelect(audio.id);
+                          setOpen(false);
+                        }}
+                      >
+                        <FileAudio className="mr-2 h-4 w-4" />
+                        {audio.Name}
+                      </CommandItem>
+                    ))
+                  ) : (
+                    <CommandItem disabled>
                       <FileAudio className="mr-2 h-4 w-4" />
-                      {audio.Name}
+                      No audio files available
                     </CommandItem>
-                  ))}
+                  )}
                 </CommandGroup>
-                <CommandSeparator />
-                <div className="p-2 text-center">
-                  <TranscriptCTA variant="selector" className="w-full" />
-                </div>
               </>
             )}
+            <CommandSeparator />
+            <div className="p-2 text-center">
+              <TranscriptCTA variant="selector" className="w-full" />
+            </div>
           </CommandList>
         </Command>
       </DialogContent>

@@ -354,12 +354,8 @@ export default function TranscriptCTA({
                   size="sm"
                   className="w-full bg-green-600 hover:bg-green-700 !text-white text-xs"
                 >
-                  <a
-                    href="https://buy.stripe.com/3cIbJ0fEn5di6k315k6Zy2e"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Join Program
+                  <a href="/join" rel="noopener noreferrer">
+                    Learn More
                   </a>
                 </Button>
               </div>
