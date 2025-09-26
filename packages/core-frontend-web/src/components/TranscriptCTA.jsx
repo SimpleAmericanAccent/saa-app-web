@@ -65,6 +65,7 @@ export default function TranscriptCTA({
         "See your specific pronunciation issues highlighted",
         "No additional call included",
       ],
+      stripeLink: "https://buy.stripe.com/dRmdR863N35a37R6pE6Zy2f",
       whatsappMessage:
         "Hi Will! I'm interested in just the Personal Accent Analysis for $200.",
     },
@@ -132,8 +133,9 @@ export default function TranscriptCTA({
               Want more analysis/help beyond that?
             </h4>
             <p className="text-sm text-muted-foreground">
-              Send me up to 3 minutes of audio via WhatsApp and I'll personally
-              analyze your accent patterns within the transcript viewer:
+              Send me up to 3 minutes of audio via WhatsApp and I'll upload &
+              personally analyze your accent patterns within the transcript
+              viewer:
             </p>
           </div>
 
@@ -213,22 +215,38 @@ export default function TranscriptCTA({
                     ))}
                   </ul>
                   <div className="pt-2">
-                    <Button
-                      asChild
-                      size="sm"
-                      className="w-full bg-green-600 hover:bg-green-700 !text-white text-xs"
-                    >
-                      <a
-                        href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                          offer.whatsappMessage
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {offer.stripeLink ? (
+                      <Button
+                        asChild
+                        size="sm"
+                        className="w-full bg-green-600 hover:bg-green-700 !text-white text-xs"
                       >
-                        <MessageCircle className="w-3 h-3 mr-1" />
-                        Contact
-                      </a>
-                    </Button>
+                        <a
+                          href={offer.stripeLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Buy Now
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button
+                        asChild
+                        size="sm"
+                        className="w-full bg-green-600 hover:bg-green-700 !text-white text-xs"
+                      >
+                        <a
+                          href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                            offer.whatsappMessage
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <MessageCircle className="w-3 h-3 mr-1" />
+                          Contact
+                        </a>
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : null;
@@ -317,14 +335,14 @@ export default function TranscriptCTA({
           {/* Full Programs Section */}
           <div className="pt-4 border-t border-border">
             <h5 className="font-medium text-sm mb-2">
-              Ready for a full program?
+              Ready for a more comprehensive mentorship?
             </h5>
             <div className="space-y-2">
               <div className="border rounded-lg p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <h6 className="font-medium text-sm">Fundamentals Program</h6>
                   <span className="text-lg font-semibold text-green-600">
-                    $2,000
+                    $2000
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -353,9 +371,7 @@ export default function TranscriptCTA({
                 className="w-full text-xs"
               >
                 <a
-                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                    "Hi Will! I'm interested in learning about your other programs (VIP, 6-12 month Mentorship Group, etc.). Can you tell me more about what's available?"
-                  )}`}
+                  href="https://simpleamericanaccent.com?utm_source=saa_web_app&utm_medium=web_app&utm_campaign=transcript_viewer"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -437,7 +453,7 @@ export default function TranscriptCTA({
   return renderContainer(
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{renderTrigger()}</DialogTrigger>
-      <DialogContent className="w-[90vw] !max-w-4xl max-h-[90vh] overflow-y-auto z-[9999]">
+      <DialogContent className="w-[90vw] !max-w-4xl max-h-[95vh] overflow-y-auto z-[9999]">
         {renderContent()}
       </DialogContent>
     </Dialog>
