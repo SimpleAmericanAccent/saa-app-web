@@ -35,6 +35,7 @@ export function bootApp({
     isDev,
     staticPath,
     indexPath,
+    devRedirectUrl: "https://localhost:5173", // Redirect to frontend in dev
     envConfig,
     requireAdminGlobally,
   });

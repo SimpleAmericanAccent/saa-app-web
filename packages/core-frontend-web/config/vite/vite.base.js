@@ -87,7 +87,7 @@ export const getBaseConfig = () => ({
         }
       : undefined,
     port: 5173,
-    open: true, // Automatically open browser when dev server starts
+    open: "https://localhost:5000", // Open backend URL when dev server starts
     proxy,
   },
   resolve: {
