@@ -5,7 +5,7 @@ A full-stack web application for American accent training and feedback.
 - Currently in production serving paid clients
 - Built with modern technologies
 
-## 🚀 Watch 5-Minute Demo Video / Explore the App Demo
+## 🚀 Watch the Demo Video / Explore the App Demo
 
 - **Demo Video:** [Watch 5-minute demo →](https://youtu.be/1I5FPCRFm7o)
 - **User App:** https://app.simpleamericanaccent.com  
