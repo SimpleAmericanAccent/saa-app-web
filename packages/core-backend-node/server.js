@@ -1,5 +1,6 @@
 import express from "express";
 import { auth } from "express-openid-connect";
+import rateLimit from "express-rate-limit";
 import { requiresAdmin } from "./middleware/requiresAdmin.js";
 import { createAirtableClient } from "./services/airtable.js";
 import { setAdminFlag } from "./middleware/setAdminFlag.js";
@@ -17,6 +18,16 @@ export function createServer({
 }) {
   const app = express();
 
+  // Rate limiting middleware - applies to all routes
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 450, // limit each IP to 100 requests per windowMs
+    message: "Too many requests from this IP, please try again later.",
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  app.use(limiter);
   app.use(express.json());
   app.use(auth(auth0Config));
   app.use(setAdminFlag);

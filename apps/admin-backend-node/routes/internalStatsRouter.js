@@ -978,13 +978,6 @@ internalStatsRouter.get("/instagram", async (req, res) => {
   const INSTAGRAM_BUSINESS_ACCOUNT_ID =
     process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
 
-  console.log("Instagram API credentials check:", {
-    hasAccessToken: !!INSTAGRAM_ACCESS_TOKEN,
-    hasBusinessAccountId: !!INSTAGRAM_BUSINESS_ACCOUNT_ID,
-    accessTokenLength: INSTAGRAM_ACCESS_TOKEN?.length || 0,
-    businessAccountId: INSTAGRAM_BUSINESS_ACCOUNT_ID || "not set",
-  });
-
   if (!INSTAGRAM_ACCESS_TOKEN || !INSTAGRAM_BUSINESS_ACCOUNT_ID) {
     console.log("Instagram API credentials missing, returning fallback data");
     return res.json({
@@ -1150,11 +1143,6 @@ internalStatsRouter.get("/instagram", async (req, res) => {
             params.append("metric_type", metricType);
           }
 
-          console.log(
-            `Instagram API request for ${metric} chunk ${chunk.since} to ${chunk.until}:`,
-            url + "?" + params.toString()
-          );
-
           const response = await fetch(url + "?" + params.toString());
 
           if (!response.ok) {
@@ -1225,11 +1213,6 @@ internalStatsRouter.get("/instagram", async (req, res) => {
         if (metricType) {
           params.append("metric_type", metricType);
         }
-
-        console.log(
-          `Instagram API request for ${metric}:`,
-          url + "?" + params.toString()
-        );
 
         const response = await fetch(url + "?" + params.toString());
 

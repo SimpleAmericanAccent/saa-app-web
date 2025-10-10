@@ -150,12 +150,10 @@ const ContrastScoreBar = ({
         )}
         {lastTrialDate && (
           <div className="absolute top-1 right-1 text-[8px] text-muted-foreground">
-            {new Date(lastTrialDate)
-              .toLocaleDateString("en-US", {
-                month: "2-digit",
-                day: "2-digit",
-              })
-              .replace("/", "/")}
+            {new Date(lastTrialDate).toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+            })}
           </div>
         )}
       </div>

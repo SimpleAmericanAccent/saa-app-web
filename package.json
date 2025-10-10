@@ -61,6 +61,7 @@
     "d3-sankey": "^0.12.3",
     "express": "^4.19.2",
     "express-openid-connect": "^2.17.1",
+    "express-rate-limit": "^7.5.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.483.0",
     "posthog-js": "^1.255.1",

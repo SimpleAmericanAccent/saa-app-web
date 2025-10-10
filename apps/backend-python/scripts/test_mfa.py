@@ -52,8 +52,8 @@ def test_mfa():
         os.makedirs(aligned_dir, exist_ok=True)
         
         # Define filenames
-        s3_url = "https://saaclientaudio.s3.us-east-2.amazonaws.com/2025+03+18+sheila+nicholson.mp3"
-        mfa_base_name = "sheila"  # Base name used in MFA (without extension)
+        s3_url = "https://saaclientaudio.s3.us-east-2.amazonaws.com/updatefilenamehere.mp3"
+        mfa_base_name = "test123"  # Base name used in MFA (without extension)
         mfa_audio = f"{mfa_base_name}.mp3"  # Audio file in MFA corpus
         mfa_transcript = f"{mfa_base_name}.txt"  # Transcript file in MFA corpus
         

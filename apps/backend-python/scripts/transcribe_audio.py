@@ -36,7 +36,7 @@ class AudioTranscriber:
     
     def transcribe_audio(self, audio_path: str, output_dir: str = "output") -> dict:
         """Transcribe audio file and save results."""
-        print(f"Transcribing {audio_path}...")
+        print(f"Transcribing...")
         
         # Transcribe the audio
         result = self.model.transcribe(audio_path)
