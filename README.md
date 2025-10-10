@@ -53,24 +53,36 @@ packages/
 
 ## 🧪 Development Setup
 
+### PowerShell
+
 - **Install dependencies:**
   ```powershell
   pnpm install
   ```
-- **Copy the environment file and fill in your credentials:**
-  ```powershell
-  copy .env.example .env
-  ```
+- **Environment Setup:** Copy any `.env.example` and `.env.local.example` files to create corresponding `.env` and `.env.local` files, then fill in your credentials
 - **Airtable Setup:** Set up your own Airtable base for accent annotations data (schema available in codebase)
 - **Localhost over HTTPS:** Set up [mkcert](https://github.com/FiloSottile/mkcert) for local SSL certificates
-- **Database Setup:** Set database URL temporarily, run migrations, then clear it (PowerShell):
-  ```powershell
-  $env:DATABASE_URL = "your_url"; pnpm --filter core-backend-node exec prisma migrate dev; Remove-Item Env:DATABASE_URL
-  ```
-- **Database Seeding:** Populate with pronunciation dictionary data (optional):
-  ```powershell
-  $env:DATABASE_URL = "your_url"; pnpm seed:cmu; Remove-Item Env:DATABASE_URL
-  ```
+- **Database Setup:**
+
+  - **Database URL:** You may need to use this pattern for database-related commands:
+    - ```powershell
+      $env:DATABASE_URL = "your_url"
+      ```
+    - ```powershell
+      [run your command(s) here]
+      ```
+    - ```powershell
+      Remove-Item Env:DATABASE_URL
+      ```
+  - **Setup:** Run migrations:
+    ```powershell
+    pnpm --filter core-backend-node exec prisma migrate dev
+    ```
+  - **Seeding:** Populate with pronunciation dictionary data:
+    ```powershell
+    pnpm seed:cmu
+    ```
+
 - **Run the application:**
   ```powershell
   pnpm dev:user    # Start user app
@@ -80,9 +92,9 @@ packages/
 
 ### Optional Tools
 
-- **Prisma Studio:** Set database URL temporarily, open Prisma Studio, then clear it (PowerShell):
+- **Prisma Studio:** Open database GUI (see note above for database URL pattern):
   ```powershell
-  $env:DATABASE_URL = "your_url"; pnpm --filter core-backend-node exec prisma studio; Remove-Item Env:DATABASE_URL
+  pnpm --filter core-backend-node exec prisma studio
   ```
 - **Direct database access via psql:** Log into Render dashboard, copy connection command, paste into terminal and hit enter. Then copy and paste the password (it will appear invisible in the terminal) and hit enter.
 
