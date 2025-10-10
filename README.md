@@ -5,55 +5,35 @@ A full-stack web application for American accent training and feedback.
 - Currently in production serving paid clients
 - Built with modern technologies
 
-## 🚀 Try It Out / Watch the Demo Video
+## 🚀 Watch 5-Minute Demo Video / Explore the App Demo
 
 - **Demo Video:** [Watch 5-minute demo →](https://youtu.be/1I5FPCRFm7o)
-
-### Live Apps
-
 - **User App:** https://app.simpleamericanaccent.com  
-  _(Client-facing training platform — demo credentials available on request)_
+  _(Client-facing training platform — I'll make a demo account soon and put that here)_
 - **Admin App:** https://admin.simpleamericanaccent.com  
-  _(Internal dashboard — demo access not currently available)_
+  _(Internal dashboard — demo access not currently planned)_
 
-## 🏗️ Architecture
+## 🏗️ Architecture & Tech Stack
 
 This is a monorepo with thin app wrappers around shared core packages:
 
-### Apps
-
-- **User App:**
-
-  - **User Frontend** (React + Vite)
-  - **User Backend** (Node.js + Express)
-
-- **Admin App:**
-
-  - **Admin Frontend** (React + Vite)
-  - **Admin Backend** (Node.js + Express)
-
-- **Shared:**
-  - **Python Backend** - Audio transcription and processing services (not yet used in production)
-
-### Packages
-
-- **Core Frontend** (React + Vite) - Shared frontend components and utilities
-- **Core Backend** (Node.js + Express) - Shared backend services and middleware
-
-## 🛠️ Tech Stack
+```
+apps/
+ ├── user-frontend-web     → React (Vite)
+ ├── user-backend-node     → Express + Prisma
+ ├── admin-frontend-web    → React (Vite)
+ ├── admin-backend-node    → Express + Prisma
+ └── backend-python        → Audio processing (Whisper)
+packages/
+ ├── core-frontend-web     → Shared React components
+ └── core-backend-node     → Shared Express services & middleware
+```
 
 - **Frontend:** React 19, Vite, Tailwind CSS
 - **Backend:** Node.js, Express, Prisma, PostgreSQL, Auth0
 - **Infrastructure:** Render, Airtable, AWS S3
 
-## 🔒 Security Features
-
-- **Authentication** - Auth0 integration with secure token handling
-- **Authorization** - Role-based access control (admin vs user) + user-specific permissions
-- **Rate Limiting** - 450 requests per 15 minutes per IP address
-- **Configuration Management** – Environment-based secrets and keys (no credentials in source)
-
-## 🎯 Key Features
+## 🎯 Core & Security Features
 
 - **Quiz System** - Minimal pairs pronunciation quiz
 - **Transcript Viewer** - Admin view for annotating accent feedback, user view for viewing accent feedback
@@ -61,20 +41,27 @@ This is a monorepo with thin app wrappers around shared core packages:
 - **Admin Dashboard** - User management, trial analytics, and client acquisition tracking
 - **Audio Processing** - Python-based transcription using OpenAI Whisper (not yet used in production)
 
-## 🚀 Deployment
+### Security Highlights
+
+- **Authentication** - Auth0 integration with secure token handling
+- **Authorization** - Role-based access control (admin vs user) + user-specific permissions
+- **Rate Limiting** - 450 requests per 15 minutes per IP address
+- **Configuration Management** – Environment-based secrets and keys (no credentials in source)
+
+## 🚀 Deployment & Data Integration
 
 - **Hosting:** Render (backend serves frontend)
 - **Database:** PostgreSQL hosted on Render
 - **Accent Annotations Database:** Airtable for storing accent annotations for each transcript
 - **File Storage:** AWS S3 for audio files and time-aligned transcripts
 
-## 📊 Data & Analytics Integration
+### Analytics Integrations:
 
 - **Instagram Graph API** – Tracks top-of-funnel metrics (reach, profile views)
 - **Plausible Analytics** – Measures website traffic and conversions
 - **Airtable** – Manages CRM data for applications and payments
 
-## 🧪 Local Development
+## 🧪 Development Setup
 
 - **Install dependencies:**
   ```powershell
