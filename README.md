@@ -20,16 +20,6 @@ A full-stack web application for American accent training and feedback.
 
 This is a monorepo with thin app wrappers around shared core packages:
 
-apps/
-├── user-frontend-web → React (Vite)
-├── user-backend-node → Express + Prisma
-├── admin-frontend-web → React (Vite)
-├── admin-backend-node → Express + Prisma
-└── backend-python → Audio processing (Whisper)
-packages/
-├── core-frontend-web → Shared React components
-└── core-backend-node → Shared Express services & middleware
-
 ### Apps
 
 - **User App:**
