@@ -9,8 +9,8 @@ A full-stack web application for American accent training and feedback.
 ## 🚀 Watch the Demo Video / Explore the App Demo
 
 - **Demo Video:** [Watch 5-minute demo →](https://youtu.be/1I5FPCRFm7o)
-- **User App:** https://app.simpleamericanaccent.com  
-  _(Client-facing training platform — I'll make a demo account soon and put that here)_
+- **User App:** https://app.simpleamericanaccent.com
+  - **Demo Username/Password:** demo@simpleamericanaccent.com / Demo123!
 - **Admin App:** https://admin.simpleamericanaccent.com  
   _(Internal dashboard — demo access not currently planned)_
 
