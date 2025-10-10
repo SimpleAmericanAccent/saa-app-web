@@ -1,39 +1,130 @@
-https://app.simpleamericanaccent.com/ - User app
-https://admin.simpleamericanaccent.com/ - Admin app
+# Simple American Accent Web App
 
-Web app for Simple American Accent, to help clients better (and to help myself/other team members to help clients better).
+A full-stack web application for American accent training and feedback.
 
-Documenting accent feedback
-Viewing accent feedback
-Testing and training accent
-Showing accent progress over time
-Etc
+- Currently in production serving paid clients
+- Built with modern technologies
 
-# Emoji shorthand conventions for console.log decoration:
+## 🚀 Try It Out / Watch the Demo Video
 
-- 💻 Frontend-Web
-- 📱 Frontend-Native (Mobile)
-- ⚙️ Backend
-- 🙋 User
-- 🔒 Admin
-- 🧪 Dev
-- 🚀 Prod
+- **Demo Video:** [Watch 5-minute demo →](https://youtu.be/1I5FPCRFm7o)
 
-# Local HTTPS?
+### Live Apps
 
-Localhost over https via mkcert
+- **User App:** https://app.simpleamericanaccent.com  
+  _(Client-facing training platform — demo credentials available on request)_
+- **Admin App:** https://admin.simpleamericanaccent.com  
+  _(Internal dashboard — demo access not currently available)_
 
-# How to migrate db via prisma, given pnpm monorepo craziness:
+## 🏗️ Architecture
 
-cd to app root first, if needed. then:
+This is a monorepo with thin app wrappers around shared core packages:
 
-$env:DATABASE_URL = "insert main url from render here, not userapp or adminapp but the main db url"; pnpm --filter core-backend-node exec prisma migrate dev --name update_user_id_to_uuid_required; Remove-Item Env:DATABASE_URL
+apps/
+├── user-frontend-web → React (Vite)
+├── user-backend-node → Express + Prisma
+├── admin-frontend-web → React (Vite)
+├── admin-backend-node → Express + Prisma
+└── backend-python → Audio processing (Whisper)
+packages/
+├── core-frontend-web → Shared React components
+└── core-backend-node → Shared Express services & middleware
 
-# how to open prisma studio
+### Apps
 
-$env:DATABASE_URL = "insert url here"; pnpm --filter core-backend-node exec prisma studio; Remove-Item Env:DATABASE_URL
+- **User App:**
 
-# how to log in via psql on command line / powershell
+  - **User Frontend** (React + Vite)
+  - **User Backend** (Node.js + Express)
 
-log into Render in browser, go to database, copy the command and paste and enter
-then copy and paste the password (it will appear invisible in the terminal) and hit enter
+- **Admin App:**
+
+  - **Admin Frontend** (React + Vite)
+  - **Admin Backend** (Node.js + Express)
+
+- **Shared:**
+  - **Python Backend** - Audio transcription and processing services (not yet used in production)
+
+### Packages
+
+- **Core Frontend** (React + Vite) - Shared frontend components and utilities
+- **Core Backend** (Node.js + Express) - Shared backend services and middleware
+
+## 🛠️ Tech Stack
+
+- **Frontend:** React 19, Vite, Tailwind CSS
+- **Backend:** Node.js, Express, Prisma, PostgreSQL, Auth0
+- **Infrastructure:** Render, Airtable, AWS S3
+
+## 🔒 Security Features
+
+- **Authentication** - Auth0 integration with secure token handling
+- **Authorization** - Role-based access control (admin vs user) + user-specific permissions
+- **Rate Limiting** - 450 requests per 15 minutes per IP address
+- **Configuration Management** – Environment-based secrets and keys (no credentials in source)
+
+## 🎯 Key Features
+
+- **Quiz System** - Minimal pairs pronunciation quiz
+- **Transcript Viewer** - Admin view for annotating accent feedback, user view for viewing accent feedback
+- **Progress Tracking** - Visual progress indicators and performance statistics
+- **Admin Dashboard** - User management, trial analytics, and client acquisition tracking
+- **Audio Processing** - Python-based transcription using OpenAI Whisper (not yet used in production)
+
+## 🚀 Deployment
+
+- **Hosting:** Render (backend serves frontend)
+- **Database:** PostgreSQL hosted on Render
+- **Accent Annotations Database:** Airtable for storing accent annotations for each transcript
+- **File Storage:** AWS S3 for audio files and time-aligned transcripts
+
+## 📊 Data & Analytics Integration
+
+- **Instagram Graph API** – Tracks top-of-funnel metrics (reach, profile views)
+- **Plausible Analytics** – Measures website traffic and conversions
+- **Airtable** – Manages CRM data for applications and payments
+
+## 🧪 Local Development
+
+- **Install dependencies:**
+  ```powershell
+  pnpm install
+  ```
+- **Copy the environment file and fill in your credentials:**
+  ```powershell
+  copy .env.example .env
+  ```
+- **Airtable Setup:** Set up your own Airtable base for accent annotations data (schema available in codebase)
+- **Localhost over HTTPS:** Set up [mkcert](https://github.com/FiloSottile/mkcert) for local SSL certificates
+- **Database Setup:** Set database URL temporarily, run migrations, then clear it (PowerShell):
+  ```powershell
+  $env:DATABASE_URL = "your_url"; pnpm --filter core-backend-node exec prisma migrate dev; Remove-Item Env:DATABASE_URL
+  ```
+- **Database Seeding:** Populate with pronunciation dictionary data (optional):
+  ```powershell
+  $env:DATABASE_URL = "your_url"; pnpm seed:cmu; Remove-Item Env:DATABASE_URL
+  ```
+- **Run the application:**
+  ```powershell
+  pnpm dev:user    # Start user app
+  # or
+  pnpm dev:admin   # Start admin app
+  ```
+
+### Optional Tools
+
+- **Prisma Studio:** Set database URL temporarily, open Prisma Studio, then clear it (PowerShell):
+  ```powershell
+  $env:DATABASE_URL = "your_url"; pnpm --filter core-backend-node exec prisma studio; Remove-Item Env:DATABASE_URL
+  ```
+- **Direct database access via psql:** Log into Render dashboard, copy connection command, paste into terminal and hit enter. Then copy and paste the password (it will appear invisible in the terminal) and hit enter.
+
+## 🤝 Contributing
+
+This is a production application serving paid accent coaching clients, that I developed independently.
+
+Temporarily open-sourced to show my full-stack development abilities. For questions or feedback, please contact me.
+
+## 📄 License
+
+**Proprietary** – Temporarily open-sourced for portfolio/demonstration purposes only.
