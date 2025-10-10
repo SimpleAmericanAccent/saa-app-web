@@ -39,7 +39,7 @@ packages/
 
 ### Security Highlights
 
-- **Authentication** - Auth0 integration with secure token handling
+- **Authentication** - Auth0 integration
 - **Authorization** - Role-based access control (admin vs user) + user-specific permissions
 - **Rate Limiting** - 450 requests per 15 minutes per IP address
 - **Configuration Management** – Environment-based secrets and keys (no credentials in source)
