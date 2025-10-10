@@ -2,8 +2,9 @@
 
 A full-stack web application for American accent training and feedback.
 
-- Currently in production serving paid clients
-- Built with modern technologies
+- In production with paying clients
+- Independently developed
+- React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
 
 ## 🚀 Watch the Demo Video / Explore the App Demo
 
@@ -13,33 +14,28 @@ A full-stack web application for American accent training and feedback.
 - **Admin App:** https://admin.simpleamericanaccent.com  
   _(Internal dashboard — demo access not currently planned)_
 
-## 🏗️ Architecture & Tech Stack
+## 🏗️ Architecture Overview
 
 This is a monorepo with thin app wrappers around shared core packages:
 
 ```
 apps/
- ├── user-frontend-web     → React (Vite)
- ├── user-backend-node     → Express + Prisma
- ├── admin-frontend-web    → React (Vite)
- ├── admin-backend-node    → Express + Prisma
- └── backend-python        → Audio processing (Whisper)
+ ├── user-frontend-web     → Client accent training app
+ ├── user-backend-node     → User API server
+ ├── admin-frontend-web    → Business analytics dashboard
+ ├── admin-backend-node    → Admin API + analytics routes
+ └── backend-python        → Standalone transcription scripts
 packages/
- ├── core-frontend-web     → Shared React components
- └── core-backend-node     → Shared Express services & middleware
+ ├── core-frontend-web     → Quiz system, transcript viewer, phoneme tools, admin pages
+ └── core-backend-node     → Auth0, Prisma, rate limiting, Airtable, API routes
 ```
 
-- **Frontend:** React 19, Vite, Tailwind CSS
-- **Backend:** Node.js, Express, Prisma, PostgreSQL, Auth0
-- **Infrastructure:** Render, Airtable, AWS S3
-
-## 🎯 Core & Security Features
+## 🎯 Core Features & Security
 
 - **Quiz System** - Minimal pairs pronunciation quiz
 - **Transcript Viewer** - Admin view for annotating accent feedback, user view for viewing accent feedback
 - **Progress Tracking** - Visual progress indicators and performance statistics
 - **Admin Dashboard** - User management, trial analytics, and client acquisition tracking
-- **Audio Processing** - Python-based transcription using OpenAI Whisper (not yet used in production)
 
 ### Security Highlights
 
@@ -48,18 +44,12 @@ packages/
 - **Rate Limiting** - 450 requests per 15 minutes per IP address
 - **Configuration Management** – Environment-based secrets and keys (no credentials in source)
 
-## 🚀 Deployment & Data Integration
+## ⚙️ Tech Stack & Infrastructure
 
-- **Hosting:** Render (backend serves frontend)
-- **Database:** PostgreSQL hosted on Render
-- **Accent Annotations Database:** Airtable for storing accent annotations for each transcript
-- **File Storage:** AWS S3 for audio files and time-aligned transcripts
-
-### Analytics Integrations:
-
-- **Instagram Graph API** – Tracks top-of-funnel metrics (reach, profile views)
-- **Plausible Analytics** – Measures website traffic and conversions
-- **Airtable** – Manages CRM data for applications and payments
+- **Frontend:** React 19, Vite, Tailwind CSS
+- **Backend:** Node.js, Express, Prisma, PostgreSQL
+- **Infrastructure:** Render, Auth0, AWS S3, Airtable
+- **Analytics:** Instagram Graph API, Plausible, Airtable
 
 ## 🧪 Development Setup
 
