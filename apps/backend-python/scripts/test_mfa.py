@@ -63,7 +63,7 @@ def test_mfa():
         
         # Check if audio file exists
         if os.path.exists(target_audio):
-            print(f"\n✓ Audio file already exists at {target_audio}")
+            print(f"\n✓ Audio file already exists")
             file_size = os.path.getsize(target_audio)
             print(f"  File size: {file_size / 1024 / 1024:.2f} MB")
         else:
@@ -97,13 +97,13 @@ def test_mfa():
                 # Rename the downloaded file to match our MFA naming convention
                 if downloaded_audio != target_audio:
                     shutil.move(downloaded_audio, target_audio)
-                    print(f"✓ Renamed audio file to {target_audio}")
+                    print(f"✓ Renamed audio file")
                 
                 # Verify the final file
                 if not os.path.exists(target_audio):
-                    print(f"Error: Target file not found at {target_audio}")
+                    print(f"Error: Target file not found")
                     return False
-                print(f"✓ Final audio file verified at {target_audio}")
+                print(f"✓ Final audio file verified")
                 
             except Exception as e:
                 print(f"Error during audio download: {str(e)}")
@@ -111,7 +111,7 @@ def test_mfa():
         
         # Check if transcript file exists
         if os.path.exists(transcript_path):
-            print(f"\n✓ Transcript file already exists at {transcript_path}")
+            print(f"\n✓ Transcript file already exists")
             with open(transcript_path, "r", encoding='utf-8') as f:
                 formatted_transcript = f.read().strip()
             print(f"  Using existing transcript: {formatted_transcript}")
@@ -134,15 +134,15 @@ def test_mfa():
             with open(transcript_path, "w", encoding='utf-8') as f:
                 f.write(formatted_transcript)
             print("✓ Created MFA transcript file")
-            print(f"  Using base name: {mfa_base_name}")
-            print(f"  Transcript format: {formatted_transcript}")
+            print(f"  Using base name")
+            print(f"  Transcript format")
         
         # Print diagnostic information for the transcript
         words = formatted_transcript.split()
         print(f"  Transcript length: {len(formatted_transcript)} characters")
         print(f"  Number of words: {len(words)}")
-        print(f"  First few words: {' '.join(words[:5])}")
         
+
         # Run MFA validate with the correct command format
         print("\nRunning MFA validate...")
         # The correct format is: mfa validate CORPUS_DIRECTORY DICTIONARY_PATH
@@ -167,7 +167,7 @@ def test_mfa():
         alignment_file = os.path.join(aligned_dir, f"{mfa_base_name}.TextGrid")
         if os.path.exists(alignment_file):
             print("✓ Alignment file created successfully")
-            print(f"  Alignment file: {alignment_file}")
+
             return True
         else:
             print("✗ Alignment file not found")
