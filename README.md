@@ -59,7 +59,7 @@ packages/
   ```powershell
   pnpm install
   ```
-- **Environment Setup:** Copy any `.env.example` and `.env.local.example` files to create corresponding `.env` and `.env.local` files, then fill in your credentials
+- **Environment Setup:** Copy any `.env.example` and `.env.local.example` files (4 total) to create corresponding `.env` and `.env.local` files, then fill in your credentials
 - **Airtable Setup:** Set up your own Airtable base for accent annotations data (schema available in codebase)
 - **Localhost over HTTPS:** Set up [mkcert](https://github.com/FiloSottile/mkcert) for local SSL certificates
 - **Database Setup:**
