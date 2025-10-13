@@ -195,17 +195,53 @@ const ImitationPractice = () => {
   // Start recording
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      // Check if we're on HTTPS (required for microphone access on iOS)
+      if (location.protocol !== "https:" && location.hostname !== "localhost") {
+        throw new Error("HTTPS required for microphone access");
+      }
+
+      // Check if MediaRecorder is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("MediaDevices API not supported");
+      }
+
+      if (!window.MediaRecorder) {
+        throw new Error("MediaRecorder not supported");
+      }
+
+      // Request microphone access with iOS-compatible constraints
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        },
+      });
+
+      // Determine the best audio format for the browser
+      let mimeType = "audio/webm";
+      if (MediaRecorder.isTypeSupported("audio/mp4")) {
+        mimeType = "audio/mp4";
+      } else if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+        mimeType = "audio/webm;codecs=opus";
+      } else if (MediaRecorder.isTypeSupported("audio/webm")) {
+        mimeType = "audio/webm";
+      }
+
+      // Create MediaRecorder with iOS-compatible options
+      const options = { mimeType };
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
       audioChunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
       };
 
       mediaRecorderRef.current.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/wav",
+          type: mimeType,
         });
         const audioUrl = URL.createObjectURL(audioBlob);
         setRecordedAudio(audioUrl);
@@ -214,11 +250,38 @@ const ImitationPractice = () => {
         stream.getTracks().forEach((track) => track.stop());
       };
 
-      mediaRecorderRef.current.start();
+      mediaRecorderRef.current.onerror = (event) => {
+        console.error("MediaRecorder error:", event.error);
+        setError("Recording failed. Please try again.");
+        setIsRecording(false);
+      };
+
+      // Start recording with time slice for better iOS compatibility
+      mediaRecorderRef.current.start(100);
       setIsRecording(true);
+      setError(""); // Clear any previous errors
     } catch (err) {
       console.error("Error accessing microphone:", err);
-      setError("Could not access microphone. Please check permissions.");
+      let errorMessage = "Could not access microphone. ";
+
+      if (err.message === "HTTPS required for microphone access") {
+        errorMessage =
+          "Recording requires HTTPS. Please use a secure connection.";
+      } else if (err.name === "NotAllowedError") {
+        errorMessage += "Please allow microphone access and try again.";
+      } else if (err.name === "NotFoundError") {
+        errorMessage += "No microphone found.";
+      } else if (err.name === "NotSupportedError") {
+        errorMessage += "Recording not supported on this device.";
+      } else if (err.message === "MediaDevices API not supported") {
+        errorMessage = "Your browser doesn't support microphone access.";
+      } else if (err.message === "MediaRecorder not supported") {
+        errorMessage = "Your browser doesn't support audio recording.";
+      } else {
+        errorMessage += "Please check permissions and try again.";
+      }
+
+      setError(errorMessage);
     }
   };
 
@@ -426,7 +489,7 @@ const ImitationPractice = () => {
                   onClick={playRecordedAudio}
                   variant={isPlayingRecorded ? "destructive" : "outline"}
                   size="sm"
-                  className="h-7 sm:h-8 cursor-pointer"
+                  className="h-20 cursor-pointer"
                 >
                   {isPlayingRecorded ? (
                     <>
@@ -444,7 +507,7 @@ const ImitationPractice = () => {
                   )}
                 </Button>
               ) : (
-                <div className="h-20 flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600 rounded">
+                <div className="h-20 sm:h-8 flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600 rounded">
                   <span className="text-xs text-muted-foreground">
                     No recording yet
                   </span>
