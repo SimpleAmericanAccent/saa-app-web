@@ -335,12 +335,12 @@ const ImitationPractice = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && searchPronunciation()}
-              className="flex-1 text-sm"
+              className="flex-1 text-lg"
             />
             <Button
               onClick={searchPronunciation}
               disabled={isLoading}
-              size="sm"
+              size="md"
               className="min-w-[60px] sm:min-w-[120px] cursor-pointer"
             >
               {isLoading ? (
