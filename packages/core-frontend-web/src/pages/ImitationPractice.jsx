@@ -24,6 +24,7 @@ const ImitationPractice = () => {
   const [nativeAudios, setNativeAudios] = useState([]);
   const [currentlyPlayingAudio, setCurrentlyPlayingAudio] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [isInitializingRecording, setIsInitializingRecording] = useState(false);
   const [recordedAudio, setRecordedAudio] = useState(null);
   const [isPlayingRecorded, setIsPlayingRecorded] = useState(false);
   const [error, setError] = useState("");
@@ -195,6 +196,9 @@ const ImitationPractice = () => {
   // Start recording
   const startRecording = async () => {
     try {
+      setIsInitializingRecording(true);
+      setError(""); // Clear any previous errors
+
       // Check if we're on HTTPS (required for microphone access on iOS)
       if (location.protocol !== "https:" && location.hostname !== "localhost") {
         throw new Error("HTTPS required for microphone access");
@@ -259,7 +263,7 @@ const ImitationPractice = () => {
       // Start recording with time slice for better iOS compatibility
       mediaRecorderRef.current.start(100);
       setIsRecording(true);
-      setError(""); // Clear any previous errors
+      setIsInitializingRecording(false);
     } catch (err) {
       console.error("Error accessing microphone:", err);
       let errorMessage = "Could not access microphone. ";
@@ -282,6 +286,7 @@ const ImitationPractice = () => {
       }
 
       setError(errorMessage);
+      setIsInitializingRecording(false);
     }
   };
 
@@ -451,7 +456,7 @@ const ImitationPractice = () => {
           <div className="grid grid-cols-2 gap-2 sm:gap-4">
             {/* Left half - Record controls */}
             <div className="flex flex-col gap-1.5">
-              {!isRecording ? (
+              {!isRecording && !isInitializingRecording ? (
                 <Button
                   onClick={startRecording}
                   variant="default"
@@ -461,6 +466,17 @@ const ImitationPractice = () => {
                   <Mic className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="hidden sm:inline ml-2">Record</span>
                   <span className="sm:hidden ml-1">Record</span>
+                </Button>
+              ) : isInitializingRecording ? (
+                <Button
+                  disabled
+                  variant="default"
+                  size="sm"
+                  className="h-20 cursor-not-allowed opacity-75"
+                >
+                  <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                  <span className="hidden sm:inline ml-2">Starting...</span>
+                  <span className="sm:hidden ml-1">Starting...</span>
                 </Button>
               ) : (
                 <Button
@@ -474,10 +490,12 @@ const ImitationPractice = () => {
                   <span className="sm:hidden ml-1">Stop</span>
                 </Button>
               )}
-              {isRecording && (
+              {(isRecording || isInitializingRecording) && (
                 <div className="flex items-center justify-center gap-1.5 text-red-500 dark:text-red-400">
                   <div className="w-1.5 h-1.5 bg-red-500 dark:bg-red-400 rounded-full animate-pulse"></div>
-                  <span className="text-xs">Recording...</span>
+                  <span className="text-xs">
+                    {isInitializingRecording ? "Starting..." : "Recording..."}
+                  </span>
                 </div>
               )}
             </div>
