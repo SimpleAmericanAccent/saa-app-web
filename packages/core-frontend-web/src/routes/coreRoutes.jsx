@@ -19,6 +19,7 @@ import Quiz from "core-frontend-web/src/pages/Quiz.jsx";
 import QuizAudioAdmin from "core-frontend-web/src/pages/QuizAudioAdmin.jsx";
 import Join from "core-frontend-web/src/pages/Join.jsx";
 import JoinThankYou from "core-frontend-web/src/pages/JoinThankYou.jsx";
+import ImitationPractice from "core-frontend-web/src/pages/ImitationPractice.jsx";
 
 const coreRoutes = (
   <>
@@ -34,6 +35,7 @@ const coreRoutes = (
     <Route path="/phonemes" element={<Phonemes />} />
     <Route path="/quiz" element={<Quiz />} />
     <Route path="/quiz-audio-admin" element={<QuizAudioAdmin />} />
+    <Route path="/imitate" element={<ImitationPractice />} />
 
     <Route
       path="/spelling-pronunciation"

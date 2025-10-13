@@ -16,6 +16,7 @@ import {
   Waves,
   Music,
   Construction,
+  Mic,
 } from "lucide-react";
 
 import {
@@ -550,15 +551,7 @@ export function SidebarLeft() {
                 </SidebarMenuItem>
               )}
 
-              {/* Links */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Links">
-                  <SidebarLink to="/links" className="flex items-center gap-2">
-                    <LinkIcon className="h-4 w-4" />
-                    {!isCollapsed && <span>Links</span>}
-                  </SidebarLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+
 
               {/* Quiz */}
               <SidebarMenuItem>
@@ -571,6 +564,19 @@ export function SidebarLeft() {
                         <QuizStats />
                       </div>
                     )}
+                  </SidebarLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Imitation Practice */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Imitation Practice">
+                  <SidebarLink
+                    to="/imitate"
+                    className="flex items-center gap-2"
+                  >
+                    <Mic className="h-4 w-4" />
+                    {!isCollapsed && <span>Imitation Practice</span>}
                   </SidebarLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -589,6 +595,16 @@ export function SidebarLeft() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
+
+                            {/* Links */}
+                            <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Links">
+                  <SidebarLink to="/links" className="flex items-center gap-2">
+                    <LinkIcon className="h-4 w-4" />
+                    {!isCollapsed && <span>Links</span>}
+                  </SidebarLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
