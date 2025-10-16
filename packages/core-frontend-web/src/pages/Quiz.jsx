@@ -45,6 +45,7 @@ import {
   TrendingUp,
   Calendar,
   Award,
+  AlertTriangle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProgressModal from "../components/ProgressModal";
@@ -1378,6 +1379,25 @@ export default function Quiz() {
 
   return (
     <div className="h-[calc(100vh-var(--navbar-height))] bg-background flex items-center justify-center p-4 overflow-hidden relative">
+      {/* Maintenance Notice */}
+      <div className="absolute top-2 left-2 right-2 z-50">
+        <Card className="border-amber-200 p-0 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+          <CardContent className="p-2 sm:p-3">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <div className="text-xs sm:text-sm">
+                <p className="font-medium text-amber-800 dark:text-amber-200">
+                  Quiz Under Maintenance
+                </p>
+                <p className="text-amber-700 dark:text-amber-300 mt-0.5 hidden sm:block">
+                  Working on a fix - will be resolved soon.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Settings Step */}
       {currentStep === "settings" && (
         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-4">
