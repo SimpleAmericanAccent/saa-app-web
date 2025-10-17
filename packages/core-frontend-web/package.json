@@ -7,10 +7,54 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
-    "test:watch": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --watch"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "modules": "commonjs"
+        }
+      ],
+      [
+        "@babel/preset-react",
+        {
+          "runtime": "automatic"
+        }
+      ],
+      "@babel/preset-typescript"
+    ]
   },
   "jest": {
-    "testEnvironment": "jsdom"
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "^core-frontend-web/(.*)$": "<rootDir>/$1"
+    }
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "4.1.1",
+    "@storybook/addon-a11y": "9.1.13",
+    "@storybook/addon-docs": "9.1.12",
+    "@storybook/addon-vitest": "^9.1.13",
+    "@storybook/react-vite": "9.1.12",
+    "eslint-plugin-storybook": "9.1.12",
+    "playwright": "^1.56.1",
+    "storybook": "9.1.12",
+    "vitest": "^3.2.4",
+    "@vitest/browser": "3.2.4",
+    "@vitest/coverage-v8": "3.2.4"
   }
 }
