@@ -20,6 +20,7 @@ import {
 import { QUIZ_TYPE_IDS } from "./Quiz";
 import useAuthStore from "../stores/authStore";
 import { fetchContrasts, fetchPairs } from "../utils/quizApi";
+import { getWiktionaryUSAudio } from "../utils/wiktionaryApi";
 
 // Rate limiting configuration
 const RATE_LIMIT_CONFIG = {
@@ -157,7 +158,7 @@ const QuizAudioAdmin = () => {
     return null;
   };
 
-  // Function to get US audio from Free Dictionary API with rate limiting
+  // Function to get US audio from Wiktionary API with rate limiting
   const getDictionaryAudio = async (word, retryCount = 0) => {
     if (!word) return null;
 
@@ -165,72 +166,18 @@ const QuizAudioAdmin = () => {
       // Wait for rate limiter
       await rateLimiter.current.waitForNextRequest();
 
-      const response = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
-      );
+      const audioUrl = await getWiktionaryUSAudio(word);
 
-      // Check for rate limiting
-      if (response.status === 429) {
-        rateLimiter.current.onFailure();
-        setRateLimitStatus({
-          isLimited: true,
-          message: "Rate limit exceeded. Waiting before retry...",
-          remainingRequests: 0,
-        });
-
-        if (retryCount < RATE_LIMIT_CONFIG.retryAttempts) {
-          console.log(
-            `Rate limited. Retrying in ${rateLimiter.current.currentDelay}ms...`
-          );
-          await new Promise((resolve) =>
-            setTimeout(resolve, rateLimiter.current.currentDelay)
-          );
-          return getDictionaryAudio(word, retryCount + 1);
-        } else {
-          console.error("Max retry attempts reached for rate limiting");
-          return null;
-        }
-      }
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      // Check for API error responses
-      if (data && data.title && data.title.includes("No Definitions Found")) {
+      if (audioUrl) {
+        rateLimiter.current.onSuccess();
+        return audioUrl;
+      } else {
         console.log(`No audio found for word: ${word}`);
         rateLimiter.current.onSuccess();
         return null;
       }
-
-      if (
-        data &&
-        data[0] &&
-        data[0].phonetics &&
-        data[0].phonetics.length > 0
-      ) {
-        // Look for US audio specifically - check for various US audio patterns
-        const usPhonetic = data[0].phonetics.find(
-          (p) =>
-            p.audio &&
-            (p.audio.includes("-us.") ||
-              p.audio.includes("-us-") ||
-              p.audio.includes("/us/"))
-        );
-
-        // Only return US audio, no fallback
-        if (usPhonetic && usPhonetic.audio) {
-          rateLimiter.current.onSuccess();
-          return usPhonetic.audio;
-        }
-      }
-
-      rateLimiter.current.onSuccess();
-      return null;
     } catch (error) {
-      console.error(`Error fetching dictionary audio for "${word}":`, error);
+      console.error(`Error fetching Wiktionary audio for "${word}":`, error);
       rateLimiter.current.onFailure();
 
       // Retry on network errors
@@ -275,20 +222,20 @@ const QuizAudioAdmin = () => {
       console.log(`❌ No database audio URL found`);
     }
 
-    // Always check dictionary API (for comparison)
-    const dictionaryAudio = await getDictionaryAudio(word);
-    console.log(`🌐 Dictionary API audio:`, dictionaryAudio);
+    // Always check Wiktionary API (for comparison)
+    const wiktionaryAudio = await getDictionaryAudio(word);
+    console.log(`🌐 Wiktionary API audio:`, wiktionaryAudio);
 
-    if (dictionaryAudio) {
-      result.sources.push("dictionary");
+    if (wiktionaryAudio) {
+      result.sources.push("wiktionary");
       // Only use API as primary if no database URL exists
       if (!result.primaryUrl) {
-        result.primaryUrl = dictionaryAudio;
-        result.primarySource = "dictionary";
+        result.primaryUrl = wiktionaryAudio;
+        result.primarySource = "wiktionary";
       }
-      console.log(`✅ Dictionary API audio found:`, dictionaryAudio);
+      console.log(`✅ Wiktionary API audio found:`, wiktionaryAudio);
     } else {
-      console.log(`❌ No dictionary API audio found`);
+      console.log(`❌ No Wiktionary API audio found`);
     }
 
     console.log(`📊 Final result:`, result);
@@ -699,7 +646,7 @@ const QuizAudioAdmin = () => {
                 <Badge className="text-xs bg-yellow-500 hover:bg-yellow-600 text-black border-yellow-500">
                   API
                 </Badge>
-                <span className="text-muted-foreground">Dictionary API</span>
+                <span className="text-muted-foreground">Wiktionary API</span>
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant="destructive" className="text-xs">
@@ -844,13 +791,13 @@ const QuizAudioAdmin = () => {
                                               </Badge>
                                             )}
                                             {(wordLog.audioSources?.includes(
-                                              "dictionary"
+                                              "wiktionary"
                                             ) ||
                                               wordLog.audioSource ===
-                                                "dictionary") && (
+                                                "wiktionary") && (
                                               <Badge
                                                 className="text-xs bg-yellow-500 hover:bg-yellow-600 text-black border-yellow-500"
-                                                title="Audio from Dictionary API"
+                                                title="Audio from Wiktionary API"
                                               >
                                                 API
                                               </Badge>

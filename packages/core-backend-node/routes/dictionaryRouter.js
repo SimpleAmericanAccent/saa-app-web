@@ -94,4 +94,14 @@ dictionaryRouter.post(
   dictionaryController.addUsageToConsonantPhoneme
 );
 
+// Wiktionary proxy routes (to avoid CORS issues)
+dictionaryRouter.get(
+  "/wiktionary/audio/:word",
+  dictionaryController.getWiktionaryAudio
+);
+dictionaryRouter.get(
+  "/wiktionary/audio/:word/us",
+  dictionaryController.getWiktionaryUSAudio
+);
+
 export default dictionaryRouter;

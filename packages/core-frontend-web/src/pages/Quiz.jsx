@@ -25,6 +25,7 @@ import {
   getSubduedGradientColorStyle,
   getQuizCardTextProps,
 } from "../utils/performanceColors";
+import { getWiktionaryUSAudio } from "../utils/wiktionaryApi";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import {
   Card,
@@ -725,39 +726,14 @@ export default function Quiz() {
     playTone(600, 0.25, "sine", 0.04); // Lower pitch, longer duration, gentler volume
   };
 
-  // Function to get US audio from Free Dictionary API
+  // Function to get US audio from Wiktionary API
   const getDictionaryAudio = async (word) => {
     if (!word) return null;
 
     try {
-      const response = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
-      );
-      const data = await response.json();
-
-      if (
-        data &&
-        data[0] &&
-        data[0].phonetics &&
-        data[0].phonetics.length > 0
-      ) {
-        // Look for US audio specifically - check for various US audio patterns
-        const usPhonetic = data[0].phonetics.find(
-          (p) =>
-            p.audio &&
-            (p.audio.includes("-us.") ||
-              p.audio.includes("-us-") ||
-              p.audio.includes("/us/"))
-        );
-
-        // Only return US audio, no fallback
-        if (usPhonetic && usPhonetic.audio) {
-          return usPhonetic.audio;
-        }
-      }
-      return null;
+      return await getWiktionaryUSAudio(word);
     } catch (error) {
-      console.error("Error fetching dictionary audio:", error);
+      console.error("Error fetching Wiktionary audio:", error);
       return null;
     }
   };
@@ -1379,25 +1355,6 @@ export default function Quiz() {
 
   return (
     <div className="h-[calc(100vh-var(--navbar-height))] bg-background flex items-center justify-center p-4 overflow-hidden relative">
-      {/* Maintenance Notice */}
-      <div className="absolute top-2 left-2 right-2 z-50">
-        <Card className="border-amber-200 p-0 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
-          <CardContent className="p-2 sm:p-3">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-              <div className="text-xs sm:text-sm">
-                <p className="font-medium text-amber-800 dark:text-amber-200">
-                  Quiz Under Maintenance
-                </p>
-                <p className="text-amber-700 dark:text-amber-300 mt-0.5 hidden sm:block">
-                  Working on a fix - will be resolved soon.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Settings Step */}
       {currentStep === "settings" && (
         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-4">

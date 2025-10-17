@@ -18,6 +18,7 @@ import {
   Loader2,
   AlertTriangle,
 } from "lucide-react";
+import { getWiktionaryAllAudio } from "../utils/wiktionaryApi";
 
 const ImitationPractice = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,23 +33,9 @@ const ImitationPractice = () => {
 
   const nativeAudioRef = useRef(null);
 
-  // Helper function to get flag and region info from audio URL
-  const getRegionInfo = (audioUrl) => {
-    if (audioUrl.includes("-us.mp3"))
-      return { flag: "🇺🇸", region: "American English" };
-    if (audioUrl.includes("-uk.mp3"))
-      return { flag: "🇬🇧", region: "British English" };
-    if (audioUrl.includes("-au.mp3"))
-      return { flag: "🇦🇺", region: "Australian English" };
-    if (audioUrl.includes("-ca.mp3"))
-      return { flag: "🇨🇦", region: "Canadian English" };
-    if (audioUrl.includes("-nz.mp3"))
-      return { flag: "🇳🇿", region: "New Zealand English" };
-    if (audioUrl.includes("-ie.mp3"))
-      return { flag: "🇮🇪", region: "Irish English" };
-    if (audioUrl.includes("-za.mp3"))
-      return { flag: "🇿🇦", region: "South African English" };
-    return { flag: "🌍", region: "International" };
+  // Helper function to get flag and region info from audio data
+  const getRegionInfo = (audioData) => {
+    return { flag: audioData.flag, region: audioData.region };
   };
   const recordedAudioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -68,7 +55,7 @@ const ImitationPractice = () => {
     };
   }, []);
 
-  // Search for pronunciation using Free Dictionary API
+  // Search for pronunciation using Wiktionary API
   const searchPronunciation = async () => {
     if (!searchTerm.trim()) {
       setError("Please enter a word to search");
@@ -81,91 +68,27 @@ const ImitationPractice = () => {
     setCurrentlyPlayingAudio(null);
 
     try {
-      // Using Free Dictionary API (no API key required)
-      const response = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(
-          searchTerm
-        )}`
-      );
+      // Using Wiktionary API
+      const audioPronunciations = await getWiktionaryAllAudio(searchTerm);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch pronunciation");
-      }
+      if (audioPronunciations.length > 0) {
+        // Sort pronunciations: American first, then others
+        const sortedPronunciations = audioPronunciations.sort((a, b) => {
+          const aIsAmerican = a.accent === "us";
+          const bIsAmerican = b.accent === "us";
 
-      const data = await response.json();
-
-      if (data && data.length > 0) {
-        const audioPronunciations = [];
-        let pronunciationId = 0;
-
-        // Extract accent from audio URL filename
-        const extractAccentFromUrl = (url) => {
-          const filename = url.split("/").pop(); // Get filename from URL
-          const match = filename.match(/-([a-z]{2})\.mp3$/i); // Match -us.mp3, -uk.mp3, etc.
-          if (match) {
-            const countryCode = match[1].toUpperCase();
-            const accentMap = {
-              US: "American",
-              UK: "British",
-              AU: "Australian",
-              CA: "Canadian",
-              NZ: "New Zealand",
-              IE: "Irish",
-              ZA: "South African",
-            };
-            return accentMap[countryCode] || countryCode;
-          }
-          return "Unknown Accent";
-        };
-
-        // Process all entries to find all available pronunciations
-        const seenAudioUrls = new Set();
-
-        data.forEach((entry, entryIndex) => {
-          if (entry.phonetics && entry.phonetics.length > 0) {
-            entry.phonetics.forEach((phonetic, phoneticIndex) => {
-              // Only include phonetics that have audio URLs (not empty) and haven't been seen before
-              if (
-                phonetic.audio &&
-                phonetic.audio.trim() !== "" &&
-                !seenAudioUrls.has(phonetic.audio)
-              ) {
-                seenAudioUrls.add(phonetic.audio);
-                audioPronunciations.push({
-                  id: pronunciationId++,
-                  audio: phonetic.audio,
-                  text: phonetic.text || "",
-                  accent: extractAccentFromUrl(phonetic.audio),
-                  source: phonetic.sourceUrl || "",
-                  entryIndex: entryIndex,
-                  phoneticIndex: phoneticIndex,
-                });
-              }
-            });
-          }
+          if (aIsAmerican && !bIsAmerican) return -1; // American first
+          if (!aIsAmerican && bIsAmerican) return 1; // American first
+          return 0; // Keep original order for same type
         });
 
-        if (audioPronunciations.length > 0) {
-          // Sort pronunciations: American first, then others
-          const sortedPronunciations = audioPronunciations.sort((a, b) => {
-            const aIsAmerican = a.audio.includes("-us.mp3");
-            const bIsAmerican = b.audio.includes("-us.mp3");
-
-            if (aIsAmerican && !bIsAmerican) return -1; // American first
-            if (!aIsAmerican && bIsAmerican) return 1; // American first
-            return 0; // Keep original order for same type
-          });
-
-          console.log(
-            `Found ${sortedPronunciations.length} unique pronunciations for "${searchTerm}":`,
-            sortedPronunciations
-          );
-          setNativeAudios(sortedPronunciations);
-        } else {
-          throw new Error("No audio available for this word");
-        }
+        console.log(
+          `Found ${sortedPronunciations.length} unique pronunciations for "${searchTerm}":`,
+          sortedPronunciations
+        );
+        setNativeAudios(sortedPronunciations);
       } else {
-        throw new Error("No pronunciation found for this word");
+        throw new Error("No audio available for this word");
       }
     } catch (err) {
       console.error("Error fetching pronunciation:", err);
@@ -323,23 +246,6 @@ const ImitationPractice = () => {
 
   return (
     <div className="container mx-auto p-2 sm:p-4 max-w-2xl">
-      {/* Maintenance Notice */}
-      <Card className="mb-2 p-0 sm:mb-3 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
-        <CardContent className="p-2 sm:p-3">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-            <div className="text-xs sm:text-sm">
-              <p className="font-medium text-amber-800 dark:text-amber-200">
-                Imitation Practice Under Maintenance
-              </p>
-              <p className="text-amber-700 dark:text-amber-300 mt-0.5 hidden sm:block">
-                Working on a fix - will be resolved soon.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <div className="mb-2 sm:mb-4">
         <h1 className="text-lg sm:text-2xl font-bold mb-0.5 sm:mb-1 text-center">
           Pronunciation Practice
@@ -400,7 +306,7 @@ const ImitationPractice = () => {
             </div>
             <div className="space-y-1.5 sm:space-y-2">
               {nativeAudios.map((audioData, index) => {
-                const isAmerican = audioData.audio.includes("-us.mp3");
+                const isAmerican = audioData.accent === "us";
 
                 return (
                   <Button
@@ -435,8 +341,8 @@ const ImitationPractice = () => {
                           }`}
                         >
                           {(() => {
-                            const regionInfo = getRegionInfo(audioData.audio);
-                            return `${regionInfo.flag} ${audioData.accent}`;
+                            const regionInfo = getRegionInfo(audioData);
+                            return `${regionInfo.flag} ${audioData.region}`;
                           })()}
                         </span>
                       </div>
