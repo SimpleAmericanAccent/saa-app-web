@@ -534,6 +534,52 @@ baseRouter.post("/v2/annotations", async (req, res) => {
   }
 });
 
+// Helper function to determine required operations
+function determineRequiredOperations(current, desired, existingEntry) {
+  const operations = [];
+
+  // If no existing entry and desired annotations exist - need CREATE
+  if (!existingEntry && desired.length > 0) {
+    operations.push({
+      type: "CREATE",
+      data: {
+        annotations: desired,
+      },
+    });
+    return operations;
+  }
+
+  // If existing entry but no desired annotations - need DELETE
+  if (existingEntry && desired.length === 0) {
+    operations.push({
+      type: "DELETE",
+      recordId: existingEntry.id,
+    });
+    return operations;
+  }
+
+  // If has both existing and desired - need UPDATE if they're different
+  if (existingEntry && !arraysMatch(current, desired)) {
+    operations.push({
+      type: "UPDATE",
+      recordId: existingEntry.id,
+      data: {
+        annotations: desired,
+      },
+    });
+  }
+
+  return operations;
+}
+
+// Helper to compare arrays
+function arraysMatch(arr1, arr2) {
+  if (arr1.length !== arr2.length) return false;
+  const sorted1 = [...arr1].sort();
+  const sorted2 = [...arr2].sort();
+  return sorted1.every((val, idx) => val === sorted2[idx]);
+}
+
 function determineV2Operations(wordIndex, annotations) {
   // Find existing word without relying on cache
   const operations = [];
@@ -608,52 +654,6 @@ async function executeV2Operations(operations) {
   }
 
   return results;
-}
-
-// Helper function to determine required operations
-function determineRequiredOperations(current, desired, existingEntry) {
-  const operations = [];
-
-  // If no existing entry and desired annotations exist - need CREATE
-  if (!existingEntry && desired.length > 0) {
-    operations.push({
-      type: "CREATE",
-      data: {
-        annotations: desired,
-      },
-    });
-    return operations;
-  }
-
-  // If existing entry but no desired annotations - need DELETE
-  if (existingEntry && desired.length === 0) {
-    operations.push({
-      type: "DELETE",
-      recordId: existingEntry.id,
-    });
-    return operations;
-  }
-
-  // If has both existing and desired - need UPDATE if they're different
-  if (existingEntry && !arraysMatch(current, desired)) {
-    operations.push({
-      type: "UPDATE",
-      recordId: existingEntry.id,
-      data: {
-        annotations: desired,
-      },
-    });
-  }
-
-  return operations;
-}
-
-// Helper to compare arrays
-function arraysMatch(arr1, arr2) {
-  if (arr1.length !== arr2.length) return false;
-  const sorted1 = [...arr1].sort();
-  const sorted2 = [...arr2].sort();
-  return sorted1.every((val, idx) => val === sorted2[idx]);
 }
 
 export default baseRouter;

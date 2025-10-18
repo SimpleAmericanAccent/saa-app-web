@@ -20,26 +20,6 @@ dictionaryRouter.use((req, res, next) => {
   next();
 });
 
-// Dictionary entry routes (original endpoints)
-dictionaryRouter.get("/entries", dictionaryController.getAllEntries);
-dictionaryRouter.get("/entries/:id", dictionaryController.getEntryById);
-dictionaryRouter.post("/entries", dictionaryController.createEntry);
-dictionaryRouter.put("/entries/:id", dictionaryController.updateEntry);
-dictionaryRouter.delete("/entries/:id", dictionaryController.deleteEntry);
-
-// Dictionary word routes (same functionality, new names)
-dictionaryRouter.get("/words", dictionaryController.getAllEntries);
-dictionaryRouter.get("/words/:id", dictionaryController.getEntryById);
-dictionaryRouter.post("/words", dictionaryController.createEntry);
-dictionaryRouter.put("/words/:id", dictionaryController.updateEntry);
-dictionaryRouter.delete("/words/:id", dictionaryController.deleteEntry);
-
-// Usage routes
-dictionaryRouter.delete(
-  "/entries/:entryId/usages/:usageId",
-  dictionaryController.deleteUsage
-);
-
 // Lexical set routes
 dictionaryRouter.get("/lexical-sets", dictionaryController.getLexicalSets);
 dictionaryRouter.get(

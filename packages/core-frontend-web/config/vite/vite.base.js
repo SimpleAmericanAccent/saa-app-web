@@ -11,17 +11,7 @@ const __dirname = path.dirname(__filename);
 const isDev = process.env.NODE_ENV === "development";
 const backendTarget = "https://localhost:5000";
 
-const proxyPaths = [
-  "/logout",
-  "/callback",
-  "/api",
-  "/authz",
-  "/data",
-  "/authnew",
-  "/v1",
-  "/prisma",
-  "/v2",
-];
+const proxyPaths = ["/logout", "/callback", "/api"];
 
 const makeProxyEntry = (path) => ({
   [path]: {
