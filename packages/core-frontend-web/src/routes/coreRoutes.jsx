@@ -17,7 +17,7 @@ import Quiz from "core-frontend-web/src/pages/Quiz.jsx";
 import QuizAudioAdmin from "core-frontend-web/src/pages/QuizAudioAdmin.jsx";
 import Join from "core-frontend-web/src/pages/Join.jsx";
 import JoinThankYou from "core-frontend-web/src/pages/JoinThankYou.jsx";
-import Imitate from "core-frontend-web/src/pages/Imitate.jsx";
+import Imitate from "core-frontend-web/src/pages/imitate.jsx";
 
 const coreRoutes = (
   <>
