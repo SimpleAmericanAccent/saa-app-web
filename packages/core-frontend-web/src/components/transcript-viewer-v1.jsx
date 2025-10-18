@@ -286,12 +286,26 @@ const TranscriptViewerV1 = ({
                     <TooltipTrigger asChild>{wordSpan}</TooltipTrigger>
                     <TooltipContent className="max-w-xs">
                       <div className="space-y-1">
+                        {currentWordData.annotations.length > 0 && (
+                          <div>
+                            <div className="font-semibold text-xs text-center">
+                              Annotations:
+                            </div>
+                            <div className="text-xs text-center">
+                              {currentWordData.annotations.map(
+                                (annotation, index) => (
+                                  <div key={index}>{annotation}</div>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        )}
                         {currentWordData.pronunciations.length > 0 && (
                           <div>
-                            <div className="font-semibold text-xs">
+                            <div className="font-semibold text-xs text-center">
                               Pronunciation:
                             </div>
-                            <div className="text-xs">
+                            <div className="text-xs text-center">
                               {currentWordData.pronunciations.map(
                                 (pron, index) => (
                                   <div key={index}>{pron}</div>
@@ -302,10 +316,10 @@ const TranscriptViewerV1 = ({
                         )}
                         {currentWordData.pronunciations2.length > 0 && (
                           <div>
-                            <div className="font-semibold text-xs">
+                            <div className="font-semibold text-xs text-center">
                               Lexical Sets:
                             </div>
-                            <div className="text-xs">
+                            <div className="text-xs text-center">
                               {currentWordData.pronunciations2.map(
                                 (pron, index) => (
                                   <div key={index}>{pron}</div>
@@ -314,20 +328,7 @@ const TranscriptViewerV1 = ({
                             </div>
                           </div>
                         )}
-                        {currentWordData.annotations.length > 0 && (
-                          <div>
-                            <div className="font-semibold text-xs">
-                              Annotations:
-                            </div>
-                            <div className="text-xs">
-                              {currentWordData.annotations.map(
-                                (annotation, index) => (
-                                  <div key={index}>{annotation}</div>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )}
+
                         {currentWordData.pronunciations.length === 0 &&
                           currentWordData.pronunciations2.length === 0 &&
                           currentWordData.annotations.length === 0 && (

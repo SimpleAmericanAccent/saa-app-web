@@ -299,18 +299,18 @@ export default function Transcript() {
                       "h-[calc(100vh-var(--navbar-height))] sm:h-screen justify-center flex-col"
                   )}
                 >
-                  <div className="flex items-center justify-between w-full">
-                    <PersonAudioSelector
-                      people={people}
-                      filteredAudio={filteredAudio}
-                      selectedPerson={selectedPerson}
-                      selectedAudio={selectedAudio}
-                      onPersonSelect={setSelectedPerson}
-                      onAudioSelect={setSelectedAudio}
-                      size={!hasAudioLoaded || loadError ? "large" : "default"}
-                    />
+                  {hasAudioLoaded ? (
+                    <div className="flex items-center justify-between w-full">
+                      <PersonAudioSelector
+                        people={people}
+                        filteredAudio={filteredAudio}
+                        selectedPerson={selectedPerson}
+                        selectedAudio={selectedAudio}
+                        onPersonSelect={setSelectedPerson}
+                        onAudioSelect={setSelectedAudio}
+                        size="default"
+                      />
 
-                    {hasAudioLoaded && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -329,8 +329,18 @@ export default function Transcript() {
                           </>
                         )}
                       </Button>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <PersonAudioSelector
+                      people={people}
+                      filteredAudio={filteredAudio}
+                      selectedPerson={selectedPerson}
+                      selectedAudio={selectedAudio}
+                      onPersonSelect={setSelectedPerson}
+                      onAudioSelect={setSelectedAudio}
+                      size="large"
+                    />
+                  )}
 
                   {(isAudioLoading || (selectedAudio && !hasAudioLoaded)) && (
                     <div className={cn("text-muted-foreground text-center")}>
