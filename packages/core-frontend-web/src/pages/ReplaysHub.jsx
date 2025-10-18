@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import GatedVideo from "../components/GatedVideo.jsx";
 import { replaysData } from "../data/replaysData.js";
-import { Waves, Construction, Music, Brain } from "lucide-react";
+import { getCategoryInfo, renderCategoryIcon } from "../data/categories.jsx";
 import { Button } from "../components/ui/button";
 
 export default function ReplaysHub() {
@@ -22,26 +22,6 @@ export default function ReplaysHub() {
     // Sort by date (newest first)
     return videos.sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [selectedCategory, showFeatured]);
-
-  const getCategoryInfo = (categoryKey) => {
-    return (
-      replaysData.categories[categoryKey] || {
-        name: "All",
-        icon: "📺",
-        color: "gray",
-      }
-    );
-  };
-
-  const renderIcon = (iconName) => {
-    const iconMap = {
-      Waves: <Waves className="h-4 w-4" />,
-      Construction: <Construction className="h-4 w-4" />,
-      Music: <Music className="h-4 w-4" />,
-      Brain: <Brain className="h-4 w-4" />,
-    };
-    return iconMap[iconName] || <span>{iconName}</span>;
-  };
 
   return (
     <div className="p-2 sm:p-4">
@@ -81,7 +61,7 @@ export default function ReplaysHub() {
                 onClick={() => setSelectedCategory(key)}
                 className="flex items-center gap-1 sm:gap-2 cursor-pointer text-xs sm:text-sm"
               >
-                {renderIcon(category.icon)}
+                {renderCategoryIcon(key)}
                 <span className="sm:inline">{category.name}</span>
               </Button>
             ))}
@@ -115,7 +95,7 @@ export default function ReplaysHub() {
           filteredVideos.map((video) => (
             <div key={video.id} className="w-full">
               <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                {renderIcon(getCategoryInfo(video.category).icon)}
+                {renderCategoryIcon(video.category)}
                 <h2 className="text-lg sm:text-xl font-semibold text-center flex-1">
                   {video.title}
                 </h2>

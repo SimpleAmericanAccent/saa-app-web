@@ -298,21 +298,6 @@ export function SidebarLeft() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {/* Resources */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Resources">
-                  <SidebarLink
-                    to="/resources"
-                    className="flex items-center gap-2"
-                  >
-                    <BookOpen className="h-4 w-4 text-white" />
-                    {!isCollapsed && (
-                      <span className="text-white">Resources</span>
-                    )}
-                  </SidebarLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
               {/* Vowels */}
               <Collapsible
                 asChild
@@ -540,6 +525,19 @@ export function SidebarLeft() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
+
+              {/* Resources */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="External Resources">
+                  <SidebarLink
+                    to="/resources"
+                    className="flex items-center gap-2"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    {!isCollapsed && <span>External Resources</span>}
+                  </SidebarLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>

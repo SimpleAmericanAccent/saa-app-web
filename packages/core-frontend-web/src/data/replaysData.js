@@ -1,7 +1,9 @@
 /**
  * Data structure for call replays and training videos
- * Single source of truth for video content and categories
+ * Single source of truth for video content
  */
+
+import { categories } from "./categories.jsx";
 
 export const replaysData = {
   videos: [
@@ -82,28 +84,16 @@ export const replaysData = {
         },
       ],
     },
+    {
+      id: "smart-practice-2022-07-13",
+      slug: "smart-practice-2022-07-13",
+      title: "Smart Practice - July 13, 2022",
+      category: "smart-practice",
+      date: "2022-07-13",
+      featured: true,
+      description: "How to use Audacity for accent training",
+    },
   ],
 
-  categories: {
-    vowels: {
-      name: "Vowels",
-      icon: "Waves",
-      description: "",
-    },
-    consonants: {
-      name: "Consonants",
-      icon: "Construction",
-      description: "",
-    },
-    flow: {
-      name: "Flow",
-      icon: "Music",
-      description: "",
-    },
-    "smart-practice": {
-      name: "Smart Practice",
-      icon: "Brain",
-      description: "",
-    },
-  },
+  categories,
 };
