@@ -32,7 +32,6 @@ export function DateRangePicker({
   );
 
   const handleDateClick = (date: string) => {
-    console.log("Date clicked:", date);
     if (selectingStart) {
       setTempStart(date);
       setSelectingStart(false);
@@ -43,10 +42,8 @@ export function DateRangePicker({
 
       // Ensure start is before end
       if (startDate <= endDate) {
-        console.log("Setting range:", { from: tempStart, to: date });
         onDateRangeChange({ from: tempStart, to: date });
       } else {
-        console.log("Setting range (swapped):", { from: date, to: tempStart });
         onDateRangeChange({ from: date, to: tempStart });
       }
       setIsOpen(false);
@@ -98,13 +95,6 @@ export function DateRangePicker({
       month: "short",
       day: "numeric",
       year: "numeric",
-    });
-    console.log("formatDisplayDate:", {
-      dateString,
-      year,
-      month,
-      day,
-      formatted,
     });
     return formatted;
   };

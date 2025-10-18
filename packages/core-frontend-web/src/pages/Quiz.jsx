@@ -712,7 +712,7 @@ export default function Quiz() {
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + duration);
     } catch (error) {
-      console.log("Sound effect not supported:", error);
+      console.error("Sound effect not supported:", error);
     }
   };
 

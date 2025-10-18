@@ -6,7 +6,6 @@ const useTranscriptStore = create((set) => ({
   annotatedTranscript: [],
   setAnnotatedTranscript: (transcript) => {
     set({ annotatedTransript: transcript });
-    console.log("annotatedTranscript", transcript);
   },
   annotations: [],
   setAnnotations: (annotations) => set({ annotations }),

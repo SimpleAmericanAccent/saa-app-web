@@ -68,7 +68,6 @@ export function PWAInstallPrompt() {
 
     // If already installed as PWA, don't show anything
     if (standalone) {
-      console.log("PWA already installed - not showing install prompt");
       return;
     }
 
@@ -76,15 +75,6 @@ export function PWAInstallPrompt() {
     const lastShown = localStorage.getItem("pwa-prompt-last-shown");
     const hasShownRecently =
       lastShown && Date.now() - parseInt(lastShown) < 7 * 24 * 60 * 60 * 1000; // 7 days
-
-    // Debug logging
-    console.log("PWA Install Prompt Debug:", {
-      userAgent: navigator.userAgent,
-      isIOS: ios,
-      isStandalone: standalone,
-      hasShownRecently,
-      showPrompt: false,
-    });
 
     if (hasShownRecently) {
       setHasShownPrompt(true);
@@ -135,7 +125,6 @@ export function PWAInstallPrompt() {
     const checkInstallationStatus = () => {
       const isInstalled = checkIfPWAInstalled();
       if (isInstalled && (showPrompt || !isStandalone)) {
-        console.log("PWA detected as installed - hiding prompt");
         setIsStandalone(true);
         setShowPrompt(false);
         setIsClosing(false);
@@ -155,7 +144,6 @@ export function PWAInstallPrompt() {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === "accepted") {
-        console.log("PWA installed successfully");
       }
       setDeferredPrompt(null);
     }
@@ -182,7 +170,6 @@ export function PWAInstallPrompt() {
   // For development - clear localStorage to test prompt
   const clearPromptHistory = () => {
     localStorage.removeItem("pwa-prompt-last-shown");
-    console.log("PWA prompt history cleared");
   };
 
   const handleIOSInstall = () => {

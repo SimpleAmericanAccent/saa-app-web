@@ -41,9 +41,6 @@ const TranscriptViewerV1 = ({
   };
 
   const shouldHighlightWord = (wordObj) => {
-    // Check for hover highlighting first
-    // console.log(hoveredWordIndices);
-    // console.log(wordObj.wordIndex);
     if (hoveredWordIndices.includes(wordObj.wordIndex)) {
       return "hover2"; // Return a string to indicate hover state
     }

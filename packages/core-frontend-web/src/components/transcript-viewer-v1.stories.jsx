@@ -16,7 +16,7 @@ export const WithContent = {
       },
     ],
     activeWordIndex: 0,
-    handleWordClick: () => console.log("clicked"),
+    handleWordClick: () => {},
   },
 };
 
@@ -33,7 +33,7 @@ export const InteractiveWordClicking = {
       },
     ],
     activeWordIndex: null,
-    handleWordClick: () => console.log("Word clicked!"),
+    handleWordClick: () => {},
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
