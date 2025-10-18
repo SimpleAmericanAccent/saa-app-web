@@ -7,7 +7,6 @@ import { useParams } from "react-router-dom";
 
 import { findActiveWordIndex } from "core-frontend-web/src/utils/binarySearch";
 import { fetchData } from "core-frontend-web/src/utils/api";
-import { setCookie, getCookie } from "core-frontend-web/src/utils/cookies";
 import { cn } from "core-frontend-web/src/lib/utils";
 
 import useVersionStore from "core-frontend-web/src/stores/versionStore";
