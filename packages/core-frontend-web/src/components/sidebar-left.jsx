@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronRight,
   FileText,
@@ -163,8 +163,10 @@ function QuizStats() {
 function SidebarLink({ to, children, ...props }) {
   const { setOpenMobile, isMobile } = useSidebar();
 
-  const handleClick = () => {
-    if (isMobile) {
+  const handleClick = (e) => {
+    // Don't handle mobile close here if we're inside a SidebarMenuButtonWithClose
+    // The button will handle it instead
+    if (isMobile && !e.currentTarget.closest('[data-sidebar="menu-button"]')) {
       setOpenMobile(false);
     }
   };
@@ -176,13 +178,65 @@ function SidebarLink({ to, children, ...props }) {
   );
 }
 
+// Custom SidebarMenuButton that closes mobile sidebar on click
+function SidebarMenuButtonWithClose({ children, asChild, ...props }) {
+  const { setOpenMobile, isMobile } = useSidebar();
+  const navigate = useNavigate();
+
+  const handleClick = (e) => {
+    if (isMobile) {
+      let href = null;
+
+      if (asChild) {
+        // When asChild is used, the child (SidebarLink) is the actual clickable element
+        // Check if the clicked element itself is a link
+        if (
+          e.currentTarget.tagName === "A" &&
+          e.currentTarget.getAttribute("href")
+        ) {
+          href = e.currentTarget.getAttribute("href");
+        }
+      } else {
+        // When not asChild, look for a link within the button
+        const link = e.currentTarget.querySelector("a[href]");
+        if (link) {
+          href = link.getAttribute("href");
+        }
+      }
+
+      if (href) {
+        // Close sidebar and navigate
+        setOpenMobile(false);
+        e.preventDefault();
+        e.stopPropagation();
+        navigate(href);
+        return;
+      }
+    }
+  };
+
+  return (
+    <SidebarMenuButton
+      asChild={asChild}
+      onClick={handleClick}
+      className="w-full cursor-pointer"
+      {...props}
+    >
+      {children}
+    </SidebarMenuButton>
+  );
+}
+
 export function SidebarLeft() {
   const { logout, user, fetchUserProfile, isAdmin } = useAuthStore();
-  const { state, setOpen } = useSidebar();
+  const { state, setOpen, openMobile } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [openSubmenus, setOpenSubmenus] = React.useState(new Set());
   const [isInitialized, setIsInitialized] = React.useState(false);
   const isMobile = useIsMobile();
+
+  // On mobile, show text when sidebar is open; on desktop, show text when not collapsed
+  const shouldShowText = isMobile ? openMobile : !isCollapsed;
 
   // Fetch user profile if not already loaded
   React.useEffect(() => {
@@ -285,17 +339,17 @@ export function SidebarLeft() {
             <SidebarMenu>
               {/* Replays */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Replays">
+                <SidebarMenuButtonWithClose asChild tooltip="Replays">
                   <SidebarLink
                     to="/replays"
                     className="flex items-center gap-2"
                   >
                     <MonitorPlay className="h-4 w-4 text-white" />
-                    {!isCollapsed && (
+                    {shouldShowText && (
                       <span className="text-white">Replays</span>
                     )}
                   </SidebarLink>
-                </SidebarMenuButton>
+                </SidebarMenuButtonWithClose>
               </SidebarMenuItem>
 
               {/* Vowels */}
@@ -315,8 +369,8 @@ export function SidebarLeft() {
                       }
                     >
                       <Waves className="h-4 w-4" />
-                      {!isCollapsed && <span>Vowels</span>}
-                      {!isCollapsed && (
+                      {shouldShowText && <span>Vowels</span>}
+                      {shouldShowText && (
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       )}
                     </SidebarMenuButton>
@@ -324,34 +378,34 @@ export function SidebarLeft() {
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
+                        <SidebarMenuButtonWithClose asChild>
                           <SidebarLink to="/lexical-sets">
                             <Brain className="h-4 w-4" />
-                            {!isCollapsed && <span>Lexical Sets</span>}
+                            {shouldShowText && <span>Lexical Sets</span>}
                           </SidebarLink>
-                        </SidebarMenuSubButton>
+                        </SidebarMenuButtonWithClose>
                       </SidebarMenuSubItem>
 
                       {!isMobile && (
                         <SidebarMenuSubItem>
-                          <SidebarMenuSubButton asChild>
+                          <SidebarMenuButtonWithClose asChild>
                             <SidebarLink to="/spelling-pronunciation">
                               <Settings className="h-4 w-4" />
-                              {!isCollapsed && (
+                              {shouldShowText && (
                                 <span>Spelling-Pronunciation Network</span>
                               )}
                             </SidebarLink>
-                          </SidebarMenuSubButton>
+                          </SidebarMenuButtonWithClose>
                         </SidebarMenuSubItem>
                       )}
 
                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
+                        <SidebarMenuButtonWithClose asChild>
                           <SidebarLink to="/vsynth">
                             <Play className="h-4 w-4" />
-                            {!isCollapsed && <span>Vowel Synthesizer</span>}
+                            {shouldShowText && <span>Vowel Synthesizer</span>}
                           </SidebarLink>
-                        </SidebarMenuSubButton>
+                        </SidebarMenuButtonWithClose>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
@@ -471,72 +525,78 @@ export function SidebarLeft() {
               {/* Transcript Viewer - Hidden on Mobile */}
               {!isMobile && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Accent Analysis">
+                  <SidebarMenuButtonWithClose asChild tooltip="Accent Analysis">
                     <SidebarLink
                       to="/transcript"
                       className="flex items-center gap-2"
                     >
                       <FileText className="h-4 w-4" />
-                      {!isCollapsed && <span>Accent Analysis</span>}
+                      {shouldShowText && <span>Accent Analysis</span>}
                     </SidebarLink>
-                  </SidebarMenuButton>
+                  </SidebarMenuButtonWithClose>
                 </SidebarMenuItem>
               )}
 
               {/* Quiz */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Quiz">
+                <SidebarMenuButtonWithClose asChild tooltip="Quiz">
                   <SidebarLink to="/quiz" className="flex items-center gap-2">
                     <HelpCircle className="h-4 w-4" />
-                    {!isCollapsed && (
+                    {shouldShowText && (
                       <div className="flex items-center gap-2 flex-1">
                         <span>Quiz</span>
                         <QuizStats />
                       </div>
                     )}
                   </SidebarLink>
-                </SidebarMenuButton>
+                </SidebarMenuButtonWithClose>
               </SidebarMenuItem>
 
               {/* Imitation Practice */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Imitate">
+                <SidebarMenuButtonWithClose asChild tooltip="Imitate">
                   <SidebarLink
                     to="/imitate"
                     className="flex items-center gap-2"
                   >
                     <Mic className="h-4 w-4" />
-                    {!isCollapsed && <span>Imitate</span>}
+                    {shouldShowText && <span>Imitate</span>}
                   </SidebarLink>
-                </SidebarMenuButton>
+                </SidebarMenuButtonWithClose>
               </SidebarMenuItem>
 
               {/* Quiz Audio Admin - Only show for admins */}
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Quiz Audio Admin">
+                  <SidebarMenuButtonWithClose
+                    asChild
+                    tooltip="Quiz Audio Admin"
+                  >
                     <SidebarLink
                       to="/quiz-audio-admin"
                       className="flex items-center gap-2"
                     >
                       <Volume2 className="h-4 w-4" />
-                      {!isCollapsed && <span>Audio Admin</span>}
+                      {shouldShowText && <span>Audio Admin</span>}
                     </SidebarLink>
-                  </SidebarMenuButton>
+                  </SidebarMenuButtonWithClose>
                 </SidebarMenuItem>
               )}
 
               {/* Resources */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="External Resources">
+                <SidebarMenuButtonWithClose
+                  asChild
+                  tooltip="External Resources"
+                >
                   <SidebarLink
                     to="/resources"
                     className="flex items-center gap-2"
                   >
                     <BookOpen className="h-4 w-4" />
-                    {!isCollapsed && <span>External Resources</span>}
+                    {shouldShowText && <span>External Resources</span>}
                   </SidebarLink>
-                </SidebarMenuButton>
+                </SidebarMenuButtonWithClose>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
@@ -545,7 +605,7 @@ export function SidebarLeft() {
         <SidebarFooter className="border-t border-sidebar-border p-1">
           <div className="flex items-center gap-2">
             <ModeToggle />
-            {!isCollapsed && (
+            {shouldShowText && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md transition-colors cursor-pointer flex-1">
