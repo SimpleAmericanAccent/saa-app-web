@@ -40,6 +40,8 @@ const TranscriptViewerV1 = ({
     pronunciations2: [],
     annotations: [],
   });
+  const [currentWord, setCurrentWord] = useState(null);
+  const [isLoadingWordData, setIsLoadingWordData] = useState(false);
   const { isAdmin } = useAuthStore();
   const { playWord, isLoading } = useWordAudio();
 
@@ -142,16 +144,27 @@ const TranscriptViewerV1 = ({
   };
 
   const handleWordHover = async (wordIndex, word) => {
+    // Immediately update the current word and clear previous data
+    setCurrentWord(word);
+    setIsLoadingWordData(true);
+    setCurrentWordData({
+      pronunciations: [],
+      pronunciations2: [],
+      annotations: [],
+    });
+
     const annotationIds = getAnnotations(wordIndex);
     const friendlyIssueNames = getIssueNames(annotationIds);
     const pronunciations = await getPronunciations(word);
     const pronunciations2 = await getPronunciations2(pronunciations);
 
+    // Update the data - the race condition is handled by the immediate state clearing above
     setCurrentWordData({
       pronunciations,
       pronunciations2,
       annotations: friendlyIssueNames,
     });
+    setIsLoadingWordData(false);
 
     // Still call parent callbacks for backward compatibility
     if (onAnnotationHover) {
@@ -286,56 +299,64 @@ const TranscriptViewerV1 = ({
                     <TooltipTrigger asChild>{wordSpan}</TooltipTrigger>
                     <TooltipContent className="max-w-xs">
                       <div className="space-y-1">
-                        {currentWordData.annotations.length > 0 && (
-                          <div>
-                            <div className="font-semibold text-xs text-center">
-                              Annotations:
-                            </div>
-                            <div className="text-xs text-center">
-                              {currentWordData.annotations.map(
-                                (annotation, index) => (
-                                  <div key={index}>{annotation}</div>
-                                )
-                              )}
-                            </div>
+                        {isLoadingWordData ? (
+                          <div className="text-xs text-center text-muted-foreground">
+                            Loading...
                           </div>
-                        )}
-                        {currentWordData.pronunciations.length > 0 && (
-                          <div>
-                            <div className="font-semibold text-xs text-center">
-                              Pronunciation:
-                            </div>
-                            <div className="text-xs text-center">
-                              {currentWordData.pronunciations.map(
-                                (pron, index) => (
-                                  <div key={index}>{pron}</div>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )}
-                        {currentWordData.pronunciations2.length > 0 && (
-                          <div>
-                            <div className="font-semibold text-xs text-center">
-                              Lexical Sets:
-                            </div>
-                            <div className="text-xs text-center">
-                              {currentWordData.pronunciations2.map(
-                                (pron, index) => (
-                                  <div key={index}>{pron}</div>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )}
+                        ) : (
+                          <>
+                            {currentWordData.annotations.length > 0 && (
+                              <div>
+                                <div className="font-semibold text-xs text-center">
+                                  Annotations:
+                                </div>
+                                <div className="text-xs text-center">
+                                  {currentWordData.annotations.map(
+                                    (annotation, index) => (
+                                      <div key={index}>{annotation}</div>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            {currentWordData.pronunciations.length > 0 && (
+                              <div>
+                                <div className="font-semibold text-xs text-center">
+                                  Pronunciation:
+                                </div>
+                                <div className="text-xs text-center">
+                                  {currentWordData.pronunciations.map(
+                                    (pron, index) => (
+                                      <div key={index}>{pron}</div>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            {currentWordData.pronunciations2.length > 0 && (
+                              <div>
+                                <div className="font-semibold text-xs text-center">
+                                  Lexical Sets:
+                                </div>
+                                <div className="text-xs text-center">
+                                  {currentWordData.pronunciations2.map(
+                                    (pron, index) => (
+                                      <div key={index}>{pron}</div>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            )}
 
-                        {currentWordData.pronunciations.length === 0 &&
-                          currentWordData.pronunciations2.length === 0 &&
-                          currentWordData.annotations.length === 0 && (
-                            <div className="text-xs text-muted-foreground">
-                              No additional data available
-                            </div>
-                          )}
+                            {currentWordData.pronunciations.length === 0 &&
+                              currentWordData.pronunciations2.length === 0 &&
+                              currentWordData.annotations.length === 0 && (
+                                <div className="text-xs text-muted-foreground text-center">
+                                  No additional data available
+                                </div>
+                              )}
+                          </>
+                        )}
                       </div>
                     </TooltipContent>
                   </Tooltip>

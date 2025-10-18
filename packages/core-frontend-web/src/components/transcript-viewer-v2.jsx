@@ -33,6 +33,8 @@ const TranscriptViewerV2 = ({
   const [currentWordData, setCurrentWordData] = useState({
     annotations: [],
   });
+  const [currentWord, setCurrentWord] = useState(null);
+  const [isLoadingWordData, setIsLoadingWordData] = useState(false);
 
   const getAnnotations = (wordIndex) => {
     const word = annotatedTranscript
@@ -91,10 +93,18 @@ const TranscriptViewerV2 = ({
     }
   };
 
-  const handleWordHover = (wordIndex) => {
+  const handleWordHover = (wordIndex, word) => {
+    // Immediately update the current word and clear previous data
+    setCurrentWord(word);
+    setIsLoadingWordData(true);
+    setCurrentWordData({ annotations: [] });
+
     const annotationIds = getAnnotations(wordIndex);
     const friendlyTargetNames = getTargetNames(annotationIds);
+
+    // Update the data - the race condition is handled by the immediate state clearing above
     setCurrentWordData({ annotations: friendlyTargetNames });
+    setIsLoadingWordData(false);
 
     // Still call parent callback for backward compatibility
     if (onAnnotationHover) {
@@ -126,7 +136,9 @@ const TranscriptViewerV2 = ({
                       "hover:bg-[hsl(var(--hover))]"
                     )}
                     onClick={() => handleWordClick(wordObj.start_time)}
-                    onMouseOver={() => handleWordHover(wordObj.wordIndex)}
+                    onMouseOver={() =>
+                      handleWordHover(wordObj.wordIndex, wordObj.word)
+                    }
                     onContextMenu={(e) =>
                       handleContextMenu(e, wordObj.wordIndex)
                     }
@@ -142,24 +154,35 @@ const TranscriptViewerV2 = ({
                         <TooltipTrigger asChild>{wordSpan}</TooltipTrigger>
                         <TooltipContent className="max-w-xs">
                           <div className="space-y-1">
-                            {currentWordData.annotations.length > 0 && (
-                              <div>
-                                <div className="font-semibold text-xs">
-                                  Annotations:
-                                </div>
-                                <div className="text-xs">
-                                  {currentWordData.annotations.map(
-                                    (annotation, index) => (
-                                      <div key={index}>{annotation}</div>
-                                    )
-                                  )}
-                                </div>
+                            <div className="font-bold text-sm border-b pb-1 text-center">
+                              "{wordObj.word}"
+                            </div>
+                            {isLoadingWordData ? (
+                              <div className="text-xs text-center text-muted-foreground">
+                                Loading...
                               </div>
-                            )}
-                            {currentWordData.annotations.length === 0 && (
-                              <div className="text-xs text-muted-foreground">
-                                No annotation data available
-                              </div>
+                            ) : (
+                              <>
+                                {currentWordData.annotations.length > 0 && (
+                                  <div>
+                                    <div className="font-semibold text-xs text-center">
+                                      Annotations:
+                                    </div>
+                                    <div className="text-xs text-center">
+                                      {currentWordData.annotations.map(
+                                        (annotation, index) => (
+                                          <div key={index}>{annotation}</div>
+                                        )
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                                {currentWordData.annotations.length === 0 && (
+                                  <div className="text-xs text-muted-foreground text-center">
+                                    No annotation data available
+                                  </div>
+                                )}
+                              </>
                             )}
                           </div>
                         </TooltipContent>
