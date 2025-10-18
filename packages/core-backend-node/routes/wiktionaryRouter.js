@@ -131,11 +131,12 @@ const getRegion = (accent) => {
 const getWiktionaryAudio = async (req, res) => {
   try {
     const { word } = req.params;
+    const normalizedWord = word.toLowerCase();
 
     // Fetch page content
     const response = await fetch(
       `https://en.wiktionary.org/w/api.php?action=parse&format=json&page=${encodeURIComponent(
-        word
+        normalizedWord
       )}&prop=text`
     );
 
@@ -147,7 +148,7 @@ const getWiktionaryAudio = async (req, res) => {
     const content = data.parse.text["*"];
 
     // Extract audio files
-    const audioFiles = extractAudioFiles(content, word);
+    const audioFiles = extractAudioFiles(content, normalizedWord);
 
     // Remove duplicates first, then get URLs from MediaWiki API
     const uniqueFiles = [...new Set(audioFiles)];
@@ -221,11 +222,12 @@ const getWiktionaryAudio = async (req, res) => {
 const getWiktionaryUSAudio = async (req, res) => {
   try {
     const { word } = req.params;
+    const normalizedWord = word.toLowerCase();
 
     // Fetch page content
     const response = await fetch(
       `https://en.wiktionary.org/w/api.php?action=parse&format=json&page=${encodeURIComponent(
-        word
+        normalizedWord
       )}&prop=text`
     );
 
@@ -237,7 +239,7 @@ const getWiktionaryUSAudio = async (req, res) => {
     const content = data.parse.text["*"];
 
     // Extract audio files
-    const audioFiles = extractAudioFiles(content, word);
+    const audioFiles = extractAudioFiles(content, normalizedWord);
 
     // Remove duplicates first, then get URLs from MediaWiki API
     const uniqueFiles = [...new Set(audioFiles)];
