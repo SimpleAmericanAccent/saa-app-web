@@ -828,7 +828,7 @@ export default function Quiz() {
         setNextAudioUrls({ dictionary: dictionaryAudio });
       }
     } catch (error) {
-      console.log("Failed to preload audio for:", word, error);
+      console.error("Failed to preload audio for:", word, error);
     }
   };
 
@@ -1061,16 +1061,6 @@ export default function Quiz() {
         respondedAt: respondedAt, // When they answered (captured in this function)
         latencyMs: cappedLatencyMs, // Response time in ms (capped at 5 minutes)
       };
-
-      // Debug: Log the trial data being sent
-      console.log("Sending trial data:", trialData);
-      console.log("Question data:", questionData);
-      console.log("Latency calculation:", {
-        presentedAt: questionData.presentedAt,
-        respondedAt: respondedAt,
-        rawLatency: latencyMs,
-        cappedLatency: cappedLatencyMs,
-      });
 
       await saveTrial(trialData);
 

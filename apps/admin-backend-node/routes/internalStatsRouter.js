@@ -31,15 +31,12 @@ internalStatsRouter.get("/loadrange", async (req, res) => {
 
   // Check if requested range is already in the cache
   if (isDataInCache(start, end)) {
-    console.log("Serving from cache");
     const filteredData = cache.data.filter((record) => {
       const recordDate = record.fields.Date;
       return recordDate >= start && recordDate <= end;
     });
     return res.json(filteredData);
   }
-
-  console.log("Fetching from Airtable");
 
   try {
     let allRecords = await airtableOps.fetchAirtableRecords("Days"); // Fetch all records from Airtable and store them in allRecords array
@@ -76,10 +73,6 @@ internalStatsRouter.get("/airtable", async (req, res) => {
 
     // Debug: Show available field names
     if (airtableData && airtableData.length > 0) {
-      console.log(
-        "Available Airtable field names:",
-        Object.keys(airtableData[0].fields)
-      );
     }
 
     // Filter by date range
@@ -197,33 +190,6 @@ internalStatsRouter.get("/airtable", async (req, res) => {
       airtableStats.acceptedButNotPaid +
       airtableStats.mgPaid +
       airtableStats.acceptedThenRejected;
-
-    // Debug: Show sequential flow calculation
-    console.log("Sequential Flow Calculation:", {
-      // Raw Airtable values
-      rawValues: {
-        mgPaid: airtableStats.mgPaid,
-        acceptedButNotPaid: airtableStats.acceptedButNotPaid,
-        rejectedWoCovo: airtableStats.rejectedWoCovo, // NOT contacted
-        contacted: airtableStats.contacted,
-        unresponsive: airtableStats.unresponsive,
-        beganConversation: airtableStats.beganConversation,
-        rejectedBasedOnConvo: airtableStats.rejectedBasedOnConvo,
-        becameUnresponsive: airtableStats.becameUnresponsive,
-        acceptedThenRejected: airtableStats.acceptedThenRejected,
-        tbd: airtableStats.tbd,
-      },
-      // Calculated flows
-      flows: {
-        totalCompletedApps: airtableStats.completed, // All completed applications
-        totalQualifiedApps: totalQualifiedApps, // Actually qualified for MG (sum of all selection states)
-        totalContacted: totalContacted, // Qualified apps MINUS rejected w/o convo
-        totalBeganConversation: totalBeganConversation,
-        totalAccepted: totalAccepted,
-        totalPaid: airtableStats.mgPaid,
-        rejectedWithoutContact: airtableStats.rejectedWoCovo, // Separate category
-      },
-    });
 
     const qualifiedApps = totalQualifiedApps;
     const nonQualifiedApps =
@@ -347,19 +313,6 @@ internalStatsRouter.get("/airtable", async (req, res) => {
           )
         : null;
 
-    // Debug: Show gap analysis
-    console.log("Gap Analysis:", {
-      totalQualifiedApps: totalQualifiedApps,
-      totalContacted: totalContacted,
-      totalBeganConversation: totalBeganConversation,
-      totalAccepted: totalAccepted,
-      totalTrackedInAirtable: totalTrackedInAirtable,
-      notContactedOrRejected: notContactedOrRejected,
-      noResponseYet: noResponseYet,
-      noDecisionYet: noDecisionYet,
-      noOutcomeYet: noOutcomeYet,
-    });
-
     // SANKEY INTERFACE VALIDATION
     // The 3 Sankey diagrams should have 2 shared interfaces:
     // 1. MG Sales Page Visits (between Sankey 1 and 2)
@@ -389,12 +342,7 @@ internalStatsRouter.get("/airtable", async (req, res) => {
         const firstResult = plausibleData.results?.[0];
         totalSalesPageVisits = firstResult?.metrics?.[0] || null;
       }
-    } catch (plausibleError) {
-      console.log(
-        "Could not fetch Plausible data for interface validation:",
-        plausibleError.message
-      );
-    }
+    } catch (plausibleError) {}
 
     // Calculate what each Sankey should show for shared interfaces
     const sankey1Output = totalSalesPageVisits; // From Plausible (Sankey 1 output)
@@ -426,47 +374,6 @@ internalStatsRouter.get("/airtable", async (req, res) => {
       },
       overallValid: salesPageInterfaceMatch && qualifiedAppsInterfaceMatch,
     };
-
-    console.log("Sankey Interface Validation:", interfaceValidation);
-
-    // Debug: Show what the actual Sankey values should be
-    console.log("Sankey Debug Values:", {
-      qualifiedApps: qualifiedApps,
-      totalContacted: totalContacted,
-      mgSelection: {
-        rejectedWoCovo: rejectedWoCovo,
-        contacted: contacted,
-        unresponsive: unresponsive,
-        begunConversation: begunConversation,
-        becameUnresponsive: becameUnresponsive,
-        rejectedBasedOnConvo: rejected,
-        acceptedNotPaid: acceptedButNotPaid,
-        rejectedAfterAcceptance: acceptedThenRejected,
-        paid: paid,
-      },
-    });
-
-    console.log("Airtable stats:", airtableStats);
-    console.log("Individual Airtable fields:", {
-      mgPaid: airtableStats.mgPaid,
-      acceptedButNotPaid: airtableStats.acceptedButNotPaid,
-      rejectedWoCovo: airtableStats.rejectedWoCovo,
-      contacted: airtableStats.contacted,
-      unresponsive: airtableStats.unresponsive,
-      beganConversation: airtableStats.beganConversation,
-      rejectedBasedOnConvo: airtableStats.rejectedBasedOnConvo,
-      becameUnresponsive: airtableStats.becameUnresponsive,
-      acceptedThenRejected: airtableStats.acceptedThenRejected,
-      tbd: airtableStats.tbd,
-    });
-    console.log("Revenue fields:", {
-      mgPaymentsApp: airtableStats.mgPaymentsApp,
-      mgRefundsApp: airtableStats.mgRefundsApp,
-      mgNetPayApp: airtableStats.mgNetPayApp,
-      mgPaymentsDay: airtableStats.mgPaymentsDay,
-      mgRefundsDay: airtableStats.mgRefundsDay,
-      mgNetPayDay: airtableStats.mgNetPayDay,
-    });
 
     const airtableResponseData = {
       mgApplication: {
@@ -559,11 +466,6 @@ internalStatsRouter.get("/plausible", async (req, res) => {
         requestBody.dimensions = dimensions;
       }
 
-      console.log(
-        "Plausible API request:",
-        JSON.stringify(requestBody, null, 2)
-      );
-
       const response = await fetch("https://plausible.io/api/v2/query", {
         method: "POST",
         headers: {
@@ -627,7 +529,6 @@ internalStatsRouter.get("/plausible", async (req, res) => {
 
     // Get total visitors
     const totalVisitorsData = await fetchPlausibleData([]);
-    console.log("Total visitors response:", totalVisitorsData);
 
     // Get Plausible inactive periods based on known tracking gaps
     const plausibleInactivePeriods = getPlausibleInactivePeriods(start, end);
@@ -666,27 +567,17 @@ internalStatsRouter.get("/plausible", async (req, res) => {
     const salesPageGaps = totalVisitorsGaps;
     const appFormGaps = totalVisitorsGaps;
 
-    console.log("Data gap analysis:", {
-      totalVisitors: totalVisitorsGaps,
-      salesPage: salesPageGaps,
-      appForm: appFormGaps,
-    });
-
     // Try to get page-specific data using dimensions
     const pageData = await fetchPlausibleData([], ["event:page"]);
-    console.log("Page data response:", pageData);
-
     // Try to get sales page specific data
     const salesPageData = await fetchPlausibleData([
       ["contains", "event:page", ["/mg-mw-new"]],
     ]);
-    console.log("Sales page data response:", salesPageData);
 
     // Try to get app form specific data
     const appFormData = await fetchPlausibleData([
       ["contains", "event:page", ["/mg-app-new"]],
     ]);
-    console.log("App form data response:", appFormData);
 
     // Get UTM source breakdowns for sales page visits using dimensions
     // Get all UTM data for sales page visits, then filter in code
@@ -694,37 +585,10 @@ internalStatsRouter.get("/plausible", async (req, res) => {
       [["contains", "event:page", ["/mg-mw-new"]]],
       ["visit:utm_source", "visit:utm_medium", "visit:utm_campaign"]
     );
-    console.log("UTM data response:", utmData);
-
-    // Debug the actual data structure
-    if (totalVisitorsData.results && totalVisitorsData.results[0]) {
-      console.log("First result:", totalVisitorsData.results[0]);
-      console.log("Metrics array:", totalVisitorsData.results[0].metrics);
-      console.log(
-        "Available properties:",
-        Object.keys(totalVisitorsData.results[0])
-      );
-    }
 
     // Get total visitors - the metrics array contains the values in order
     const firstResult = totalVisitorsData.results?.[0];
     const totalVisitors = firstResult?.metrics?.[0] || null;
-
-    console.log("Extracted totalVisitors:", totalVisitors);
-
-    // Debug page data responses
-    if (salesPageData.results && salesPageData.results.length > 0) {
-      console.log("Sales page results:", salesPageData.results);
-    }
-    if (appFormData.results && appFormData.results.length > 0) {
-      console.log("App form results:", appFormData.results);
-    }
-    if (pageData.results && pageData.results.length > 0) {
-      console.log("All pages data (first 5):", pageData.results.slice(0, 5));
-    }
-
-    // Debug UTM data responses
-    console.log("UTM dimension data:", utmData);
 
     // Try to extract real page data, return null if no data
     const realSalesPageVisits =
@@ -739,9 +603,6 @@ internalStatsRouter.get("/plausible", async (req, res) => {
     let realFromEmail = null;
 
     if (utmData.results && utmData.results.length > 0) {
-      console.log("Processing UTM dimension results:", utmData.results);
-      console.log("Number of UTM results:", utmData.results.length);
-
       // Process each UTM combination result
       utmData.results.forEach((result) => {
         // UTM dimensions are in an array, not an object
@@ -749,10 +610,6 @@ internalStatsRouter.get("/plausible", async (req, res) => {
         const utmMedium = result.dimensions?.[1];
         const utmCampaign = result.dimensions?.[2];
         const visitors = result.metrics?.[0] || 0;
-
-        console.log(
-          `UTM: source=${utmSource}, medium=${utmMedium}, campaign=${utmCampaign}, visitors=${visitors}`
-        );
 
         // Match IG sources
         if (utmSource === "ig" && utmMedium === "social") {
@@ -783,26 +640,6 @@ internalStatsRouter.get("/plausible", async (req, res) => {
     const totalSalesPageVisits = realSalesPageVisits;
     const totalAppFormVisits = realAppFormVisits;
 
-    console.log("Page data summary:", {
-      totalVisitors,
-      realSalesPageVisits,
-      realAppFormVisits,
-      totalSalesPageVisits,
-      totalAppFormVisits,
-      realFromIgBio,
-      realFromIgStory,
-      realFromIgManychat,
-      realFromIgDm,
-      realFromEmail,
-      hasRealData: realSalesPageVisits > 0 || realAppFormVisits > 0,
-    });
-
-    console.log("Data summary:", {
-      totalVisitors,
-      totalSalesPageVisits,
-      totalAppFormVisits,
-    });
-
     // Use real UTM source attribution data
     const fromIgBio = realFromIgBio;
     const fromIgStory = realFromIgStory;
@@ -821,15 +658,6 @@ internalStatsRouter.get("/plausible", async (req, res) => {
       totalSalesPageVisits !== null && knownSources > 0
         ? Math.max(0, totalSalesPageVisits - knownSources)
         : null;
-
-    console.log("Final UTM data being returned:", {
-      fromIgBio,
-      fromIgStory,
-      fromIgManychat,
-      fromIgDm,
-      fromEmail,
-      fromUnknown,
-    });
 
     // Get real Airtable data for app completions and outcomes
     let appAbandons = null;
@@ -955,8 +783,6 @@ internalStatsRouter.get("/plausible", async (req, res) => {
 internalStatsRouter.get("/instagram", async (req, res) => {
   const { start, end } = req.query;
 
-  console.log("Instagram API endpoint called with:", { start, end });
-
   if (!start || !end) {
     return res.status(400).json({
       success: false,
@@ -979,7 +805,6 @@ internalStatsRouter.get("/instagram", async (req, res) => {
     process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
 
   if (!INSTAGRAM_ACCESS_TOKEN || !INSTAGRAM_BUSINESS_ACCOUNT_ID) {
-    console.log("Instagram API credentials missing, returning fallback data");
     return res.json({
       success: true,
       data: {
@@ -999,35 +824,21 @@ internalStatsRouter.get("/instagram", async (req, res) => {
   try {
     // Extract totals from the data
     const extractTotal = (data, metricName) => {
-      console.log(`=== EXTRACTING TOTAL FOR ${metricName.toUpperCase()} ===`);
-      console.log(`Raw data:`, JSON.stringify(data, null, 2));
-
       if (!data) {
-        console.log(`❌ ${metricName}: No data received`);
         return null;
       }
 
       if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
-        console.log(`❌ ${metricName}: No data array or empty array`);
-        console.log(`Data structure:`, data);
         return null;
       }
 
       const firstDataItem = data.data[0];
-      console.log(
-        `${metricName} first data item:`,
-        JSON.stringify(firstDataItem, null, 2)
-      );
 
       // Check for total_value structure (when using metric_type=total_value)
       if (
         firstDataItem.total_value &&
         typeof firstDataItem.total_value.value === "number"
       ) {
-        console.log(
-          `✅ ${metricName} found total_value:`,
-          firstDataItem.total_value.value
-        );
         return firstDataItem.total_value.value;
       }
 
@@ -1037,15 +848,9 @@ internalStatsRouter.get("/instagram", async (req, res) => {
           (sum, day) => sum + (day.value || 0),
           0
         );
-        console.log(
-          `✅ ${metricName} calculated total from values array:`,
-          total
-        );
         return total;
       }
 
-      console.log(`❌ ${metricName}: No total_value or values array found`);
-      console.log(`Available properties:`, Object.keys(firstDataItem));
       return null;
     };
 
@@ -1110,20 +915,7 @@ internalStatsRouter.get("/instagram", async (req, res) => {
       const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
       const needsChunking = useChunking && daysDiff > 30;
 
-      console.log(`Instagram API request for ${metric}:`, {
-        start,
-        end,
-        instagramStart,
-        instagramEnd,
-        daysDiff,
-        useChunking,
-        needsChunking,
-        isTodayDate,
-        isEndDateToday,
-      });
-
       if (needsChunking) {
-        console.log(`Using chunking for ${metric} (${daysDiff} days)`);
         const chunks = getDateChunks(start, end, 30);
 
         let totalValue = 0;
@@ -1171,19 +963,10 @@ internalStatsRouter.get("/instagram", async (req, res) => {
 
           // Extract value from this chunk and add to total
           const chunkValue = extractTotal(chunkData, `${metric}_chunk`);
-          console.log(
-            `DEBUG: ${metric} chunk ${chunk.since} to ${chunk.until} value:`,
-            chunkValue
-          );
           if (chunkValue !== null) {
             totalValue += chunkValue;
           }
         }
-
-        console.log(
-          `Total ${metric} from ${chunks.length} chunks:`,
-          totalValue
-        );
 
         // Return a mock response structure that matches what extractTotal expects
         return {
@@ -1235,10 +1018,6 @@ internalStatsRouter.get("/instagram", async (req, res) => {
         }
 
         const responseData = await response.json();
-        console.log(
-          `DEBUG: ${metric} single request response:`,
-          JSON.stringify(responseData, null, 2)
-        );
         return responseData;
       }
     };
@@ -1253,9 +1032,6 @@ internalStatsRouter.get("/instagram", async (req, res) => {
       const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
 
       if (daysDiff > 30) {
-        console.log(
-          `Reach requested for ${daysDiff} days - returning null (cannot sum unique audience across periods)`
-        );
         // Return null data structure that extractTotal will handle
         return { data: [] };
       }
@@ -1279,31 +1055,10 @@ internalStatsRouter.get("/instagram", async (req, res) => {
         fetchInstagramData("website_clicks", "day", "total_value", true), // Bio link clicks with chunking
       ]);
 
-    console.log("Instagram API responses:", {
-      views: viewsData,
-      reach: reachData,
-      profileViews: profileViewsData,
-      websiteClicks: websiteClicksData,
-    });
-
-    // Debug: Log the raw data structure for views specifically
-    console.log(
-      "DEBUG: Views data structure:",
-      JSON.stringify(viewsData, null, 2)
-    );
-
     const views = extractTotal(viewsData, "views");
     const reach = extractTotal(reachData, "reach");
     const profileVisits = extractTotal(profileViewsData, "profile_views");
     const bioLinkClicks = extractTotal(websiteClicksData, "website_clicks");
-
-    console.log("🎯 FINAL EXTRACTED INSTAGRAM METRICS:", {
-      views: views,
-      reach: reach,
-      profileVisits: profileVisits,
-      bioLinkClicks: bioLinkClicks,
-    });
-    console.log("🔍 Views specifically:", views, typeof views);
 
     // Check if reach was excluded due to >30 day range
     const startDate = new Date(start);

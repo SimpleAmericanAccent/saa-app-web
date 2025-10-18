@@ -52,7 +52,7 @@ export default function VSounds() {
         return;
       }
     } catch (error) {
-      console.log("Wiktionary audio failed, falling back to S3:", error);
+      console.error("Wiktionary audio failed, falling back to S3:", error);
     }
 
     // Fallback to S3 audio with timestamps

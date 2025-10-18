@@ -10,7 +10,6 @@ import wlsData from "core-frontend-web/src/data/wls-data.json";
 
 export default function ModulePage() {
   const { moduleId, lessonId } = useParams();
-  console.log("ModulePage params:", { moduleId, lessonId });
 
   // Determine if we're on a vowel or consonant page
   const isVowelPage = moduleId === "vowels";

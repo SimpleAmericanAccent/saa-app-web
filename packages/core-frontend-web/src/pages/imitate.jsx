@@ -82,10 +82,6 @@ const Imitate = () => {
           return 0; // Keep original order for same type
         });
 
-        console.log(
-          `Found ${sortedPronunciations.length} unique pronunciations for "${searchTerm}":`,
-          sortedPronunciations
-        );
         setNativeAudios(sortedPronunciations);
       } else {
         throw new Error("No audio available for this word");

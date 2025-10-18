@@ -901,58 +901,6 @@ const buildSankeyData = (data) => {
   // Check if reach data is available (not null/undefined)
   const hasReachData = data.ig?.reach !== null && data.ig?.reach !== undefined;
 
-  // Debug: Log the data being used for Sankey diagrams
-  console.log("Sankey Data Debug:", {
-    mgApplication: data.mgApplication,
-    mgSelection: data.mgSelection,
-    qualifiedApps: data.mgApplication?.qualifiedApps,
-    totalSelection: data.mgSelection
-      ? (data.mgSelection.rejectedWoCovo || 0) +
-        (data.mgSelection.contacted || 0)
-      : null,
-    hasReachData,
-    reachValue: data.ig?.reach,
-  });
-
-  // Debug: Log specific values for Sankey 2
-  console.log("Sankey 2 Debug Values:", {
-    appFormPageVisits: data.mgApplication?.appFormPageVisits,
-    appStarts: data.mgApplication?.appStarts,
-    appCompletions: data.mgApplication?.appCompletions,
-    qualifiedApps: data.mgApplication?.qualifiedApps,
-    salesPageTotal: data.mgSalesPageVisits?.total,
-  });
-
-  // Debug: Log the full mgApplication object to see what's actually there
-  console.log("Full mgApplication object:", data.mgApplication);
-
-  // Debug: Check for discrepancies between source of truth and Sankey data
-  console.log("Data Consistency Check:", {
-    sourceOfTruth: {
-      qualifiedApps: data.mgApplication?.qualifiedApps,
-      contacted: data.mgSelection?.contacted,
-      rejectedWoCovo: data.mgSelection?.rejectedWoCovo,
-      notContactedOrRejected: data.mgSelection?.notContactedOrRejected,
-    },
-    sankeyUsage: {
-      qualifiedApps: data.mgApplication?.qualifiedApps, // Same as source of truth
-      selectionStates: {
-        contacted: data.mgSelection?.contacted,
-        rejectedWoCovo: data.mgSelection?.rejectedWoCovo,
-        unresponsive: data.mgSelection?.unresponsive,
-        begunConversation: data.mgSelection?.begunConversation,
-        becameUnresponsive: data.mgSelection?.becameUnresponsive,
-        rejectedBasedOnConvo: data.mgSelection?.rejectedBasedOnConvo,
-        acceptedNotPaid: data.mgSelection?.acceptedNotPaid,
-        rejectedAfterAcceptance: data.mgSelection?.rejectedAfterAcceptance,
-        paid: data.mgSelection?.paid,
-        notContactedOrRejected: data.mgSelection?.notContactedOrRejected,
-        noResponseYet: data.mgSelection?.noResponseYet,
-        noDecisionYet: data.mgSelection?.noDecisionYet,
-        noOutcomeYet: data.mgSelection?.noOutcomeYet,
-      },
-    },
-  });
   // 1. Traffic Funnel: Instagram Engagement → MG Sales Page Visits
   const trafficFunnelData = {
     nodes: [
@@ -1383,20 +1331,6 @@ const buildSankeyData = (data) => {
     ],
   };
 
-  // Debug: Log the built Sankey 2 data structure
-  console.log("Built Sankey 2 Data:", {
-    nodes: applicationFunnelData.nodes.map((node) => ({
-      id: node.id,
-      name: node.name,
-      value: node.value,
-    })),
-    links: applicationFunnelData.links.map((link) => ({
-      source: link.source,
-      target: link.target,
-      value: link.value,
-    })),
-  });
-
   // 3. Selection Funnel: MG Qualified Apps → Sales Outcomes
   const selectionFunnelData = {
     nodes: [
@@ -1708,9 +1642,6 @@ const ClientAcquisitionDashboard = () => {
     setInstagramTokenExpired(false);
 
     try {
-      console.log(`Fetching acquisition data for ${startDate} to ${endDate}`);
-      console.log("Starting API calls...");
-
       // Get temporary Instagram token if available
       const tempToken = localStorage.getItem("instagram_temp_token");
 
@@ -1734,12 +1665,6 @@ const ClientAcquisitionDashboard = () => {
               : {}
           ),
         ]);
-
-      console.log("API responses received:", {
-        plausible: plausibleResponse.status,
-        airtable: airtableResponse.status,
-        instagram: instagramResponse.status,
-      });
 
       if (!plausibleResponse.ok) {
         throw new Error(
@@ -1790,35 +1715,9 @@ const ClientAcquisitionDashboard = () => {
         }
       }
 
-      // Debug the API responses
-      console.log("Plausible API response:", plausibleResult);
-      console.log("Airtable API response:", airtableResult);
-      console.log("Instagram API response:", instagramResult);
-      console.log(
-        "Plausible mgSalesPageVisits:",
-        plausibleResult.data.mgSalesPageVisits
-      );
-
-      // Debug specific UTM values
-      console.log("UTM Debug - Frontend received:", {
-        fromIgBio: plausibleResult.data.mgSalesPageVisits?.fromIgBio,
-        fromIgStory: plausibleResult.data.mgSalesPageVisits?.fromIgStory,
-        fromIgManychat: plausibleResult.data.mgSalesPageVisits?.fromIgManychat,
-        fromIgDm: plausibleResult.data.mgSalesPageVisits?.fromIgDm,
-        fromEmailBroadcasts:
-          plausibleResult.data.mgSalesPageVisits?.fromEmailBroadcasts,
-        fromUnknown: plausibleResult.data.mgSalesPageVisits?.fromUnknown,
-      });
-
       // Calculate interface validation using data from both endpoints
       const salesPageVisits = plausibleResult.data.mgSalesPageVisits?.total;
       const qualifiedApps = airtableResult.data.mgApplication?.qualifiedApps;
-
-      console.log("Interface Validation Calculation:", {
-        salesPageVisits,
-        qualifiedApps,
-        source: "Frontend calculation using both API results",
-      });
 
       const interfaceValidation = {
         salesPageVisits: {
@@ -1860,22 +1759,6 @@ const ClientAcquisitionDashboard = () => {
           ...(instagramResult.success ? instagramResult.data?.dataGaps : {}), // Instagram data gaps
         },
       };
-
-      console.log("Final combined funnelData:", combinedData);
-      console.log(
-        "Final mgSalesPageVisits in state:",
-        combinedData.mgSalesPageVisits
-      );
-      console.log("Revenue data from Airtable:", airtableResult.data.revenue);
-      console.log("Combined revenue data:", combinedData.revenue);
-
-      // Debug: Log the data being set in funnelData
-      console.log("Setting funnelData with:", {
-        appFormPageVisits: combinedData.mgApplication?.appFormPageVisits,
-        appStarts: combinedData.mgApplication?.appStarts,
-        salesPageTotal: combinedData.mgSalesPageVisits?.total,
-        timestamp: new Date().toISOString(),
-      });
 
       setFunnelData(combinedData);
     } catch (err) {
@@ -2383,7 +2266,6 @@ const ClientAcquisitionDashboard = () => {
 
   // Load data on component mount
   useEffect(() => {
-    console.log("Component mounted, fetching data with dateRange:", dateRange);
     fetchAcquisitionData(dateRange.start, dateRange.end);
   }, []);
 
@@ -2395,14 +2277,6 @@ const ClientAcquisitionDashboard = () => {
       setCompareData(null);
     }
   }, [compareDateRange]);
-
-  // Debug: Log funnelData before building Sankey
-  console.log("About to build Sankey with funnelData:", {
-    appFormPageVisits: funnelData.mgApplication?.appFormPageVisits,
-    appStarts: funnelData.mgApplication?.appStarts,
-    salesPageTotal: funnelData.mgSalesPageVisits?.total,
-    timestamp: new Date().toISOString(),
-  });
 
   const { trafficFunnelData, applicationFunnelData, selectionFunnelData } =
     buildSankeyData(funnelData);

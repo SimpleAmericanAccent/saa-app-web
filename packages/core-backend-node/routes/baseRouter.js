@@ -341,9 +341,6 @@ baseRouter.post("/v1/annotations/update", async (req, res) => {
       });
     }
 
-    console.log("wordIndex:", wordIndex);
-    console.log("desired annotations:", annotationsDesired);
-
     let wordsData = req.app.locals.wordsData;
     let wordsEntry = wordsData.find(
       (entry) => entry.fields["word index"] == wordIndex
@@ -351,7 +348,6 @@ baseRouter.post("/v1/annotations/update", async (req, res) => {
 
     // Get current annotations or empty array if none exist
     const annotationsCurrent = wordsEntry?.fields["BR issues"] || [];
-    console.log("current annotations:", annotationsCurrent);
 
     // Determine operations needed
     const operations = determineRequiredOperations(
@@ -469,9 +465,6 @@ baseRouter.get("/v2/audio/:audioId", async (req, res) => {
 
     req.app.locals.wordsDataV2 = wordsDataV2;
 
-    // console.log("Fetched wordsDataV2:", wordsDataV2);
-    // console.log("Fetched annotationDataV2:", annotationDataV2);
-
     res.json({
       audio: {
         mp3url: audioData.fields["mp3 url"],
@@ -515,7 +508,6 @@ baseRouter.post("/v2/annotations", async (req, res) => {
 
     // Get current annotations or empty array if none exist
     const annotationsCurrent = wordsEntry?.fields["Annotations"] || [];
-    console.log("current annotations:", annotationsCurrent);
 
     const operations = determineV2Operations(
       wordIndex,

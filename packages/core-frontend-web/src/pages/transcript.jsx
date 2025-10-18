@@ -237,9 +237,6 @@ export default function Transcript() {
       setAnnotations(friendlyIssueNames);
     } else if (version === "v2") {
       const friendlyTargetNames = getTargetNames(annotations);
-      // console.log("friendlyTargetNames", friendlyTargetNames);
-      // console.log("annotations", annotations);
-      // console.log("issuesData", issuesData);
       setAnnotations(friendlyTargetNames);
     }
   };
@@ -254,13 +251,6 @@ export default function Transcript() {
 
   const handleAnnotationUpdate = async (wordIndex, annotations) => {
     // Flatten the annotatedTranscript structure and find the word ID
-
-    console.log(
-      "Attempting to update annotations for wordIndex",
-      wordIndex,
-      "\n annotations target state: ",
-      annotations
-    );
 
     const flattenedWords = annotatedTranscript.flatMap(
       (segment) => segment.alignment
@@ -283,8 +273,6 @@ export default function Transcript() {
         "Content-Type": "application/json",
       },
     });
-
-    console.log("server response", response);
 
     // Update transcript state
     fetchAudio(selectedAudio); // Refetch to update state

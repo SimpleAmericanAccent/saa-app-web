@@ -104,8 +104,6 @@ export default function VowelSynthesizer() {
 
       oscillator.start();
       setIsPlaying(true);
-
-      console.log("Audio synthesis started successfully");
     } catch (error) {
       console.error("Error starting audio synthesis:", error);
     }
@@ -130,7 +128,6 @@ export default function VowelSynthesizer() {
       });
 
       setIsPlaying(false);
-      console.log("Audio synthesis stopped successfully");
     } catch (error) {
       console.error("Error stopping audio synthesis:", error);
     }

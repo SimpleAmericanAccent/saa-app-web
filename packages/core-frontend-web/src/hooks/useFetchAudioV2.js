@@ -22,9 +22,6 @@ const useFetchAudioV2 = () => {
         return indexA - indexB;
       });
 
-      console.log(sortedAirtableWords, "sortedAirtableWords");
-      console.log(annotationData, "annotationData");
-
       // Create annotation lookup map
       const annotationMap = (annotationData?.records || []).reduce(
         (acc, annotation) => {
@@ -51,10 +48,6 @@ const useFetchAudioV2 = () => {
         };
       });
 
-      console.log(enrichedAirtableWords, "enrichedAirtableWords");
-
-      // put words into paragraphs
-
       // Group words into paragraphs
       const paragraphs = enrichedAirtableWords.reduce((acc, word) => {
         const paragraphIndex = word.fields["paragraph index"] ?? 0;
@@ -77,8 +70,6 @@ const useFetchAudioV2 = () => {
       const orderedParagraphs = Object.entries(paragraphs)
         .sort(([indexA], [indexB]) => Number(indexA) - Number(indexB))
         .map(([_, paragraph]) => paragraph);
-
-      console.log(orderedParagraphs, "orderedParagraphs");
 
       setAnnotatedTranscript(orderedParagraphs);
 
