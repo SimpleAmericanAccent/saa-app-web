@@ -130,29 +130,32 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Right Column - Pronunciation Guide */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <h3 className="text-sm font-semibold">Pronunciation Guide</h3>
             <div className="text-sm text-muted-foreground">
               <p className="mb-2">
-                ARPAbet symbols are converted to lexical sets:
+                Feedback provided in format
+                <br />
+                TARGET x ACTUAL:
               </p>
               <ul className="list-disc pl-4 space-y-1">
-                <li className="whitespace-nowrap">
-                  IY → FLEECE (e.g., "beet")
-                </li>
-                <li>IH → KIT (e.g., "bit")</li>
-                <li>AA/AO → LOT (e.g., "bought")</li>
-                <li>ER → NURSE (e.g., "bird")</li>
-                <li>etc.</li>
+                <li>KIT x FLEECE</li>
+                <li>DH x D/flap</li>
               </ul>
-              <p className="my-2">... or more familiar consonants:</p>
+              <p className="my-2">
+                ARPAbet symbols are converted to lexical sets / more common
+                consonant spellings:
+              </p>
               <ul className="list-disc pl-4 space-y-1">
-                <li>DH → Voiced TH (e.g., "this")</li>
-                <li>HH → H (e.g., "hi")</li>
-                <li>JH → J (e.g., "jungle")</li>
+                <li className="whitespace-nowrap">IY → FLEECE ("beet")</li>
+                <li>IH → KIT ("bit")</li>
+                <li>AA/AO → LOT ("bought")</li>
+                <li>ER → NURSE ("bird")</li>
+                <li>HH → H ("hi")</li>
+                <li>JH → J ("jungle")</li>
               </ul>
               <p className="mt-2">
-                Stress markers (0, 1, 2) indicate syllable stress:
+                Vowel stress markers (0, 1, 2) indicate syllable stress:
               </p>
               <ul className="list-disc pl-4">
                 <li>0: No stress</li>
