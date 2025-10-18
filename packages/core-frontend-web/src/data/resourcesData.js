@@ -176,6 +176,26 @@ export const categoryTypes = {
       },
     },
   },
+  platform: {
+    name: "Platform",
+    description: "Device compatibility",
+    categories: {
+      desktop: {
+        name: "Desktop Only",
+        icon: Settings,
+        description: "Optimized for desktop/laptop use",
+        color:
+          "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+      },
+      mobile: {
+        name: "Mobile Only",
+        icon: Smartphone,
+        description: "Optimized for mobile devices",
+        color:
+          "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
+      },
+    },
+  },
 };
 
 export const resourcesData = {
@@ -344,6 +364,7 @@ export const resourcesData = {
         fundamentals: ["vowels", "consonants", "flow", "smart-practice"],
         functionality: ["playback", "analysis", "recording"],
         pricing: ["free"],
+        platform: ["desktop"],
       },
       icons: [Mic, Volume2, Mic, BarChart3],
     },
@@ -359,6 +380,7 @@ export const resourcesData = {
         fundamentals: ["vowels", "consonants", "flow", "smart-practice"],
         functionality: ["playback", "analysis", "recording"],
         pricing: ["free"],
+        platform: ["desktop"],
       },
       icons: [Play, Volume2, Mic, BarChart3],
     },
@@ -376,6 +398,7 @@ export const resourcesData = {
         functionality: ["reference", "recording"],
         discovery: ["curated"],
         pricing: ["trial"],
+        platform: ["mobile"],
       },
       icons: [Smartphone, Volume2, Mic, Target],
     },
