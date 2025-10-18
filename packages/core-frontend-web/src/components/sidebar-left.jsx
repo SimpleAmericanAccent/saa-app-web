@@ -469,12 +469,22 @@ export function SidebarLeft() {
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
+
+              {/* Links */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Links">
+                  <SidebarLink to="/links" className="flex items-center gap-2">
+                    <LinkIcon className="h-4 w-4 text-white" />
+                    {!isCollapsed && <span className="text-white">Links</span>}
+                  </SidebarLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
 
           {/* Resources Section */}
           <SidebarGroup>
-            <SidebarGroupLabel>Other</SidebarGroupLabel>
+            <SidebarGroupLabel>Tools</SidebarGroupLabel>
             <SidebarMenu>
               {/* Other Resources - Hidden on Mobile */}
               {!isMobile && (
@@ -485,59 +495,19 @@ export function SidebarLeft() {
                   onOpenChange={(isOpen) =>
                     handleSubmenuToggle("more-resources", isOpen)
                   }
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton
-                        tooltip="More Resources"
-                        className="cursor-pointer"
-                        onClick={(e) =>
-                          handleCollapsedIconClick(e, true, "more-resources")
-                        }
-                      >
-                        <Library className="h-4 w-4" />
-                        {!isCollapsed && <span>More Resources</span>}
-                        {!isCollapsed && (
-                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        )}
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton asChild>
-                            <SidebarLink to="/stats">
-                              <BarChart3 className="h-4 w-4" />
-                              {!isCollapsed && <span>Group Accent Stats</span>}
-                            </SidebarLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton asChild>
-                            <SidebarLink to="/wls">
-                              <List className="h-4 w-4" />
-                              {!isCollapsed && (
-                                <span>Word Lists & Spelling</span>
-                              )}
-                            </SidebarLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
+                ></Collapsible>
               )}
 
               {/* Transcript Viewer - Hidden on Mobile */}
               {!isMobile && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Transcript Viewer">
+                  <SidebarMenuButton asChild tooltip="Accent Analysis">
                     <SidebarLink
                       to="/transcript"
                       className="flex items-center gap-2"
                     >
                       <FileText className="h-4 w-4" />
-                      {!isCollapsed && <span>Transcript Viewer</span>}
+                      {!isCollapsed && <span>Accent Analysis</span>}
                     </SidebarLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -585,16 +555,6 @@ export function SidebarLeft() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
-
-              {/* Links */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Links">
-                  <SidebarLink to="/links" className="flex items-center gap-2">
-                    <LinkIcon className="h-4 w-4" />
-                    {!isCollapsed && <span>Links</span>}
-                  </SidebarLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
