@@ -24,7 +24,7 @@ export default function UserDashboard() {
     // Fetch issues data
     const fetchIssues = async () => {
       try {
-        const issues = await fetchData("/data/loadIssues");
+        const issues = await fetchData("/api/data/loadIssues");
         setIssuesData(issues);
       } catch (error) {
         console.error("Error fetching issues:", error);

@@ -96,7 +96,7 @@ export default function Transcript() {
   useEffect(() => {
     const fetchIssues = async () => {
       try {
-        setIssuesData(await fetchData("/data/loadIssues"));
+        setIssuesData(await fetchData("/api/data/loadIssues"));
       } catch (error) {
         console.error("Error fetching issues:", error);
       }
@@ -270,7 +270,7 @@ export default function Transcript() {
     const word = flattenedWords[wordIndex]?.word;
     const timestamp = flattenedWords[wordIndex]?.start_time;
 
-    let response = await fetchData("/v1/api/annotations/update", {
+    let response = await fetchData("/api/v1/annotations/update", {
       method: "POST",
       body: JSON.stringify({
         wordIndex,

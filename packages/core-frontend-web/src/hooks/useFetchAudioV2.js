@@ -9,7 +9,7 @@ const useFetchAudioV2 = () => {
     if (!selectedAudio) return;
 
     try {
-      const response = await fetchData(`/v2/api/audio/${selectedAudio}`);
+      const response = await fetchData(`/api/v2/audio/${selectedAudio}`);
       const { audio, airtableWords, annotationData } = response || {};
       const { mp3url } = audio || {};
       setMp3Url(mp3url);

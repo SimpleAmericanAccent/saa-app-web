@@ -23,7 +23,7 @@ const useAuthStore = create((set) => ({
   fetchAdminStatus: async () => {
     try {
       set({ isLoading: true });
-      const { isAdmin, canViewReplays } = await fetchData("/authz");
+      const { isAdmin, canViewReplays } = await fetchData("/api/authz");
       set({
         isAdmin,
         canViewReplays: canViewReplays !== false,

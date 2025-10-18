@@ -41,7 +41,7 @@ const useFetchResources = () => {
   useEffect(() => {
     const fetchUserResources = async () => {
       try {
-        const { people, audios } = await fetchData("/authz");
+        const { people, audios } = await fetchData("/api/authz");
         setPeople(people);
         setAudio(audios);
       } catch (error) {
