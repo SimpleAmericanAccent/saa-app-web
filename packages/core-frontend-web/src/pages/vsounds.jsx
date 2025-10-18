@@ -8,21 +8,54 @@ import {
   SelectValue,
 } from "core-frontend-web/src/components/ui/select";
 import timestampsData from "core-frontend-web/src/data/timestamps.json";
+import { getWiktionaryUSAudio } from "../utils/wiktionaryApi.js";
 
 export default function VSounds() {
   const [selectedColumn, setSelectedColumn] = useState("gambiarra");
   const [selectedSpeed, setSelectedSpeed] = useState("1.0");
   const [audioCache, setAudioCache] = useState({});
+  const [wiktionaryCache, setWiktionaryCache] = useState({});
   const [timeoutId, setTimeoutId] = useState(null);
   const audioUrl =
-    "https://native-scga-audio.s3.us-east-2.amazonaws.com/2025+01+04+will+rosenberg+vowels+96+hz+h_d+b_d+b_t+frames.mp3";
+    "https://saa-assets.s3.us-east-2.amazonaws.com/2025+01+04+will+rosenberg+vowels+96+hz+h_d+b_d+b_t+frames.mp3";
 
-  const handlePlayAudio = (word) => {
+  const handlePlayAudio = async (word) => {
     if (!timestampsData || !timestampsData[word]) {
       console.error("No data for word:", word);
       return;
     }
 
+    // Clear any existing timeout
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    // Try Wiktionary audio first
+    try {
+      let wiktionaryAudioUrl = wiktionaryCache[word];
+
+      if (!wiktionaryAudioUrl) {
+        wiktionaryAudioUrl = await getWiktionaryUSAudio(word);
+        if (wiktionaryAudioUrl) {
+          setWiktionaryCache((prev) => ({
+            ...prev,
+            [word]: wiktionaryAudioUrl,
+          }));
+        }
+      }
+
+      if (wiktionaryAudioUrl) {
+        // Use Wiktionary audio
+        const audio = new Audio(wiktionaryAudioUrl);
+        audio.playbackRate = parseFloat(selectedSpeed);
+        await audio.play();
+        return;
+      }
+    } catch (error) {
+      console.log("Wiktionary audio failed, falling back to S3:", error);
+    }
+
+    // Fallback to S3 audio with timestamps
     const audio = audioCache[0] || new Audio(audioUrl);
     if (!audioCache[0]) {
       setAudioCache({ 0: audio });
@@ -30,11 +63,6 @@ export default function VSounds() {
 
     const wordData = timestampsData[word];
     const duration = wordData.full.end - wordData.full.start;
-
-    // Clear any existing timeout
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
 
     // Update audio position and speed
     audio.currentTime = wordData.full.start;

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getWiktionaryUSAudio } from "../utils/wiktionaryApi.js";
 
 // Cache for dictionary API audio URLs
 const dictionaryAudioCache = new Map();
@@ -51,33 +52,19 @@ export const useWordAudio = () => {
         return true;
       }
 
-      // Try dictionary API
-      const response = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
-      );
-      const data = await response.json();
+      // Try Wiktionary API for US audio
+      const audioUrl = await getWiktionaryUSAudio(word);
 
-      if (data[0]?.phonetics?.length > 0) {
-        // Find first US English audio
-        const usPhonetic = data[0].phonetics.find(
-          (p) =>
-            p.audio &&
-            (p.audio.includes("_us_") ||
-              p.audio.includes("en_us") ||
-              p.audio.includes("-us.") ||
-              p.audio.includes("/us/"))
-        );
-
-        if (usPhonetic?.audio) {
-          dictionaryAudioCache.set(word, usPhonetic.audio);
-          const audio = new Audio(usPhonetic.audio);
-          await audio.play();
-          return true;
-        }
+      if (audioUrl) {
+        dictionaryAudioCache.set(word, audioUrl);
+        const audio = new Audio(audioUrl);
+        await audio.play();
+        return true;
       }
+
       return false;
     } catch (error) {
-      console.error("Dictionary API error:", error);
+      console.error("Wiktionary API error:", error);
       return false;
     }
   };
