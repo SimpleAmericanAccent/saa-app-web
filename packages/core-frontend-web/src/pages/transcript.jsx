@@ -10,7 +10,7 @@ import { fetchData } from "core-frontend-web/src/utils/api";
 import { cn } from "core-frontend-web/src/lib/utils";
 
 import useVersionStore from "core-frontend-web/src/stores/versionStore";
-import { HelpCircle, Keyboard, Mic } from "lucide-react";
+import { HelpCircle, Keyboard, Mic, Eye, EyeOff } from "lucide-react";
 
 import TranscriptViewerV1 from "core-frontend-web/src/components/transcript-viewer-v1";
 import TranscriptViewerV2 from "core-frontend-web/src/components/transcript-viewer-v2";
@@ -74,6 +74,7 @@ export default function Transcript() {
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
 
   const [hoveredWordIndices, setHoveredWordIndices] = useState([]);
+  const [tooltipsEnabled, setTooltipsEnabled] = useState(true);
   // #endregion
 
   // #region do stuff
@@ -298,15 +299,38 @@ export default function Transcript() {
                       "h-[calc(100vh-var(--navbar-height))] sm:h-screen justify-center flex-col"
                   )}
                 >
-                  <PersonAudioSelector
-                    people={people}
-                    filteredAudio={filteredAudio}
-                    selectedPerson={selectedPerson}
-                    selectedAudio={selectedAudio}
-                    onPersonSelect={setSelectedPerson}
-                    onAudioSelect={setSelectedAudio}
-                    size={!hasAudioLoaded || loadError ? "large" : "default"}
-                  />
+                  <div className="flex items-center justify-between w-full">
+                    <PersonAudioSelector
+                      people={people}
+                      filteredAudio={filteredAudio}
+                      selectedPerson={selectedPerson}
+                      selectedAudio={selectedAudio}
+                      onPersonSelect={setSelectedPerson}
+                      onAudioSelect={setSelectedAudio}
+                      size={!hasAudioLoaded || loadError ? "large" : "default"}
+                    />
+
+                    {hasAudioLoaded && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setTooltipsEnabled(!tooltipsEnabled)}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        {tooltipsEnabled ? (
+                          <>
+                            <Eye className="h-4 w-4" />
+                            Hide Tooltips
+                          </>
+                        ) : (
+                          <>
+                            <EyeOff className="h-4 w-4" />
+                            Show Tooltips
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
 
                   {(isAudioLoading || (selectedAudio && !hasAudioLoaded)) && (
                     <div className={cn("text-muted-foreground text-center")}>
@@ -327,21 +351,6 @@ export default function Transcript() {
                         playbackSpeed={playbackSpeed}
                         onPlaybackSpeedChange={setPlaybackSpeed}
                       />
-                    </div>
-                    <div className="relative min-h-[40px]">
-                      <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
-                        {pronunciations.join(", ") || "\u00A0"}
-                      </div>
-                    </div>
-                    <div className="relative min-h-[40px]">
-                      <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
-                        {pronunciations2.join(", ") || "\u00A0"}
-                      </div>
-                    </div>
-                    <div className="relative min-h-[40px]">
-                      <div className="border border-border rounded-md p-2 absolute w-full bg-background z-10">
-                        {annotations.join(", ") || "\u00A0"}
-                      </div>
                     </div>
                   </>
                 )}
@@ -364,6 +373,7 @@ export default function Transcript() {
                       onAnnotationUpdate={handleAnnotationUpdate}
                       activeFilters={activeFilters}
                       hoveredWordIndices={hoveredWordIndices}
+                      tooltipsEnabled={tooltipsEnabled}
                     />
                   ) : (
                     <TranscriptViewerV2
@@ -378,6 +388,7 @@ export default function Transcript() {
                       issuesData={issuesData}
                       onAnnotationUpdate={handleAnnotationUpdate}
                       activeFilters={activeFilters}
+                      tooltipsEnabled={tooltipsEnabled}
                     />
                   ))}
               </section>

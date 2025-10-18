@@ -13,6 +13,11 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "core-frontend-web/src/components/ui/context-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "core-frontend-web/src/components/ui/tooltip";
 
 const TranscriptViewerV1 = ({
   annotatedTranscript,
@@ -25,9 +30,15 @@ const TranscriptViewerV1 = ({
   issuesData,
   activeFilters = [],
   hoveredWordIndices = [],
+  tooltipsEnabled = true,
 }) => {
   const [contextMenu, setContextMenu] = useState({
     wordIndex: null,
+  });
+  const [currentWordData, setCurrentWordData] = useState({
+    pronunciations: [],
+    pronunciations2: [],
+    annotations: [],
   });
   const { isAdmin } = useAuthStore();
   const { playWord, isLoading } = useWordAudio();
@@ -38,6 +49,24 @@ const TranscriptViewerV1 = ({
       .find((word) => word.wordIndex === wordIndex);
     return word ? word["BR issues"] || [] : [];
     // return record ? record.fields["BR issues"] : [];
+  };
+
+  // Helper function to get issue names from IDs
+  const getIssueNames = (issueIds) => {
+    if (!issueIds || !issuesData.length) return [];
+
+    return issueIds.map((id) => {
+      // Find the category that contains this issue
+      const category = issuesData.find((cat) =>
+        cat.issues.some((issue) => issue.id === id)
+      );
+
+      if (category) {
+        const issue = category.issues.find((i) => i.id === id);
+        return issue ? issue.name : id;
+      }
+      return id;
+    });
   };
 
   const shouldHighlightWord = (wordObj) => {
@@ -112,12 +141,25 @@ const TranscriptViewerV1 = ({
     }
   };
 
-  const handlePronunciationHover = async (word) => {
+  const handleWordHover = async (wordIndex, word) => {
+    const annotationIds = getAnnotations(wordIndex);
+    const friendlyIssueNames = getIssueNames(annotationIds);
     const pronunciations = await getPronunciations(word);
+    const pronunciations2 = await getPronunciations2(pronunciations);
+
+    setCurrentWordData({
+      pronunciations,
+      pronunciations2,
+      annotations: friendlyIssueNames,
+    });
+
+    // Still call parent callbacks for backward compatibility
+    if (onAnnotationHover) {
+      onAnnotationHover(friendlyIssueNames);
+    }
     if (onPronunciationHover) {
       onPronunciationHover(pronunciations);
     }
-    const pronunciations2 = await getPronunciations2(pronunciations);
     if (onPronunciation2Hover) {
       onPronunciation2Hover(pronunciations2);
     }
@@ -212,31 +254,93 @@ const TranscriptViewerV1 = ({
             const isActive = activeWordIndex === wordObj.wordIndex;
             const highlightState = shouldHighlightWord(wordObj);
 
+            const wordSpan = (
+              <span
+                className={cn(
+                  "cursor-pointer rounded-[5px]",
+                  {
+                    "text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))]":
+                      highlightState === true && hasAnnotations && !isActive,
+                    "text-[hsl(var(--hover2-foreground))] bg-[hsl(var(--hover2))]":
+                      highlightState === "hover2" && !isActive,
+                    "!bg-[#aa00aa80]": isActive,
+                  },
+                  "hover:bg-[hsl(var(--hover))] hover:text-[hsl(var(--hover-foreground))]"
+                )}
+                onClick={() => handleWordClick(wordObj.start_time)}
+                onMouseOver={() => {
+                  handleWordHover(wordObj.wordIndex, wordObj.word);
+                }}
+                onContextMenu={(e) =>
+                  handleContextMenu(e, wordObj.wordIndex, wordObj.word)
+                }
+              >
+                {wordObj.word}
+              </span>
+            );
+
             return (
               <React.Fragment key={wordObj.wordIndex}>
-                <span
-                  className={cn(
-                    "cursor-pointer rounded-[5px]",
-                    {
-                      "text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))]":
-                        highlightState === true && hasAnnotations && !isActive,
-                      "text-[hsl(var(--hover2-foreground))] bg-[hsl(var(--hover2))]":
-                        highlightState === "hover2" && !isActive,
-                      "!bg-[#aa00aa80]": isActive,
-                    },
-                    "hover:bg-[hsl(var(--hover))] hover:text-[hsl(var(--hover-foreground))]"
-                  )}
-                  onClick={() => handleWordClick(wordObj.start_time)}
-                  onMouseOver={() => {
-                    handleAnnotationHover(wordObj.wordIndex);
-                    handlePronunciationHover(wordObj.word);
-                  }}
-                  onContextMenu={(e) =>
-                    handleContextMenu(e, wordObj.wordIndex, wordObj.word)
-                  }
-                >
-                  {wordObj.word}
-                </span>{" "}
+                {tooltipsEnabled ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>{wordSpan}</TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <div className="space-y-1">
+                        {currentWordData.pronunciations.length > 0 && (
+                          <div>
+                            <div className="font-semibold text-xs">
+                              Pronunciation:
+                            </div>
+                            <div className="text-xs">
+                              {currentWordData.pronunciations.map(
+                                (pron, index) => (
+                                  <div key={index}>{pron}</div>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {currentWordData.pronunciations2.length > 0 && (
+                          <div>
+                            <div className="font-semibold text-xs">
+                              Lexical Sets:
+                            </div>
+                            <div className="text-xs">
+                              {currentWordData.pronunciations2.map(
+                                (pron, index) => (
+                                  <div key={index}>{pron}</div>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {currentWordData.annotations.length > 0 && (
+                          <div>
+                            <div className="font-semibold text-xs">
+                              Annotations:
+                            </div>
+                            <div className="text-xs">
+                              {currentWordData.annotations.map(
+                                (annotation, index) => (
+                                  <div key={index}>{annotation}</div>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {currentWordData.pronunciations.length === 0 &&
+                          currentWordData.pronunciations2.length === 0 &&
+                          currentWordData.annotations.length === 0 && (
+                            <div className="text-xs text-muted-foreground">
+                              No additional data available
+                            </div>
+                          )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  wordSpan
+                )}{" "}
               </React.Fragment>
             );
           })}
@@ -252,11 +356,11 @@ const TranscriptViewerV1 = ({
   return (
     <ContextMenu>
       <ContextMenuTrigger>{content}</ContextMenuTrigger>
-      <ContextMenuContent className="w-auto z-9999">
+      <ContextMenuContent className="w-auto z-9999 max-h-120">
         {issuesData.map((target) => (
           <ContextMenuSub key={target.id}>
             <ContextMenuSubTrigger>{target.name}</ContextMenuSubTrigger>
-            <ContextMenuSubContent>
+            <ContextMenuSubContent className="max-h-64 overflow-y-auto">
               {target.issues.map((issue) => (
                 <ContextMenuItem
                   key={issue.id}

@@ -11,6 +11,11 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "core-frontend-web/src/components/ui/context-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "core-frontend-web/src/components/ui/tooltip";
 
 const TranscriptViewerV2 = ({
   annotatedTranscript,
@@ -20,9 +25,13 @@ const TranscriptViewerV2 = ({
   onAnnotationUpdate,
   issuesData,
   // activeFilters = [],
+  tooltipsEnabled = true,
 }) => {
   const [contextMenu, setContextMenu] = useState({
     wordIndex: null,
+  });
+  const [currentWordData, setCurrentWordData] = useState({
+    annotations: [],
   });
 
   const getAnnotations = (wordIndex) => {
@@ -33,6 +42,23 @@ const TranscriptViewerV2 = ({
       ? word.Annotations.map((annotation) => annotation.Target) || []
       : [];
     // return record ? record.fields["BR issues"] : [];
+  };
+
+  // Helper function to get target names from IDs
+  const getTargetNames = (targetIds) => {
+    if (!targetIds || !issuesData.length) return [];
+
+    return targetIds.map((array) =>
+      array.map((id) => {
+        // Find the category that contains this issue
+        const category = issuesData.find((cat) => cat.id === id);
+
+        if (category) {
+          return category.name;
+        }
+        return id;
+      })
+    );
   };
 
   // const shouldHighlightWord = (word) => {
@@ -65,10 +91,14 @@ const TranscriptViewerV2 = ({
     }
   };
 
-  const handleAnnotationHover = (wordIndex) => {
-    const annotations = getAnnotations(wordIndex);
+  const handleWordHover = (wordIndex) => {
+    const annotationIds = getAnnotations(wordIndex);
+    const friendlyTargetNames = getTargetNames(annotationIds);
+    setCurrentWordData({ annotations: friendlyTargetNames });
+
+    // Still call parent callback for backward compatibility
     if (onAnnotationHover) {
-      onAnnotationHover(annotations);
+      onAnnotationHover(friendlyTargetNames);
     }
   };
 
@@ -83,29 +113,60 @@ const TranscriptViewerV2 = ({
                 const hasAnnotations = annotations.length > 0;
                 const isActive = activeWordIndex === wordObj.wordIndex;
 
+                const wordSpan = (
+                  <span
+                    className={cn(
+                      "cursor-pointer rounded-[5px]",
+                      {
+                        "text-annotation-foreground bg-[hsl(var(--annotation))]":
+                          // shouldHighlightWord(wordObj) &&
+                          hasAnnotations && !isActive,
+                        "!bg-[#aa00aa80]": isActive,
+                      },
+                      "hover:bg-[hsl(var(--hover))]"
+                    )}
+                    onClick={() => handleWordClick(wordObj.start_time)}
+                    onMouseOver={() => handleWordHover(wordObj.wordIndex)}
+                    onContextMenu={(e) =>
+                      handleContextMenu(e, wordObj.wordIndex)
+                    }
+                  >
+                    {wordObj.word}
+                  </span>
+                );
+
                 return (
                   <React.Fragment key={wordObj.wordIndex}>
-                    <span
-                      className={cn(
-                        "cursor-pointer rounded-[5px]",
-                        {
-                          "text-annotation-foreground bg-[hsl(var(--annotation))]":
-                            // shouldHighlightWord(wordObj) &&
-                            hasAnnotations && !isActive,
-                          "!bg-[#aa00aa80]": isActive,
-                        },
-                        "hover:bg-[hsl(var(--hover))]"
-                      )}
-                      onClick={() => handleWordClick(wordObj.start_time)}
-                      onMouseOver={() =>
-                        handleAnnotationHover(wordObj.wordIndex)
-                      }
-                      onContextMenu={(e) =>
-                        handleContextMenu(e, wordObj.wordIndex)
-                      }
-                    >
-                      {wordObj.word}
-                    </span>{" "}
+                    {tooltipsEnabled ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>{wordSpan}</TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <div className="space-y-1">
+                            {currentWordData.annotations.length > 0 && (
+                              <div>
+                                <div className="font-semibold text-xs">
+                                  Annotations:
+                                </div>
+                                <div className="text-xs">
+                                  {currentWordData.annotations.map(
+                                    (annotation, index) => (
+                                      <div key={index}>{annotation}</div>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            {currentWordData.annotations.length === 0 && (
+                              <div className="text-xs text-muted-foreground">
+                                No annotation data available
+                              </div>
+                            )}
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      wordSpan
+                    )}{" "}
                   </React.Fragment>
                 );
               })}
@@ -117,7 +178,7 @@ const TranscriptViewerV2 = ({
         {issuesData.map((target) => (
           <ContextMenuSub key={target.id}>
             <ContextMenuSubTrigger>{target.name}</ContextMenuSubTrigger>
-            <ContextMenuSubContent>
+            <ContextMenuSubContent className="max-h-64 overflow-y-auto">
               {target.issues.map((issue) => (
                 <ContextMenuItem
                   key={issue.id}
