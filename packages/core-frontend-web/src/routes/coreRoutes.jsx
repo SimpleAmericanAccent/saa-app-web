@@ -3,16 +3,13 @@ import Transcript from "core-frontend-web/src/pages/transcript.jsx";
 import WLS from "core-frontend-web/src/pages/wls.jsx";
 import VSounds from "core-frontend-web/src/pages/vsounds.jsx";
 import VSynth from "core-frontend-web/src/pages/vsynth.jsx";
-import Home6 from "core-frontend-web/src/pages/stats.jsx";
-import Links from "core-frontend-web/src/pages/links.jsx";
+import Stats from "core-frontend-web/src/pages/stats.jsx";
 import SpellingPronunciationPage from "core-frontend-web/src/pages/SpellingPronunciationPage.jsx";
 import LexicalSets from "core-frontend-web/src/pages/lexical-sets.jsx";
 import ModulePage from "core-frontend-web/src/pages/ModulePage.jsx";
 import UserDashboard from "core-frontend-web/src/pages/UserDashboard.jsx";
-import VowelReplays from "core-frontend-web/src/pages/replays/vowels.jsx";
-import ConsonantReplays from "core-frontend-web/src/pages/replays/consonants.jsx";
-import FlowReplays from "core-frontend-web/src/pages/replays/flow.jsx";
-import SmartPracticeReplays from "core-frontend-web/src/pages/replays/smart-practice.jsx";
+import ReplaysHub from "core-frontend-web/src/pages/ReplaysHub.jsx";
+import Resources from "core-frontend-web/src/pages/Resources.jsx";
 import Quiz from "core-frontend-web/src/pages/Quiz.jsx";
 import QuizAudioAdmin from "core-frontend-web/src/pages/QuizAudioAdmin.jsx";
 import Join from "core-frontend-web/src/pages/Join.jsx";
@@ -28,8 +25,9 @@ const coreRoutes = (
     <Route path="/wls" element={<WLS />} />
     <Route path="/vsounds" element={<VSounds />} />
     <Route path="/vsynth" element={<VSynth />} />
-    <Route path="/stats" element={<Home6 />} />
-    <Route path="/links" element={<Links />} />
+    <Route path="/stats" element={<Stats />} />
+    <Route path="/links" element={<Resources />} />
+    <Route path="/resources" element={<Resources />} />
     <Route path="/quiz" element={<Quiz />} />
     <Route path="/quiz-audio-admin" element={<QuizAudioAdmin />} />
     <Route path="/imitate" element={<Imitate />} />
@@ -38,10 +36,11 @@ const coreRoutes = (
       path="/spelling-pronunciation"
       element={<SpellingPronunciationPage />}
     />
-    <Route path="/replays/vowels" element={<VowelReplays />} />
-    <Route path="/replays/consonants" element={<ConsonantReplays />} />
-    <Route path="/replays/flow" element={<FlowReplays />} />
-    <Route path="/replays/smart-practice" element={<SmartPracticeReplays />} />
+    <Route path="/replays" element={<ReplaysHub />} />
+    <Route path="/replays/vowels" element={<ReplaysHub />} />
+    <Route path="/replays/consonants" element={<ReplaysHub />} />
+    <Route path="/replays/flow" element={<ReplaysHub />} />
+    <Route path="/replays/smart-practice" element={<ReplaysHub />} />
 
     <Route path="/join" element={<Join />} />
     <Route path="/join-ty" element={<JoinThankYou />} />

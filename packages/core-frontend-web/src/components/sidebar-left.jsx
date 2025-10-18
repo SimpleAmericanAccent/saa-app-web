@@ -17,6 +17,7 @@ import {
   Music,
   Construction,
   Mic,
+  MonitorPlay,
 } from "lucide-react";
 
 import {
@@ -282,6 +283,36 @@ export function SidebarLeft() {
           <SidebarGroup>
             <SidebarGroupLabel>Fundamentals</SidebarGroupLabel>
             <SidebarMenu>
+              {/* Replays */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Replays">
+                  <SidebarLink
+                    to="/replays"
+                    className="flex items-center gap-2"
+                  >
+                    <MonitorPlay className="h-4 w-4 text-white" />
+                    {!isCollapsed && (
+                      <span className="text-white">Replays</span>
+                    )}
+                  </SidebarLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Resources */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Resources">
+                  <SidebarLink
+                    to="/resources"
+                    className="flex items-center gap-2"
+                  >
+                    <BookOpen className="h-4 w-4 text-white" />
+                    {!isCollapsed && (
+                      <span className="text-white">Resources</span>
+                    )}
+                  </SidebarLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
               {/* Vowels */}
               <Collapsible
                 asChild
@@ -337,21 +368,13 @@ export function SidebarLeft() {
                           </SidebarLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/replays/vowels">
-                            <List className="h-4 w-4" />
-                            {!isCollapsed && <span>Vowel Call Replays</span>}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
 
               {/* Consonants */}
-              <Collapsible
+              {/* <Collapsible
                 asChild
                 className="group/collapsible"
                 open={openSubmenus.has("consonants")}
@@ -377,23 +400,13 @@ export function SidebarLeft() {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/replays/consonants">
-                            <List className="h-4 w-4" />
-                            {!isCollapsed && (
-                              <span>Consonant Call Replays</span>
-                            )}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
-              </Collapsible>
+              </Collapsible> */}
 
               {/* Flow */}
-              <Collapsible
+              {/* <Collapsible
                 asChild
                 className="group/collapsible"
                 open={openSubmenus.has("flow")}
@@ -415,21 +428,13 @@ export function SidebarLeft() {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/replays/flow">
-                            <List className="h-4 w-4" />
-                            {!isCollapsed && <span>Flow Call Replays</span>}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
-              </Collapsible>
+              </Collapsible> */}
 
               {/* Smart Practice */}
-              <Collapsible
+              {/* <Collapsible
                 asChild
                 className="group/collapsible"
                 open={openSubmenus.has("smart-practice")}
@@ -455,30 +460,10 @@ export function SidebarLeft() {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/replays/smart-practice">
-                            <List className="h-4 w-4" />
-                            {!isCollapsed && (
-                              <span>Smart Practice Call Replays</span>
-                            )}
-                          </SidebarLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
-              </Collapsible>
-
-              {/* Links */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Links">
-                  <SidebarLink to="/links" className="flex items-center gap-2">
-                    <LinkIcon className="h-4 w-4 text-white" />
-                    {!isCollapsed && <span className="text-white">Links</span>}
-                  </SidebarLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              </Collapsible> */}
             </SidebarMenu>
           </SidebarGroup>
 
