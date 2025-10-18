@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { getWiktionaryAllAudio } from "../utils/wiktionaryApi";
 
-const ImitationPractice = () => {
+const Imitate = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [nativeAudios, setNativeAudios] = useState([]);
@@ -248,10 +248,10 @@ const ImitationPractice = () => {
     <div className="container mx-auto p-2 sm:p-4 max-w-2xl">
       <div className="mb-2 sm:mb-4">
         <h1 className="text-lg sm:text-2xl font-bold mb-0.5 sm:mb-1 text-center">
-          Pronunciation Practice
+          Imitate
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block text-center">
-          Search, listen, and practice pronunciation.
+          Search a word and try to imitate the native audio exactly.
         </p>
       </div>
 
@@ -449,7 +449,7 @@ const ImitationPractice = () => {
                   )}
                 </Button>
               ) : (
-                <div className="h-20 sm:h-8 flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600 rounded">
+                <div className="h-20 sm:h-20 flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600 rounded">
                   <span className="text-xs text-muted-foreground">
                     No recording yet
                   </span>
@@ -470,4 +470,4 @@ const ImitationPractice = () => {
   );
 };
 
-export default ImitationPractice;
+export default Imitate;

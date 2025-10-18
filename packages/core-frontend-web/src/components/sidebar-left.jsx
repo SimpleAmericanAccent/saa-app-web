@@ -560,13 +560,13 @@ export function SidebarLeft() {
 
               {/* Imitation Practice */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Imitation Practice">
+                <SidebarMenuButton asChild tooltip="Imitate">
                   <SidebarLink
                     to="/imitate"
                     className="flex items-center gap-2"
                   >
                     <Mic className="h-4 w-4" />
-                    {!isCollapsed && <span>Imitation Practice</span>}
+                    {!isCollapsed && <span>Imitate</span>}
                   </SidebarLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
