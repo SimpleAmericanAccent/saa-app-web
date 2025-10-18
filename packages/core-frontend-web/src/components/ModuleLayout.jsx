@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import TableOfContents from "../content/temp-components/TableOfContents";
-import { SoundContent } from "../content/temp-components/SoundContent";
+import TableOfContents from "../components/TableOfContents";
 
 export default function ModuleLayout({
   children,

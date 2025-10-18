@@ -5,10 +5,8 @@ import VSounds from "core-frontend-web/src/pages/vsounds.jsx";
 import VSynth from "core-frontend-web/src/pages/vsynth.jsx";
 import Home6 from "core-frontend-web/src/pages/stats.jsx";
 import Links from "core-frontend-web/src/pages/links.jsx";
-import Phonemes from "core-frontend-web/src/pages/phonemes.jsx";
 import SpellingPronunciationPage from "core-frontend-web/src/pages/SpellingPronunciationPage.jsx";
-import LexicalSets from "core-frontend-web/src/pages/onboarding/lexical-sets.jsx";
-import LexicalSetsQuiz from "core-frontend-web/src/pages/onboarding/lexical-sets-quiz.jsx";
+import LexicalSets from "core-frontend-web/src/pages/lexical-sets.jsx";
 import ModulePage from "core-frontend-web/src/pages/ModulePage.jsx";
 import UserDashboard from "core-frontend-web/src/pages/UserDashboard.jsx";
 import VowelReplays from "core-frontend-web/src/pages/replays/vowels.jsx";
@@ -32,7 +30,6 @@ const coreRoutes = (
     <Route path="/vsynth" element={<VSynth />} />
     <Route path="/stats" element={<Home6 />} />
     <Route path="/links" element={<Links />} />
-    <Route path="/phonemes" element={<Phonemes />} />
     <Route path="/quiz" element={<Quiz />} />
     <Route path="/quiz-audio-admin" element={<QuizAudioAdmin />} />
     <Route path="/imitate" element={<ImitationPractice />} />
@@ -49,8 +46,7 @@ const coreRoutes = (
     <Route path="/join" element={<Join />} />
     <Route path="/join-ty" element={<JoinThankYou />} />
 
-    <Route path="/onboarding/lexical-sets" element={<LexicalSets />} />
-    <Route path="/onboarding/lexical-sets-quiz" element={<LexicalSetsQuiz />} />
+    <Route path="/lexical-sets" element={<LexicalSets />} />
 
     <Route path="/learn/:moduleId" element={<ModulePage />} />
     <Route path="/learn/:moduleId/:lessonId" element={<ModulePage />} />

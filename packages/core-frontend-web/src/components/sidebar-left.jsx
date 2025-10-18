@@ -309,7 +309,7 @@ export function SidebarLeft() {
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <SidebarLink to="/onboarding/lexical-sets">
+                          <SidebarLink to="/lexical-sets">
                             <Brain className="h-4 w-4" />
                             {!isCollapsed && <span>Lexical Sets</span>}
                           </SidebarLink>
@@ -506,14 +506,6 @@ export function SidebarLeft() {
                       <SidebarMenuSub>
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton asChild>
-                            <SidebarLink to="/phonemes">
-                              <BookOpen className="h-4 w-4" />
-                              {!isCollapsed && <span>Phonemes</span>}
-                            </SidebarLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        <SidebarMenuSubItem>
-                          <SidebarMenuSubButton asChild>
                             <SidebarLink to="/stats">
                               <BarChart3 className="h-4 w-4" />
                               {!isCollapsed && <span>Group Accent Stats</span>}
@@ -550,8 +542,6 @@ export function SidebarLeft() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
-
-
 
               {/* Quiz */}
               <SidebarMenuItem>
@@ -596,8 +586,8 @@ export function SidebarLeft() {
                 </SidebarMenuItem>
               )}
 
-                            {/* Links */}
-                            <SidebarMenuItem>
+              {/* Links */}
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="Links">
                   <SidebarLink to="/links" className="flex items-center gap-2">
                     <LinkIcon className="h-4 w-4" />
