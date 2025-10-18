@@ -165,7 +165,9 @@ export default function GatedVideo({
               Get access to call replays and live training.
             </p>
             <a
-              href="/join"
+              href="https://simpleamericanaccent.com/mg?utm_source=saa_web_app&utm_medium=web_app&utm_campaign=gated_video"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-block bg-white text-black px-4 py-2 rounded-md font-medium hover:bg-gray-100"
             >
               Upgrade Now

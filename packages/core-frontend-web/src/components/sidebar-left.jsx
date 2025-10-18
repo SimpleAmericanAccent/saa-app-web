@@ -18,6 +18,8 @@ import {
   Construction,
   Mic,
   MonitorPlay,
+  Info,
+  MessageSquare,
 } from "lucide-react";
 
 import {
@@ -228,7 +230,8 @@ function SidebarMenuButtonWithClose({ children, asChild, ...props }) {
 }
 
 export function SidebarLeft() {
-  const { logout, user, fetchUserProfile, isAdmin } = useAuthStore();
+  const { logout, user, fetchUserProfile, isAdmin, canViewReplays, isLoading } =
+    useAuthStore();
   const { state, setOpen, openMobile } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [openSubmenus, setOpenSubmenus] = React.useState(new Set());
@@ -597,6 +600,47 @@ export function SidebarLeft() {
                     {shouldShowText && <span>External Resources</span>}
                   </SidebarLink>
                 </SidebarMenuButtonWithClose>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+
+          {/* Program Section */}
+          <SidebarGroup>
+            <SidebarGroupLabel>Program</SidebarGroupLabel>
+            <SidebarMenu>
+              {/* Program Details - Links to mgr if has replay access, mg if not */}
+
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Program Details">
+                  <a
+                    href={
+                      isLoading || !canViewReplays
+                        ? "https://simpleamericanaccent.com/mg&utm_source=saa_web_app&utm_medium=web_app&utm_campaign=sidebar"
+                        : "https://simpleamericanaccent.com/mgr&utm_source=saa_web_app&utm_medium=web_app&utm_campaign=sidebar"
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2"
+                  >
+                    <Info className="h-4 w-4" />
+                    {shouldShowText && <span>Program Details</span>}
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Message Will */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Message Will">
+                  <a
+                    href="https://wa.me/13194576479"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    {shouldShowText && <span>Message Will</span>}
+                  </a>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
