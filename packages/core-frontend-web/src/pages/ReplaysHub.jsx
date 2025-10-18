@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from "react";
 import GatedVideo from "../components/GatedVideo.jsx";
 import { replaysData } from "../data/replaysData.js";
+import { Waves, Construction, Music, Brain } from "lucide-react";
+import { Button } from "../components/ui/button";
 
 export default function ReplaysHub() {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -31,55 +33,62 @@ export default function ReplaysHub() {
     );
   };
 
+  const renderIcon = (iconName) => {
+    const iconMap = {
+      Waves: <Waves className="h-4 w-4" />,
+      Construction: <Construction className="h-4 w-4" />,
+      Music: <Music className="h-4 w-4" />,
+      Brain: <Brain className="h-4 w-4" />,
+    };
+    return iconMap[iconName] || <span>{iconName}</span>;
+  };
+
   return (
-    <div className="p-4">
-      <h1 className="text-4xl font-bold text-center mb-8">Call Replays</h1>
+    <div className="p-2 sm:p-4">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-4 sm:mb-6 lg:mb-8">
+        Call Replays
+      </h1>
 
       {/* Calendar Link */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-4 sm:mb-6 lg:mb-8">
         <a
           href="https://simpleamericanaccent.com/mgcalendar"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-lg font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+          className="inline-flex items-center gap-2 text-base sm:text-lg font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
         >
           📅 Upcoming Call Calendar
         </a>
       </div>
 
       {/* Filter Controls */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <div className="flex flex-wrap gap-4 justify-center items-center">
+      <div className="max-w-4xl mx-auto mb-4 sm:mb-6 lg:mb-8">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
           {/* Category Filters */}
-          <div className="flex flex-wrap gap-2">
-            <button
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Button
+              variant={selectedCategory === "all" ? "default" : "outline"}
               onClick={() => setSelectedCategory("all")}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                selectedCategory === "all"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
-              }`}
+              className="flex items-center gap-1 sm:gap-2 cursor-pointer text-xs sm:text-sm"
             >
-              📺 All Categories
-            </button>
+              📺 <span className="hidden sm:inline">All Categories</span>
+              <span className="sm:hidden">All</span>
+            </Button>
             {Object.entries(replaysData.categories).map(([key, category]) => (
-              <button
+              <Button
                 key={key}
+                variant={selectedCategory === key ? "default" : "outline"}
                 onClick={() => setSelectedCategory(key)}
-                className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                  selectedCategory === key
-                    ? `bg-${category.color}-600 text-white`
-                    : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
-                }`}
+                className="flex items-center gap-1 sm:gap-2 cursor-pointer text-xs sm:text-sm"
               >
-                <span>{category.icon}</span>
-                <span>{category.name}</span>
-              </button>
+                {renderIcon(category.icon)}
+                <span className="sm:inline">{category.name}</span>
+              </Button>
             ))}
           </div>
 
           {/* Featured Toggle */}
-          <label className="flex items-center gap-2 cursor-pointer">
+          {/* <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={showFeatured}
@@ -87,13 +96,13 @@ export default function ReplaysHub() {
               className="rounded"
             />
             <span>Featured Only</span>
-          </label>
+          </label> */}
         </div>
 
         {/* Category Description */}
         {selectedCategory !== "all" && (
-          <div className="text-center mt-4">
-            <p className="text-muted-foreground">
+          <div className="text-center mt-3 sm:mt-4 px-4">
+            <p className="text-sm sm:text-base text-muted-foreground">
               {getCategoryInfo(selectedCategory).description}
             </p>
           </div>
@@ -101,29 +110,27 @@ export default function ReplaysHub() {
       </div>
 
       {/* Videos Grid */}
-      <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
         {filteredVideos.length > 0 ? (
           filteredVideos.map((video) => (
-            <div key={video.id} className="w-full max-w-[500px]">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl">
-                  {getCategoryInfo(video.category).icon}
-                </span>
-                <h2 className="text-xl font-semibold text-center flex-1">
+            <div key={video.id} className="w-full">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                {renderIcon(getCategoryInfo(video.category).icon)}
+                <h2 className="text-lg sm:text-xl font-semibold text-center flex-1">
                   {video.title}
                 </h2>
               </div>
               <GatedVideo slug={video.slug} title={video.title} />
               {video.description && (
-                <p className="text-sm text-muted-foreground mt-2 text-center">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-2 text-center">
                   {video.description}
                 </p>
               )}
             </div>
           ))
         ) : (
-          <div className="text-center col-span-full">
-            <p className="text-muted-foreground text-lg">
+          <div className="col-span-full text-center">
+            <p className="text-muted-foreground text-base sm:text-lg">
               No videos found for the selected filters.
             </p>
           </div>
@@ -133,44 +140,28 @@ export default function ReplaysHub() {
       {/* Special handling for Smart Practice chapters */}
       {selectedCategory === "smart-practice" &&
         filteredVideos.some((v) => v.id === "smart-practice-2025") && (
-          <div className="max-w-4xl mx-auto mt-8">
-            <h3 className="text-xl font-semibold mb-4 text-center">
+          <div className="max-w-4xl mx-auto mt-6 sm:mt-8 px-2 sm:px-4">
+            <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center">
               Video Chapters
             </h3>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-              <ul className="space-y-3">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 sm:p-6">
+              <ul className="space-y-2 sm:space-y-3">
                 {replaysData.videos
                   .find((v) => v.id === "smart-practice-2025")
                   ?.chapters?.map((chapter, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded mr-3 mt-0.5">
+                    <li key={index} className="flex items-start gap-2 sm:gap-3">
+                      <span className="font-mono text-xs sm:text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded flex-shrink-0">
                         {chapter.time}
                       </span>
-                      <span>{chapter.title}</span>
+                      <span className="text-sm sm:text-base">
+                        {chapter.title}
+                      </span>
                     </li>
                   ))}
               </ul>
             </div>
           </div>
         )}
-
-      {/* Link to Resources page */}
-      <div className="max-w-4xl mx-auto mt-12 text-center">
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-2">
-            Looking for Training Resources?
-          </h2>
-          <p className="text-muted-foreground mb-4">
-            Find practice tools, pronunciation guides, and external resources
-          </p>
-          <a
-            href="/resources"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            📚 View Resources
-          </a>
-        </div>
-      </div>
     </div>
   );
 }
