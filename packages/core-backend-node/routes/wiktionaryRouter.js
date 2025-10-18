@@ -1,5 +1,5 @@
 import express from "express";
-const dictionaryRouter = express.Router();
+const wiktionaryRouter = express.Router();
 
 /**
  * Extract audio files from Wiktionary page content
@@ -298,7 +298,7 @@ const getWiktionaryUSAudio = async (req, res) => {
 };
 
 // Wiktionary proxy routes (to avoid CORS issues)
-dictionaryRouter.get("/wiktionary/audio/:word", getWiktionaryAudio);
-dictionaryRouter.get("/wiktionary/audio/:word/us", getWiktionaryUSAudio);
+wiktionaryRouter.get("/audio/:word", getWiktionaryAudio);
+wiktionaryRouter.get("/audio/:word/us", getWiktionaryUSAudio);
 
-export default dictionaryRouter;
+export default wiktionaryRouter;

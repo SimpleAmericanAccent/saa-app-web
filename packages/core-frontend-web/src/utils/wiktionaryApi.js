@@ -14,7 +14,7 @@ export const getWiktionaryAudio = async (word) => {
   try {
     // Use backend proxy to avoid CORS issues
     const response = await fetch(
-      `/api/dictionary/wiktionary/audio/${encodeURIComponent(word)}`
+      `/api/wiktionary/audio/${encodeURIComponent(word)}`
     );
 
     if (!response.ok) {
@@ -59,7 +59,7 @@ export const getWiktionaryUSAudio = async (word) => {
   try {
     // Use backend proxy to avoid CORS issues
     const response = await fetch(
-      `/api/dictionary/wiktionary/audio/${encodeURIComponent(word)}/us`
+      `/api/wiktionary/audio/${encodeURIComponent(word)}/us`
     );
 
     if (!response.ok) {
