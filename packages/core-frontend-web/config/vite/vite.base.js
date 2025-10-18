@@ -40,10 +40,7 @@ export const makeLogOnce = (label) => (server) => {
         unindent(
           `Started VITE server at ${
             isDev ? "https://localhost" : "http://localhost"
-          }:${server.config.server.port} for:
-              🧪 DEV
-              💻 FRONTEND-WEB
-              ${label}`
+          }:${server.config.server.port}`
         ) +
         "\n"
     );

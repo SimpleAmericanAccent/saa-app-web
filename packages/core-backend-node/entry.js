@@ -49,17 +49,11 @@ export function bootApp({
     const key = fs.readFileSync("../../localhost-key.pem");
 
     https.createServer({ key, cert }, app).listen(port, () => {
-      console.log(
-        `\nStarted HTTPS Express server on port ${port} for:\n` +
-          `  🧪 DEV\n  ⚙️  BACKEND-NODE\n  ${appLabel}`
-      );
+      console.log(`\nStarted HTTPS Express server on port ${port}`);
     });
   } else {
     app.listen(port, () => {
-      console.log(
-        `\nStarted Express server on port ${port} for:\n` +
-          `  🚀 PROD\n  ⚙️ BACKEND-NODE\n  ${appLabel}`
-      );
+      console.log(`\nStarted Express server on port ${port}`);
     });
   }
 }
