@@ -332,12 +332,12 @@ export default function Transcript() {
                           {tooltipsEnabled ? (
                             <>
                               <Eye className="h-4 w-4" />
-                              Hide Tooltips
+                              Tooltips
                             </>
                           ) : (
                             <>
                               <EyeOff className="h-4 w-4" />
-                              Show Tooltips
+                              Tooltips
                             </>
                           )}
                         </Button>
@@ -364,12 +364,12 @@ export default function Transcript() {
                           {isRightPanelCollapsed ? (
                             <>
                               <ChevronLeft className="h-4 w-4" />
-                              Show Stats
+                              Stats
                             </>
                           ) : (
                             <>
                               <ChevronRight className="h-4 w-4" />
-                              Hide Stats
+                              Stats
                             </>
                           )}
                         </Button>
