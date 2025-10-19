@@ -4,6 +4,37 @@
  */
 
 /**
+ * Clean word for API lookups by removing punctuation and converting to lowercase
+ * @param {string} word - The word to clean
+ * @param {string} type - Type of cleaning: 'cmu' for CMU dictionary, 'wiktionary' for Wiktionary
+ * @returns {string} Cleaned word
+ */
+export const cleanWordForAPI = (word, type = "wiktionary") => {
+  if (!word) return "";
+
+  let cleaned = word.toLowerCase().trim();
+
+  if (type === "cmu") {
+    // Remove punctuation for CMU dictionary: period, comma, exclamation, question mark, semicolon, colon, quotes, parentheses, brackets, braces
+    cleaned = cleaned.replace(/[.,!?;:"()\[\]{}]/g, "");
+  } else if (type === "wiktionary") {
+    // Remove punctuation for Wiktionary: period, comma, exclamation, question mark, semicolon, colon, hyphen, dash
+    cleaned = cleaned.replace(/[.,!?;:—-]/g, "");
+  }
+
+  return cleaned;
+};
+
+/**
+ * Clean word for Wiktionary lookup by removing punctuation and converting to lowercase
+ * @param {string} word - The word to clean
+ * @returns {string} Cleaned word
+ */
+const cleanWordForWiktionary = (word) => {
+  return cleanWordForAPI(word, "wiktionary");
+};
+
+/**
  * Get pronunciation audio files from Wiktionary for a given word
  * @param {string} word - The word to look up
  * @returns {Promise<Array>} Array of audio pronunciation objects
@@ -11,10 +42,13 @@
 export const getWiktionaryAudio = async (word) => {
   if (!word) return [];
 
+  const cleanedWord = cleanWordForWiktionary(word);
+  if (!cleanedWord) return [];
+
   try {
     // Use backend proxy to avoid CORS issues
     const response = await fetch(
-      `/api/wiktionary/audio/${encodeURIComponent(word)}`
+      `/api/wiktionary/audio/${encodeURIComponent(cleanedWord)}`
     );
 
     if (!response.ok) {
@@ -24,7 +58,10 @@ export const getWiktionaryAudio = async (word) => {
     const data = await response.json();
     return data || [];
   } catch (error) {
-    console.error(`Error fetching Wiktionary audio for "${word}":`, error);
+    console.error(
+      `Error fetching Wiktionary audio for "${cleanedWord}":`,
+      error
+    );
     return [];
   }
 };
@@ -56,10 +93,13 @@ export const getFlagForAccent = (accent) => {
 export const getWiktionaryUSAudio = async (word) => {
   if (!word) return null;
 
+  const cleanedWord = cleanWordForWiktionary(word);
+  if (!cleanedWord) return null;
+
   try {
     // Use backend proxy to avoid CORS issues
     const response = await fetch(
-      `/api/wiktionary/audio/${encodeURIComponent(word)}/us`
+      `/api/wiktionary/audio/${encodeURIComponent(cleanedWord)}/us`
     );
 
     if (!response.ok) {
@@ -75,7 +115,10 @@ export const getWiktionaryUSAudio = async (word) => {
 
     return null;
   } catch (error) {
-    console.error(`Error fetching Wiktionary US audio for "${word}":`, error);
+    console.error(
+      `Error fetching Wiktionary US audio for "${cleanedWord}":`,
+      error
+    );
     return null;
   }
 };

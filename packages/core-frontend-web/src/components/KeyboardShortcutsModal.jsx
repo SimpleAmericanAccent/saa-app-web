@@ -17,13 +17,13 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-2 gap-8 py-4">
+        <div className="grid grid-cols-2 gap-6 py-2">
           {/* Left Column - Keyboard Shortcuts */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold">
+          <div className="space-y-3">
+            <h3 className="text-base font-bold text-foreground border-b border-border pb-2 mb-3">
               Keyboard Playback Controls
             </h3>
-            <div className="grid gap-4">
+            <div className="grid gap-2">
               <div className="flex items-center justify-between">
                 <kbd className="px-2 py-1.5 text-xs font-semibold bg-white text-black border rounded-md">
                   Space
@@ -74,8 +74,10 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            <h3 className="text-sm font-semibold mt-6">Left/Right Click</h3>
-            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+            <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide mt-4">
+              Left/Right Click
+            </h4>
+            <div className="flex flex-col gap-1 text-sm text-muted-foreground">
               <div className="flex items-center justify-between">
                 <span title="Left Click">
                   <svg width="24" height="24" viewBox="0 0 24 24">
@@ -130,38 +132,135 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Right Column - Pronunciation Guide */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold">Pronunciation Guide</h3>
-            <div className="text-sm text-muted-foreground">
-              <p className="mb-2">
-                Feedback provided in format
-                <br />
-                TARGET x ACTUAL:
-              </p>
-              <ul className="list-disc pl-4 space-y-1">
-                <li>KIT x FLEECE</li>
-                <li>DH x D/flap</li>
-              </ul>
-              <p className="my-2">
-                ARPAbet symbols are converted to lexical sets / more common
-                consonant spellings:
-              </p>
-              <ul className="list-disc pl-4 space-y-1">
-                <li className="whitespace-nowrap">IY → FLEECE ("beet")</li>
-                <li>IH → KIT ("bit")</li>
-                <li>AA/AO → LOT ("bought")</li>
-                <li>ER → NURSE ("bird")</li>
-                <li>HH → H ("hi")</li>
-                <li>JH → J ("jungle")</li>
-              </ul>
-              <p className="mt-2">
-                Vowel stress markers (0, 1, 2) indicate syllable stress:
-              </p>
-              <ul className="list-disc pl-4">
-                <li>0: No stress</li>
-                <li>1: Primary stress</li>
-                <li>2: Secondary stress</li>
-              </ul>
+          <div className="space-y-3">
+            <h3 className="text-base font-bold text-foreground border-b border-border pb-2 mb-3">
+              Pronunciation Guide
+            </h3>
+
+            {/* 1. Annotations/Feedback */}
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                Annotations/Feedback
+              </h4>
+              <div className="text-xs text-muted-foreground">
+                <p className="mb-1">
+                  Format: <span className="font-mono">TARGET x ACTUAL</span>
+                </p>
+                <div>
+                  <div className="font-mono bg-muted p-1 m-1 rounded ">
+                    KIT x FLEECE
+                  </div>
+                  <div className="font-mono bg-muted p-1 m-1 rounded">
+                    DH x D/flap
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Pronunciation Conversion */}
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                Pronunciation Conversion
+              </h4>
+              <div className="text-sm text-muted-foreground">
+                <p>
+                  From{" "}
+                  <a
+                    href="https://en.wikipedia.org/wiki/CMU_Pronouncing_Dictionary"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    CMU Dictionary
+                  </a>
+                </p>
+                <p className="ml-5">
+                  →{" "}
+                  <a
+                    href="https://en.wikipedia.org/wiki/Lexical_set"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Lexical Sets
+                  </a>
+                </p>
+                <p className="ml-5">
+                  →{" "}
+                  <a
+                    href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    IPA
+                  </a>
+                </p>
+              </div>
+            </div>
+
+            {/* 3. Stress Markers */}
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                Stress Markers
+              </h4>
+              <div className="text-xs text-muted-foreground">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs border-collapse border border-border">
+                    <thead>
+                      <tr className="bg-muted">
+                        <th className="border border-border p-1 text-center font-semibold">
+                          Stress
+                        </th>
+                        <th className="border border-border p-1 text-center font-semibold">
+                          CMU/lex
+                        </th>
+                        <th className="border border-border p-1 text-center font-semibold">
+                          IPA
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="border border-border p-1 text-center">
+                          None
+                        </td>
+                        <td className="border border-border p-1 font-mono text-center">
+                          _0
+                        </td>
+                        <td className="border border-border p-1 font-mono text-center">
+                          _
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border border-border p-1 text-center">
+                          Primary
+                        </td>
+                        <td className="border border-border p-1 font-mono text-center">
+                          _1
+                        </td>
+                        <td className="border border-border p-1 font-mono text-center">
+                          ˈ_
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border border-border p-1 text-center">
+                          Secondary
+                        </td>
+                        <td className="border border-border p-1 font-mono text-center">
+                          _2
+                        </td>
+                        <td className="border border-border p-1 font-mono text-center">
+                          <span className="font-ipa text-sm relative top-[2px]">
+                            ˌ
+                          </span>
+                          _
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
