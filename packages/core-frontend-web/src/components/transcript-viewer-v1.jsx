@@ -340,6 +340,15 @@ const TranscriptViewerV1 = ({
           data.arpabets.includes(basePhoneme)
         );
 
+        // Special handling for AH phoneme based on stress
+        if (basePhoneme === "AH") {
+          if (stressMarker === "0") {
+            return "commA" + stressMarker; // commA for unstressed AH
+          } else {
+            return "STRUT" + stressMarker; // STRUT for stressed AH
+          }
+        }
+
         return lexicalSet ? lexicalSet[0] + stressMarker : phoneme;
       });
 
@@ -358,14 +367,15 @@ const TranscriptViewerV1 = ({
       TRAP: "æ",
       GOOSE: "u",
       FOOT: "ʊ",
-      STRUT: "ə",
+      STRUT: "ʌ", // STRUT vowel (stressed AH)
+      commA: "ə", // commA vowel (unstressed AH)
       LOT: "ɑ",
       FACE: "eɪ",
       PRICE: "aɪ",
       CHOICE: "ɔɪ",
       GOAT: "oʊ",
       MOUTH: "aʊ",
-      NURSE: "ɜr",
+      NURSE: "ər",
     };
 
     // CMU to IPA mapping (for consonants)
