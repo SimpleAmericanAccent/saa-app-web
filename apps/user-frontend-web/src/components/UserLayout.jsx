@@ -21,7 +21,7 @@ export default function UserLayout({ children }) {
       <MobileNav />
       <div className="flex flex-1">
         <SidebarLeft />
-        <main className="flex-1 transition-all duration-200 pt-[var(--navbar-height)] md:pt-0">
+        <main className="flex-1 transition-all duration-200 pt-[var(--navbar-height)] md:pt-0 min-w-0">
           {children}
         </main>
       </div>

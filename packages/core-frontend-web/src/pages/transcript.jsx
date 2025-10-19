@@ -10,7 +10,15 @@ import { fetchData } from "core-frontend-web/src/utils/api";
 import { cn } from "core-frontend-web/src/lib/utils";
 
 import useVersionStore from "core-frontend-web/src/stores/versionStore";
-import { HelpCircle, Keyboard, Mic, Eye, EyeOff } from "lucide-react";
+import {
+  HelpCircle,
+  Keyboard,
+  Mic,
+  Eye,
+  EyeOff,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 import TranscriptViewerV1 from "core-frontend-web/src/components/transcript-viewer-v1";
 import TranscriptViewerV2 from "core-frontend-web/src/components/transcript-viewer-v2";
@@ -27,6 +35,7 @@ import {
   ResizablePanelGroup,
 } from "core-frontend-web/src/components/ui/resizable";
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
+import { SidebarRight } from "core-frontend-web/src/components/sidebar-right";
 
 export default function Transcript() {
   // #region declarations
@@ -46,6 +55,8 @@ export default function Transcript() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
+  const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
+  const rightPanelRef = useRef(null);
   const { version } = useVersionStore();
 
   const handleFilterChange = (activeIssues) => {
@@ -286,7 +297,7 @@ export default function Transcript() {
   const hasAudioLoaded = Boolean(mp3url && annotatedTranscript?.length);
 
   return (
-    <div>
+    <div className="flex">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel id="transcript-main" order={0}>
           <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
@@ -311,24 +322,58 @@ export default function Transcript() {
                         size="default"
                       />
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setTooltipsEnabled(!tooltipsEnabled)}
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        {tooltipsEnabled ? (
-                          <>
-                            <Eye className="h-4 w-4" />
-                            Hide Tooltips
-                          </>
-                        ) : (
-                          <>
-                            <EyeOff className="h-4 w-4" />
-                            Show Tooltips
-                          </>
-                        )}
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setTooltipsEnabled(!tooltipsEnabled)}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
+                          {tooltipsEnabled ? (
+                            <>
+                              <Eye className="h-4 w-4" />
+                              Hide Tooltips
+                            </>
+                          ) : (
+                            <>
+                              <EyeOff className="h-4 w-4" />
+                              Show Tooltips
+                            </>
+                          )}
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (rightPanelRef.current) {
+                              if (rightPanelRef.current.isCollapsed()) {
+                                rightPanelRef.current.expand();
+                              } else {
+                                rightPanelRef.current.collapse();
+                              }
+                            }
+                          }}
+                          className="flex items-center gap-2 cursor-pointer"
+                          title={
+                            isRightPanelCollapsed
+                              ? "Expand stats panel"
+                              : "Collapse stats panel"
+                          }
+                        >
+                          {isRightPanelCollapsed ? (
+                            <>
+                              <ChevronLeft className="h-4 w-4" />
+                              Show Stats
+                            </>
+                          ) : (
+                            <>
+                              <ChevronRight className="h-4 w-4" />
+                              Hide Stats
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <PersonAudioSelector
@@ -415,9 +460,17 @@ export default function Transcript() {
         {/* Only show right panel when audio is loaded */}
         {hasAudioLoaded && (
           <ResizablePanel
+            ref={rightPanelRef}
             id="transcript-stats"
             order={1}
             className="h-[calc(100vh-var(--navbar-height))] sm:h-screen"
+            defaultSize={50}
+            minSize={30}
+            maxSize={50}
+            collapsible={true}
+            collapsedSize={0}
+            onCollapse={() => setIsRightPanelCollapsed(true)}
+            onExpand={() => setIsRightPanelCollapsed(false)}
           >
             <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
               <div className="px-4 bg-background">
@@ -440,6 +493,7 @@ export default function Transcript() {
           </ResizablePanel>
         )}
       </ResizablePanelGroup>
+      {/* <SidebarRight /> */}
 
       {/* Floating help buttons */}
       {hasAudioLoaded && (
