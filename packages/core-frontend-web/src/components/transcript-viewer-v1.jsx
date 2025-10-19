@@ -70,6 +70,31 @@ const TranscriptViewerV1 = ({
     );
   };
 
+  // Function to detect TRAP allophonic patterns
+  const getTrapAllophonicNote = (pronunciations) => {
+    if (!pronunciations || pronunciations.length === 0) return null;
+
+    for (const pronunciation of pronunciations) {
+      const phonemes = pronunciation.split(" ");
+
+      for (let i = 0; i < phonemes.length - 1; i++) {
+        const currentPhoneme = phonemes[i].replace(/[0-2]$/, ""); // Remove stress marker
+        const nextPhoneme = phonemes[i + 1].replace(/[0-2]$/, ""); // Remove stress marker
+
+        if (currentPhoneme === "AE") {
+          // TRAP vowel
+          if (nextPhoneme === "M" || nextPhoneme === "N") {
+            return "TRAP before M or N becomes more like [eə̯]";
+          } else if (nextPhoneme === "NG") {
+            return "TRAP before NG becomes more like [eɪ̯]";
+          }
+        }
+      }
+    }
+
+    return null;
+  };
+
   const nextPronunciation = () => {
     const max = getMaxPronunciations();
     setPronunciationIndex((prev) => (prev + 1) % max);
@@ -656,6 +681,20 @@ const TranscriptViewerV1 = ({
                               None found
                             </div>
                           )}
+
+                          {/* Allophonic note for TRAP patterns */}
+                          {!isLoadingWordData &&
+                            currentWordData.pronunciations.length > 0 &&
+                            (() => {
+                              const allophonicNote = getTrapAllophonicNote(
+                                currentWordData.pronunciations
+                              );
+                              return allophonicNote ? (
+                                <div className="text-xs text-center text-muted-background px-1 mt-1 border-t border-border/20 pt-1">
+                                  Note: {allophonicNote}
+                                </div>
+                              ) : null;
+                            })()}
                         </div>
 
                         {/* Audio Section - Always Show */}
