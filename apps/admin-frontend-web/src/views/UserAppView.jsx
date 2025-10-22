@@ -1,5 +1,5 @@
 import { Routes } from "react-router-dom";
-import coreRoutes from "core-frontend-web/src/routes/coreRoutes.jsx";
+import coreRoutes from "core-frontend-web/src/routes/core-routes.jsx";
 import { SidebarLeft } from "core-frontend-web/src/components/sidebar-left";
 import { MobileNav } from "core-frontend-web/src/components/mobile-nav";
 

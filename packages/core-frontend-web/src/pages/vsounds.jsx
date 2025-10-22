@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "core-frontend-web/src/components/ui/select";
 import timestampsData from "core-frontend-web/src/data/timestamps.json";
-import { getWiktionaryUSAudio } from "../utils/wiktionaryApi.js";
+import { getWiktionaryUSAudio } from "../utils/wiktionary-api.js";
 
 export default function VSounds() {
   const [selectedColumn, setSelectedColumn] = useState("gambiarra");

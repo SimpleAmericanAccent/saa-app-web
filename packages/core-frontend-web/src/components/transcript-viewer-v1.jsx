@@ -2,8 +2,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import React from "react";
 import { cn } from "core-frontend-web/src/lib/utils";
-import useAuthStore from "core-frontend-web/src/stores/authStore";
-import { useWordAudio } from "core-frontend-web/src/hooks/useWordAudio";
+import useAuthStore from "core-frontend-web/src/stores/auth-store";
+import { useWordAudio } from "core-frontend-web/src/hooks/use-word-audio";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -27,7 +27,10 @@ import {
   Volume2,
 } from "lucide-react";
 import KeyboardShortcutsModal from "./keyboard-shortcuts-modal";
-import { getWiktionaryAllAudio, cleanWordForAPI } from "../utils/wiktionaryApi";
+import {
+  getWiktionaryAllAudio,
+  cleanWordForAPI,
+} from "../utils/wiktionary-api";
 
 const TranscriptViewerV1 = ({
   annotatedTranscript,

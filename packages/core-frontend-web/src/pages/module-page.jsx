@@ -5,7 +5,7 @@ import ModuleLayout from "core-frontend-web/src/components/module-layout";
 import {
   SoundContent,
   SoundGrid,
-} from "core-frontend-web/src/components/SoundContent";
+} from "core-frontend-web/src/components/sound-content";
 import wlsData from "core-frontend-web/src/data/wls-data.json";
 
 export default function ModulePage() {

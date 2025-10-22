@@ -1,4 +1,4 @@
-import { getCategoryStats, getCategoryCompletion } from "./quizStats.js";
+import { getCategoryStats, getCategoryCompletion } from "./quiz-stats.js";
 
 describe("Quiz Statistics", () => {
   const mockResults = {

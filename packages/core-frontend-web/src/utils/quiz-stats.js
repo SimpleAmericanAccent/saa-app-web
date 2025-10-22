@@ -24,7 +24,7 @@ const QUIZ_TYPE_IDS = {
 // Get quiz results from API
 export const getQuizResults = async (recentTrials = 30) => {
   try {
-    const { fetchQuizResults } = await import("./quizApi");
+    const { fetchQuizResults } = await import("./quiz-api");
     return await fetchQuizResults(recentTrials);
   } catch (error) {
     console.error("Error fetching quiz results:", error);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getWiktionaryUSAudio } from "../utils/wiktionaryApi.js";
+import { getWiktionaryUSAudio } from "../utils/wiktionary-api.js";
 
 // Cache for dictionary API audio URLs
 const dictionaryAudioCache = new Map();

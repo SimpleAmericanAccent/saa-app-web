@@ -34,7 +34,7 @@ const F2_MAX_DISPLAY =
   Math.max(...F2Values) +
   0.05 * (Math.max(...F2Values) - Math.min(...F2Values));
 
-export default function VowelSynthesizer() {
+export default function VowelSynth() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [formants, setFormants] = useState({
     F1: 500,

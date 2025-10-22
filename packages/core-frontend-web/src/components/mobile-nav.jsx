@@ -1,7 +1,7 @@
 import * as React from "react";
 import { SidebarTrigger } from "core-frontend-web/src/components/ui/sidebar";
 import { ModeToggle } from "./mode-toggle";
-import useAuthStore from "core-frontend-web/src/stores/authStore";
+import useAuthStore from "core-frontend-web/src/stores/auth-store";
 import { Menu, ArrowLeft, ArrowRight, RefreshCw } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 

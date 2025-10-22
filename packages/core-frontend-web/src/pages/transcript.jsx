@@ -1,15 +1,15 @@
 import { useEffect, useState, useRef } from "react";
-import useFetchResources from "core-frontend-web/src/hooks/useFetchResources";
-import useFetchAudioV1 from "core-frontend-web/src/hooks/useFetchAudioV1";
-import useFetchAudioV2 from "core-frontend-web/src/hooks/useFetchAudioV2";
-import useAudioSync from "core-frontend-web/src/hooks/useAudioSync";
+import useFetchResources from "core-frontend-web/src/hooks/use-fetch-resources";
+import useFetchAudioV1 from "core-frontend-web/src/hooks/use-fetch-audio-v1";
+import useFetchAudioV2 from "core-frontend-web/src/hooks/use-fetch-audio-v2";
+import useAudioSync from "core-frontend-web/src/hooks/use-audio-sync";
 import { useParams } from "react-router-dom";
 
-import { findActiveWordIndex } from "core-frontend-web/src/utils/binarySearch";
+import { findActiveWordIndex } from "core-frontend-web/src/utils/binary-search";
 import { fetchData } from "core-frontend-web/src/utils/api";
 import { cn } from "core-frontend-web/src/lib/utils";
 
-import useVersionStore from "core-frontend-web/src/stores/versionStore";
+import useVersionStore from "core-frontend-web/src/stores/version-store";
 import {
   HelpCircle,
   Keyboard,
@@ -26,7 +26,7 @@ import TranscriptStatsV1 from "core-frontend-web/src/components/transcript-stats
 import TranscriptStatsV2 from "core-frontend-web/src/components/transcript-stats-v2";
 import AudioPlayer from "core-frontend-web/src/components/audio-player";
 import KeyboardShortcutsModal from "core-frontend-web/src/components/keyboard-shortcuts-modal";
-import TranscriptCTA from "core-frontend-web/src/components/TranscriptCTA";
+import TranscriptCTA from "core-frontend-web/src/components/transcript-cta";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import { PersonAudioSelector } from "core-frontend-web/src/components/person-audio-selector";
 import {

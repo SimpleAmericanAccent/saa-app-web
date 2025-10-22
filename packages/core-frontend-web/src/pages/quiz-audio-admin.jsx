@@ -17,10 +17,9 @@ import {
   Trash2,
   AlertTriangle,
 } from "lucide-react";
-import { QUIZ_TYPE_IDS } from "./Quiz";
-import useAuthStore from "../stores/authStore";
-import { fetchContrasts, fetchPairs } from "../utils/quizApi";
-import { getWiktionaryUSAudio } from "../utils/wiktionaryApi";
+import useAuthStore from "../stores/auth-store";
+import { fetchContrasts, fetchPairs } from "../utils/quiz-api";
+import { getWiktionaryUSAudio } from "../utils/wiktionary-api";
 
 // Rate limiting configuration
 const RATE_LIMIT_CONFIG = {

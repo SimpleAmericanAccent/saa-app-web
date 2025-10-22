@@ -1,7 +1,7 @@
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
 import { Checkbox } from "core-frontend-web/src/components/ui/checkbox";
 import { useState, useEffect, useRef } from "react";
-import useFetchAudioV1 from "core-frontend-web/src/hooks/useFetchAudioV1";
+import useFetchAudioV1 from "core-frontend-web/src/hooks/use-fetch-audio-v1";
 
 export default function TranscriptList({
   people,

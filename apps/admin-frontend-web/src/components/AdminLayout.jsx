@@ -1,5 +1,5 @@
 import AdminSidebar from "./AdminSidebar";
-import useAuthStore from "core-frontend-web/src/stores/authStore";
+import useAuthStore from "core-frontend-web/src/stores/auth-store";
 import { useEffect } from "react";
 
 export default function AdminLayout({ children }) {

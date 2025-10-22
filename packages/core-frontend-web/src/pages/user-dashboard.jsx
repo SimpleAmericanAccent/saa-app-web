@@ -1,9 +1,9 @@
-import useAuthStore from "core-frontend-web/src/stores/authStore";
+import useAuthStore from "core-frontend-web/src/stores/auth-store";
 import { useEffect, useState, useMemo } from "react";
 import { fetchData } from "core-frontend-web/src/utils/api";
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
-import useFetchResources from "core-frontend-web/src/hooks/useFetchResources";
-import TranscriptList from "core-frontend-web/src/components/TranscriptList";
+import useFetchResources from "core-frontend-web/src/hooks/use-fetch-resources";
+import TranscriptList from "core-frontend-web/src/components/transcript-list";
 import TranscriptStatsV1 from "core-frontend-web/src/components/transcript-stats-v1";
 import {
   ResizableHandle,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import useAuthStore from "core-frontend-web/src/stores/authStore";
+import useAuthStore from "core-frontend-web/src/stores/auth-store";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 

@@ -1,17 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useQuizStatsStore } from "../stores/quizStatsStore";
+import { useQuizStatsStore } from "../stores/quiz-stats-store";
 import {
   fetchQuizSettings,
   saveQuizSettings,
   fetchQuizResults,
-} from "../utils/quizApi";
-import useAuthStore from "../stores/authStore";
+} from "../utils/quiz-api";
+import useAuthStore from "../stores/auth-store";
 import {
   fetchContrasts,
   fetchPairs,
   saveTrial,
   getAllQuizMetadata,
-} from "../utils/quizApi";
+} from "../utils/quiz-api";
 import {
   getPerformanceLevel,
   getTextColorClass,
@@ -24,8 +24,8 @@ import {
   getSubduedGradientBorderStyle,
   getSubduedGradientColorStyle,
   getQuizCardTextProps,
-} from "../utils/performanceColors";
-import { getWiktionaryUSAudio } from "../utils/wiktionaryApi";
+} from "../utils/performance-colors";
+import { getWiktionaryUSAudio } from "../utils/wiktionary-api";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import {
   Card,
@@ -49,7 +49,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import ProgressModal from "../components/ProgressModal";
+import ProgressModal from "../components/progress-modal";
 
 // ScoreBar component for visual progress display
 const ScoreBar = ({

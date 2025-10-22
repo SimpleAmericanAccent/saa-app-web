@@ -4,16 +4,16 @@ import WLS from "core-frontend-web/src/pages/wls.jsx";
 import VSounds from "core-frontend-web/src/pages/vsounds.jsx";
 import VSynth from "core-frontend-web/src/pages/vsynth.jsx";
 import Stats from "core-frontend-web/src/pages/stats.jsx";
-import SpellingPronunciationPage from "core-frontend-web/src/pages/SpellingPronunciationPage.jsx";
+import SpellingPronunciationPage from "core-frontend-web/src/pages/spelling-pronunciation-page.jsx";
 import LexicalSets from "core-frontend-web/src/pages/lexical-sets.jsx";
-import ModulePage from "core-frontend-web/src/pages/ModulePage.jsx";
-import UserDashboard from "core-frontend-web/src/pages/UserDashboard.jsx";
-import ReplaysHub from "core-frontend-web/src/pages/ReplaysHub.jsx";
-import Resources from "core-frontend-web/src/pages/Resources.jsx";
-import Quiz from "core-frontend-web/src/pages/Quiz.jsx";
-import QuizAudioAdmin from "core-frontend-web/src/pages/QuizAudioAdmin.jsx";
-import Join from "core-frontend-web/src/pages/Join.jsx";
-import JoinThankYou from "core-frontend-web/src/pages/JoinThankYou.jsx";
+import ModulePage from "core-frontend-web/src/pages/module-page.jsx";
+import UserDashboard from "core-frontend-web/src/pages/user-dashboard.jsx";
+import ReplaysHub from "core-frontend-web/src/pages/replays-hub.jsx";
+import Resources from "core-frontend-web/src/pages/resources.jsx";
+import Quiz from "core-frontend-web/src/pages/quiz.jsx";
+import QuizAudioAdmin from "core-frontend-web/src/pages/quiz-audio-admin.jsx";
+import Join from "core-frontend-web/src/pages/join.jsx";
+import JoinThankYou from "core-frontend-web/src/pages/join-ty.jsx";
 import Imitate from "core-frontend-web/src/pages/imitate.jsx";
 
 const coreRoutes = (

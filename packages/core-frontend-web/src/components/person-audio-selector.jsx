@@ -28,7 +28,7 @@ import {
 } from "core-frontend-web/src/components/ui/dialog";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import { cn } from "core-frontend-web/src/lib/utils";
-import TranscriptCTA from "core-frontend-web/src/components/TranscriptCTA";
+import TranscriptCTA from "core-frontend-web/src/components/transcript-cta";
 
 export function PersonAudioSelector({
   people,

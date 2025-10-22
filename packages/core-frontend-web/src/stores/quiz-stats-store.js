@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getQuizStats } from "../utils/quizStats";
+import { getQuizStats } from "../utils/quiz-stats";
 
 // Centralized quiz stats store
 export const useQuizStatsStore = create((set, get) => ({

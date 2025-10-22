@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { resourcesData } from "../data/resourcesData.js";
+import { resourcesData } from "../data/resources-data.js";
 import { ExternalLink, Filter, X, Check } from "lucide-react";
-import { Button } from "../components/ui/button";
+import { Button } from "../components/ui/button.js";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../components/ui/popover";
+} from "../components/ui/popover.js";
 import {
   Command,
   CommandEmpty,
@@ -14,8 +14,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "../components/ui/command";
-import { Badge } from "../components/ui/badge";
+} from "../components/ui/command.js";
+import { Badge } from "../components/ui/badge.js";
 
 export default function Resources() {
   const [selectedFilters, setSelectedFilters] = useState({});

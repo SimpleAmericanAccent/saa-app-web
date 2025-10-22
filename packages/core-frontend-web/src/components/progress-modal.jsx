@@ -8,8 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { ProgressChart } from "./ProgressChart";
-import { fetchProgressData, fetchContrasts } from "../utils/quizApi";
+import { ProgressChart } from "./progress-chart";
+import { fetchProgressData, fetchContrasts } from "../utils/quiz-api";
 import { TrendingUp, Target, Clock, X, RefreshCw } from "lucide-react";
 
 export default function ProgressModal({

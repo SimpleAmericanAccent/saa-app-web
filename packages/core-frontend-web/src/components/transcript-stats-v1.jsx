@@ -17,9 +17,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from "core-frontend-web/src/components/ui/dropdown-menu";
-import PhonemeGridSummary from "core-frontend-web/src/components/PhonemeGridSummary";
+import PhonemeGridSummary from "core-frontend-web/src/components/phoneme-grid-summary";
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
-import { useWordAudio } from "core-frontend-web/src/hooks/useWordAudio";
+import { useWordAudio } from "core-frontend-web/src/hooks/use-word-audio";
 
 // Define WordFrequencyList component first
 const WordFrequencyList = ({ words }) => {

@@ -1,4 +1,4 @@
-import VowelSynthesizer from "../components/VowelSynthesizer";
+import VowelSynthesizer from "../components/vowel-synth";
 
 export default function VSynth() {
   return (

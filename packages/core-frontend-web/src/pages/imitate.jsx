@@ -18,7 +18,7 @@ import {
   Loader2,
   AlertTriangle,
 } from "lucide-react";
-import { getWiktionaryAllAudio } from "../utils/wiktionaryApi";
+import { getWiktionaryAllAudio } from "../utils/wiktionary-api";
 
 const Imitate = () => {
   const [searchTerm, setSearchTerm] = useState("");

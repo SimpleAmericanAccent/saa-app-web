@@ -58,16 +58,16 @@ import {
   DropdownMenuTrigger,
 } from "core-frontend-web/src/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
-import useAuthStore from "core-frontend-web/src/stores/authStore";
+import useAuthStore from "core-frontend-web/src/stores/auth-store";
 import { useIsMobile } from "core-frontend-web/src/hooks/use-mobile";
 import { User, LogOut, Settings } from "lucide-react";
-import { useQuizStatsStore } from "../stores/quizStatsStore";
-import { fetchQuizResults, getAllQuizMetadata } from "../utils/quizApi";
+import { useQuizStatsStore } from "../stores/quiz-stats-store";
+import { fetchQuizResults, getAllQuizMetadata } from "../utils/quiz-api";
 
 import {
   getTextColorClass,
   getGradientColorStyle,
-} from "../utils/performanceColors";
+} from "../utils/performance-colors";
 
 // Quiz statistics component for sidebar
 function QuizStats() {

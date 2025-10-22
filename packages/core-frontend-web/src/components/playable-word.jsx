@@ -1,4 +1,4 @@
-import { useWordAudio } from "core-frontend-web/src/hooks/useWordAudio";
+import { useWordAudio } from "core-frontend-web/src/hooks/use-word-audio";
 
 export const PlayableWord = ({ word, isInline = false, onClick }) => {
   const { playWord, isLoading } = useWordAudio();

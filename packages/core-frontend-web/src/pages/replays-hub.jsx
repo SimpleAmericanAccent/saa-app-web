@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
 import GatedVideo from "../components/gated-video.jsx";
-import { replaysData } from "../data/replaysData.js";
+import { replaysData } from "../data/replays-data.js";
 import { getCategoryInfo, renderCategoryIcon } from "../data/categories.jsx";
-import { Button } from "../components/ui/button";
+import { Button } from "../components/ui/button.js";
 
 export default function ReplaysHub() {
   const [selectedCategory, setSelectedCategory] = useState("all");
