@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ForceGraphNetwork from "../components/ForceGraphNetwork";
+import ForceGraphNetwork from "../components/force-graph-network";
 import wlsData from "core-frontend-web/src/data/wls-data.json";
 
 const SpellingPronunciationPage = () => {

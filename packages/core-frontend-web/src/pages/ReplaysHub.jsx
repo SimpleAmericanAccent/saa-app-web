@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import GatedVideo from "../components/GatedVideo.jsx";
+import GatedVideo from "../components/gated-video.jsx";
 import { replaysData } from "../data/replaysData.js";
 import { getCategoryInfo, renderCategoryIcon } from "../data/categories.jsx";
 import { Button } from "../components/ui/button";

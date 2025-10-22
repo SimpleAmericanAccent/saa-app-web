@@ -26,7 +26,7 @@ import {
   Pause,
   Volume2,
 } from "lucide-react";
-import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
+import KeyboardShortcutsModal from "./keyboard-shortcuts-modal";
 import { getWiktionaryAllAudio, cleanWordForAPI } from "../utils/wiktionaryApi";
 
 const TranscriptViewerV1 = ({

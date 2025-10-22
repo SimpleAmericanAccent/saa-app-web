@@ -1,7 +1,7 @@
 import useAuthStore from "core-frontend-web/src/stores/authStore";
 import { useEffect } from "react";
 import { SidebarLeft } from "core-frontend-web/src/components/sidebar-left";
-import { MobileNav } from "core-frontend-web/src/components/MobileNav";
+import { MobileNav } from "core-frontend-web/src/components/mobile-nav";
 
 export default function UserLayout({ children }) {
   const { isLoggedOut, fetchAdminStatus } = useAuthStore();

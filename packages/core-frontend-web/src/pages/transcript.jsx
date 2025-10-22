@@ -24,8 +24,8 @@ import TranscriptViewerV1 from "core-frontend-web/src/components/transcript-view
 import TranscriptViewerV2 from "core-frontend-web/src/components/transcript-viewer-v2";
 import TranscriptStatsV1 from "core-frontend-web/src/components/transcript-stats-v1";
 import TranscriptStatsV2 from "core-frontend-web/src/components/transcript-stats-v2";
-import AudioPlayer from "core-frontend-web/src/components/AudioPlayer";
-import KeyboardShortcutsModal from "core-frontend-web/src/components/KeyboardShortcutsModal";
+import AudioPlayer from "core-frontend-web/src/components/audio-player";
+import KeyboardShortcutsModal from "core-frontend-web/src/components/keyboard-shortcuts-modal";
 import TranscriptCTA from "core-frontend-web/src/components/TranscriptCTA";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import { PersonAudioSelector } from "core-frontend-web/src/components/person-audio-selector";
