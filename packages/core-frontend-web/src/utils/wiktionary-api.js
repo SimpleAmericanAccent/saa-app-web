@@ -12,14 +12,19 @@
 export const cleanWordForAPI = (word, type = "wiktionary") => {
   if (!word) return "";
 
-  let cleaned = word.toLowerCase().trim();
+  let cleaned = word.trim();
 
   if (type === "cmu") {
     // Remove punctuation for CMU dictionary: period, comma, exclamation, question mark, semicolon, colon, quotes, parentheses, brackets, braces
-    cleaned = cleaned.replace(/[.,!?;:"()\[\]{}]/g, "");
+    cleaned = cleaned.replace(/[.,!?;:“”"—()\[\]{}]/g, "").replace(/’/g, "'");
   } else if (type === "wiktionary") {
     // Remove punctuation for Wiktionary: period, comma, exclamation, question mark, semicolon, colon, hyphen, dash
-    cleaned = cleaned.replace(/[.,!?;:—-]/g, "");
+    cleaned = cleaned.replace(/[.,!?;:“”"—]/g, "").replace(/’/g, "'");
+  }
+
+  if (cleaned === "I" || cleaned.startsWith("I'")) {
+  } else {
+    cleaned = cleaned.toLowerCase();
   }
 
   return cleaned;

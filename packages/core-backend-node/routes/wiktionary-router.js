@@ -2,6 +2,28 @@ import express from "express";
 const wiktionaryRouter = express.Router();
 
 /**
+ * Clean word for API lookups by removing punctuation and handling "I" capitalization
+ * @param {string} word - The word to clean
+ * @returns {string} Cleaned word
+ */
+const cleanWordForAPI = (word) => {
+  if (!word) return "";
+
+  // Special handling for "I" and contractions with "I"
+  let cleaned;
+  if (word === "I" || word.startsWith("I'")) {
+    cleaned = word.trim();
+  } else {
+    cleaned = word.toLowerCase().trim();
+  }
+
+  // Remove punctuation for Wiktionary: period, comma, exclamation, question mark, semicolon, colon, hyphen, dash, apostrophes
+  cleaned = cleaned.replace(/[.,!?;:""—]/g, "");
+
+  return cleaned;
+};
+
+/**
  * Extract audio files from Wiktionary page content
  */
 const extractAudioFiles = (content, word) => {
@@ -131,7 +153,7 @@ const getRegion = (accent) => {
 const getWiktionaryAudio = async (req, res) => {
   try {
     const { word } = req.params;
-    const normalizedWord = word.toLowerCase();
+    const normalizedWord = cleanWordForAPI(word);
 
     // Fetch page content
     const response = await fetch(
@@ -222,7 +244,7 @@ const getWiktionaryAudio = async (req, res) => {
 const getWiktionaryUSAudio = async (req, res) => {
   try {
     const { word } = req.params;
-    const normalizedWord = word.toLowerCase();
+    const normalizedWord = cleanWordForAPI(word);
 
     // Fetch page content
     const response = await fetch(
