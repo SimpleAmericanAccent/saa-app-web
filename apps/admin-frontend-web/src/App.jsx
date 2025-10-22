@@ -1,10 +1,10 @@
 import AppBase from "core-frontend-web/src/app.base";
-import AdminLayout from "./components/AdminLayout";
+import AdminLayout from "./components/admin-layout";
 import { Route } from "react-router-dom";
 
-import UserAppView from "./views/UserAppView";
-import CoachingView from "./views/CoachingView";
-import OpsView from "./views/OpsView";
+import UserAppView from "./views/user-app-view";
+import CoachingView from "./views/coaching-view";
+import OpsView from "./views/ops-view";
 import UserTrialsAdmin from "./pages/user-trials";
 import AdminOverview from "./pages/admin-overview";
 import ClientAcquisitionDashboard from "./pages/client-acquisition-dashboard";

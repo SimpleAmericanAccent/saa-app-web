@@ -1,5 +1,5 @@
 // ─── 🟢 Load .env files early ───────────────────────────────────────────────
-import { loadAppAndSharedEnv } from "core-backend-node/utils/loadEnv.js";
+import { loadAppAndSharedEnv } from "core-backend-node/utils/load-env.js";
 loadAppAndSharedEnv(import.meta.url);
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -8,7 +8,7 @@ import url from "url";
 import { bootApp } from "core-backend-node/entry.js";
 import router from "core-backend-node/routes/routes.js";
 import express from "express";
-import internalStatsRouter from "./routes/internalStatsRouter.js";
+import internalStatsRouter from "./routes/internal-stats-router.js";
 import { createAirtableClient } from "core-backend-node/services/airtable.js";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));

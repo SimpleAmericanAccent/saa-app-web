@@ -1,5 +1,5 @@
-import { createPrismaClient } from "./initPrisma.js";
-import { logModuleInfo } from "../utils/logModuleInfo.js";
+import { createPrismaClient } from "./init-prisma.js";
+import { logModuleInfo } from "../utils/log-module-info.js";
 
 let prisma;
 try {

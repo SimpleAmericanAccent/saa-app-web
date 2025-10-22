@@ -1,5 +1,5 @@
 import AppBase from "core-frontend-web/src/app.base";
-import UserLayout from "./components/UserLayout";
+import UserLayout from "./components/user-layout";
 import coreRoutes from "core-frontend-web/src/routes/core-routes";
 
 export default function App() {

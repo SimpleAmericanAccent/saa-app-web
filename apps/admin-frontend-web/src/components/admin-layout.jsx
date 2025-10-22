@@ -1,4 +1,4 @@
-import AdminSidebar from "./AdminSidebar";
+import AdminSidebar from "./admin-sidebar";
 import useAuthStore from "core-frontend-web/src/stores/auth-store";
 import { useEffect } from "react";
 

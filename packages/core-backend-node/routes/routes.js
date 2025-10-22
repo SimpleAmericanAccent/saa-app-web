@@ -1,11 +1,11 @@
 import express from "express";
 
-import baseRouter from "./baseRouter.js";
-import wiktionaryRouter from "./wiktionaryRouter.js";
-import orthoRouter from "./orthoRouter.js";
-import quizRouter from "./quizRouter.js";
-import adminRouter from "./adminRouter.js";
-import { wrapMethodsWithSafeRoute } from "../middleware/safeRoute.js";
+import baseRouter from "./base-router.js";
+import wiktionaryRouter from "./wiktionary-router.js";
+import orthoRouter from "./ortho-router.js";
+import quizRouter from "./quiz-router.js";
+import adminRouter from "./admin-router.js";
+import { wrapMethodsWithSafeRoute } from "../middleware/safe-route.js";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { prisma } from "../prisma/services/prismaClient.js";
+import { prisma } from "../prisma/services/prisma-client.js";
 
 const router = express.Router();
 

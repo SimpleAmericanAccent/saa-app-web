@@ -1,10 +1,10 @@
 import express from "express";
 import { auth } from "express-openid-connect";
 import rateLimit from "express-rate-limit";
-import { requiresAdmin } from "./middleware/requiresAdmin.js";
+import { requiresAdmin } from "./middleware/requires-admin.js";
 import { createAirtableClient } from "./services/airtable.js";
-import { setAdminFlag } from "./middleware/setAdminFlag.js";
-import { authMiddleware } from "./middleware/authMiddleware.js";
+import { setAdminFlag } from "./middleware/set-admin-flag.js";
+import { authMiddleware } from "./middleware/auth-middleware.js";
 
 export function createServer({
   auth0Config,

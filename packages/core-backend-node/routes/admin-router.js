@@ -1,6 +1,6 @@
 import express from "express";
 import { PrismaClient } from "../prisma/generated/index.js";
-import { requiresAdmin } from "../middleware/requiresAdmin.js";
+import { requiresAdmin } from "../middleware/requires-admin.js";
 
 const router = express.Router();
 const prisma = new PrismaClient();
