@@ -15,6 +15,9 @@ import QuizAudioAdmin from "core-frontend-web/src/pages/quiz-audio-admin.jsx";
 import Join from "core-frontend-web/src/pages/join.jsx";
 import JoinThankYou from "core-frontend-web/src/pages/join-ty.jsx";
 import Imitate from "core-frontend-web/src/pages/imitate.jsx";
+import AccentIssuePage from "core-frontend-web/src/pages/accent-issue-page.jsx";
+import AccentTargetPage from "core-frontend-web/src/pages/accent-target-page.jsx";
+import AccentExplorer from "core-frontend-web/src/pages/accent-explorer.jsx";
 
 const coreRoutes = (
   <>
@@ -47,8 +50,14 @@ const coreRoutes = (
 
     <Route path="/lexical-sets" element={<LexicalSets />} />
 
+    {/* Accent Issue Routes */}
+    <Route path="/accent-explorer" element={<AccentExplorer />} />
+    <Route path="/:targetSlug/:issueSlug" element={<AccentIssuePage />} />
+    <Route path="/:targetSlug" element={<AccentTargetPage />} />
+
     <Route path="/learn/:moduleId" element={<ModulePage />} />
     <Route path="/learn/:moduleId/:lessonId" element={<ModulePage />} />
+
     <Route path="/" element={<Quiz />} />
     <Route path="*" element={<Quiz />} />
   </>

@@ -28,6 +28,20 @@ const CONSONANT_GROUPS = [
   ["M", "N", "NG", null, "misc"],
 ];
 
+const getConsonantGroups = (hideMisc) => {
+  if (hideMisc) {
+    return [
+      ["P", "T", "CH", "K"],
+      ["B", "D", "J", "G"],
+      ["F", "TH", "S", "SH", "H"],
+      ["V", "DH", "Z", "ZH"],
+      ["Y", "R", "W", "L"],
+      ["M", "N", "NG", null, null],
+    ];
+  }
+  return CONSONANT_GROUPS;
+};
+
 const cellStyle = {
   minWidth: 60,
   maxWidth: 60,
@@ -47,52 +61,6 @@ const cellStyle = {
   position: "relative",
 };
 
-// Example: grid label => target name in your data
-const PHONEME_TO_TARGET = {
-  FLEECE: "FLEECE",
-  GOOSE: "GOOSE",
-  FACE: "FACE",
-  KIT: "KIT",
-  FOOT: "FOOT",
-  PRICE: "PRICE",
-  DRESS: "DRESS",
-  STRUT: "STRUT",
-  CHOICE: "CHOICE",
-  TRAP: "TRAP",
-  LOT: "LOT",
-  GOAT: "GOAT",
-  MOUTH: "MOUTH",
-  P: "P",
-  T: "T",
-  K: "K",
-  CH: "CH",
-  B: "B",
-  D: "D",
-  G: "G",
-  J: "J",
-  F: "F",
-  TH: "THu",
-  S: "S",
-  SH: "SH",
-  H: "H",
-  V: "V",
-  DH: "THv",
-  Z: "Z",
-  ZH: "ZH",
-  L: "L",
-  R: "R",
-  W: "W",
-  Y: "Y",
-  M: "M",
-  N: "N",
-  NG: "NG",
-  misc: "misc",
-  // If your target names are different, map accordingly:
-  // "CH": "Affricate_CH",
-  // "TH": "Theta",
-  // etc.
-};
-
 export default function PhonemeGridSummary({
   issueWordMap,
   issues,
@@ -102,6 +70,9 @@ export default function PhonemeGridSummary({
   setSelectedIssues,
   issuesData,
   onHover,
+  onPhonemeClick,
+  hideSettings = false,
+  hideMisc = false,
 }) {
   const [displayMode, setDisplayMode] = useState("heatmap"); // "count" | "percent" | "heatmap"
   const [highlightTop, setHighlightTop] = useState(0); // 0 = none, 3 = top 3, 5 = top 5
@@ -136,15 +107,13 @@ export default function PhonemeGridSummary({
   const topGroups = highlightTop > 0 ? sortedGroups.slice(0, highlightTop) : [];
 
   const isTargetSelected = (label) => {
-    const targetName = PHONEME_TO_TARGET[label] || label;
-    const target = issuesData.find((t) => t.name === targetName);
+    const target = issuesData.find((t) => t.name === label);
     if (!target) return false;
     return target.issues.every((issue) => selectedIssues[issue.id]);
   };
 
   const isTargetPartiallySelected = (label) => {
-    const targetName = PHONEME_TO_TARGET[label] || label;
-    const target = issuesData.find((t) => t.name === targetName);
+    const target = issuesData.find((t) => t.name === label);
     if (!target) return false;
     const selectedCount = target.issues.filter(
       (issue) => selectedIssues[issue.id]
@@ -153,8 +122,12 @@ export default function PhonemeGridSummary({
   };
 
   const handlePhonemeClick = (label) => {
-    const targetName = PHONEME_TO_TARGET[label] || label;
-    const target = issuesData.find((t) => t.name === targetName);
+    if (onPhonemeClick) {
+      onPhonemeClick(label);
+      return;
+    }
+
+    const target = issuesData.find((t) => t.name === label);
     if (!target) return;
     const allSelected = isTargetSelected(label);
     const updated = { ...selectedIssues };
@@ -173,8 +146,7 @@ export default function PhonemeGridSummary({
           style={{ visibility: "hidden", ...cellStyle }}
         />
       );
-    const targetName = PHONEME_TO_TARGET[label];
-    const count = targetName ? targetCounts[targetName] || 0 : 0;
+    const count = targetCounts[label] || 0;
     // Calculate color factor - treat misc as zero when includeMisc is false
     const colorCount = label === "misc" && !includeMisc ? 0 : count;
     const factor = colorCount / maxCount;
@@ -223,7 +195,7 @@ export default function PhonemeGridSummary({
     const textColor = factor > 0.5 ? "#fff" : "#222";
 
     // Highlight
-    const isHighlighted = topGroups.includes(targetName);
+    const isHighlighted = topGroups.includes(label);
 
     return (
       <div
@@ -252,7 +224,7 @@ export default function PhonemeGridSummary({
         onClick={() => handlePhonemeClick(label)}
         onMouseEnter={() => {
           // Get all word indices for this target
-          const target = issuesData.find((t) => t.name === targetName);
+          const target = issuesData.find((t) => t.name === label);
           if (target) {
             const wordIndices = target.issues.flatMap(
               (issue) =>
@@ -309,32 +281,36 @@ export default function PhonemeGridSummary({
     );
   };
 
+  const consonantGroups = getConsonantGroups(hideMisc);
+
   return (
     <div style={{ position: "relative" }}>
       {/* Options dropdown in top-right */}
-      <div style={{ position: "absolute", top: 0, right: 0, zIndex: 1 }}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button>
-              <Settings size={18} />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuCheckboxItem
-              checked={hideZero}
-              onCheckedChange={setHideZero}
-            >
-              Hide Zero-Annotation Cells
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={includeMisc}
-              onCheckedChange={setIncludeMisc}
-            >
-              Include Misc in Totals
-            </DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      {!hideSettings && (
+        <div style={{ position: "absolute", top: 0, right: 0, zIndex: 1 }}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button>
+                <Settings size={18} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuCheckboxItem
+                checked={hideZero}
+                onCheckedChange={setHideZero}
+              >
+                Hide Zero-Annotation Cells
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={includeMisc}
+                onCheckedChange={setIncludeMisc}
+              >
+                Include Misc in Totals
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
       <div style={{ display: "flex", gap: 8 }}>
         {/* Vowel grid */}
         <div
@@ -348,7 +324,7 @@ export default function PhonemeGridSummary({
         </div>
         {/* Consonant grid */}
         <div>
-          {CONSONANT_GROUPS.map((row, i) => (
+          {consonantGroups.map((row, i) => (
             <div key={i} style={{ display: "flex" }}>
               {row.map((cell, j) => (
                 <div key={j} style={{ margin: 1 }}>

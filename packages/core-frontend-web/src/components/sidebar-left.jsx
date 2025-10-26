@@ -20,6 +20,7 @@ import {
   MonitorPlay,
   Info,
   MessageSquare,
+  Search,
 } from "lucide-react";
 
 import {
@@ -350,6 +351,21 @@ export function SidebarLeft() {
                     <MonitorPlay className="h-4 w-4 text-white" />
                     {shouldShowText && (
                       <span className="text-white">Replays</span>
+                    )}
+                  </SidebarLink>
+                </SidebarMenuButtonWithClose>
+              </SidebarMenuItem>
+
+              {/* Accent Explorer */}
+              <SidebarMenuItem>
+                <SidebarMenuButtonWithClose asChild tooltip="Accent Explorer">
+                  <SidebarLink
+                    to="/accent-explorer"
+                    className="flex items-center gap-2"
+                  >
+                    <Search className="h-4 w-4 text-white" />
+                    {shouldShowText && (
+                      <span className="text-white">Accent Explorer</span>
                     )}
                   </SidebarLink>
                 </SidebarMenuButtonWithClose>

@@ -135,6 +135,7 @@ baseRouter.get("/data/loadIssues", async (req, res) => {
     const issueData = {
       id: record.id,
       name: record.fields.Name || "",
+      shortName: record.fields["short-name"] || "",
       po: record.fields["Presentation order"] || Infinity,
       resources: resources,
     };
