@@ -20,6 +20,7 @@ import {
 import PhonemeGridSummary from "core-frontend-web/src/components/phoneme-grid-summary";
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
 import { useWordAudio } from "core-frontend-web/src/hooks/use-word-audio";
+import { hasQuizForTargetIssue } from "core-frontend-web/src/pages/quiz";
 
 // Define WordFrequencyList component first
 const WordFrequencyList = ({ words }) => {
@@ -722,6 +723,21 @@ Before each response, please double-check each included issue, target word list,
                                     {stats.issueWordMap[issue.id]?.length}
                                   </span>
                                 )}
+                                {/* Add quiz button if available */}
+                                {hasQuizForTargetIssue(
+                                  target.name,
+                                  issue.shortName
+                                ) && (
+                                  <a
+                                    href={`/quiz/${target.name.toLowerCase()}/${issue.shortName.toLowerCase()}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-muted-foreground bg-foreground text-xs px-1 py-1 rounded"
+                                    title={`Take quiz for ${issue.name}`}
+                                  >
+                                    Quiz
+                                  </a>
+                                )}
                                 {/* Add individual link icons for each resource */}
                                 {issue.resources &&
                                   issue.resources.map((resource, idx) => (
@@ -745,7 +761,8 @@ Before each response, please double-check each included issue, target word list,
                               stats.issueWordMap[issue.id]?.reduce(
                                 (groups, word) => {
                                   const cleanWord = word.word
-                                    .replace(/[.,!?;:"()\[\]{}]/g, "")
+                                    .replace(/[.,!?;:"“”()\[\]{}]/g, "")
+                                    .replace(/’/g, "'")
                                     .toLowerCase()
                                     .trim();
                                   if (!groups[cleanWord]) {
@@ -804,8 +821,12 @@ Before each response, please double-check each included issue, target word list,
                                         <button
                                           onClick={() => playWord(word)}
                                           disabled={isLoading}
-                                          className="cursor-pointer hover:bg-accent/50 inline-flex items-center"
-                                          title="Play reference audio"
+                                          className="cursor-pointer hover:bg-accent/50 inline-flex items-center p-1 rounded"
+                                          title={
+                                            isLoading
+                                              ? "Loading audio..."
+                                              : `Play pronunciation of "${word}"`
+                                          }
                                         >
                                           <span className="text-muted-foreground">
                                             {isLoading ? "⏳" : "🔊"}
@@ -817,10 +838,31 @@ Before each response, please double-check each included issue, target word list,
                                           )}/english/us`}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="text-muted-foreground hover:text-foreground text-xs font-medium"
-                                          title="Listen on YouGlish"
+                                          className="text-muted-foreground hover:text-foreground text-xs font-medium px-1 py-1 rounded hover:bg-accent/50"
+                                          title={`Listen to "${word}" pronunciation examples on YouGlish`}
                                         >
                                           YG
+                                        </a>
+                                        <a
+                                          href={`/imitate/${encodeURIComponent(
+                                            word
+                                          )}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="hover:text-foreground text-xs px-1 py-1 rounded hover:bg-accent/50"
+                                          title={`Practice pronunciation of "${word}" in Imitate`}
+                                          aria-label={`Practice pronunciation of "${word}" in Imitate`}
+                                        >
+                                          <span
+                                            role="img"
+                                            aria-label="Imitate"
+                                            style={{
+                                              fontSize: "1em",
+                                              verticalAlign: "middle",
+                                            }}
+                                          >
+                                            🎤
+                                          </span>
                                         </a>
                                       </label>
                                     </div>
