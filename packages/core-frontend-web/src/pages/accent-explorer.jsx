@@ -150,19 +150,14 @@ export default function AccentExplorer() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-card border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-foreground mb-1">
-            Accent Issues Explorer
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Click on a target phoneme to explore related accent issues
-          </p>
-        </div>
+      <div className="max-w-6xl mx-auto py-1">
+        <h1 className="text-2xl font-bold text-foreground text-center">
+          Accent Targets & Issues
+        </h1>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto py-2 px-4">
         {/* Row 1: Phoneme Grid + Issues */}
         <div className="flex flex-col lg:flex-row gap-6 mb-6">
           {/* Phoneme Grid */}
