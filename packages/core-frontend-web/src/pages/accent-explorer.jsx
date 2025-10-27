@@ -129,7 +129,7 @@ export default function AccentExplorer() {
       {/* Header */}
       <div className="max-w-6xl mx-auto py-1">
         <h1 className="text-2xl font-bold text-foreground text-center">
-          Accent Targets & Issues
+          Accent Targets
         </h1>
       </div>
 
