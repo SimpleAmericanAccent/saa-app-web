@@ -12,31 +12,21 @@ export const useIssuesStore = create((set, get) => ({
   // Actions
   fetchIssues: async (forceRefresh = false) => {
     const state = get();
-    console.log("IssuesStore: fetchIssues called, forceRefresh:", forceRefresh);
-    console.log(
-      "IssuesStore: current issuesData length:",
-      state.issuesData.length
-    );
 
     // Don't refetch if we already have data and not forcing refresh
     if (!forceRefresh && state.issuesData.length > 0) {
-      console.log("IssuesStore: Skipping fetch - data already exists");
       return;
     }
 
     // Prevent concurrent fetches
     if (state.isFetching) {
-      console.log("IssuesStore: Fetch already in progress, skipping");
       return;
     }
 
-    console.log("IssuesStore: Starting fetch...");
     set({ loading: true, error: null, isFetching: true });
 
     try {
       const data = await fetchData("/api/data/loadIssues");
-      console.log("IssuesStore: Fetch successful, data length:", data.length);
-      console.log("IssuesStore: Sample data:", data[0]);
       set({
         issuesData: data,
         loading: false,

@@ -277,6 +277,66 @@ baseRouter.get("/replays/:slug/meta", async (req, res) => {
   }
 });
 
+// Bulk endpoint to retrieve all replay data at once
+baseRouter.get("/replays", async (req, res) => {
+  try {
+    const airtable = req.app.locals.airtable;
+    const user = req.oidc?.user;
+    if (!user) return res.status(401).json({ error: "Unauthorized" });
+
+    // Load People and find current user
+    const people = await airtable.fetchAirtableRecords("People");
+    const currentUser = people.find(
+      (r) => r.fields["auth0 user_id"] === user.sub
+    );
+
+    // Check permission
+    const canViewReplays = computeCanViewReplaysFromRecord(req, currentUser);
+
+    // Fetch all replays
+    const replays = await airtable.fetchAirtableRecords("Replays");
+
+    // Process each replay
+    const replayData = replays
+      .map((replay) => {
+        const platform = String(replay.fields["platform"] || "").toLowerCase();
+        const id = replay.fields["id"];
+        const thumbUrl =
+          replay.fields["thumburl"] || replay.fields["thumbUrl"] || null;
+
+        // Get slug (try both lowercase and capitalized field names)
+        const slug = replay.fields["slug"] || replay.fields["Slug"] || null;
+
+        if (!slug) return null; // Skip replays without slugs
+
+        const result = {
+          slug,
+          canView: canViewReplays,
+        };
+
+        // Only include sensitive data if user can view replays
+        if (canViewReplays && platform && id) {
+          result.platform = platform;
+          result.id = id;
+          result.thumbUrl = thumbUrl;
+          if (platform === "youtube") {
+            result.embedUrl = `https://www.youtube.com/embed/${id}`;
+          } else if (platform === "loom") {
+            result.embedUrl = `https://www.loom.com/embed/${id}`;
+          }
+        }
+
+        return result;
+      })
+      .filter(Boolean); // Remove null entries
+
+    return res.json({ replays: replayData });
+  } catch (error) {
+    console.error("/api/replays error", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
 baseRouter.get("/me", async (req, res) => {
   const user = req.oidc.user;
 

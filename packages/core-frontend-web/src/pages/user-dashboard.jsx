@@ -1,8 +1,8 @@
 import useAuthStore from "core-frontend-web/src/stores/auth-store";
+import { useIssuesStore } from "core-frontend-web/src/stores/issues-store";
 import { useEffect, useState, useMemo } from "react";
 import { fetchData } from "core-frontend-web/src/utils/api";
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
-import useFetchResources from "core-frontend-web/src/hooks/use-fetch-resources";
 import TranscriptList from "core-frontend-web/src/components/transcript-list";
 import TranscriptStatsV1 from "core-frontend-web/src/components/transcript-stats-v1";
 import {
@@ -12,26 +12,10 @@ import {
 } from "core-frontend-web/src/components/ui/resizable";
 
 export default function UserDashboard() {
-  const { user, fetchUserProfile } = useAuthStore();
-  const { people, audio } = useFetchResources();
-  const [issuesData, setIssuesData] = useState([]);
+  const { user, people, audios } = useAuthStore();
+  const { issuesData } = useIssuesStore();
   const [currentPersonId, setCurrentPersonId] = useState(null);
   const [selectedTranscripts, setSelectedTranscripts] = useState([]);
-
-  useEffect(() => {
-    if (!user) fetchUserProfile();
-
-    // Fetch issues data
-    const fetchIssues = async () => {
-      try {
-        const issues = await fetchData("/api/data/loadIssues");
-        setIssuesData(issues);
-      } catch (error) {
-        console.error("Error fetching issues:", error);
-      }
-    };
-    fetchIssues();
-  }, [user]);
 
   useEffect(() => {
     if (user && people.length) {

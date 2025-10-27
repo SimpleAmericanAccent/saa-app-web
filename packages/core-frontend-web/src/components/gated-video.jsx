@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useAuthStore from "core-frontend-web/src/stores/auth-store";
+import { useReplaysStore } from "core-frontend-web/src/stores/replays-store";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 
@@ -10,12 +11,18 @@ export default function GatedVideo({
   aspect = "aspect-video",
 }) {
   const { canViewReplays, fetchAdminStatus, isLoading } = useAuthStore();
+  const {
+    getReplayBySlug,
+    loading: replaysLoading,
+    error: replaysError,
+  } = useReplaysStore();
   const [embedUrl, setEmbedUrl] = useState(null);
   const [platform, setPlatform] = useState(null);
   const [videoId, setVideoId] = useState(null);
   const [resolvedThumb, setResolvedThumb] = useState(thumbUrl || null);
   const [errorCode, setErrorCode] = useState(null); // 401|403|404|500|network
   const [attempted, setAttempted] = useState(false);
+  const [replayNotFound, setReplayNotFound] = useState(false);
 
   useEffect(() => {
     if (!attempted) {
@@ -25,51 +32,65 @@ export default function GatedVideo({
   }, [attempted, fetchAdminStatus]);
 
   useEffect(() => {
-    // Always fetch non-sensitive metadata to display a thumbnail, even if user can't view
-    if (slug && !resolvedThumb) {
-      fetch(`/api/replays/${slug}/meta`)
-        .then((r) => (r.ok ? r.json() : null))
-        .then((data) => {
-          if (data?.thumbUrl && !resolvedThumb) setResolvedThumb(data.thumbUrl);
-        })
-        .catch(() => {});
+    if (!slug) return;
+
+    // Get replay data from store
+    const replayData = getReplayBySlug(slug);
+
+    if (!replayData) {
+      // Replay not found in store
+      setEmbedUrl(null);
+      setPlatform(null);
+      setVideoId(null);
+      setErrorCode(null);
+
+      // If store has finished loading and still no data, mark as not found
+      if (!replaysLoading && !replaysError) {
+        setReplayNotFound(true);
+      } else {
+        setReplayNotFound(false);
+      }
+      return;
     }
 
-    if (canViewReplays && slug) {
-      fetch(`/api/replays/${slug}/url`)
-        .then(async (r) => {
-          if (!r.ok) {
-            // HTTP error: set specific code and clear embed info
-            setErrorCode(r.status);
-            setEmbedUrl(null);
-            setPlatform(null);
-            setVideoId(null);
-            return null;
-          }
-          const data = await r.json();
-          return data;
-        })
-        .then((data) => {
-          if (!data) return;
-          const { embedUrl, platform, id, thumbUrl } = data;
-          setEmbedUrl(embedUrl);
-          setPlatform(platform);
-          setVideoId(id);
-          if (!resolvedThumb && thumbUrl) setResolvedThumb(thumbUrl);
-          setErrorCode(null);
-        })
-        .catch(() => {
-          // Network or parsing error: only set to network if we don't already have a specific code
-          setEmbedUrl(null);
-          setPlatform(null);
-          setVideoId(null);
-          setErrorCode((prev) => (prev == null ? "network" : prev));
-        });
+    // Reset not found flag when we find the replay
+    setReplayNotFound(false);
+
+    // Set thumbnail (from store or prop)
+    if (!resolvedThumb && replayData.thumbUrl) {
+      setResolvedThumb(replayData.thumbUrl);
     }
-  }, [canViewReplays, slug]);
+
+    // Set video data if user can view replays
+    if (canViewReplays && replayData.canView) {
+      setEmbedUrl(replayData.embedUrl || null);
+      setPlatform(replayData.platform || null);
+      setVideoId(replayData.id || null);
+      setErrorCode(null);
+    } else if (canViewReplays && !replayData.canView) {
+      // User has replay access but this specific replay is not viewable
+      setErrorCode(403);
+      setEmbedUrl(null);
+      setPlatform(null);
+      setVideoId(null);
+    } else {
+      // User doesn't have replay access
+      setEmbedUrl(null);
+      setPlatform(null);
+      setVideoId(null);
+      setErrorCode(null);
+    }
+  }, [
+    canViewReplays,
+    slug,
+    getReplayBySlug,
+    resolvedThumb,
+    replaysLoading,
+    replaysError,
+  ]);
 
   // Show loading state with same dimensions to prevent layout shift
-  if (isLoading) {
+  if (isLoading || replaysLoading) {
     return (
       <div className={`relative w-full ${aspect}`}>
         <div className="w-full h-full bg-gray-200 dark:bg-gray-800 rounded-md flex items-center justify-center">
@@ -136,13 +157,13 @@ export default function GatedVideo({
         <div className="w-full h-full bg-gray-200 dark:bg-gray-800 rounded-md flex items-center justify-center"></div>
       )}
       <div className="absolute inset-0 bg-black/50 rounded-md flex flex-col items-center justify-center text-center px-6">
-        {errorCode === 404 ? (
+        {replayNotFound ? (
           <>
             <h3 className="text-white text-lg font-semibold mb-2">
               Replay not found
             </h3>
             <p className="text-white/90 text-sm max-w-md">
-              This replay isn’t available. Please check back later or contact
+              This replay isn't available. Please check back later or contact
               support.
             </p>
           </>

@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import useFetchResources from "core-frontend-web/src/hooks/use-fetch-resources";
 import useFetchAudioV1 from "core-frontend-web/src/hooks/use-fetch-audio-v1";
 import useFetchAudioV2 from "core-frontend-web/src/hooks/use-fetch-audio-v2";
 import useAudioSync from "core-frontend-web/src/hooks/use-audio-sync";
@@ -10,6 +9,8 @@ import { fetchData } from "core-frontend-web/src/utils/api";
 import { cn } from "core-frontend-web/src/lib/utils";
 
 import useVersionStore from "core-frontend-web/src/stores/version-store";
+import { useIssuesStore } from "core-frontend-web/src/stores/issues-store";
+import useAuthStore from "core-frontend-web/src/stores/auth-store";
 import {
   HelpCircle,
   Keyboard,
@@ -41,16 +42,16 @@ export default function Transcript() {
   // #region declarations
   const { audioId } = useParams(); // Get audioId from route params
 
-  // Fetch People and Audio Resources
+  // Get People and Audio Resources from auth store
   const {
     people,
-    audio,
-    filteredAudio,
+    audios: audio,
+    filteredAudios: filteredAudio,
     selectedPerson,
     setSelectedPerson,
     selectedAudio,
     setSelectedAudio,
-  } = useFetchResources();
+  } = useAuthStore();
 
   const [activeFilters, setActiveFilters] = useState([]);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
@@ -78,8 +79,8 @@ export default function Transcript() {
   const [pronunciations, setPronunciations] = useState([]);
   const [pronunciations2, setPronunciations2] = useState([]);
 
-  // State for Airtable Issues
-  const [issuesData, setIssuesData] = useState([]);
+  // Get issues data from store
+  const { issuesData } = useIssuesStore();
 
   // Add state for modal visibility
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
@@ -103,18 +104,6 @@ export default function Transcript() {
       }
     }
   }, [audioId, audio, selectedAudio, setSelectedPerson, setSelectedAudio]);
-
-  // Fetch issues data on component mount
-  useEffect(() => {
-    const fetchIssues = async () => {
-      try {
-        setIssuesData(await fetchData("/api/data/loadIssues"));
-      } catch (error) {
-        console.error("Error fetching issues:", error);
-      }
-    };
-    fetchIssues();
-  }, []);
 
   // Helper function to get issue names from IDs
   const getIssueNames = (issueIds) => {
