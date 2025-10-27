@@ -34,6 +34,7 @@ const coreRoutes = (
     <Route path="/quiz/:targetSlug/:issueSlug" element={<Quiz />} />
     <Route path="/quiz-audio-admin" element={<QuizAudioAdmin />} />
     <Route path="/imitate" element={<Imitate />} />
+    <Route path="/imitate/:word" element={<Imitate />} />
 
     <Route
       path="/spelling-pronunciation"

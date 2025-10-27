@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import { Input } from "core-frontend-web/src/components/ui/input";
 import {
@@ -21,6 +22,9 @@ import {
 import { getWiktionaryAllAudio } from "../utils/wiktionary-api";
 
 const Imitate = () => {
+  const { word } = useParams();
+  const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [nativeAudios, setNativeAudios] = useState([]);
@@ -41,6 +45,15 @@ const Imitate = () => {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
 
+  // Handle URL parameter to auto-search for word
+  useEffect(() => {
+    if (word) {
+      setSearchTerm(word);
+      // Auto-search for the word from URL
+      searchPronunciationForWord(word);
+    }
+  }, [word]);
+
   // Cleanup audio on unmount
   useEffect(() => {
     return () => {
@@ -55,9 +68,9 @@ const Imitate = () => {
     };
   }, []);
 
-  // Search for pronunciation using Wiktionary API
-  const searchPronunciation = async () => {
-    if (!searchTerm.trim()) {
+  // Search for pronunciation using Wiktionary API (internal function)
+  const searchPronunciationForWord = async (wordToSearch) => {
+    if (!wordToSearch.trim()) {
       setError("Please enter a word to search");
       return;
     }
@@ -69,7 +82,7 @@ const Imitate = () => {
 
     try {
       // Using Wiktionary API
-      const audioPronunciations = await getWiktionaryAllAudio(searchTerm);
+      const audioPronunciations = await getWiktionaryAllAudio(wordToSearch);
 
       if (audioPronunciations.length > 0) {
         // Sort pronunciations: American first, then others
@@ -94,6 +107,20 @@ const Imitate = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Search for pronunciation using Wiktionary API (public function)
+  const searchPronunciation = async () => {
+    if (!searchTerm.trim()) {
+      setError("Please enter a word to search");
+      return;
+    }
+
+    // Navigate to the word URL
+    navigate(`/imitate/${encodeURIComponent(searchTerm.trim())}`);
+
+    // Search for the pronunciation
+    await searchPronunciationForWord(searchTerm.trim());
   };
 
   // Play native speaker audio
