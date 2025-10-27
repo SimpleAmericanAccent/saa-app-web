@@ -744,10 +744,10 @@ Before each response, please double-check each included issue, target word list,
                               // Group words by their cleaned text
                               stats.issueWordMap[issue.id]?.reduce(
                                 (groups, word) => {
-                                  const cleanWord = word.word.replace(
-                                    /[.,!?;:"()\[\]{}]/g,
-                                    ""
-                                  );
+                                  const cleanWord = word.word
+                                    .replace(/[.,!?;:"()\[\]{}]/g, "")
+                                    .toLowerCase()
+                                    .trim();
                                   if (!groups[cleanWord]) {
                                     groups[cleanWord] = [];
                                   }
