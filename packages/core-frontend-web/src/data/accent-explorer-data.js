@@ -788,6 +788,17 @@ export const accentExplorerData = {
       .filter((issue) => issue.shortName === issueName.toLowerCase())
       .map((issue) => issue.target);
   },
+
+  hasTargetPage: (targetName) => {
+    try {
+      if (!targetName || typeof targetName !== "string") return false;
+      const targetData = accentExplorerData.getTargetData(targetName);
+      return targetData !== null;
+    } catch (error) {
+      console.warn("Error checking if target has page:", error);
+      return false;
+    }
+  },
 };
 
 export default accentExplorerData;

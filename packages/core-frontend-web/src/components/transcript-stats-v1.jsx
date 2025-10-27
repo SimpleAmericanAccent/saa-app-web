@@ -21,6 +21,7 @@ import PhonemeGridSummary from "core-frontend-web/src/components/phoneme-grid-su
 import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
 import { useWordAudio } from "core-frontend-web/src/hooks/use-word-audio";
 import { hasQuizForTargetIssue } from "core-frontend-web/src/pages/quiz";
+import { accentExplorerData } from "core-frontend-web/src/data/accent-explorer-data";
 
 // Define WordFrequencyList component first
 const WordFrequencyList = ({ words }) => {
@@ -669,10 +670,24 @@ Before each response, please double-check each included issue, target word list,
                           className="text-lg font-bold flex items-center gap-2 cursor-pointer"
                         >
                           {target.name}
+
                           {targetInstances > 0 && (
                             <span className="text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))] text-sm rounded-full px-2 py-0.5">
                               {targetInstances}
                             </span>
+                          )}
+                          {/* Add target page link if available */}
+                          {accentExplorerData.hasTargetPage(target.name) && (
+                            <a
+                              href={`/${target.name.toLowerCase()}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-muted-foreground bg-foreground text-xs px-1 py-1 rounded"
+                              title={`View ${target.name} target page`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Study
+                            </a>
                           )}
                         </label>
                       </div>
