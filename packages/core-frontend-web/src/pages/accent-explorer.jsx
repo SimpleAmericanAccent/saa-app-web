@@ -8,6 +8,7 @@ export default function AccentExplorer() {
   const { issuesData, loading, error, fetchIssues } = useIssuesStore();
   const [selectedTarget, setSelectedTarget] = useState(null);
   const [selectedIssues, setSelectedIssues] = useState({});
+  const [selectedIssue, setSelectedIssue] = useState(null);
 
   // Create mock data for phoneme grid (since it expects specific format)
   const mockStats = useMemo(() => {
@@ -62,9 +63,22 @@ export default function AccentExplorer() {
       // Toggle selection: if clicking the same target, clear it; otherwise select it
       if (selectedTarget === label) {
         setSelectedTarget(null);
+        setSelectedIssue(null);
       } else {
         setSelectedTarget(label);
+        setSelectedIssue(null);
       }
+    }
+  };
+
+  // Handle issue click
+  const handleIssueClick = (issue) => {
+    if (selectedIssue && selectedIssue.id === issue.id) {
+      // Deselect if clicking the same issue
+      setSelectedIssue(null);
+    } else {
+      // Select new issue
+      setSelectedIssue(issue);
     }
   };
 
@@ -105,83 +119,169 @@ export default function AccentExplorer() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-4">
-        {/* Phoneme Grid */}
-        <div className="bg-card border border-border rounded-lg p-4 mb-4">
-          <PhonemeGridSummary
-            issueWordMap={mockStats.issueWordMap}
-            issues={[]}
-            targetCounts={targetCounts}
-            stats={mockStats}
-            selectedIssues={selectedIssuesForHighlighting}
-            setSelectedIssues={() => {}} // Disable selection changes
-            issuesData={issuesData}
-            onHover={() => {}}
-            onPhonemeClick={handlePhonemeClick}
-            hideSettings={true}
-            hideMisc={true}
-          />
-        </div>
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        {/* Row 1: Phoneme Grid + Issues */}
+        <div className="flex flex-col lg:flex-row gap-6 mb-6">
+          {/* Phoneme Grid */}
+          <div className="bg-card border border-border rounded-lg p-4 flex-shrink-0">
+            <PhonemeGridSummary
+              issueWordMap={mockStats.issueWordMap}
+              issues={[]}
+              targetCounts={targetCounts}
+              stats={mockStats}
+              selectedIssues={selectedIssuesForHighlighting}
+              setSelectedIssues={() => {}} // Disable selection changes
+              issuesData={issuesData}
+              onHover={() => {}}
+              onPhonemeClick={handlePhonemeClick}
+              hideSettings={true}
+              hideMisc={true}
+            />
+          </div>
 
-        {/* Selected Target Issues */}
-        {selectedTarget && (
-          <div className="bg-card border border-border rounded-lg p-4">
-            <div className="mb-4">
-              <p className="text-sm text-muted-foreground">
-                Target was {selectedTarget}, but it sounded more like...
-              </p>
-            </div>
+          {/* Issues Area */}
+          <div className="flex-1 min-w-0">
+            {selectedTarget ? (
+              <div className="bg-card border border-border rounded-lg p-4 h-full">
+                <div className="mb-4">
+                  <p className="text-sm text-muted-foreground">
+                    Target was {selectedTarget}, but it sounded more like...
+                  </p>
+                </div>
 
-            {filteredIssues.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">
-                  No issues available for this target
-                </p>
+                {filteredIssues.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">
+                      No issues available for this target
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 0 }}>
+                    {filteredIssues.map((issue) => {
+                      const hasResources = issue.resources.length > 0;
+                      return (
+                        <div
+                          key={issue.id}
+                          className={`flex flex-col items-center justify-center rounded border transition-colors cursor-pointer ${
+                            selectedIssue && selectedIssue.id === issue.id
+                              ? "bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700"
+                              : hasResources
+                              ? "bg-background/50 border-border/50 hover:bg-muted/50"
+                              : "bg-muted/30 border-border/30 text-muted-foreground hover:bg-muted/50"
+                          }`}
+                          style={{
+                            minWidth: 60,
+                            maxWidth: 60,
+                            width: 60,
+                            minHeight: 28,
+                            fontSize: 12,
+                            fontWeight: "bold",
+                            margin: 1,
+                          }}
+                          onClick={() => handleIssueClick(issue)}
+                        >
+                          <div className="text-center">
+                            <div className="font-mono text-xs font-medium">
+                              {issue.shortName}
+                            </div>
+                            <div className="text-xs opacity-75">
+                              {issue.resources.length}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
-                {filteredIssues.map((issue) => {
-                  const hasResources = issue.resources.length > 0;
-                  return (
-                    <div
-                      key={issue.id}
-                      className={`flex flex-col p-3 rounded-md border transition-colors cursor-pointer ${
-                        hasResources
-                          ? "bg-background/50 border-border/50 hover:bg-muted/50"
-                          : "bg-muted/30 border-border/30 text-muted-foreground hover:bg-muted/50"
-                      }`}
-                      onClick={() =>
-                        (window.location.href = `/${selectedTarget.toLowerCase()}/${
-                          issue.shortName
-                        }`)
-                      }
-                    >
-                      <div className="text-center">
-                        <div className="font-mono text-sm font-medium">
-                          {issue.shortName}
-                        </div>
-                        <div className="text-xs mt-1">
-                          {issue.resources.length} resource
-                          {issue.resources.length !== 1 ? "s" : ""}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="bg-card border border-border rounded-lg p-4 h-full flex items-center justify-center">
+                <div className="text-center">
+                  <p className="text-muted-foreground text-lg">
+                    Click on any phoneme to explore its accent issues
+                  </p>
+                  <p className="text-muted-foreground text-sm mt-2">
+                    Click the same phoneme again to deselect
+                  </p>
+                </div>
               </div>
             )}
           </div>
-        )}
+        </div>
 
-        {/* Instructions when no target selected */}
-        {!selectedTarget && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">
-              Click on any phoneme above to explore its accent issues
-            </p>
-            <p className="text-muted-foreground text-sm mt-2">
-              Click the same phoneme again to deselect
-            </p>
+        {/* Row 2: Target Info or Issue Details */}
+        {selectedTarget && (
+          <div className="bg-card border border-border rounded-lg p-4">
+            {selectedIssue ? (
+              /* Issue Details */
+              <div>
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {selectedTarget} x {selectedIssue.shortName}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedIssue.resources.length} resource
+                    {selectedIssue.resources.length !== 1 ? "s" : ""} available
+                  </p>
+                </div>
+
+                {selectedIssue.resources.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2">
+                    {selectedIssue.resources.map((resource, index) => (
+                      <a
+                        key={index}
+                        href={resource}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-2 bg-background/50 border border-border/50 rounded hover:bg-background/70 transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                              <span className="text-lg">🎬</span>
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-foreground">
+                                Reel {index + 1}
+                              </h4>
+                              <p className="text-sm text-muted-foreground"></p>
+                            </div>
+                          </div>
+                          <ExternalLink
+                            size={16}
+                            className="text-muted-foreground"
+                          />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">
+                      No resources available for this issue
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Target Info */
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  Target: {selectedTarget}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {filteredIssues.length} issue
+                  {filteredIssues.length !== 1 ? "s" : ""} available. Click on
+                  an issue above to see details.
+                </p>
+                <div className="text-sm text-muted-foreground">
+                  <p>
+                    This target phoneme represents the /
+                    {selectedTarget.toLowerCase()}/ sound in English.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
