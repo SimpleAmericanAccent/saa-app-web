@@ -161,6 +161,9 @@ export default function AccentExplorer() {
         <div className="flex flex-col lg:flex-row gap-6 mb-6">
           {/* Phoneme Grid */}
           <div className="bg-card border border-border rounded-lg p-4 flex-shrink-0">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              Target:
+            </h3>
             <PhonemeGridSummary
               issueWordMap={mockStats.issueWordMap}
               issues={[]}
@@ -175,11 +178,13 @@ export default function AccentExplorer() {
               hideMisc={true}
             />
           </div>
-
           {/* Issues Area */}
           <div className="flex-1 min-w-0">
             {selectedTarget ? (
               <div className="bg-card border border-border rounded-lg p-4 h-full">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  Issue:
+                </h3>
                 <div className="mb-4">
                   <p className="text-sm text-muted-foreground">
                     Target was {selectedTarget}, but it sounded more like...
@@ -254,7 +259,7 @@ export default function AccentExplorer() {
               <div>
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {selectedTarget} x {selectedIssue.shortName}
+                    {selectedIssue.name}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     {selectedIssue.resources.length} resource
