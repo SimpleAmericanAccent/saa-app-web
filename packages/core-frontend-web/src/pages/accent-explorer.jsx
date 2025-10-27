@@ -496,7 +496,9 @@ export default function AccentExplorer() {
           {/* Phoneme Grid */}
           <div className="bg-card border border-border rounded-lg p-2 lg:p-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold text-foreground">Target:</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                Select Target:
+              </h3>
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <span>🧠</span>
