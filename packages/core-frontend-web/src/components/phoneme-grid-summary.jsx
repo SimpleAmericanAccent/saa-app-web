@@ -73,6 +73,9 @@ export default function PhonemeGridSummary({
   onPhonemeClick,
   hideSettings = false,
   hideMisc = false,
+  hideNumbers = false,
+  customBottomLeft = null,
+  customBottomRight = null,
 }) {
   const [displayMode, setDisplayMode] = useState("heatmap"); // "count" | "percent" | "heatmap"
   const [highlightTop, setHighlightTop] = useState(0); // 0 = none, 3 = top 3, 5 = top 5
@@ -251,32 +254,38 @@ export default function PhonemeGridSummary({
         >
           {label}
         </div>
-        {/* Lower left: count */}
-        <div
-          style={{
-            position: "absolute",
-            left: 4,
-            bottom: 2,
-            fontSize: 10,
-            fontWeight: "normal",
-            opacity: 0.85,
-          }}
-        >
-          {count}
-        </div>
-        {/* Lower right: percent */}
-        <div
-          style={{
-            position: "absolute",
-            right: 4,
-            bottom: 2,
-            fontSize: 10,
-            fontWeight: "normal",
-            opacity: 0.85,
-          }}
-        >
-          {percent}%
-        </div>
+        {/* Lower left: count or custom content */}
+        {(!hideNumbers || customBottomLeft) && (
+          <div
+            style={{
+              position: "absolute",
+              left: 4,
+              bottom: 2,
+              fontSize: 10,
+              fontWeight: "normal",
+              opacity: 0.85,
+            }}
+          >
+            {customBottomLeft ? customBottomLeft(label, count, percent) : count}
+          </div>
+        )}
+        {/* Lower right: percent or custom content */}
+        {(!hideNumbers || customBottomRight) && (
+          <div
+            style={{
+              position: "absolute",
+              right: 4,
+              bottom: 2,
+              fontSize: 10,
+              fontWeight: "normal",
+              opacity: 0.85,
+            }}
+          >
+            {customBottomRight
+              ? customBottomRight(label, count, percent)
+              : `${percent}%`}
+          </div>
+        )}
       </div>
     );
   };

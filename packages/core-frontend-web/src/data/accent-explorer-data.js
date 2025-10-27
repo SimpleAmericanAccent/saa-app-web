@@ -17,6 +17,13 @@ export const accentExplorerData = {
       name: "KIT",
       category: "vowel",
       exampleWords: ["it", "this", "did", "if", "is", "pick", "live", "big"],
+      contrasts: [
+        {
+          target: "fleece",
+          targetName: "FLEECE",
+          examples: ["bit/beat", "sit/seat", "ship/sheep", "live/leave"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -29,6 +36,13 @@ export const accentExplorerData = {
       name: "FLEECE",
       category: "vowel",
       exampleWords: ["we", "see", "he", "me", "leave", "peek", "eat", "read"],
+      contrasts: [
+        {
+          target: "kit",
+          targetName: "KIT",
+          examples: ["beat/bit", "seat/sit", "sheep/ship", "leave/live"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -41,6 +55,13 @@ export const accentExplorerData = {
       name: "TRAP",
       category: "vowel",
       exampleWords: ["cat", "hat", "bad", "sad", "cap", "map", "lap"],
+      contrasts: [
+        {
+          target: "dress",
+          targetName: "DRESS",
+          examples: ["bad/bed", "sad/said", "math/meth", "Dad/dead"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -53,6 +74,18 @@ export const accentExplorerData = {
       name: "DRESS",
       category: "vowel",
       exampleWords: ["bed", "red", "head", "said", "kept"],
+      contrasts: [
+        {
+          target: "trap",
+          targetName: "TRAP",
+          examples: ["bed/bad", "said/sad", "meth/math", "dead/Dad"],
+        },
+        {
+          target: "ban",
+          targetName: "BAN",
+          examples: ["ten/tan, lend/land, expend/expand, den/Dan"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -64,6 +97,15 @@ export const accentExplorerData = {
       name: "GOOSE",
       category: "vowel",
       exampleWords: ["you", "who", "do", "too", "soon", "two", "to", "new"],
+      contrasts: [
+        {
+          target: "foot",
+          targetName: "FOOT",
+          examples: [
+            "Luke/look, nuke/nook, shooed/should, wooed/would, cooed/could",
+          ],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -87,6 +129,15 @@ export const accentExplorerData = {
         "stood",
         "cookies",
       ],
+      contrasts: [
+        {
+          target: "goose",
+          targetName: "GOOSE",
+          examples: [
+            "look/Luke, nook/nuke, should/shooed, would/wooed, could/cooed",
+          ],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -109,6 +160,13 @@ export const accentExplorerData = {
         "other",
         "up",
       ],
+      contrasts: [
+        {
+          target: "lot",
+          targetName: "LOT",
+          examples: ["what/Watt, udder/otter, up/op, done/don, none/non"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -129,6 +187,13 @@ export const accentExplorerData = {
         "launch",
         "pot",
         "project",
+      ],
+      contrasts: [
+        {
+          target: "strut",
+          targetName: "STRUT",
+          examples: ["Watt/what, otter/udder, op/up, don/done, non/none"],
+        },
       ],
       externalResources: [
         {
@@ -273,6 +338,13 @@ export const accentExplorerData = {
         "tonight",
         "together",
       ],
+      contrasts: [
+        {
+          target: "ch",
+          targetName: "CH",
+          examples: ["too/chew, port/porch, 8/H, tease/cheese"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -291,6 +363,13 @@ export const accentExplorerData = {
         "deliver",
         "dinner",
         "dance",
+      ],
+      contrasts: [
+        {
+          target: "j",
+          targetName: "J",
+          examples: ["do/Jew,", "deep/Jeep", "dude/Jude"],
+        },
       ],
       externalResources: [
         {
@@ -366,7 +445,7 @@ export const accentExplorerData = {
     v: {
       name: "V",
       category: "consonant",
-      exampleWords: ["very", "vote", "save", "avoid", "vision", "voice"],
+      exampleWords: ["of", "very", "vote", "save", "avoid", "vision", "voice"],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -386,6 +465,18 @@ export const accentExplorerData = {
         "thick",
         "author",
       ],
+      contrasts: [
+        {
+          target: "f",
+          targetName: "F",
+          examples: ["thin/fin, death/deaf, thirst/first, three/free"],
+        },
+        {
+          target: "t",
+          targetName: "T",
+          examples: ["thigh/tie, theme/team, thin/tin, thorn/torn"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -397,6 +488,13 @@ export const accentExplorerData = {
       name: "DH",
       category: "consonant",
       exampleWords: ["this", "that", "the", "they", "then", "there"],
+      contrasts: [
+        {
+          target: "d",
+          targetName: "D",
+          examples: ["the/duh", "they/day", "there/dare", "this/diss"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -408,6 +506,13 @@ export const accentExplorerData = {
       name: "S",
       category: "consonant",
       exampleWords: ["so", "basic", "small", "beside", "smile", "sleep"],
+      contrasts: [
+        {
+          target: "z",
+          targetName: "Z",
+          examples: ["ice/eyes, advice/advise, bus/buzz, ass/as, gross/grows"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -419,6 +524,13 @@ export const accentExplorerData = {
       name: "Z",
       category: "consonant",
       exampleWords: ["zone", "zero", "was", "Portuguese", "is", "phase"],
+      contrasts: [
+        {
+          target: "s",
+          targetName: "S",
+          examples: ["eyes/ice, advise/advice, buzz/bus, as/ass, grows/gross"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -471,6 +583,18 @@ export const accentExplorerData = {
       name: "M",
       category: "consonant",
       exampleWords: ["company", "them", "him", "himself", "theme", "team"],
+      contrasts: [
+        {
+          target: "n",
+          targetName: "N",
+          examples: ["sim/sin, gum/gun, game/gain, seem/seen, team/teen"],
+        },
+        {
+          target: "ng",
+          targetName: "NG",
+          examples: ["sim/sing, rim/ring, same/saying, sum/sung, hem/hang"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -493,6 +617,18 @@ export const accentExplorerData = {
         "input",
         "Austin",
       ],
+      contrasts: [
+        {
+          target: "m",
+          targetName: "M",
+          examples: ["sin/sim, gun/gum, gain/game, seen/seem, teen/team"],
+        },
+        {
+          target: "ng",
+          targetName: "NG",
+          examples: ["sin/sing, kin/king, thing/thing, win/wing"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -504,6 +640,18 @@ export const accentExplorerData = {
       name: "NG",
       category: "consonant",
       exampleWords: ["being", "sing", "thing", "living", "thinking", "ringing"],
+      contrasts: [
+        {
+          target: "n",
+          targetName: "N",
+          examples: ["sing/sin, king/kin, thing/thin, wing/win"],
+        },
+        {
+          target: "m",
+          targetName: "M",
+          examples: ["sing/sim, ring/rim, saying/same, sung/sum, hang/hem"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -523,6 +671,20 @@ export const accentExplorerData = {
         "order",
         "thirty",
       ],
+      contrasts: [
+        {
+          target: "null",
+          targetName: "null",
+          examples: [
+            "party/potty, heard/hood, word/wood, order/odor, Arthur/author",
+          ],
+        },
+        {
+          target: `R like "rato"`,
+          targetName: `"rato"`,
+          examples: ["reply, report, remember, restaurant, word, work"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -534,6 +696,18 @@ export const accentExplorerData = {
       name: "L",
       category: "consonant",
       exampleWords: ["people", "all", "cold", "Brazil", "school", "small"],
+      contrasts: [
+        {
+          target: "goat",
+          targetName: "GOAT",
+          examples: ["cold/code, bolt/boat, bowel/bow, goal/go"],
+        },
+        {
+          target: "good",
+          targetName: "GOOSE",
+          examples: ["tool/too, dull/do, jewel/Jew, null/new"],
+        },
+      ],
       externalResources: [
         {
           name: "Practice Phrases",
@@ -575,6 +749,13 @@ export const accentExplorerData = {
         "vocabulary",
         "senior",
         "regular",
+      ],
+      contrasts: [
+        {
+          target: "null",
+          targetName: "null",
+          examples: ["year/ear, yeast/east"],
+        },
       ],
       externalResources: [
         {
