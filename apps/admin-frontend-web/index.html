@@ -14,7 +14,67 @@
     <title>ADMIN - SAA</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial loading screen - shown before React mounts -->
+      <div
+        id="initial-loading"
+        style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: #0a0a0a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          font-family: system-ui, -apple-system, sans-serif;
+        "
+      >
+        <div style="text-align: center; color: #ffffff">
+          <!-- Loading spinner -->
+          <div
+            style="
+              width: 64px;
+              height: 64px;
+              border: 4px solid #333333;
+              border-top: 4px solid #3b82f6;
+              border-radius: 50%;
+              animation: spin 1s linear infinite;
+              margin: 0 auto 24px;
+            "
+          ></div>
+
+          <!-- Loading text -->
+          <h1
+            style="
+              font-size: 24px;
+              font-weight: bold;
+              margin: 0 0 8px;
+              color: #ffffff;
+            "
+          >
+            Loading SAA Admin
+          </h1>
+          <p style="font-size: 16px; margin: 0; color: #a1a1aa">
+            Setting up admin dashboard...
+          </p>
+        </div>
+      </div>
+
+      <!-- CSS for spinner animation -->
+      <style>
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+      </style>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

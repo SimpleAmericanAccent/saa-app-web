@@ -12,6 +12,17 @@ const options = {
 export function renderApp(AppComponent) {
   const root = document.getElementById("root");
 
+  // Remove the initial loading screen once React mounts
+  const initialLoading = document.getElementById("initial-loading");
+  if (initialLoading) {
+    // Add fade-out effect before removing
+    initialLoading.style.transition = "opacity 0.3s ease-out";
+    initialLoading.style.opacity = "0";
+    setTimeout(() => {
+      initialLoading.remove();
+    }, 300);
+  }
+
   // Check if PostHog is properly configured
   const posthogKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
   const posthogHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST;
