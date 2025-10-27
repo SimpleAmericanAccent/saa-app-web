@@ -1,11 +1,21 @@
 import { useState, useMemo, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useIssuesStore } from "../stores/issues-store";
 import { ExternalLink } from "lucide-react";
 import { Button } from "../components/ui/button";
 import PhonemeGridSummary from "../components/phoneme-grid-summary";
 
 export default function AccentExplorer() {
-  const { issuesData, loading, error, fetchIssues } = useIssuesStore();
+  const { targetSlug, issueSlug } = useParams();
+  const navigate = useNavigate();
+  const {
+    issuesData,
+    loading,
+    error,
+    fetchIssues,
+    findTargetBySlug,
+    findIssueBySlug,
+  } = useIssuesStore();
   const [selectedTarget, setSelectedTarget] = useState(null);
   const [selectedIssues, setSelectedIssues] = useState({});
   const [selectedIssue, setSelectedIssue] = useState(null);
@@ -64,9 +74,11 @@ export default function AccentExplorer() {
       if (selectedTarget === label) {
         setSelectedTarget(null);
         setSelectedIssue(null);
+        navigate("/accent-explorer");
       } else {
         setSelectedTarget(label);
         setSelectedIssue(null);
+        navigate(`/${label.toLowerCase()}`);
       }
     }
   };
@@ -76,11 +88,36 @@ export default function AccentExplorer() {
     if (selectedIssue && selectedIssue.id === issue.id) {
       // Deselect if clicking the same issue
       setSelectedIssue(null);
+      navigate(`/${selectedTarget.toLowerCase()}`);
     } else {
       // Select new issue
       setSelectedIssue(issue);
+      navigate(`/${selectedTarget.toLowerCase()}/${issue.shortName}`);
     }
   };
+
+  // Handle URL parameters on component mount and when they change
+  useEffect(() => {
+    if (targetSlug && issuesData.length > 0) {
+      const target = findTargetBySlug(targetSlug);
+      if (target) {
+        setSelectedTarget(target.name);
+
+        if (issueSlug) {
+          const issue = findIssueBySlug(targetSlug, issueSlug);
+          if (issue) {
+            setSelectedIssue(issue);
+          }
+        } else {
+          setSelectedIssue(null);
+        }
+      }
+    } else if (!targetSlug) {
+      // Reset to no selection when on /accent-explorer
+      setSelectedTarget(null);
+      setSelectedIssue(null);
+    }
+  }, [targetSlug, issueSlug, issuesData, findTargetBySlug, findIssueBySlug]);
 
   if (loading) {
     return (
