@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useIssuesStore } from "../stores/issues-store";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, BookOpen, Play, Brain } from "lucide-react";
 import { Button } from "../components/ui/button";
 import PhonemeGridSummary from "../components/phoneme-grid-summary";
 import { hasQuizForTargetIssue } from "./quiz";
+import accentExplorerData from "../data/accent-explorer-data";
 
 export default function AccentExplorer() {
   const { targetSlug, issueSlug } = useParams();
@@ -258,27 +259,168 @@ export default function AccentExplorer() {
             {selectedIssue ? (
               /* Issue Details */
               <div>
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {selectedIssue.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {selectedIssue.resources.length} resource
-                    {selectedIssue.resources.length !== 1 ? "s" : ""} available
-                  </p>
-                  {hasQuiz && (
-                    <Button
-                      onClick={() =>
-                        navigate(
-                          `/quiz/${selectedTarget.toLowerCase()}/${selectedIssue.shortName.toLowerCase()}`
-                        )
-                      }
-                      className="w-full sm:w-auto cursor-pointer"
-                    >
-                      Start Quiz
-                    </Button>
-                  )}
-                </div>
+                {(() => {
+                  let issueData;
+                  try {
+                    issueData = accentExplorerData.getIssueData(
+                      selectedIssue.name
+                    );
+                  } catch (error) {
+                    console.warn("Error getting issue data:", error);
+                    issueData = null;
+                  }
+
+                  return (
+                    <div>
+                      <div className="mb-4">
+                        <h3 className="text-xl font-semibold text-foreground mb-2">
+                          {issueData?.name || selectedIssue.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {selectedIssue.resources.length} resource
+                          {selectedIssue.resources.length !== 1 ? "s" : ""}{" "}
+                          available
+                        </p>
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {hasQuiz && (
+                            <Button
+                              onClick={() =>
+                                navigate(
+                                  `/quiz/${selectedTarget.toLowerCase()}/${selectedIssue.shortName.toLowerCase()}`
+                                )
+                              }
+                              className="cursor-pointer"
+                            >
+                              <Brain className="mr-2 h-4 w-4" />
+                              Start Quiz
+                            </Button>
+                          )}
+                          {issueData?.audioResources && (
+                            <Button
+                              variant="outline"
+                              className="cursor-pointer"
+                            >
+                              <Play className="mr-2 h-4 w-4" />
+                              Audio Guide
+                            </Button>
+                          )}
+                          {issueData && (
+                            <Button
+                              variant="outline"
+                              className="cursor-pointer"
+                            >
+                              <BookOpen className="mr-2 h-4 w-4" />
+                              Learn More
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Rich Content */}
+                      {issueData && (
+                        <div className="space-y-6">
+                          {/* Description */}
+                          {issueData?.description && (
+                            <div>
+                              <h4 className="font-medium text-foreground mb-2">
+                                Description
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                {issueData.description}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Example Words */}
+                          {issueData?.exampleWords &&
+                            Array.isArray(issueData.exampleWords) && (
+                              <div>
+                                <h4 className="font-medium text-foreground mb-2">
+                                  Example Words
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                  {issueData.exampleWords.map(
+                                    (example, index) => {
+                                      if (!example || !example.word)
+                                        return null;
+                                      return (
+                                        <div
+                                          key={index}
+                                          className="bg-background/50 border border-border/50 rounded p-2"
+                                        >
+                                          <div className="font-medium text-foreground">
+                                            {example.word}
+                                          </div>
+                                          {example.correct && (
+                                            <div className="text-sm text-green-600">
+                                              ✓ {example.correct}
+                                            </div>
+                                          )}
+                                          {example.incorrect && (
+                                            <div className="text-sm text-red-600">
+                                              ✗ {example.incorrect}
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    }
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                          {/* External Resources */}
+                          {issueData?.externalResources &&
+                            Array.isArray(issueData.externalResources) && (
+                              <div>
+                                <h4 className="font-medium text-foreground mb-2">
+                                  External Resources
+                                </h4>
+                                <div className="space-y-2">
+                                  {issueData.externalResources.map(
+                                    (resource, index) => {
+                                      if (!resource || !resource.url)
+                                        return null;
+                                      return (
+                                        <a
+                                          key={index}
+                                          href={resource.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="block p-2 bg-background/50 border border-border/50 rounded hover:bg-background/70 transition-colors"
+                                        >
+                                          <div className="font-medium text-foreground">
+                                            {resource.name || "Resource"}
+                                          </div>
+                                          {resource.description && (
+                                            <div className="text-sm text-muted-foreground">
+                                              {resource.description}
+                                            </div>
+                                          )}
+                                        </a>
+                                      );
+                                    }
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                          {/* Difficulty */}
+                          {issueData?.difficulty && (
+                            <div className="flex gap-4 text-sm text-muted-foreground">
+                              <div>
+                                <span className="font-medium">Difficulty:</span>{" "}
+                                {issueData.difficulty}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {selectedIssue.resources.length > 0 ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2">
@@ -321,20 +463,119 @@ export default function AccentExplorer() {
             ) : (
               /* Target Info */
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  Target: {selectedTarget}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {filteredIssues.length} issue
-                  {filteredIssues.length !== 1 ? "s" : ""} available. Click on
-                  an issue above to see details.
-                </p>
-                <div className="text-sm text-muted-foreground">
-                  <p>
-                    This target phoneme represents the /
-                    {selectedTarget.toLowerCase()}/ sound in English.
-                  </p>
-                </div>
+                {(() => {
+                  let targetData;
+                  try {
+                    targetData =
+                      accentExplorerData.getTargetData(selectedTarget);
+                  } catch (error) {
+                    console.warn("Error getting target data:", error);
+                    targetData = null;
+                  }
+
+                  return targetData ? (
+                    <div>
+                      <div className="mb-4">
+                        <h3 className="text-xl font-semibold text-foreground mb-2">
+                          {(() => {
+                            try {
+                              return (
+                                accentExplorerData.getTargetDisplayName(
+                                  selectedTarget
+                                ) || selectedTarget
+                              );
+                            } catch (error) {
+                              console.warn(
+                                "Error getting target display name:",
+                                error
+                              );
+                              return selectedTarget;
+                            }
+                          })()}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {filteredIssues.length} issue
+                          {filteredIssues.length !== 1 ? "s" : ""} available.
+                          Click on an issue above to see details.
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        {/* Example Words */}
+                        {targetData.exampleWords &&
+                          Array.isArray(targetData.exampleWords) && (
+                            <div>
+                              <h4 className="font-medium text-foreground mb-2">
+                                Example Words
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {targetData.exampleWords.map((word, index) => (
+                                  <span
+                                    key={index}
+                                    className="bg-background/50 border border-border/50 rounded px-2 py-1 text-sm"
+                                  >
+                                    {word || "N/A"}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                        {/* External Resources */}
+                        {targetData.externalResources &&
+                          Array.isArray(targetData.externalResources) && (
+                            <div>
+                              <h4 className="font-medium text-foreground mb-2">
+                                External Resources
+                              </h4>
+                              <div className="space-y-2">
+                                {targetData.externalResources.map(
+                                  (resource, index) => {
+                                    if (!resource || !resource.url) return null;
+                                    return (
+                                      <a
+                                        key={index}
+                                        href={resource.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block p-2 bg-background/50 border border-border/50 rounded hover:bg-background/70 transition-colors"
+                                      >
+                                        <div className="font-medium text-foreground">
+                                          {resource.name || "Resource"}
+                                        </div>
+                                        {resource.description && (
+                                          <div className="text-sm text-muted-foreground">
+                                            {resource.description}
+                                          </div>
+                                        )}
+                                      </a>
+                                    );
+                                  }
+                                )}
+                              </div>
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground mb-2">
+                        Target: {selectedTarget}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {filteredIssues.length} issue
+                        {filteredIssues.length !== 1 ? "s" : ""} available.
+                        Click on an issue above to see details.
+                      </p>
+                      <div className="text-sm text-muted-foreground">
+                        <p>
+                          This target phoneme represents the /
+                          {selectedTarget.toLowerCase()}/ sound in English.
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>
