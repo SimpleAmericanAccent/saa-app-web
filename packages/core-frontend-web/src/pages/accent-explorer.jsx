@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useIssuesStore } from "../stores/issues-store";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Brain } from "lucide-react";
 import { Button } from "../components/ui/button";
 import PhonemeGridSummary from "../components/phoneme-grid-summary";
 import accentExplorerData from "../data/accent-explorer-data";
+import { hasQuizForTargetIssue } from "./quiz";
 
 export default function AccentExplorer() {
   const { targetSlug } = useParams();
@@ -73,6 +74,22 @@ export default function AccentExplorer() {
     return selected;
   }, [selectedTarget, issuesData]);
 
+  // Get available quizzes for the selected target
+  const availableQuizzes = useMemo(() => {
+    if (!selectedTarget) return [];
+
+    const target = issuesData.find((t) => t.name === selectedTarget);
+    if (!target) return [];
+
+    return target.issues
+      .filter((issue) => hasQuizForTargetIssue(target.name, issue.shortName))
+      .map((issue) => ({
+        issueName: issue.name,
+        shortName: issue.shortName,
+        url: `/quiz/${target.name.toLowerCase()}/${issue.shortName.toLowerCase()}`,
+      }));
+  }, [selectedTarget, issuesData]);
+
   // Handle phoneme grid click
   const handlePhonemeClick = (label) => {
     const target = issuesData.find((t) => t.name === label);
@@ -138,23 +155,44 @@ export default function AccentExplorer() {
         {/* Row 1: Phoneme Grid + Issues */}
         <div className="flex flex-col lg:flex-row gap-6 mb-6">
           {/* Phoneme Grid */}
-          <div className="bg-card border border-border rounded-lg p-4 flex-shrink-0">
+          <div className="bg-card border border-border rounded-lg p-2 lg:p-4">
             <h3 className="text-lg font-semibold text-foreground mb-2">
               Target:
             </h3>
-            <PhonemeGridSummary
-              issueWordMap={mockStats.issueWordMap}
-              issues={[]}
-              targetCounts={targetCounts}
-              stats={mockStats}
-              selectedIssues={selectedIssuesForHighlighting}
-              setSelectedIssues={() => {}} // Disable selection changes
-              issuesData={issuesData}
-              onHover={() => {}}
-              onPhonemeClick={handlePhonemeClick}
-              hideSettings={true}
-              hideMisc={true}
-            />
+            {/* Mobile: Horizontal scroll container */}
+            <div className="lg:hidden overflow-x-auto pb-2">
+              <div className="min-w-max">
+                <PhonemeGridSummary
+                  issueWordMap={mockStats.issueWordMap}
+                  issues={[]}
+                  targetCounts={targetCounts}
+                  stats={mockStats}
+                  selectedIssues={selectedIssuesForHighlighting}
+                  setSelectedIssues={() => {}} // Disable selection changes
+                  issuesData={issuesData}
+                  onHover={() => {}}
+                  onPhonemeClick={handlePhonemeClick}
+                  hideSettings={true}
+                  hideMisc={true}
+                />
+              </div>
+            </div>
+            {/* Desktop: Normal layout */}
+            <div className="hidden lg:block">
+              <PhonemeGridSummary
+                issueWordMap={mockStats.issueWordMap}
+                issues={[]}
+                targetCounts={targetCounts}
+                stats={mockStats}
+                selectedIssues={selectedIssuesForHighlighting}
+                setSelectedIssues={() => {}} // Disable selection changes
+                issuesData={issuesData}
+                onHover={() => {}}
+                onPhonemeClick={handlePhonemeClick}
+                hideSettings={true}
+                hideMisc={true}
+              />
+            </div>
           </div>
         </div>
 
@@ -215,66 +253,111 @@ export default function AccentExplorer() {
                           </div>
                         )}
 
-                      <div className="flex gap-4">
-                        {/* External Resources */}
-                        {targetData.externalResources &&
-                          Array.isArray(targetData.externalResources) && (
-                            <div className="space-y-2 min-w-40">
-                              {targetData.externalResources.map(
-                                (resource, index) => {
-                                  if (!resource || !resource.url) return null;
-                                  return (
-                                    <a
-                                      key={index}
-                                      href={resource.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="block p-2 bg-foreground rounded"
-                                    >
-                                      <div className="flex items-center justify-between">
-                                        <div className="font-medium text-background">
-                                          {resource.name || "Resource"}
+                      {/* All Resources in Compact Layout */}
+                      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                        {/* Left Column: Quizzes and Resources Stacked */}
+                        <div className="lg:col-span-1 space-y-3">
+                          {/* Quizzes */}
+                          {availableQuizzes.length > 0 && (
+                            <div>
+                              <h4 className="font-medium text-foreground mb-2 text-sm">
+                                Available Quizzes
+                              </h4>
+                              <div className="space-y-1">
+                                {availableQuizzes.map((quiz, index) => (
+                                  <a
+                                    key={index}
+                                    href={quiz.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block p-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                                  >
+                                    <div className="flex items-center gap-1.5">
+                                      <Brain
+                                        size={12}
+                                        className="text-blue-600 dark:text-blue-400"
+                                      />
+                                      <div className="flex-1">
+                                        <div className="font-medium text-foreground text-xs">
+                                          {quiz.issueName}
                                         </div>
-                                        <ExternalLink
-                                          size={16}
-                                          className="text-muted-foreground"
-                                        />
                                       </div>
-                                    </a>
-                                  );
-                                }
-                              )}
+                                      <ExternalLink
+                                        size={10}
+                                        className="text-blue-600 dark:text-blue-400"
+                                      />
+                                    </div>
+                                  </a>
+                                ))}
+                              </div>
                             </div>
                           )}
 
-                        {/* Reels */}
+                          {/* External Resources */}
+                          {targetData.externalResources &&
+                            Array.isArray(targetData.externalResources) && (
+                              <div>
+                                <h4 className="font-medium text-foreground mb-2 text-sm">
+                                  Practice Resources
+                                </h4>
+                                <div className="space-y-1">
+                                  {targetData.externalResources.map(
+                                    (resource, index) => {
+                                      if (!resource || !resource.url)
+                                        return null;
+                                      return (
+                                        <a
+                                          key={index}
+                                          href={resource.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="block p-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+                                        >
+                                          <div className="flex items-center gap-1.5">
+                                            <span className="text-green-600 dark:text-green-400 text-xs">
+                                              📚
+                                            </span>
+                                            <div className="flex-1">
+                                              <div className="font-medium text-foreground text-xs">
+                                                {resource.name || "Resource"}
+                                              </div>
+                                            </div>
+                                            <ExternalLink
+                                              size={10}
+                                              className="text-green-600 dark:text-green-400"
+                                            />
+                                          </div>
+                                        </a>
+                                      );
+                                    }
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                        </div>
+
+                        {/* Right Column: Reels */}
                         {allReels.length > 0 && (
-                          <div>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 ">
+                          <div className="lg:col-span-3">
+                            <h4 className="font-medium text-foreground mb-2 text-sm">
+                              Practice Reels
+                            </h4>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2">
                               {allReels.map((resource, index) => (
                                 <a
                                   key={index}
                                   href={resource}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="block p-2 bg-background/50 border border-border/50 rounded hover:bg-background/70 transition-colors"
+                                  className="block p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
                                 >
-                                  <div className="flex items-center justify-between ">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                                        <span className="text-lg">🎬</span>
-                                      </div>
-                                      <div>
-                                        <h4 className="font-medium text-foreground">
-                                          Reel {index + 1}
-                                        </h4>
-                                        <p className="text-sm text-muted-foreground"></p>
+                                  <div className="flex flex-col items-center gap-1">
+                                    <span className="text-lg">🎬</span>
+                                    <div className="text-center">
+                                      <div className="font-medium text-foreground text-xs">
+                                        Reel {index + 1}
                                       </div>
                                     </div>
-                                    {/* <ExternalLink
-                                      size={16}
-                                      className="text-muted-foreground"
-                                    /> */}
                                   </div>
                                 </a>
                               ))}
