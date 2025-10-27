@@ -357,21 +357,19 @@ export function SidebarLeft() {
               </SidebarMenuItem>
 
               {/* Accent Explorer */}
-              {isAdmin && (
-                <SidebarMenuItem>
-                  <SidebarMenuButtonWithClose asChild tooltip="Accent Targets">
-                    <SidebarLink
-                      to="/accent-explorer"
-                      className="flex items-center gap-2"
-                    >
-                      <Search className="h-4 w-4 text-white" />
-                      {shouldShowText && (
-                        <span className="text-white">Accent Targets</span>
-                      )}
-                    </SidebarLink>
-                  </SidebarMenuButtonWithClose>
-                </SidebarMenuItem>
-              )}
+              <SidebarMenuItem>
+                <SidebarMenuButtonWithClose asChild tooltip="Accent Targets">
+                  <SidebarLink
+                    to="/accent-explorer"
+                    className="flex items-center gap-2"
+                  >
+                    <Search className="h-4 w-4 text-white" />
+                    {shouldShowText && (
+                      <span className="text-white">Accent Targets</span>
+                    )}
+                  </SidebarLink>
+                </SidebarMenuButtonWithClose>
+              </SidebarMenuItem>
 
               {/* Vowels */}
               <Collapsible
