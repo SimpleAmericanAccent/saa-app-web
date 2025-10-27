@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuizStatsStore } from "../stores/quiz-stats-store";
 import {
   fetchQuizSettings,
@@ -200,7 +201,43 @@ const shuffleArray = (array) => {
   return shuffled;
 };
 
+// Mapping between quiz types and their URL paths (without /quiz prefix)
+export const QUIZ_TYPE_TO_PATH = {
+  dh_d: "dh/d",
+  kit_fleece: "kit/fleece",
+  trap_dress: "trap/dress",
+  ban_dress: "ban/dress",
+  foot_goose: "foot/goose",
+  strut_lot: "strut/lot",
+  dark_l_o: "l/o",
+  dark_l_u: "l/u",
+  t_ch: "t/ch",
+  s_z: "s/z",
+  m_n: "m/n",
+  n_ng: "n/ng",
+  m_ng: "m/ng",
+  th_t: "th/t",
+  th_f: "th/f",
+  r_null: "r/null",
+};
+
+// Reverse mapping for URL path to quiz type
+export const PATH_TO_QUIZ_TYPE = Object.fromEntries(
+  Object.entries(QUIZ_TYPE_TO_PATH).map(([key, value]) => [value, key])
+);
+
+// Helper function to check if a quiz exists for a target/issue combination
+export const hasQuizForTargetIssue = (target, issue) => {
+  if (!target || !issue) return false;
+
+  const targetIssueKey = `${target.toLowerCase()}/${issue.toLowerCase()}`;
+  return Object.values(QUIZ_TYPE_TO_PATH).includes(targetIssueKey);
+};
+
 export default function Quiz() {
+  const { category, targetSlug, issueSlug } = useParams();
+  const navigate = useNavigate();
+
   const [quizSettings, setQuizSettings] = useState({
     numberOfQuestions: 10,
     autoPlayAudio: true,
@@ -509,6 +546,36 @@ export default function Quiz() {
   useEffect(() => {
     useAuthStore.getState().fetchUserProfile();
   }, []);
+
+  // Handle URL parameters to auto-select quiz type or category
+  useEffect(() => {
+    if (
+      targetSlug &&
+      issueSlug &&
+      quizDataFromApi &&
+      Object.keys(quizDataFromApi).length > 0
+    ) {
+      // Specific quiz selected
+      const urlPath = `${targetSlug}/${issueSlug}`;
+      const quizTypeId = PATH_TO_QUIZ_TYPE[urlPath];
+
+      if (quizTypeId && quizDataFromApi[quizTypeId]) {
+        // Auto-select the quiz type and start the quiz
+        setSelectedQuizType(quizTypeId);
+        setCurrentStep("settings"); // Skip to settings step
+      }
+    } else if (category === "vowels" || category === "consonants") {
+      // Category view
+      setSelectedCategory(category);
+      setCurrentStep("quizType");
+      setSelectedQuizType(null);
+    } else if (!category && !targetSlug && !issueSlug) {
+      // Main quiz page - category selection
+      setCurrentStep("category");
+      setSelectedCategory(null);
+      setSelectedQuizType(null);
+    }
+  }, [category, targetSlug, issueSlug, quizDataFromApi]);
 
   // Cleanup audio when component unmounts
   useEffect(() => {
@@ -888,6 +955,12 @@ export default function Quiz() {
   const handleQuizTypeSelect = (quizTypeId) => {
     setSelectedQuizType(quizTypeId);
     setCurrentStep("settings");
+
+    // Navigate to URL if we have a mapping
+    const path = QUIZ_TYPE_TO_PATH[quizTypeId];
+    if (path) {
+      navigate(`/quiz/${path}`);
+    }
   };
 
   // Handle begin quiz (for backward compatibility)
@@ -1442,7 +1515,15 @@ export default function Quiz() {
 
               {/* Back to Quiz Types Button */}
               <Button
-                onClick={() => setCurrentStep("quizType")}
+                onClick={() => {
+                  setCurrentStep("quizType");
+                  // Go back to the category we came from, or determine it from the current quiz
+                  const categoryToNavigate =
+                    selectedCategory ||
+                    (selectedQuizType && currentQuizData?.category) ||
+                    "vowels";
+                  navigate(`/quiz/${categoryToNavigate}`);
+                }}
                 variant="ghost"
                 className="w-full cursor-pointer text-sm"
               >
@@ -1469,6 +1550,7 @@ export default function Quiz() {
                   onClick={() => {
                     setSelectedCategory("vowels");
                     setCurrentStep("quizType");
+                    navigate("/quiz/vowels");
                   }}
                   className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
                     vowelsAverage ? "" : "border-gray"
@@ -1516,6 +1598,7 @@ export default function Quiz() {
                   onClick={() => {
                     setSelectedCategory("consonants");
                     setCurrentStep("quizType");
+                    navigate("/quiz/consonants");
                   }}
                   className={`relative w-full cursor-pointer rounded-lg p-6 hover:bg-accent hover:text-accent-foreground transition-colors border-2 bg-card ${
                     consonantsAverage ? "" : "border-gray"
@@ -2233,7 +2316,10 @@ export default function Quiz() {
             )}
             <div className="p-3 pt-0 flex-shrink-0">
               <Button
-                onClick={() => setCurrentStep("category")}
+                onClick={() => {
+                  setCurrentStep("category");
+                  navigate("/quiz");
+                }}
                 variant="ghost"
                 className="w-full cursor-pointer text-sm"
               >

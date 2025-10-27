@@ -30,6 +30,8 @@ const coreRoutes = (
     <Route path="/links" element={<Resources />} />
     <Route path="/resources" element={<Resources />} />
     <Route path="/quiz" element={<Quiz />} />
+    <Route path="/quiz/:category" element={<Quiz />} />
+    <Route path="/quiz/:targetSlug/:issueSlug" element={<Quiz />} />
     <Route path="/quiz-audio-admin" element={<QuizAudioAdmin />} />
     <Route path="/imitate" element={<Imitate />} />
 

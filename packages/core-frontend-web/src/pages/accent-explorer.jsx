@@ -4,6 +4,7 @@ import { useIssuesStore } from "../stores/issues-store";
 import { ExternalLink } from "lucide-react";
 import { Button } from "../components/ui/button";
 import PhonemeGridSummary from "../components/phoneme-grid-summary";
+import { hasQuizForTargetIssue } from "./quiz";
 
 export default function AccentExplorer() {
   const { targetSlug, issueSlug } = useParams();
@@ -64,6 +65,11 @@ export default function AccentExplorer() {
 
     return target.issues;
   }, [selectedTarget, issuesData]);
+
+  // Check if a quiz exists for the current target/issue combination
+  const hasQuiz = useMemo(() => {
+    return hasQuizForTargetIssue(selectedTarget, selectedIssue?.shortName);
+  }, [selectedTarget, selectedIssue]);
 
   // Handle phoneme grid click
   const handlePhonemeClick = (label) => {
@@ -261,10 +267,22 @@ export default function AccentExplorer() {
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     {selectedIssue.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground mb-3">
                     {selectedIssue.resources.length} resource
                     {selectedIssue.resources.length !== 1 ? "s" : ""} available
                   </p>
+                  {hasQuiz && (
+                    <Button
+                      onClick={() =>
+                        navigate(
+                          `/quiz/${selectedTarget.toLowerCase()}/${selectedIssue.shortName.toLowerCase()}`
+                        )
+                      }
+                      className="w-full sm:w-auto cursor-pointer"
+                    >
+                      Start Quiz
+                    </Button>
+                  )}
                 </div>
 
                 {selectedIssue.resources.length > 0 ? (
