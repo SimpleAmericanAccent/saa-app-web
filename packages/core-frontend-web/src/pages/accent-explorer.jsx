@@ -256,10 +256,6 @@ export default function AccentExplorer() {
       const lexicalPhonemes = lexicalSets[i].split(" ");
       const convertedPhonemes = [];
 
-      console.log(`Converting pronunciation ${i}:`, cmuPronunciations[i]);
-      console.log("CMU phonemes:", cmuPhonemes);
-      console.log("Lexical phonemes:", lexicalPhonemes);
-
       for (let j = 0; j < cmuPhonemes.length; j++) {
         const cmuPhoneme = cmuPhonemes[j];
         const lexicalPhoneme = lexicalPhonemes[j];
@@ -269,24 +265,17 @@ export default function AccentExplorer() {
         const baseLexical = lexicalPhoneme.replace(/[0-2]$/, "");
         const stressMarker = cmuPhoneme.match(/[0-2]$/)?.[0] || "";
 
-        console.log(
-          `Processing: ${cmuPhoneme} (${baseCmu}) -> ${lexicalPhoneme} (${baseLexical}), stress: ${stressMarker}`
-        );
-
         // Use lexical set for vowels, CMU for consonants
         let ipaSymbol;
         if (lexicalSetToIpaMap[baseLexical]) {
           // It's a vowel - use lexical set mapping
           ipaSymbol = lexicalSetToIpaMap[baseLexical];
-          console.log(`Vowel ${baseLexical} -> ${ipaSymbol}`);
         } else if (cmuToIpaMap[baseCmu]) {
           // It's a consonant - use CMU mapping
           ipaSymbol = cmuToIpaMap[baseCmu];
-          console.log(`Consonant ${baseCmu} -> ${ipaSymbol}`);
         } else {
           // Fallback to original phoneme
           ipaSymbol = baseCmu;
-          console.log(`Fallback: ${baseCmu} -> ${ipaSymbol}`);
         }
 
         // Add stress markers for vowels (primary stress: ˈ, secondary stress: ˌ)
@@ -300,7 +289,6 @@ export default function AccentExplorer() {
       }
 
       const result = convertedPhonemes.join("");
-      console.log("Final IPA:", result);
       pronunciations3.push(result);
     }
 
@@ -313,7 +301,6 @@ export default function AccentExplorer() {
     setIsLoadingAudio(true);
     try {
       const audioFiles = await getWiktionaryAllAudio(word);
-      console.log("Audio data for", word, ":", audioFiles);
       setAudioData(audioFiles);
     } catch (error) {
       console.error("Error fetching audio:", error);
@@ -324,12 +311,6 @@ export default function AccentExplorer() {
   };
 
   const playAudio = (audioId) => {
-    console.log("Attempting to play audio with ID:", audioId);
-    console.log(
-      "Available audio elements:",
-      audioData.map((a) => `audio-${a.id}`)
-    );
-
     if (currentlyPlayingAudio === audioId) {
       // Stop current audio
       const audioElement = document.getElementById(`audio-${audioId}`);
@@ -352,9 +333,7 @@ export default function AccentExplorer() {
 
       // Play new audio
       const audioElement = document.getElementById(`audio-${audioId}`);
-      console.log("Audio element found:", audioElement);
       if (audioElement) {
-        console.log("Audio src:", audioElement.src);
         audioElement.play().catch((error) => {
           console.error("Error playing audio:", error);
           setCurrentlyPlayingAudio(null);
@@ -362,10 +341,6 @@ export default function AccentExplorer() {
         setCurrentlyPlayingAudio(audioId);
       } else {
         console.error(`Audio element not found: audio-${audioId}`);
-        console.log(
-          "All audio elements in DOM:",
-          document.querySelectorAll("audio")
-        );
       }
     }
   };
@@ -389,7 +364,6 @@ export default function AccentExplorer() {
   };
 
   const handleWordHover = async (word) => {
-    console.log("Hovering over word:", word);
     setCurrentWord(word);
     setIsLoadingWordData(true);
     setPronunciationIndex(0);
@@ -404,14 +378,11 @@ export default function AccentExplorer() {
 
     try {
       const pronunciations = await getPronunciations(word);
-      console.log("Pronunciations:", pronunciations);
       const pronunciations2 = await getPronunciations2(pronunciations);
-      console.log("Lexical sets:", pronunciations2);
       const pronunciations3 = await getPronunciations3(
         pronunciations,
         pronunciations2
       );
-      console.log("IPA:", pronunciations3);
 
       setCurrentWordData({
         pronunciations,
@@ -1189,7 +1160,6 @@ export default function AccentExplorer() {
 
       {/* Hidden audio elements for playback */}
       {audioData.map((audio) => {
-        console.log("Rendering audio element:", audio);
         return (
           <audio
             key={audio.id}
@@ -1201,12 +1171,6 @@ export default function AccentExplorer() {
               console.error("Audio error:", e);
               setCurrentlyPlayingAudio(null);
             }}
-            onLoadStart={() =>
-              console.log("Audio loading started:", audio.audio || audio.url)
-            }
-            onCanPlay={() =>
-              console.log("Audio can play:", audio.audio || audio.url)
-            }
           />
         );
       })}

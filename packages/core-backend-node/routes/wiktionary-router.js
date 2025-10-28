@@ -305,11 +305,7 @@ const getWiktionaryUSAudio = async (req, res) => {
 
       // Only include US English audio files
       const isUS =
-        audio.fileName.includes("en-us-") ||
-        audio.fileName.includes("En-us-") ||
-        audio.fileName.includes("LL-Q1860") ||
-        (audio.fileName.includes("(eng)") &&
-          audio.fileName.includes("LL-Q1860"));
+        audio.fileName.includes("en-us-") || audio.fileName.includes("En-us-");
 
       return isUS;
     });
