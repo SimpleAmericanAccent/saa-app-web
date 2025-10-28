@@ -9,6 +9,7 @@ import {
   Pause,
   ChevronLeft,
   ChevronRight,
+  Hourglass,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import PhonemeGridSummary from "../components/phoneme-grid-summary";
@@ -25,6 +26,18 @@ import {
   getWiktionaryAllAudio,
   cleanWordForAPI,
 } from "../utils/wiktionary-api";
+import {
+  getFrequencyWordStrings,
+  hasFrequencyData,
+  getWordFrequency,
+  getAvailableFrequencyRanges,
+} from "../utils/frequency-utils";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 
 export default function AccentExplorer() {
   const { targetSlug } = useParams();
@@ -47,6 +60,11 @@ export default function AccentExplorer() {
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [pronunciationIndex, setPronunciationIndex] = useState(0);
   const [currentlyPlayingAudio, setCurrentlyPlayingAudio] = useState(null);
+
+  // Frequency data state
+  const [frequencyRange, setFrequencyRange] = useState(20);
+  const [showFrequencyWords, setShowFrequencyWords] = useState(true);
+  const [isGeneratingPhrases, setIsGeneratingPhrases] = useState(false);
 
   // Create mock data for phoneme grid (since it expects specific format)
   const mockStats = useMemo(() => {
@@ -400,6 +418,36 @@ export default function AccentExplorer() {
     }
   };
 
+  const generatePracticePhrases = async () => {
+    if (!selectedTarget) return;
+
+    setIsGeneratingPhrases(true);
+
+    try {
+      // Get currently visible words
+      const visibleWords = getFrequencyWordStrings(
+        selectedTarget,
+        frequencyRange
+      );
+
+      // Create prompt for ChatGPT
+      const prompt = `Create 5-10 practice phrases using these ${selectedTarget} phoneme words. Make the phrases natural and useful for pronunciation practice. Include a mix of short and longer phrases. When you use any of the target words in your phrases, format each instance of the word as code. Only respond with the phrases, nothing else.\n\nWords to use: ${visibleWords.join(
+        ", "
+      )}`;
+
+      // Open ChatGPT with the prompt
+      const encodedPrompt = encodeURIComponent(prompt);
+      const chatgptUrl = `https://chat.openai.com/?q=${encodedPrompt}`;
+
+      // Open in new tab
+      window.open(chatgptUrl, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      console.error("Error generating practice phrases:", error);
+    } finally {
+      setIsGeneratingPhrases(false);
+    }
+  };
+
   // Handle phoneme grid click
   const handlePhonemeClick = (label) => {
     const target = issuesData.find((t) => t.name === label);
@@ -667,310 +715,666 @@ export default function AccentExplorer() {
                     </div>
 
                     <div className="space-y-4">
-                      {/* Example Words */}
-                      {targetData.exampleWords &&
-                        Array.isArray(targetData.exampleWords) && (
-                          <div>
-                            <h4 className="font-medium text-foreground mb-2">
-                              Example Words
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {targetData.exampleWords.map((word, index) => (
-                                <Tooltip key={index}>
-                                  <TooltipTrigger asChild>
-                                    <div
-                                      className="bg-background/50 border border-border/50 rounded px-2 py-1 text-sm flex items-center gap-1 cursor-pointer hover:bg-background/70 transition-colors"
-                                      onMouseEnter={() => handleWordHover(word)}
-                                    >
-                                      <span>{word || "N/A"}</span>
-                                      <div className="flex items-center gap-1 ml-1">
-                                        {/* Audio Playback Button */}
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            playWord(word);
-                                          }}
-                                          disabled={isAudioLoading}
-                                          className="text-muted-foreground hover:text-foreground p-0.5 rounded hover:bg-accent/50 transition-colors"
-                                          title={`Listen to "${word}" pronunciation`}
-                                        >
-                                          {isAudioLoading ? (
-                                            <span className="text-xs">⏳</span>
-                                          ) : (
-                                            <Play size={12} />
-                                          )}
-                                        </button>
-
-                                        {/* Imitation Link */}
-                                        {/* <a
-                                          href={`/imitate/${encodeURIComponent(
-                                            word
-                                          )}`}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-muted-foreground hover:text-foreground p-0.5 rounded hover:bg-accent/50 transition-colors"
-                                          title={`Practice pronunciation of "${word}" in Imitate`}
-                                        >
-                                          <Mic size={12} />
-                                        </a> */}
-                                      </div>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent
-                                    className="max-w-xs p-1"
-                                    side="top"
-                                    align="center"
-                                    sideOffset={-10}
-                                    avoidCollisions={true}
-                                  >
-                                    <div className="space-y-1">
-                                      {/* Pronunciation Section */}
-                                      <div className="bg-muted/20 rounded-md pb-1 mt-0">
-                                        <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-emerald-600 py-0.5 rounded-t-md w-full">
-                                          PRONUNCIATION{" "}
-                                          {getMaxPronunciations() > 1
-                                            ? `${
-                                                pronunciationIndex + 1
-                                              }/${getMaxPronunciations()}`
-                                            : ""}
+                      <Tabs defaultValue="frequency">
+                        <TabsList>
+                          {/* <TabsTrigger value="example">
+                            Example Words
+                          </TabsTrigger> */}
+                          <TabsTrigger
+                            value="frequency"
+                            className="cursor-pointer"
+                          >
+                            Most Frequent Words
+                          </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="example">
+                          {/* Example Words */}
+                          {targetData.exampleWords &&
+                            Array.isArray(targetData.exampleWords) && (
+                              <div className="flex flex-wrap gap-2">
+                                {targetData.exampleWords.map((word, index) => (
+                                  <Tooltip key={index}>
+                                    <TooltipTrigger asChild>
+                                      <div
+                                        className="bg-background/50 border border-border/50 rounded px-2 py-1 text-sm flex items-center gap-1 cursor-pointer hover:bg-background/70 transition-colors"
+                                        onMouseEnter={() =>
+                                          handleWordHover(word)
+                                        }
+                                      >
+                                        <span>{word || "N/A"}</span>
+                                        <div className="flex items-center gap-1 ml-1">
+                                          {/* Audio Playback Button */}
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              playWord(word);
+                                            }}
+                                            disabled={isAudioLoading}
+                                            className="text-muted-foreground hover:text-foreground p-0.5 rounded hover:bg-accent/50 transition-colors"
+                                            title={`Listen to "${word}" pronunciation`}
+                                          >
+                                            {isAudioLoading ? (
+                                              <Hourglass size={12} />
+                                            ) : (
+                                              <Play size={12} />
+                                            )}
+                                          </button>
                                         </div>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                      className="max-w-xs p-1"
+                                      side="top"
+                                      align="center"
+                                      sideOffset={-10}
+                                      avoidCollisions={true}
+                                    >
+                                      <div className="space-y-1">
+                                        {/* Pronunciation Section */}
+                                        <div className="bg-muted/20 rounded-md pb-1 mt-0">
+                                          <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-emerald-600 py-0.5 rounded-t-md w-full">
+                                            PRONUNCIATION{" "}
+                                            {getMaxPronunciations() > 1
+                                              ? `${
+                                                  pronunciationIndex + 1
+                                                }/${getMaxPronunciations()}`
+                                              : ""}
+                                          </div>
 
-                                        {getMaxPronunciations() > 0 ? (
-                                          <>
-                                            <div className="mb-1">
-                                              <div className="font-semibold text-xs text-center">
-                                                CMU:
-                                              </div>
-                                              <div className="text-xs text-center px-1">
-                                                {isLoadingWordData ? (
-                                                  <div className="text-background/80">
-                                                    Loading...
-                                                  </div>
-                                                ) : currentWordData
-                                                    .pronunciations.length >
-                                                  0 ? (
-                                                  currentWordData
-                                                    .pronunciations[
-                                                    pronunciationIndex
-                                                  ] || "N/A"
-                                                ) : (
-                                                  "N/A"
-                                                )}
-                                              </div>
-                                            </div>
-
-                                            <div className="mb-1">
-                                              <div className="font-semibold text-xs text-center">
-                                                Lexical Sets:
-                                              </div>
-                                              <div className="text-xs text-center px-1">
-                                                {isLoadingWordData ? (
-                                                  <div className="text-background/80">
-                                                    Loading...
-                                                  </div>
-                                                ) : currentWordData
-                                                    .pronunciations2.length >
-                                                  0 ? (
-                                                  currentWordData
-                                                    .pronunciations2[
-                                                    pronunciationIndex
-                                                  ] || "N/A"
-                                                ) : (
-                                                  "N/A"
-                                                )}
-                                              </div>
-                                            </div>
-
-                                            <div className="mb-1">
-                                              <div className="font-semibold text-xs text-center">
-                                                IPA:
-                                              </div>
-                                              <div className="text-xs text-center px-1">
-                                                {isLoadingWordData ? (
-                                                  <div className="text-background/80">
-                                                    Loading...
-                                                  </div>
-                                                ) : currentWordData
-                                                    .pronunciations3.length >
-                                                  0 ? (
-                                                  currentWordData
-                                                    .pronunciations3[
-                                                    pronunciationIndex
-                                                  ] || "N/A"
-                                                ) : (
-                                                  "N/A"
-                                                )}
-                                              </div>
-                                            </div>
-
-                                            {getMaxPronunciations() > 1 && (
-                                              <div className="flex items-center justify-center gap-2 mt-2">
-                                                <button
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    prevPronunciation();
-                                                  }}
-                                                  className="p-1 hover:bg-accent/10 rounded cursor-pointer"
-                                                >
-                                                  <ChevronLeft className="h-3 w-3" />
-                                                </button>
-                                                <div className="flex gap-1">
-                                                  {Array.from(
-                                                    {
-                                                      length:
-                                                        getMaxPronunciations(),
-                                                    },
-                                                    (_, i) => (
-                                                      <div
-                                                        key={i}
-                                                        className={`w-1.5 h-1.5 rounded-full ${
-                                                          i ===
-                                                          pronunciationIndex
-                                                            ? "bg-gray-600"
-                                                            : "bg-gray-300"
-                                                        }`}
-                                                      />
-                                                    )
+                                          {getMaxPronunciations() > 0 ? (
+                                            <>
+                                              <div className="mb-1">
+                                                <div className="font-semibold text-xs text-center">
+                                                  CMU:
+                                                </div>
+                                                <div className="text-xs text-center px-1">
+                                                  {isLoadingWordData ? (
+                                                    <div className="text-background/80">
+                                                      Loading...
+                                                    </div>
+                                                  ) : currentWordData
+                                                      .pronunciations.length >
+                                                    0 ? (
+                                                    currentWordData
+                                                      .pronunciations[
+                                                      pronunciationIndex
+                                                    ] || "N/A"
+                                                  ) : (
+                                                    "N/A"
                                                   )}
                                                 </div>
-                                                <button
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    nextPronunciation();
-                                                  }}
-                                                  className="p-1 hover:bg-accent/10 rounded cursor-pointer"
-                                                >
-                                                  <ChevronRight className="h-3 w-3" />
-                                                </button>
                                               </div>
-                                            )}
-                                          </>
-                                        ) : (
-                                          <div className="text-xs text-center text-muted-foreground px-1">
-                                            None found
-                                          </div>
-                                        )}
-                                      </div>
 
-                                      {/* Audio Section */}
-                                      <div className="bg-muted/20 rounded-md pb-1 mt-0">
-                                        <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-amber-600 py-0.5 rounded-t-md w-full">
-                                          AUDIO
-                                        </div>
-                                        {isLoadingAudio ? (
-                                          <div className="text-xs text-center text-background/80 px-1">
-                                            Loading...
-                                          </div>
-                                        ) : audioData.length > 0 ? (
-                                          <div className="flex flex-wrap justify-center gap-1">
-                                            {audioData
-                                              .sort((a, b) => {
-                                                // Sort US audio first, then others
-                                                const aIsUS = a.accent === "us";
-                                                const bIsUS = b.accent === "us";
-                                                if (aIsUS && !bIsUS) return -1;
-                                                if (!aIsUS && bIsUS) return 1;
-                                                return 0;
-                                              })
-                                              .slice(0, 3)
-                                              .map((audio) => (
-                                                <button
-                                                  key={audio.id}
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    playAudio(audio.id);
-                                                  }}
-                                                  className="flex items-center gap-1.5 px-2 py-1 text-xs bg-muted hover:bg-muted/80 rounded transition-colors border border-border/50 cursor-pointer"
-                                                  title={`${audio.region} pronunciation`}
-                                                >
-                                                  <span className="text-base leading-none">
-                                                    {audio.flag}
-                                                  </span>
-                                                  {currentlyPlayingAudio ===
-                                                  audio.id ? (
-                                                    <Pause className="h-3 w-3 text-foreground/70" />
+                                              <div className="mb-1">
+                                                <div className="font-semibold text-xs text-center">
+                                                  Lexical Sets:
+                                                </div>
+                                                <div className="text-xs text-center px-1">
+                                                  {isLoadingWordData ? (
+                                                    <div className="text-background/80">
+                                                      Loading...
+                                                    </div>
+                                                  ) : currentWordData
+                                                      .pronunciations2.length >
+                                                    0 ? (
+                                                    currentWordData
+                                                      .pronunciations2[
+                                                      pronunciationIndex
+                                                    ] || "N/A"
                                                   ) : (
-                                                    <Play className="h-3 w-3 text-foreground/70" />
+                                                    "N/A"
                                                   )}
-                                                </button>
-                                              ))}
-                                          </div>
-                                        ) : (
-                                          <div className="text-xs text-center text-muted-foreground px-1">
-                                            None found
-                                          </div>
-                                        )}
+                                                </div>
+                                              </div>
 
-                                        {/* External pronunciation links */}
-                                        {currentWord && (
-                                          <div className="text-center mt-1 space-y-1">
-                                            <div className="flex justify-center items-center gap-1 text-xs text-muted-foreground">
-                                              {(() => {
-                                                const cleanWord =
-                                                  cleanWordForAPI(
-                                                    currentWord,
-                                                    "wiktionary"
+                                              <div className="mb-1">
+                                                <div className="font-semibold text-xs text-center">
+                                                  IPA:
+                                                </div>
+                                                <div className="text-xs text-center px-1">
+                                                  {isLoadingWordData ? (
+                                                    <div className="text-background/80">
+                                                      Loading...
+                                                    </div>
+                                                  ) : currentWordData
+                                                      .pronunciations3.length >
+                                                    0 ? (
+                                                    currentWordData
+                                                      .pronunciations3[
+                                                      pronunciationIndex
+                                                    ] || "N/A"
+                                                  ) : (
+                                                    "N/A"
+                                                  )}
+                                                </div>
+                                              </div>
+
+                                              {getMaxPronunciations() > 1 && (
+                                                <div className="flex items-center justify-center gap-2 mt-2">
+                                                  <button
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      prevPronunciation();
+                                                    }}
+                                                    className="p-1 hover:bg-accent/10 rounded cursor-pointer"
+                                                  >
+                                                    <ChevronLeft className="h-3 w-3" />
+                                                  </button>
+                                                  <div className="flex gap-1">
+                                                    {Array.from(
+                                                      {
+                                                        length:
+                                                          getMaxPronunciations(),
+                                                      },
+                                                      (_, i) => (
+                                                        <div
+                                                          key={i}
+                                                          className={`w-1.5 h-1.5 rounded-full ${
+                                                            i ===
+                                                            pronunciationIndex
+                                                              ? "bg-gray-600"
+                                                              : "bg-gray-300"
+                                                          }`}
+                                                        />
+                                                      )
+                                                    )}
+                                                  </div>
+                                                  <button
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      nextPronunciation();
+                                                    }}
+                                                    className="p-1 hover:bg-accent/10 rounded cursor-pointer"
+                                                  >
+                                                    <ChevronRight className="h-3 w-3" />
+                                                  </button>
+                                                </div>
+                                              )}
+                                            </>
+                                          ) : (
+                                            <div className="text-xs text-center text-muted-foreground px-1">
+                                              None found
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        {/* Audio Section */}
+                                        <div className="bg-muted/20 rounded-md pb-1 mt-0">
+                                          <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-amber-600 py-0.5 rounded-t-md w-full">
+                                            AUDIO
+                                          </div>
+                                          {isLoadingAudio ? (
+                                            <div className="text-xs text-center text-background/80 px-1">
+                                              Loading...
+                                            </div>
+                                          ) : audioData.length > 0 ? (
+                                            <div className="flex flex-wrap justify-center gap-1">
+                                              {audioData
+                                                .sort((a, b) => {
+                                                  // Sort US audio first, then others
+                                                  const aIsUS =
+                                                    a.accent === "us";
+                                                  const bIsUS =
+                                                    b.accent === "us";
+                                                  if (aIsUS && !bIsUS)
+                                                    return -1;
+                                                  if (!aIsUS && bIsUS) return 1;
+                                                  return 0;
+                                                })
+                                                .slice(0, 3)
+                                                .map((audio) => (
+                                                  <button
+                                                    key={audio.id}
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      playAudio(audio.id);
+                                                    }}
+                                                    className="flex items-center gap-1.5 px-2 py-1 text-xs bg-muted hover:bg-muted/80 rounded transition-colors border border-border/50 cursor-pointer"
+                                                    title={`${audio.region} pronunciation`}
+                                                  >
+                                                    <span className="text-base leading-none">
+                                                      {audio.flag}
+                                                    </span>
+                                                    {currentlyPlayingAudio ===
+                                                    audio.id ? (
+                                                      <Pause className="h-3 w-3 text-foreground/70" />
+                                                    ) : (
+                                                      <Play className="h-3 w-3 text-foreground/70" />
+                                                    )}
+                                                  </button>
+                                                ))}
+                                            </div>
+                                          ) : (
+                                            <div className="text-xs text-center text-muted-foreground px-1">
+                                              None found
+                                            </div>
+                                          )}
+
+                                          {/* External pronunciation links */}
+                                          {currentWord && (
+                                            <div className="text-center mt-1 space-y-1">
+                                              <div className="flex justify-center items-center gap-1 text-xs text-muted-foreground">
+                                                {(() => {
+                                                  const cleanWord =
+                                                    cleanWordForAPI(
+                                                      currentWord,
+                                                      "wiktionary"
+                                                    );
+                                                  return (
+                                                    <>
+                                                      <a
+                                                        href={`https://youglish.com/pronounce/${encodeURIComponent(
+                                                          cleanWord
+                                                        )}/english/us`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        onClick={(e) =>
+                                                          e.stopPropagation()
+                                                        }
+                                                        className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
+                                                        title="Hear real-world pronunciations on YouGlish"
+                                                      >
+                                                        YouGlish
+                                                      </a>
+                                                      <span>|</span>
+                                                      <a
+                                                        href={`https://playphrase.me/#/search?q=${encodeURIComponent(
+                                                          cleanWord
+                                                        )}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        onClick={(e) =>
+                                                          e.stopPropagation()
+                                                        }
+                                                        className="text-green-600 hover:text-green-800 underline cursor-pointer"
+                                                        title="Hear movie/TV pronunciations on PlayPhrase"
+                                                      >
+                                                        PlayPhrase
+                                                      </a>
+                                                      <span>|</span>
+                                                      <a
+                                                        href={`https://getyarn.io/yarn-find?text=${encodeURIComponent(
+                                                          cleanWord
+                                                        )}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        onClick={(e) =>
+                                                          e.stopPropagation()
+                                                        }
+                                                        className="text-purple-600 hover:text-purple-800 underline cursor-pointer"
+                                                        title="Hear movie/TV pronunciations on Yarn"
+                                                      >
+                                                        Yarn
+                                                      </a>
+                                                    </>
                                                   );
-                                                return (
-                                                  <>
-                                                    <a
-                                                      href={`https://youglish.com/pronounce/${encodeURIComponent(
-                                                        cleanWord
-                                                      )}/english/us`}
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
-                                                      onClick={(e) =>
-                                                        e.stopPropagation()
-                                                      }
-                                                      className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                                                      title="Hear real-world pronunciations on YouGlish"
-                                                    >
-                                                      YouGlish
-                                                    </a>
-                                                    <span>|</span>
-                                                    <a
-                                                      href={`https://playphrase.me/#/search?q=${encodeURIComponent(
-                                                        cleanWord
-                                                      )}`}
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
-                                                      onClick={(e) =>
-                                                        e.stopPropagation()
-                                                      }
-                                                      className="text-green-600 hover:text-green-800 underline cursor-pointer"
-                                                      title="Hear movie/TV pronunciations on PlayPhrase"
-                                                    >
-                                                      PlayPhrase
-                                                    </a>
-                                                    <span>|</span>
-                                                    <a
-                                                      href={`https://getyarn.io/yarn-find?text=${encodeURIComponent(
-                                                        cleanWord
-                                                      )}`}
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
-                                                      onClick={(e) =>
-                                                        e.stopPropagation()
-                                                      }
-                                                      className="text-purple-600 hover:text-purple-800 underline cursor-pointer"
-                                                      title="Hear movie/TV pronunciations on Yarn"
-                                                    >
-                                                      Yarn
-                                                    </a>
-                                                  </>
-                                                );
-                                              })()}
+                                                })()}
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                ))}
+                              </div>
+                            )}
+                        </TabsContent>
+                        <TabsContent value="frequency">
+                          {/* Frequency Words */}
+                          {hasFrequencyData(selectedTarget) &&
+                            showFrequencyWords && (
+                              <div>
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2">
+                                    <select
+                                      value={frequencyRange}
+                                      onChange={(e) =>
+                                        setFrequencyRange(
+                                          parseInt(e.target.value)
+                                        )
+                                      }
+                                      className="text-xs bg-background border border-border rounded px-2 py-1 cursor-pointer"
+                                    >
+                                      {getAvailableFrequencyRanges(
+                                        selectedTarget
+                                      ).map((range) => (
+                                        <option key={range} value={range}>
+                                          Top {range}
+                                        </option>
+                                      ))}
+                                    </select>
+                                    <button
+                                      onClick={generatePracticePhrases}
+                                      disabled={isGeneratingPhrases}
+                                      className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                      title="Generate practice phrases with these words using ChatGPT"
+                                    >
+                                      {isGeneratingPhrases
+                                        ? "Opening..."
+                                        : "Generate Practice Phrases"}
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                  {getFrequencyWordStrings(
+                                    selectedTarget,
+                                    frequencyRange
+                                  ).map((word, index) => {
+                                    const frequencyData = getWordFrequency(
+                                      word,
+                                      selectedTarget
+                                    );
+                                    return (
+                                      <Tooltip key={index}>
+                                        <TooltipTrigger asChild>
+                                          <div
+                                            className="bg-background/50 border border-border/50 rounded px-2 py-1 text-sm flex items-center gap-1 cursor-pointer hover:bg-background/70 transition-colors"
+                                            onMouseEnter={() =>
+                                              handleWordHover(word)
+                                            }
+                                          >
+                                            <span>{word || "N/A"}</span>
+
+                                            <div className="flex items-center gap-1 ml-1">
+                                              {/* Audio Playback Button */}
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  playWord(word);
+                                                }}
+                                                disabled={isAudioLoading}
+                                                className="text-muted-foreground hover:text-foreground p-0.5 rounded hover:bg-accent/50 transition-colors"
+                                                title={`Listen to "${word}" pronunciation`}
+                                              >
+                                                {isAudioLoading ? (
+                                                  <Hourglass size={12} />
+                                                ) : (
+                                                  <Play size={12} />
+                                                )}
+                                              </button>
                                             </div>
                                           </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </TooltipContent>
-                                </Tooltip>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                                        </TooltipTrigger>
+                                        <TooltipContent
+                                          className="max-w-xs p-1"
+                                          side="top"
+                                          align="center"
+                                          sideOffset={-10}
+                                          avoidCollisions={true}
+                                        >
+                                          <div className="space-y-1">
+                                            {/* Frequency Information */}
+                                            {frequencyData && (
+                                              <div className="bg-blue-100 dark:bg-blue-900 rounded-md pb-1 mt-0">
+                                                <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-blue-600 dark:bg-blue-700 py-0.5 rounded-t-md w-full">
+                                                  FREQUENCY RANK #{index + 1}
+                                                </div>
+                                                <div className="text-xs text-center px-1">
+                                                  <div className="font-medium">
+                                                    {frequencyData.freqSubtlexUs?.toLocaleString() ||
+                                                      "N/A"}{" "}
+                                                    occurrences
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            )}
+
+                                            {/* Pronunciation Section */}
+                                            <div className="bg-muted/20 rounded-md pb-1 mt-0">
+                                              <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-emerald-600 py-0.5 rounded-t-md w-full">
+                                                PRONUNCIATION{" "}
+                                                {getMaxPronunciations() > 1
+                                                  ? `${
+                                                      pronunciationIndex + 1
+                                                    }/${getMaxPronunciations()}`
+                                                  : ""}
+                                              </div>
+
+                                              {getMaxPronunciations() > 0 ? (
+                                                <>
+                                                  <div className="mb-1">
+                                                    <div className="font-semibold text-xs text-center">
+                                                      CMU:
+                                                    </div>
+                                                    <div className="text-xs text-center px-1">
+                                                      {isLoadingWordData ? (
+                                                        <div className="text-background/80">
+                                                          Loading...
+                                                        </div>
+                                                      ) : currentWordData
+                                                          .pronunciations
+                                                          .length > 0 ? (
+                                                        currentWordData
+                                                          .pronunciations[
+                                                          pronunciationIndex
+                                                        ] || "N/A"
+                                                      ) : (
+                                                        "N/A"
+                                                      )}
+                                                    </div>
+                                                  </div>
+
+                                                  <div className="mb-1">
+                                                    <div className="font-semibold text-xs text-center">
+                                                      Lexical Sets:
+                                                    </div>
+                                                    <div className="text-xs text-center px-1">
+                                                      {isLoadingWordData ? (
+                                                        <div className="text-background/80">
+                                                          Loading...
+                                                        </div>
+                                                      ) : currentWordData
+                                                          .pronunciations2
+                                                          .length > 0 ? (
+                                                        currentWordData
+                                                          .pronunciations2[
+                                                          pronunciationIndex
+                                                        ] || "N/A"
+                                                      ) : (
+                                                        "N/A"
+                                                      )}
+                                                    </div>
+                                                  </div>
+
+                                                  <div className="mb-1">
+                                                    <div className="font-semibold text-xs text-center">
+                                                      IPA:
+                                                    </div>
+                                                    <div className="text-xs text-center px-1">
+                                                      {isLoadingWordData ? (
+                                                        <div className="text-background/80">
+                                                          Loading...
+                                                        </div>
+                                                      ) : currentWordData
+                                                          .pronunciations3
+                                                          .length > 0 ? (
+                                                        currentWordData
+                                                          .pronunciations3[
+                                                          pronunciationIndex
+                                                        ] || "N/A"
+                                                      ) : (
+                                                        "N/A"
+                                                      )}
+                                                    </div>
+                                                  </div>
+
+                                                  {getMaxPronunciations() >
+                                                    1 && (
+                                                    <div className="flex items-center justify-center gap-2 mt-2">
+                                                      <button
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          prevPronunciation();
+                                                        }}
+                                                        className="p-1 hover:bg-accent/10 rounded cursor-pointer"
+                                                      >
+                                                        <ChevronLeft className="h-3 w-3" />
+                                                      </button>
+                                                      <div className="flex gap-1">
+                                                        {Array.from(
+                                                          {
+                                                            length:
+                                                              getMaxPronunciations(),
+                                                          },
+                                                          (_, i) => (
+                                                            <div
+                                                              key={i}
+                                                              className={`w-1.5 h-1.5 rounded-full ${
+                                                                i ===
+                                                                pronunciationIndex
+                                                                  ? "bg-gray-600"
+                                                                  : "bg-gray-300"
+                                                              }`}
+                                                            />
+                                                          )
+                                                        )}
+                                                      </div>
+                                                      <button
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          nextPronunciation();
+                                                        }}
+                                                        className="p-1 hover:bg-accent/10 rounded cursor-pointer"
+                                                      >
+                                                        <ChevronRight className="h-3 w-3" />
+                                                      </button>
+                                                    </div>
+                                                  )}
+                                                </>
+                                              ) : (
+                                                <div className="text-xs text-center text-muted-foreground px-1">
+                                                  None found
+                                                </div>
+                                              )}
+                                            </div>
+
+                                            {/* Audio Section */}
+                                            <div className="bg-muted/20 rounded-md pb-1 mt-0">
+                                              <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-amber-600 py-0.5 rounded-t-md w-full">
+                                                AUDIO
+                                              </div>
+                                              {isLoadingAudio ? (
+                                                <div className="text-xs text-center text-background/80 px-1">
+                                                  Loading...
+                                                </div>
+                                              ) : audioData.length > 0 ? (
+                                                <div className="flex flex-wrap justify-center gap-1">
+                                                  {audioData
+                                                    .sort((a, b) => {
+                                                      // Sort US audio first, then others
+                                                      const aIsUS =
+                                                        a.accent === "us";
+                                                      const bIsUS =
+                                                        b.accent === "us";
+                                                      if (aIsUS && !bIsUS)
+                                                        return -1;
+                                                      if (!aIsUS && bIsUS)
+                                                        return 1;
+                                                      return 0;
+                                                    })
+                                                    .slice(0, 3)
+                                                    .map((audio) => (
+                                                      <button
+                                                        key={audio.id}
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          playAudio(audio.id);
+                                                        }}
+                                                        className="flex items-center gap-1.5 px-2 py-1 text-xs bg-muted hover:bg-muted/80 rounded transition-colors border border-border/50 cursor-pointer"
+                                                        title={`${audio.region} pronunciation`}
+                                                      >
+                                                        <span className="text-base leading-none">
+                                                          {audio.flag}
+                                                        </span>
+                                                        {currentlyPlayingAudio ===
+                                                        audio.id ? (
+                                                          <Pause className="h-3 w-3 text-foreground/70" />
+                                                        ) : (
+                                                          <Play className="h-3 w-3 text-foreground/70" />
+                                                        )}
+                                                      </button>
+                                                    ))}
+                                                </div>
+                                              ) : (
+                                                <div className="text-xs text-center text-muted-foreground px-1">
+                                                  None found
+                                                </div>
+                                              )}
+
+                                              {/* External pronunciation links */}
+                                              {currentWord && (
+                                                <div className="text-center mt-1 space-y-1">
+                                                  <div className="flex justify-center items-center gap-1 text-xs text-muted-foreground">
+                                                    {(() => {
+                                                      const cleanWord =
+                                                        cleanWordForAPI(
+                                                          currentWord,
+                                                          "wiktionary"
+                                                        );
+                                                      return (
+                                                        <>
+                                                          <a
+                                                            href={`https://youglish.com/pronounce/${encodeURIComponent(
+                                                              cleanWord
+                                                            )}/english/us`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={(e) =>
+                                                              e.stopPropagation()
+                                                            }
+                                                            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
+                                                            title="Hear real-world pronunciations on YouGlish"
+                                                          >
+                                                            YouGlish
+                                                          </a>
+                                                          <span>|</span>
+                                                          <a
+                                                            href={`https://playphrase.me/#/search?q=${encodeURIComponent(
+                                                              cleanWord
+                                                            )}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={(e) =>
+                                                              e.stopPropagation()
+                                                            }
+                                                            className="text-green-600 hover:text-green-800 underline cursor-pointer"
+                                                            title="Hear movie/TV pronunciations on PlayPhrase"
+                                                          >
+                                                            PlayPhrase
+                                                          </a>
+                                                          <span>|</span>
+                                                          <a
+                                                            href={`https://getyarn.io/yarn-find?text=${encodeURIComponent(
+                                                              cleanWord
+                                                            )}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={(e) =>
+                                                              e.stopPropagation()
+                                                            }
+                                                            className="text-purple-600 hover:text-purple-800 underline cursor-pointer"
+                                                            title="Hear movie/TV pronunciations on Yarn"
+                                                          >
+                                                            Yarn
+                                                          </a>
+                                                        </>
+                                                      );
+                                                    })()}
+                                                  </div>
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                        </TabsContent>
+                      </Tabs>
 
                       {/* All Resources in Compact Layout */}
                       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">

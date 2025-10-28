@@ -26,7 +26,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/1-kit-lexical-set/#phrases",
         },
       ],
@@ -45,7 +45,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/9-fleece-lexical-set/#phrases",
         },
       ],
@@ -64,7 +64,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/3-trap-lexical-set/#phrases",
         },
       ],
@@ -88,7 +88,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/2-dress-lexical-set/#phrases",
         },
       ],
@@ -108,7 +108,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/13-goose-lexical-set/#phrases",
         },
       ],
@@ -140,7 +140,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/6-foot-lexical-set/#phrases",
         },
       ],
@@ -169,7 +169,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/5-strut-lexical-set/#phrases",
         },
       ],
@@ -197,7 +197,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/4-lot-lexical-set/#phrases",
         },
       ],
@@ -218,7 +218,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/14-face-lexical-set/#phrases",
         },
       ],
@@ -229,7 +229,7 @@ export const accentExplorerData = {
       exampleWords: ["why", "hi", "try", "pie", "high", "guy", "live"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/15-price-lexical-set/#phrases",
         },
       ],
@@ -250,7 +250,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/17-choice-lexical-set/#phrases",
         },
       ],
@@ -274,7 +274,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/18-goat-lexical-set/#phrases",
         },
       ],
@@ -294,7 +294,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/16-mouth-lexical-set/#phrases",
         },
       ],
@@ -306,7 +306,7 @@ export const accentExplorerData = {
       exampleWords: ["people", "pie", "spy", "open", "top"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/p-words.html#:~:text=Initial P Phrases and Sentences",
         },
       ],
@@ -317,7 +317,7 @@ export const accentExplorerData = {
       exampleWords: ["boy", "obey", "job", "rabbit", "hobby"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/b-words.html#:~:text=Initial B Phrases and Sentences",
         },
       ],
@@ -347,7 +347,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/t-words.html#:~:text=Initial T Phrases and Sentences",
         },
       ],
@@ -373,7 +373,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/d-words.html#:~:text=Initial D Phrases and Sentences",
         },
       ],
@@ -384,7 +384,7 @@ export const accentExplorerData = {
       exampleWords: ["cold", "calm", "chrome", "quiz", "queue", "Kim"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/k-words.html#:~:text=Initial K Phrases and Sentences",
         },
       ],
@@ -395,7 +395,7 @@ export const accentExplorerData = {
       exampleWords: ["go", "gone", "get", "gig", "give"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/g-words.html#:~:text=Initial G Phrases and Sentences",
         },
       ],
@@ -415,7 +415,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/ch-words.html#:~:text=Initial CH Phrases and Sentences",
         },
       ],
@@ -426,7 +426,7 @@ export const accentExplorerData = {
       exampleWords: ["join", "jam", "judge", "agent", "jump", "page"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/j-words.html#:~:text=Initial J Phrases and Sentences",
         },
       ],
@@ -437,7 +437,7 @@ export const accentExplorerData = {
       exampleWords: ["fish", "finance", "finish", "off", "offer"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/f-words.html#:~:text=Initial F Phrases and Sentences",
         },
       ],
@@ -448,7 +448,7 @@ export const accentExplorerData = {
       exampleWords: ["of", "very", "vote", "save", "avoid", "vision", "voice"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/v-words.html#:~:text=Initial V Phrases and Sentences",
         },
       ],
@@ -479,7 +479,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/voiceless-th-words.html#:~:text=Initial Voiceless TH Phrases and Sentences",
         },
       ],
@@ -497,7 +497,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/voiced-th-words.html#:~:text=Initial Voiced TH Phrases and Sentences",
         },
       ],
@@ -515,7 +515,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/s-words.html#:~:text=Initial S Phrases and Sentences",
         },
       ],
@@ -533,7 +533,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/z-words.html#:~:text=Initial Z Phrases and Sentences",
         },
       ],
@@ -544,7 +544,7 @@ export const accentExplorerData = {
       exampleWords: ["ship", "session", "shot", "shape", "wish"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/sh-words.html#:~:text=Initial SH Phrases and Sentences",
         },
       ],
@@ -563,7 +563,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/zh-words.html#:~:text=Initial ZH Phrases and Sentences",
         },
       ],
@@ -574,7 +574,7 @@ export const accentExplorerData = {
       exampleWords: ["hi", "hello", "high", "house", "hope", "horse", "hotel"],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/h-words.html#:~:text=Initial H Phrases and Sentences",
         },
       ],
@@ -597,7 +597,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/m-words.html#:~:text=Final M Phrases and Sentences",
         },
       ],
@@ -631,7 +631,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/n-words.html#:~:text=Final N Phrases and Sentences",
         },
       ],
@@ -654,7 +654,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/ng-words.html#:~:text=Final NG Phrases and Sentences",
         },
       ],
@@ -687,7 +687,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/r-words.html#:~:text=Initial R Phrases and Sentences",
         },
       ],
@@ -710,7 +710,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/l-words.html#:~:text=Final L Phrases and Sentences",
         },
       ],
@@ -730,7 +730,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/w-words.html#:~:text=Initial W Phrases and Sentences",
         },
       ],
@@ -759,7 +759,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://www.home-speech-home.com/y-words.html#:~:text=Initial Y Phrases and Sentences",
         },
       ],
@@ -782,7 +782,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/7-kit-fleece-lexical-set/#phrases",
         },
       ],
@@ -802,7 +802,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/8-trap-dress-lexical-set/#phrases",
         },
       ],
@@ -822,7 +822,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/9-dh-d-lexical-set/#phrases",
         },
       ],
@@ -842,7 +842,7 @@ export const accentExplorerData = {
       ],
       externalResources: [
         {
-          name: "Practice Phrases",
+          name: "Pre-Made Practice Phrases",
           url: "https://ecampusontario.pressbooks.pub/lexicalsets/chapter/10-dark-l-o-lexical-set/#phrases",
         },
       ],
