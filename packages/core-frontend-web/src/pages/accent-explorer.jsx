@@ -552,6 +552,35 @@ export default function AccentExplorer() {
                     }
                     return "";
                   }}
+                  customTooltip={(label, count, percent) => {
+                    // Show quiz and reel info in tooltip
+                    const target = issuesData.find((t) => t.name === label);
+                    if (target) {
+                      const hasQuizzes = target.issues.some((issue) =>
+                        hasQuizForTargetIssue(target.name, issue.shortName)
+                      );
+                      const hasReels = target.issues.some(
+                        (issue) =>
+                          issue.resources &&
+                          Array.isArray(issue.resources) &&
+                          issue.resources.length > 0
+                      );
+
+                      let tooltipText = `${label}`;
+                      if (hasQuizzes && hasReels) {
+                        tooltipText += ` - 🧠 Quizzes & 📹 Reels available`;
+                      } else if (hasQuizzes) {
+                        tooltipText += ` - 🧠 Quizzes available`;
+                      } else if (hasReels) {
+                        tooltipText += ` - 📹 Reels available`;
+                      } else {
+                        tooltipText += ``;
+                      }
+                      return tooltipText;
+                    }
+                    return `${label}: ${count} (${percent}%)`;
+                  }}
+                  showHeaders={true}
                 />
               </div>
             </div>
@@ -596,6 +625,35 @@ export default function AccentExplorer() {
                   }
                   return "";
                 }}
+                customTooltip={(label, count, percent) => {
+                  // Show quiz and reel info in tooltip
+                  const target = issuesData.find((t) => t.name === label);
+                  if (target) {
+                    const hasQuizzes = target.issues.some((issue) =>
+                      hasQuizForTargetIssue(target.name, issue.shortName)
+                    );
+                    const hasReels = target.issues.some(
+                      (issue) =>
+                        issue.resources &&
+                        Array.isArray(issue.resources) &&
+                        issue.resources.length > 0
+                    );
+
+                    let tooltipText = `${label}`;
+                    if (hasQuizzes && hasReels) {
+                      tooltipText += ` - 🧠 Quizzes & 📹 Reels available`;
+                    } else if (hasQuizzes) {
+                      tooltipText += ` - 🧠 Quizzes available`;
+                    } else if (hasReels) {
+                      tooltipText += ` - 📹 Reels available`;
+                    } else {
+                      tooltipText += ``;
+                    }
+                    return tooltipText;
+                  }
+                  return `${label}: ${count} (${percent}%)`;
+                }}
+                showHeaders={true}
               />
             </div>
           </div>
