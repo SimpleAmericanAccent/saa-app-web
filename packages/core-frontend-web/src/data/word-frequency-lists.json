@@ -123,15 +123,6 @@
       ]
     },
     {
-      "id": 90244,
-      "word": "nice",
-      "freqSubtlexUs": 33125,
-      "pronsCmuDict": [
-        { "id": 95803, "orthoWordId": 90244, "pronCmuDict": "N AY1 S" },
-        { "id": 95804, "orthoWordId": 90244, "pronCmuDict": "N IY1 S" }
-      ]
-    },
-    {
       "id": 50379,
       "word": "feel",
       "freqSubtlexUs": 31989,
