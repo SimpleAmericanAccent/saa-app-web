@@ -104,6 +104,37 @@ baseRouter.get("/authz", async (req, res) => {
   }
 });
 
+baseRouter.get("/me", async (req, res) => {
+  const user = req.oidc.user;
+
+  if (!user) {
+    return res.status(401).json({ error: "User not authenticated" });
+  }
+
+  try {
+    // Use userId from global middleware (JIT provisioning already happened)
+    const userId = req.userId;
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      sub: user.sub,
+      picture: user.picture, // optional
+      id: userId, // database user ID from global JIT middleware
+    });
+  } catch (error) {
+    console.error("Error getting user info:", error);
+    // Return user info without database ID if lookup fails
+    res.json({
+      name: user.name,
+      email: user.email,
+      sub: user.sub,
+      picture: user.picture,
+      id: null,
+    });
+  }
+});
+
 baseRouter.get("/data/loadIssues", async (req, res) => {
   const airtable = req.app.locals.airtable;
 
@@ -334,37 +365,6 @@ baseRouter.get("/replays", async (req, res) => {
   } catch (error) {
     console.error("/api/replays error", error);
     return res.status(500).json({ error: "Server error" });
-  }
-});
-
-baseRouter.get("/me", async (req, res) => {
-  const user = req.oidc.user;
-
-  if (!user) {
-    return res.status(401).json({ error: "User not authenticated" });
-  }
-
-  try {
-    // Use userId from global middleware (JIT provisioning already happened)
-    const userId = req.userId;
-
-    res.json({
-      name: user.name,
-      email: user.email,
-      sub: user.sub,
-      picture: user.picture, // optional
-      id: userId, // database user ID from global JIT middleware
-    });
-  } catch (error) {
-    console.error("Error getting user info:", error);
-    // Return user info without database ID if lookup fails
-    res.json({
-      name: user.name,
-      email: user.email,
-      sub: user.sub,
-      picture: user.picture,
-      id: null,
-    });
   }
 });
 
