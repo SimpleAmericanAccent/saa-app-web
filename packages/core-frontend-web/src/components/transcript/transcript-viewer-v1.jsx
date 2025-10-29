@@ -819,7 +819,21 @@ const TranscriptViewerV1 = ({
   );
 
   if (!isAdmin) {
-    return content;
+    return (
+      <>
+        {content}
+        {/* Audio elements */}
+        {audioData.map((audio) => (
+          <audio
+            key={audio.id}
+            id={`audio-${audio.id}`}
+            src={audio.audio}
+            onEnded={() => setCurrentlyPlayingAudio(null)}
+            preload="none"
+          />
+        ))}
+      </>
+    );
   }
 
   return (
