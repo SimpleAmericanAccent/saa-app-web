@@ -29,7 +29,13 @@
     "lint": "eslint .",
     "test": "pnpm -r test",
     "test:frontend": "pnpm --filter core-frontend-web run test",
-    "test:f": "pnpm run test:frontend"
+    "test:f": "pnpm run test:frontend",
+    "// ============= Dependency Analysis ============= ": "",
+    "depcruise": "dependency-cruiser --config .dependency-cruiser.cjs packages apps",
+    "depcruise:graph": "dependency-cruiser --config .dependency-cruiser.cjs --output-type dot packages apps | dot -T svg > dependency-graph.svg",
+    "depcruise:archi": "dependency-cruiser --config .dependency-cruiser.cjs --output-type archi packages apps | dot -T svg > architecture-graph.svg",
+    "depcruise:json": "dependency-cruiser --config .dependency-cruiser.cjs --output-type json packages apps > dependency-report.json",
+    "depcruise:html": "dependency-cruiser --config .dependency-cruiser.cjs --output-type html packages apps > dependency-report.html"
   },
   "dependencies": {
     "@mdx-js/react": "^3.1.0",
@@ -92,6 +98,7 @@
     "@types/react-dom": "19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^9.1.2",
+    "dependency-cruiser": "^17.2.0",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
