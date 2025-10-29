@@ -132,36 +132,6 @@ const TranscriptViewerV1 = ({
     }
   };
 
-  const playAudio = (audioId) => {
-    if (currentlyPlayingAudio === audioId) {
-      // Stop current audio
-      const audioElement = document.getElementById(`audio-${audioId}`);
-      if (audioElement) {
-        audioElement.pause();
-        audioElement.currentTime = 0;
-      }
-      setCurrentlyPlayingAudio(null);
-    } else {
-      // Stop any currently playing audio
-      if (currentlyPlayingAudio) {
-        const currentAudio = document.getElementById(
-          `audio-${currentlyPlayingAudio}`
-        );
-        if (currentAudio) {
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
-        }
-      }
-
-      // Play new audio
-      const audioElement = document.getElementById(`audio-${audioId}`);
-      if (audioElement) {
-        audioElement.play();
-        setCurrentlyPlayingAudio(audioId);
-      }
-    }
-  };
-
   const getAnnotations = (wordIndex) => {
     const word = annotatedTranscript
       .flatMap((paragraph) => paragraph.alignment)
@@ -701,109 +671,13 @@ const TranscriptViewerV1 = ({
                         </div>
 
                         {/* Audio Section - Always Show */}
-                        <div className="bg-muted/20 rounded-md pb-1 mt-0">
-                          <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-amber-600 py-0.5 rounded-t-md w-full">
-                            AUDIO
-                          </div>
-                          {isLoadingAudio ? (
-                            <div className="text-xs text-center text-background/80  px-1">
-                              Loading...
-                            </div>
-                          ) : audioData.length > 0 ? (
-                            <div className="flex flex-wrap justify-center gap-1">
-                              {audioData
-                                .sort((a, b) => {
-                                  // Sort US audio first, then others
-                                  const aIsUS = a.accent === "us";
-                                  const bIsUS = b.accent === "us";
-                                  if (aIsUS && !bIsUS) return -1;
-                                  if (!aIsUS && bIsUS) return 1;
-                                  return 0;
-                                })
-                                .slice(0, 3)
-                                .map((audio) => (
-                                  <button
-                                    key={audio.id}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      playAudio(audio.id);
-                                    }}
-                                    className="flex items-center gap-1.5 px-2 py-1 text-xs bg-muted hover:bg-muted/80 rounded transition-colors border border-border/50 cursor-pointer"
-                                    title={`${audio.region} pronunciation`}
-                                  >
-                                    <span className="text-base leading-none">
-                                      {audio.flag}
-                                    </span>
-                                    {currentlyPlayingAudio === audio.id ? (
-                                      <Pause className="h-3 w-3 text-foreground/70" />
-                                    ) : (
-                                      <Play className="h-3 w-3 text-foreground/70" />
-                                    )}
-                                  </button>
-                                ))}
-                            </div>
-                          ) : (
-                            <div className="text-xs text-center text-muted-foreground px-1">
-                              None found
-                            </div>
-                          )}
-
-                          {/* External pronunciation links */}
-                          {currentWord && (
-                            <div className="text-center mt-1 space-y-1">
-                              <div className="flex justify-center items-center gap-1 text-xs text-muted-foreground">
-                                {(() => {
-                                  const cleanWord = cleanWordForAPI(
-                                    currentWord,
-                                    "wiktionary"
-                                  );
-                                  return (
-                                    <>
-                                      <a
-                                        href={`https://youglish.com/pronounce/${encodeURIComponent(
-                                          cleanWord
-                                        )}/english/us`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onClick={(e) => e.stopPropagation()}
-                                        className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                                        title="Hear real-world pronunciations on YouGlish"
-                                      >
-                                        YouGlish
-                                      </a>
-                                      <span>|</span>
-                                      <a
-                                        href={`https://playphrase.me/#/search?q=${encodeURIComponent(
-                                          cleanWord
-                                        )}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onClick={(e) => e.stopPropagation()}
-                                        className="text-green-600 hover:text-green-800 underline cursor-pointer"
-                                        title="Hear movie/TV pronunciations on PlayPhrase"
-                                      >
-                                        PlayPhrase
-                                      </a>
-                                      <span>|</span>
-                                      <a
-                                        href={`https://getyarn.io/yarn-find?text=${encodeURIComponent(
-                                          cleanWord
-                                        )}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onClick={(e) => e.stopPropagation()}
-                                        className="text-purple-600 hover:text-purple-800 underline cursor-pointer"
-                                        title="Hear movie/TV pronunciations on Yarn"
-                                      >
-                                        Yarn
-                                      </a>
-                                    </>
-                                  );
-                                })()}
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                        <_WordAudio
+                          audioData={audioData}
+                          currentWord={currentWord}
+                          isLoadingAudio={isLoadingAudio}
+                          currentlyPlayingAudio={currentlyPlayingAudio}
+                          setCurrentlyPlayingAudio={setCurrentlyPlayingAudio}
+                        />
                       </div>
                     </TooltipContent>
                   </Tooltip>
@@ -876,5 +750,143 @@ const TranscriptViewerV1 = ({
     </ContextMenu>
   );
 };
+
+function _WordAudio({
+  audioData,
+  currentWord,
+  isLoadingAudio,
+  currentlyPlayingAudio,
+  setCurrentlyPlayingAudio,
+}) {
+  const playAudio = (audioId) => {
+    if (currentlyPlayingAudio === audioId) {
+      // Stop current audio
+      const audioElement = document.getElementById(`audio-${audioId}`);
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.currentTime = 0;
+      }
+      setCurrentlyPlayingAudio(null);
+    } else {
+      // Stop any currently playing audio
+      if (currentlyPlayingAudio) {
+        const currentAudio = document.getElementById(
+          `audio-${currentlyPlayingAudio}`
+        );
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+      }
+
+      // Play new audio
+      const audioElement = document.getElementById(`audio-${audioId}`);
+      if (audioElement) {
+        audioElement.play();
+        setCurrentlyPlayingAudio(audioId);
+      }
+    }
+  };
+  return (
+    <div className="bg-muted/20 rounded-md pb-1 mt-0">
+      <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-amber-600 py-0.5 rounded-t-md w-full">
+        AUDIO
+      </div>
+      {isLoadingAudio ? (
+        <div className="text-xs text-center text-background/80  px-1">
+          Loading...
+        </div>
+      ) : audioData.length > 0 ? (
+        <div className="flex flex-wrap justify-center gap-1">
+          {audioData
+            .sort((a, b) => {
+              // Sort US audio first, then others
+              const aIsUS = a.accent === "us";
+              const bIsUS = b.accent === "us";
+              if (aIsUS && !bIsUS) return -1;
+              if (!aIsUS && bIsUS) return 1;
+              return 0;
+            })
+            .slice(0, 3)
+            .map((audio) => (
+              <button
+                key={audio.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playAudio(audio.id);
+                }}
+                className="flex items-center gap-1.5 px-2 py-1 text-xs bg-muted hover:bg-muted/80 rounded transition-colors border border-border/50 cursor-pointer"
+                title={`${audio.region} pronunciation`}
+              >
+                <span className="text-base leading-none">{audio.flag}</span>
+                {currentlyPlayingAudio === audio.id ? (
+                  <Pause className="h-3 w-3 text-foreground/70" />
+                ) : (
+                  <Play className="h-3 w-3 text-foreground/70" />
+                )}
+              </button>
+            ))}
+        </div>
+      ) : (
+        <div className="text-xs text-center text-muted-foreground px-1">
+          None found
+        </div>
+      )}
+
+      {/* External pronunciation links */}
+      {currentWord && (
+        <div className="text-center mt-1 space-y-1">
+          <div className="flex justify-center items-center gap-1 text-xs text-muted-foreground">
+            {(() => {
+              const cleanWord = cleanWordForAPI(currentWord, "wiktionary");
+              return (
+                <>
+                  <a
+                    href={`https://youglish.com/pronounce/${encodeURIComponent(
+                      cleanWord
+                    )}/english/us`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
+                    title="Hear real-world pronunciations on YouGlish"
+                  >
+                    YouGlish
+                  </a>
+                  <span>|</span>
+                  <a
+                    href={`https://playphrase.me/#/search?q=${encodeURIComponent(
+                      cleanWord
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-green-600 hover:text-green-800 underline cursor-pointer"
+                    title="Hear movie/TV pronunciations on PlayPhrase"
+                  >
+                    PlayPhrase
+                  </a>
+                  <span>|</span>
+                  <a
+                    href={`https://getyarn.io/yarn-find?text=${encodeURIComponent(
+                      cleanWord
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-purple-600 hover:text-purple-800 underline cursor-pointer"
+                    title="Hear movie/TV pronunciations on Yarn"
+                  >
+                    Yarn
+                  </a>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default TranscriptViewerV1;
