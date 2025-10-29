@@ -679,7 +679,7 @@ export default function AccentExplorer() {
         </div>
 
         {/* Row 2: Target Info or Issue Details */}
-        {selectedTarget && (
+        {selectedTarget ? (
           <div className="bg-card border border-border rounded-lg p-4">
             {/* Target Info */}
             <div>
@@ -1557,6 +1557,14 @@ export default function AccentExplorer() {
                   </div>
                 );
               })()}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">
+                Choose a target phoneme from the grid above.
+              </p>
             </div>
           </div>
         )}
