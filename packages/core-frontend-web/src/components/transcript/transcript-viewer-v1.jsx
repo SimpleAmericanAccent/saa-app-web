@@ -26,11 +26,11 @@ import {
   Pause,
   Volume2,
 } from "lucide-react";
-import KeyboardShortcutsModal from "./keyboard-shortcuts-modal";
+import KeyboardShortcutsModal from "core-frontend-web/src/components/keyboard-shortcuts-modal";
 import {
   getWiktionaryAllAudio,
   cleanWordForAPI,
-} from "../utils/wiktionary-api";
+} from "core-frontend-web/src/utils/wiktionary-api";
 
 const TranscriptViewerV1 = ({
   annotatedTranscript,

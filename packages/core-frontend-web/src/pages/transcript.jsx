@@ -21,9 +21,9 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-import TranscriptViewerV1 from "core-frontend-web/src/components/transcript-viewer-v1";
+import TranscriptViewerV1 from "core-frontend-web/src/components/transcript/transcript-viewer-v1";
 import TranscriptViewerV2 from "core-frontend-web/src/components/transcript-viewer-v2";
-import TranscriptStatsV1 from "core-frontend-web/src/components/transcript-stats-v1";
+import TranscriptStatsV1 from "core-frontend-web/src/components/transcript/transcript-stats-v1";
 import TranscriptStatsV2 from "core-frontend-web/src/components/transcript-stats-v2";
 import AudioPlayer from "core-frontend-web/src/components/audio-player";
 import KeyboardShortcutsModal from "core-frontend-web/src/components/keyboard-shortcuts-modal";
