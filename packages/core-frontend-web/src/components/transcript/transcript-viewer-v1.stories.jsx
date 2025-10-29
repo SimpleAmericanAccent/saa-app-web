@@ -27,7 +27,7 @@ export const TooltipContentOnly = {
     // Mock data for the tooltip
     const mockWordData = {
       pronunciations: ["S AO1 F T W EH2 R", "S AO1 F W EH2 R"],
-      pronunciations2: ["S LOT1 F T W DRESS2 R", "S LOT1 F T W DRESS2 R"],
+      pronunciations2: ["S LOT1 F T W DRESS2 R", "S LOT1 F W DRESS2 R"],
       pronunciations3: ["sˈɑftwˌɛr", "sˈɑfwˌɛr"],
       annotations: ["R x null"],
     };
