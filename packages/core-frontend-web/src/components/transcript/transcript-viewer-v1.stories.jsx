@@ -1,4 +1,6 @@
-import TranscriptViewerV1 from "./transcript-viewer-v1";
+import TranscriptViewerV1, {
+  _RenderExternalPronunciationLinks,
+} from "./transcript-viewer-v1";
 import { userEvent, within } from "@storybook/test";
 import { useState } from "react";
 import {
@@ -16,6 +18,7 @@ import {
 
 export default {
   component: TranscriptViewerV1,
+  subcomponents: { _RenderExternalPronunciationLinks },
   parameters: {
     layout: "padded",
   },
@@ -23,6 +26,14 @@ export default {
 
 // Story showing tooltip content permanently visible
 export const TooltipContentOnly = {
+  render: (args) => <_RenderExternalPronunciationLinks {...args} />,
+  args: {
+    cleanWord: "software",
+  },
+};
+
+// Story showing tooltip content permanently visible
+export const TooltipContentOnly2 = {
   render: () => {
     // Mock data for the tooltip
     const mockWordData = {
@@ -335,59 +346,6 @@ export const TooltipContentOnly = {
   },
 };
 
-export const WithContent = {
-  args: {
-    annotatedTranscript: [
-      {
-        alignment: [
-          { word: "hello", wordIndex: 0, start_time: 0 },
-          { word: "world", wordIndex: 1, start_time: 0.5 },
-        ],
-      },
-    ],
-    activeWordIndex: 0,
-    handleWordClick: () => {},
-    tooltipsEnabled: true,
-  },
-};
-
-// New interactive story with play function
-export const InteractiveWordClicking = {
-  args: {
-    annotatedTranscript: [
-      {
-        alignment: [
-          { word: "hello", wordIndex: 0, start_time: 0 },
-          { word: "beautiful", wordIndex: 1, start_time: 0.5 },
-          { word: "world", wordIndex: 2, start_time: 1.0 },
-        ],
-      },
-    ],
-    activeWordIndex: null,
-    handleWordClick: () => {},
-    tooltipsEnabled: true,
-  },
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
-
-    // Test that words are clickable
-    const helloWord = canvas.getByText("hello");
-    const worldWord = canvas.getByText("world");
-
-    // Click on "hello" word
-    await userEvent.click(helloWord);
-
-    // Wait a bit to see the interaction
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Click on "world" word
-    await userEvent.click(worldWord);
-
-    // Verify the click handler was called
-    // (In a real test, you'd mock the handler and verify it was called)
-  },
-};
-
 // Story to demonstrate tooltip functionality
 export const TooltipDemo = {
   args: {
@@ -457,6 +415,59 @@ export const TooltipDemo = {
     // Hover over "difficult" to see tooltip with different annotations
     await userEvent.hover(difficultWord);
     await new Promise((resolve) => setTimeout(resolve, 1000));
+  },
+};
+
+export const WithContent = {
+  args: {
+    annotatedTranscript: [
+      {
+        alignment: [
+          { word: "hello", wordIndex: 0, start_time: 0 },
+          { word: "world", wordIndex: 1, start_time: 0.5 },
+        ],
+      },
+    ],
+    activeWordIndex: 0,
+    handleWordClick: () => {},
+    tooltipsEnabled: true,
+  },
+};
+
+// New interactive story with play function
+export const InteractiveWordClicking = {
+  args: {
+    annotatedTranscript: [
+      {
+        alignment: [
+          { word: "hello", wordIndex: 0, start_time: 0 },
+          { word: "beautiful", wordIndex: 1, start_time: 0.5 },
+          { word: "world", wordIndex: 2, start_time: 1.0 },
+        ],
+      },
+    ],
+    activeWordIndex: null,
+    handleWordClick: () => {},
+    tooltipsEnabled: true,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    // Test that words are clickable
+    const helloWord = canvas.getByText("hello");
+    const worldWord = canvas.getByText("world");
+
+    // Click on "hello" word
+    await userEvent.click(helloWord);
+
+    // Wait a bit to see the interaction
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Click on "world" word
+    await userEvent.click(worldWord);
+
+    // Verify the click handler was called
+    // (In a real test, you'd mock the handler and verify it was called)
   },
 };
 

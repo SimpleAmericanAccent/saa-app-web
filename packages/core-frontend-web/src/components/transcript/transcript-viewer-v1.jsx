@@ -840,46 +840,7 @@ function _WordAudio({
             {(() => {
               const cleanWord = cleanWordForAPI(currentWord, "wiktionary");
               return (
-                <>
-                  <a
-                    href={`https://youglish.com/pronounce/${encodeURIComponent(
-                      cleanWord
-                    )}/english/us`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                    title="Hear real-world pronunciations on YouGlish"
-                  >
-                    YouGlish
-                  </a>
-                  <span>|</span>
-                  <a
-                    href={`https://playphrase.me/#/search?q=${encodeURIComponent(
-                      cleanWord
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-green-600 hover:text-green-800 underline cursor-pointer"
-                    title="Hear movie/TV pronunciations on PlayPhrase"
-                  >
-                    PlayPhrase
-                  </a>
-                  <span>|</span>
-                  <a
-                    href={`https://getyarn.io/yarn-find?text=${encodeURIComponent(
-                      cleanWord
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-purple-600 hover:text-purple-800 underline cursor-pointer"
-                    title="Hear movie/TV pronunciations on Yarn"
-                  >
-                    Yarn
-                  </a>
-                </>
+                <_RenderExternalPronunciationLinks cleanWord={cleanWord} />
               );
             })()}
           </div>
@@ -889,4 +850,49 @@ function _WordAudio({
   );
 }
 
+function _RenderExternalPronunciationLinks(cleanWord) {
+  const links = [
+    {
+      name: "YouGlish",
+      href: `https://youglish.com/pronounce/${encodeURIComponent(
+        cleanWord
+      )}/english/us`,
+      title: "Hear real-world pronunciations on YouGlish",
+    },
+    {
+      name: "PlayPhrase",
+      href: `https://playphrase.me/#/search?q=${encodeURIComponent(cleanWord)}`,
+      title: "Hear movie/TV pronunciations on PlayPhrase",
+    },
+    {
+      name: "Yarn",
+      href: `https://getyarn.io/yarn-find?text=${encodeURIComponent(
+        cleanWord
+      )}`,
+      title: "Hear movie/TV pronunciations on Yarn",
+    },
+  ];
+
+  return (
+    <>
+      {links.map((link, i) => (
+        <React.Fragment key={link.name}>
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
+            title={link.title}
+          >
+            {link.name}
+          </a>
+          {i < links.length - 1 && <span> | </span>}
+        </React.Fragment>
+      ))}
+    </>
+  );
+}
+
 export default TranscriptViewerV1;
+export { _RenderExternalPronunciationLinks };
