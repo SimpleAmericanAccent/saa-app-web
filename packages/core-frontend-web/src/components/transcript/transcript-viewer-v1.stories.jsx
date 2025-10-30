@@ -1,4 +1,8 @@
 import TranscriptViewerV1, {
+  _WordTooltip,
+  _WordAnnotations,
+  _WordPronunciations,
+  _WordAudio,
   _RenderExternalPronunciationLinks,
 } from "./transcript-viewer-v1";
 import { userEvent, within } from "@storybook/test";
@@ -7,6 +11,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  TooltipProvider,
 } from "core-frontend-web/src/components/ui/tooltip";
 import {
   HelpCircle,
@@ -25,11 +30,96 @@ export default {
 };
 
 // Story showing tooltip content permanently visible
-export const TooltipContentOnly = {
+export const WordTooltip = {
+  render: (args) => (
+    <TooltipProvider delayDuration={0}>
+      <_WordTooltip
+        {...args}
+        wordSpan={
+          <span
+            className={
+              "cursor-pointer rounded-[5px] hover:bg-[hsl(var(--hover))] hover:text-[hsl(var(--hover-foreground))]"
+            }
+          >
+            software
+          </span>
+        }
+      />
+    </TooltipProvider>
+  ),
+  args: {
+    forceOpen: true,
+    isLoadingWordData: false,
+    currentWordData: {
+      pronunciations: ["S AO1 F T W EH2 R", "S AO1 F W EH2 R"],
+      pronunciations2: ["S LOT1 F T W DRESS2 R", "S LOT1 F W DRESS2 R"],
+      pronunciations3: ["sˈɑftwˌɛr", "sˈɑfwˌɛr"],
+      annotations: ["R x null"],
+    },
+    pronunciationIndex: 0,
+    setPronunciationIndex: () => {},
+    audioData: [],
+    currentWord: "software",
+    isLoadingAudio: false,
+    currentlyPlayingAudio: null,
+    setCurrentlyPlayingAudio: () => {},
+  },
+};
+
+// Story showing tooltip content permanently visible
+export const AnnotationsSection = {
+  render: (args) => <_WordAnnotations {...args} />,
+  args: {
+    currentWordData: {
+      pronunciations: ["S AO1 F T W EH2 R", "S AO1 F W EH2 R"],
+      pronunciations2: ["S LOT1 F T W DRESS2 R", "S LOT1 F W DRESS2 R"],
+      pronunciations3: ["sˈɑftwˌɛr", "sˈɑfwˌɛr"],
+      annotations: ["R x null"],
+    },
+    isLoadingWordData: false,
+  },
+};
+
+// Story showing tooltip content permanently visible
+export const PronunciationSection = {
+  render: (args) => <_WordPronunciations {...args} />,
+  args: {
+    currentWordData: {
+      pronunciations: ["S AO1 F T W EH2 R", "S AO1 F W EH2 R"],
+      pronunciations2: ["S LOT1 F T W DRESS2 R", "S LOT1 F W DRESS2 R"],
+      pronunciations3: ["sˈɑftwˌɛr", "sˈɑfwˌɛr"],
+      annotations: ["R x null"],
+    },
+    isLoadingWordData: false,
+    pronunciationIndex: 0,
+    setPronunciationIndex: () => {},
+  },
+};
+
+// Story showing tooltip content permanently visible
+export const AudioSection = {
+  render: (args) => <_WordAudio {...args} />,
+  args: {
+    audioData: [],
+    currentWord: "software",
+    isLoadingAudio: false,
+    currentlyPlayingAudio: null,
+    setCurrentlyPlayingAudio: () => {},
+  },
+};
+
+// Story showing tooltip content permanently visible
+export const ExternalPronunciationLinks = {
   render: (args) => <_RenderExternalPronunciationLinks {...args} />,
   args: {
     cleanWord: "software",
   },
+};
+
+// Story showing tooltip content permanently visible
+export const TooltipContentOnly = {
+  render: (args) => <_WordPronunciations {...args} />,
+  args: {},
 };
 
 // Story showing tooltip content permanently visible

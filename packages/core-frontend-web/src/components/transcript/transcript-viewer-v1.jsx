@@ -65,49 +65,6 @@ const TranscriptViewerV1 = ({
   const { isAdmin } = useAuthStore();
   const { playWord, isLoading } = useWordAudio();
 
-  const getMaxPronunciations = () => {
-    return Math.max(
-      currentWordData.pronunciations.length,
-      currentWordData.pronunciations2.length,
-      currentWordData.pronunciations3.length
-    );
-  };
-
-  // Function to detect TRAP allophonic patterns
-  const getTrapAllophonicNote = (pronunciations) => {
-    if (!pronunciations || pronunciations.length === 0) return null;
-
-    for (const pronunciation of pronunciations) {
-      const phonemes = pronunciation.split(" ");
-
-      for (let i = 0; i < phonemes.length - 1; i++) {
-        const currentPhoneme = phonemes[i].replace(/[0-2]$/, ""); // Remove stress marker
-        const nextPhoneme = phonemes[i + 1].replace(/[0-2]$/, ""); // Remove stress marker
-
-        if (currentPhoneme === "AE") {
-          // TRAP vowel
-          if (nextPhoneme === "M" || nextPhoneme === "N") {
-            return "TRAP before M or N becomes more like [eə̯]";
-          } else if (nextPhoneme === "NG") {
-            return "TRAP before NG becomes more like [eɪ̯]";
-          }
-        }
-      }
-    }
-
-    return null;
-  };
-
-  const nextPronunciation = () => {
-    const max = getMaxPronunciations();
-    setPronunciationIndex((prev) => (prev + 1) % max);
-  };
-
-  const prevPronunciation = () => {
-    const max = getMaxPronunciations();
-    setPronunciationIndex((prev) => (prev - 1 + max) % max);
-  };
-
   const fetchAudioData = async (word) => {
     if (!word) return;
 
@@ -495,192 +452,18 @@ const TranscriptViewerV1 = ({
             return (
               <React.Fragment key={wordObj.wordIndex}>
                 {tooltipsEnabled ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>{wordSpan}</TooltipTrigger>
-                    <TooltipContent
-                      className="max-w-xs p-1"
-                      side="top"
-                      align="center"
-                      sideOffset={-10}
-                      avoidCollisions={true}
-                    >
-                      <div className="space-y-1">
-                        {/* Annotations Section */}
-                        <div className="bg-muted/20 rounded-md pb-1 mt-0">
-                          <div className="relative flex items-center justify-center">
-                            <div className="font-semibold text-xs text-center text-background/90 bg-zinc-600 py-0.5 rounded-t-md w-full">
-                              ANNOTATIONS
-                            </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setIsShortcutsModalOpen(true);
-                              }}
-                              className="absolute right-[2px] p-0 rounded-full cursor-pointer"
-                              title="Pronunciation Guide"
-                            >
-                              <HelpCircle className="h-3 w-3 text-background/80 hover:text-background" />
-                            </button>
-                          </div>
-                          <div className="text-xs text-center mt-1 px-1">
-                            {isLoadingWordData ? (
-                              <div className="text-background/80  ">
-                                Loading...
-                              </div>
-                            ) : currentWordData.annotations.length > 0 ? (
-                              currentWordData.annotations.map(
-                                (annotation, index) => (
-                                  <div key={index}>{annotation}</div>
-                                )
-                              )
-                            ) : (
-                              <div className="text-muted-foreground">None</div>
-                            )}
-                          </div>
-                        </div>
-                        {/* Pronunciation Section - Always Show */}
-                        <div className="bg-muted/20 rounded-md pb-1 mt-0">
-                          <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-emerald-600 py-0.5 rounded-t-md w-full">
-                            PRONUNCIATION{" "}
-                            {getMaxPronunciations() > 1
-                              ? `${
-                                  pronunciationIndex + 1
-                                }/${getMaxPronunciations()}`
-                              : ""}
-                          </div>
-
-                          {getMaxPronunciations() > 0 ? (
-                            <>
-                              <div className="mb-1">
-                                <div className="font-semibold text-xs text-center">
-                                  CMU:
-                                </div>
-                                <div className="text-xs text-center px-1">
-                                  {isLoadingWordData ? (
-                                    <div className="text-background/80">
-                                      Loading...
-                                    </div>
-                                  ) : currentWordData.pronunciations.length >
-                                    0 ? (
-                                    currentWordData.pronunciations[
-                                      pronunciationIndex
-                                    ] || "N/A"
-                                  ) : (
-                                    "N/A"
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="mb-1">
-                                <div className="font-semibold text-xs text-center">
-                                  Lexical Sets:
-                                </div>
-                                <div className="text-xs text-center px-1">
-                                  {isLoadingWordData ? (
-                                    <div className="text-background/80">
-                                      Loading...
-                                    </div>
-                                  ) : currentWordData.pronunciations2.length >
-                                    0 ? (
-                                    currentWordData.pronunciations2[
-                                      pronunciationIndex
-                                    ] || "N/A"
-                                  ) : (
-                                    "N/A"
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="mb-1">
-                                <div className="font-semibold text-xs text-center">
-                                  IPA:
-                                </div>
-                                <div className="text-xs text-center px-1">
-                                  {isLoadingWordData ? (
-                                    <div className="text-background/80">
-                                      Loading...
-                                    </div>
-                                  ) : currentWordData.pronunciations3.length >
-                                    0 ? (
-                                    currentWordData.pronunciations3[
-                                      pronunciationIndex
-                                    ] || "N/A"
-                                  ) : (
-                                    "N/A"
-                                  )}
-                                </div>
-                              </div>
-
-                              {getMaxPronunciations() > 1 && (
-                                <div className="flex items-center justify-center gap-2 mt-2">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      prevPronunciation();
-                                    }}
-                                    className="p-1 hover:bg-accent/10 rounded cursor-pointer"
-                                  >
-                                    <ChevronLeft className="h-3 w-3" />
-                                  </button>
-                                  <div className="flex gap-1">
-                                    {Array.from(
-                                      { length: getMaxPronunciations() },
-                                      (_, i) => (
-                                        <div
-                                          key={i}
-                                          className={`w-1.5 h-1.5 rounded-full ${
-                                            i === pronunciationIndex
-                                              ? "bg-gray-600"
-                                              : "bg-gray-300"
-                                          }`}
-                                        />
-                                      )
-                                    )}
-                                  </div>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      nextPronunciation();
-                                    }}
-                                    className="p-1 hover:bg-accent/10 rounded cursor-pointer"
-                                  >
-                                    <ChevronRight className="h-3 w-3" />
-                                  </button>
-                                </div>
-                              )}
-                            </>
-                          ) : (
-                            <div className="text-xs text-center text-muted-foreground px-1">
-                              None found
-                            </div>
-                          )}
-
-                          {/* Allophonic note for TRAP patterns */}
-                          {!isLoadingWordData &&
-                            currentWordData.pronunciations.length > 0 &&
-                            (() => {
-                              const allophonicNote = getTrapAllophonicNote(
-                                currentWordData.pronunciations
-                              );
-                              return allophonicNote ? (
-                                <div className="text-xs text-center text-muted-background px-1 mt-1 border-t border-border/20 pt-1">
-                                  Note: {allophonicNote}
-                                </div>
-                              ) : null;
-                            })()}
-                        </div>
-
-                        {/* Audio Section - Always Show */}
-                        <_WordAudio
-                          audioData={audioData}
-                          currentWord={currentWord}
-                          isLoadingAudio={isLoadingAudio}
-                          currentlyPlayingAudio={currentlyPlayingAudio}
-                          setCurrentlyPlayingAudio={setCurrentlyPlayingAudio}
-                        />
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
+                  <_WordTooltip
+                    wordSpan={wordSpan}
+                    isLoadingWordData={isLoadingWordData}
+                    currentWordData={currentWordData}
+                    pronunciationIndex={pronunciationIndex}
+                    setPronunciationIndex={setPronunciationIndex}
+                    audioData={audioData}
+                    currentWord={currentWord}
+                    isLoadingAudio={isLoadingAudio}
+                    currentlyPlayingAudio={currentlyPlayingAudio}
+                    setCurrentlyPlayingAudio={setCurrentlyPlayingAudio}
+                  />
                 ) : (
                   wordSpan
                 )}{" "}
@@ -750,6 +533,247 @@ const TranscriptViewerV1 = ({
     </ContextMenu>
   );
 };
+
+function _WordTooltip({
+  wordSpan,
+  isLoadingWordData,
+  currentWordData,
+  pronunciationIndex,
+  setPronunciationIndex,
+  audioData,
+  currentWord,
+  isLoadingAudio,
+  currentlyPlayingAudio,
+  setCurrentlyPlayingAudio,
+  forceOpen = false,
+}) {
+  return (
+    <Tooltip open={forceOpen} onOpenChange={() => {}}>
+      <TooltipTrigger asChild>{wordSpan}</TooltipTrigger>
+      <TooltipContent
+        className="max-w-xs p-1"
+        side="top"
+        align="center"
+        sideOffset={-10}
+        avoidCollisions={true}
+      >
+        <div className="space-y-1">
+          {/* Annotations Section */}
+          <_WordAnnotations
+            isLoadingWordData={isLoadingWordData}
+            currentWordData={currentWordData}
+          />
+          {/* Pronunciation Section - Always Show */}
+          <_WordPronunciations
+            currentWordData={currentWordData}
+            isLoadingWordData={isLoadingWordData}
+            pronunciationIndex={pronunciationIndex}
+            setPronunciationIndex={setPronunciationIndex}
+          />
+
+          {/* Audio Section - Always Show */}
+          <_WordAudio
+            audioData={audioData}
+            currentWord={currentWord}
+            isLoadingAudio={isLoadingAudio}
+            currentlyPlayingAudio={currentlyPlayingAudio}
+            setCurrentlyPlayingAudio={setCurrentlyPlayingAudio}
+          />
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+function _WordAnnotations({ isLoadingWordData, currentWordData }) {
+  return (
+    <div className="bg-muted/20 rounded-md pb-1 mt-0">
+      <div className="relative flex items-center justify-center">
+        <div className="font-semibold text-xs text-center text-background/90 bg-zinc-600 py-0.5 rounded-t-md w-full">
+          ANNOTATIONS
+        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsShortcutsModalOpen(true);
+          }}
+          className="absolute right-[2px] p-0 rounded-full cursor-pointer"
+          title="Pronunciation Guide"
+        >
+          <HelpCircle className="h-3 w-3 text-background/80 hover:text-background" />
+        </button>
+      </div>
+      <div className="text-xs text-center mt-1 px-1">
+        {isLoadingWordData ? (
+          <div className="text-background/80  ">Loading...</div>
+        ) : currentWordData.annotations.length > 0 ? (
+          currentWordData.annotations.map((annotation, index) => (
+            <div key={index}>{annotation}</div>
+          ))
+        ) : (
+          <div className="text-muted-foreground">None</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function _WordPronunciations({
+  currentWordData,
+  isLoadingWordData,
+  pronunciationIndex,
+  setPronunciationIndex,
+}) {
+  const getMaxPronunciations = () => {
+    return Math.max(
+      currentWordData.pronunciations.length,
+      currentWordData.pronunciations2.length,
+      currentWordData.pronunciations3.length
+    );
+  };
+
+  // Function to detect TRAP allophonic patterns
+  const getTrapAllophonicNote = (pronunciations) => {
+    if (!pronunciations || pronunciations.length === 0) return null;
+
+    for (const pronunciation of pronunciations) {
+      const phonemes = pronunciation.split(" ");
+
+      for (let i = 0; i < phonemes.length - 1; i++) {
+        const currentPhoneme = phonemes[i].replace(/[0-2]$/, ""); // Remove stress marker
+        const nextPhoneme = phonemes[i + 1].replace(/[0-2]$/, ""); // Remove stress marker
+
+        if (currentPhoneme === "AE") {
+          // TRAP vowel
+          if (nextPhoneme === "M" || nextPhoneme === "N") {
+            return "TRAP before M or N becomes more like [eə̯]";
+          } else if (nextPhoneme === "NG") {
+            return "TRAP before NG becomes more like [eɪ̯]";
+          }
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const nextPronunciation = () => {
+    const max = getMaxPronunciations();
+    setPronunciationIndex((prev) => (prev + 1) % max);
+  };
+
+  const prevPronunciation = () => {
+    const max = getMaxPronunciations();
+    setPronunciationIndex((prev) => (prev - 1 + max) % max);
+  };
+
+  return (
+    <div className="bg-muted/20 rounded-md pb-1 mt-0">
+      <div className="font-semibold text-xs text-center mb-1 text-background/90 bg-emerald-600 py-0.5 rounded-t-md w-full">
+        PRONUNCIATION{" "}
+        {getMaxPronunciations() > 1
+          ? `${pronunciationIndex + 1}/${getMaxPronunciations()}`
+          : ""}
+      </div>
+
+      {getMaxPronunciations() > 0 ? (
+        <>
+          <div className="mb-1">
+            <div className="font-semibold text-xs text-center">CMU:</div>
+            <div className="text-xs text-center px-1">
+              {isLoadingWordData ? (
+                <div className="text-background/80">Loading...</div>
+              ) : currentWordData.pronunciations.length > 0 ? (
+                currentWordData.pronunciations[pronunciationIndex] || "N/A"
+              ) : (
+                "N/A"
+              )}
+            </div>
+          </div>
+
+          <div className="mb-1">
+            <div className="font-semibold text-xs text-center">
+              Lexical Sets:
+            </div>
+            <div className="text-xs text-center px-1">
+              {isLoadingWordData ? (
+                <div className="text-background/80">Loading...</div>
+              ) : currentWordData.pronunciations2.length > 0 ? (
+                currentWordData.pronunciations2[pronunciationIndex] || "N/A"
+              ) : (
+                "N/A"
+              )}
+            </div>
+          </div>
+
+          <div className="mb-1">
+            <div className="font-semibold text-xs text-center">IPA:</div>
+            <div className="text-xs text-center px-1">
+              {isLoadingWordData ? (
+                <div className="text-background/80">Loading...</div>
+              ) : currentWordData.pronunciations3.length > 0 ? (
+                currentWordData.pronunciations3[pronunciationIndex] || "N/A"
+              ) : (
+                "N/A"
+              )}
+            </div>
+          </div>
+
+          {getMaxPronunciations() > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prevPronunciation();
+                }}
+                className="p-1 hover:bg-accent/10 rounded cursor-pointer"
+              >
+                <ChevronLeft className="h-3 w-3" />
+              </button>
+              <div className="flex gap-1">
+                {Array.from({ length: getMaxPronunciations() }, (_, i) => (
+                  <div
+                    key={i}
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      i === pronunciationIndex ? "bg-gray-600" : "bg-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextPronunciation();
+                }}
+                className="p-1 hover:bg-accent/10 rounded cursor-pointer"
+              >
+                <ChevronRight className="h-3 w-3" />
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="text-xs text-center text-muted-foreground px-1">
+          None found
+        </div>
+      )}
+
+      {/* Allophonic note for TRAP patterns */}
+      {!isLoadingWordData &&
+        currentWordData.pronunciations.length > 0 &&
+        (() => {
+          const allophonicNote = getTrapAllophonicNote(
+            currentWordData.pronunciations
+          );
+          return allophonicNote ? (
+            <div className="text-xs text-center text-muted-background px-1 mt-1 border-t border-border/20 pt-1">
+              Note: {allophonicNote}
+            </div>
+          ) : null;
+        })()}
+    </div>
+  );
+}
 
 function _WordAudio({
   audioData,
@@ -850,7 +874,7 @@ function _WordAudio({
   );
 }
 
-function _RenderExternalPronunciationLinks(cleanWord) {
+function _RenderExternalPronunciationLinks({ cleanWord }) {
   const links = [
     {
       name: "YouGlish",
@@ -895,4 +919,10 @@ function _RenderExternalPronunciationLinks(cleanWord) {
 }
 
 export default TranscriptViewerV1;
-export { _RenderExternalPronunciationLinks };
+export {
+  _WordTooltip,
+  _WordAnnotations,
+  _WordPronunciations,
+  _WordAudio,
+  _RenderExternalPronunciationLinks,
+};
