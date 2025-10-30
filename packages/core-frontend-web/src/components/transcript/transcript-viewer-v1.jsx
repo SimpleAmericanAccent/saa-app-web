@@ -545,7 +545,7 @@ function _WordTooltip({
   isLoadingAudio,
   currentlyPlayingAudio,
   setCurrentlyPlayingAudio,
-  forceOpen = false,
+  forceOpen = undefined,
 }) {
   return (
     <Tooltip open={forceOpen} onOpenChange={() => {}}>
