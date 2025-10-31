@@ -4,7 +4,8 @@ import { useReplaysStore } from "./replays-store";
 
 const useAuthStore = create((set, get) => ({
   isAdmin: false,
-  canViewReplays: true,
+  canViewReplays: false,
+  mgAccess: false,
   isLoading: false, // Initialize as false instead of true
   isLoggedOut: null, // Add new state
   error: null,
@@ -42,6 +43,7 @@ const useAuthStore = create((set, get) => ({
         user,
         isAdmin: authzData.isAdmin,
         canViewReplays: authzData.canViewReplays !== false,
+        mgAccess: authzData.mgAccess !== false,
         people: authzData.people || [],
         audios: authzData.audios || [],
         isLoading: false,
@@ -124,7 +126,8 @@ const useAuthStore = create((set, get) => ({
   reset: () => {
     set({
       isAdmin: false,
-      canViewReplays: true,
+      canViewReplays: false,
+      mgAccess: false,
       isLoading: false,
       isLoggedOut: null,
       error: null,

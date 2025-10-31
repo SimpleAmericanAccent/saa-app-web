@@ -13,6 +13,16 @@ function computeCanViewReplaysFromRecord(req, currentUser) {
   return !blocked;
 }
 
+function computeMgAccessFromRecord(req, currentUser) {
+  if (req.isAdmin) return true;
+  const raw =
+    currentUser?.fields?.["mgAccess"] ??
+    currentUser?.fields?.["mgaccess"] ??
+    "";
+  const mgAccess = String(raw).trim().toLowerCase() === "yes";
+  return mgAccess;
+}
+
 baseRouter.get("/authz", async (req, res) => {
   const airtable = req.app.locals.airtable;
 
@@ -98,6 +108,7 @@ baseRouter.get("/authz", async (req, res) => {
       audios: uniqueAudios,
       isAdmin: req.isAdmin,
       canViewReplays: computeCanViewReplaysFromRecord(req, currentUser),
+      mgAccess: computeMgAccessFromRecord(req, currentUser),
     });
   } else {
     res.status(404).json({ error: "User not found" });
