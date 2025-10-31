@@ -26,7 +26,7 @@ export default function ReplaysHub() {
   return (
     <div className="p-2 sm:p-4">
       <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-4 sm:mb-6 lg:mb-8">
-        Call Replays
+        Zoom Calls & Selected Recordings
       </h1>
 
       {/* Calendar Link */}

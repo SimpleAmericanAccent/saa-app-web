@@ -21,8 +21,12 @@ import {
   Info,
   MessageSquare,
   Search,
+  MapPin,
+  ExternalLink,
+  Ear,
+  FileVolume,
+  Activity,
 } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -64,7 +68,6 @@ import { useIsMobile } from "core-frontend-web/src/hooks/use-mobile";
 import { User, LogOut, Settings } from "lucide-react";
 import { useQuizStatsStore } from "../stores/quiz-stats-store";
 import { fetchQuizResults, getAllQuizMetadata } from "../utils/quiz-api";
-
 import {
   getTextColorClass,
   getGradientColorStyle,
@@ -337,42 +340,129 @@ export function SidebarLeft() {
         </SidebarHeader>
 
         <SidebarContent>
-          {/* Fundamentals Section */}
+          {/* Resources Section */}
           <SidebarGroup>
-            <SidebarGroupLabel>Fundamentals</SidebarGroupLabel>
+            {/* <SidebarGroupLabel>Tools</SidebarGroupLabel> */}
             <SidebarMenu>
-              {/* Replays */}
-              <SidebarMenuItem>
-                <SidebarMenuButtonWithClose asChild tooltip="Replays">
-                  <SidebarLink
-                    to="/replays"
-                    className="flex items-center gap-2"
-                  >
-                    <MonitorPlay className="h-4 w-4 text-white" />
-                    {shouldShowText && (
-                      <span className="text-white">Replays</span>
-                    )}
-                  </SidebarLink>
-                </SidebarMenuButtonWithClose>
-              </SidebarMenuItem>
+              {/* Other Resources - Hidden on Mobile */}
+              {!isMobile && (
+                <Collapsible
+                  asChild
+                  className="group/collapsible"
+                  open={openSubmenus.has("more-resources")}
+                  onOpenChange={(isOpen) =>
+                    handleSubmenuToggle("more-resources", isOpen)
+                  }
+                ></Collapsible>
+              )}
 
               {/* Accent Explorer */}
               <SidebarMenuItem>
-                <SidebarMenuButtonWithClose asChild tooltip="Accent Targets">
+                <SidebarMenuButtonWithClose asChild tooltip="Target Sounds">
                   <SidebarLink
                     to="/accent-explorer"
                     className="flex items-center gap-2"
                   >
-                    <Search className="h-4 w-4 text-white" />
+                    <MapPin className="h-4 w-4" />
+                    {shouldShowText && <span>Target Sounds</span>}
+                  </SidebarLink>
+                </SidebarMenuButtonWithClose>
+              </SidebarMenuItem>
+
+              {/* Quiz */}
+              <SidebarMenuItem>
+                <SidebarMenuButtonWithClose asChild tooltip="Quiz">
+                  <SidebarLink to="/quiz" className="flex items-center gap-2">
+                    <Ear className="h-4 w-4" />
                     {shouldShowText && (
-                      <span className="text-white">Accent Targets</span>
+                      <div className="flex items-center gap-2 flex-1">
+                        <span>Quiz</span>
+                        <QuizStats />
+                      </div>
                     )}
                   </SidebarLink>
                 </SidebarMenuButtonWithClose>
               </SidebarMenuItem>
 
-              {/* Vowels */}
-              <Collapsible
+              {/* Imitation Practice */}
+              <SidebarMenuItem>
+                <SidebarMenuButtonWithClose asChild tooltip="Imitate">
+                  <SidebarLink
+                    to="/imitate"
+                    className="flex items-center gap-2"
+                  >
+                    <Mic className="h-4 w-4" />
+                    {shouldShowText && <span>Imitate</span>}
+                  </SidebarLink>
+                </SidebarMenuButtonWithClose>
+              </SidebarMenuItem>
+
+              {/* Transcript Viewer - Hidden on Mobile */}
+              {!isMobile && (
+                <SidebarMenuItem>
+                  <SidebarMenuButtonWithClose asChild tooltip="Accent Analysis">
+                    <SidebarLink
+                      to="/transcript"
+                      className="flex items-center gap-2"
+                    >
+                      <FileVolume className="h-4 w-4" />
+                      {shouldShowText && <span>Accent Analysis</span>}
+                    </SidebarLink>
+                  </SidebarMenuButtonWithClose>
+                </SidebarMenuItem>
+              )}
+
+              <SidebarMenuItem>
+                <SidebarMenuButtonWithClose asChild>
+                  <SidebarLink to="/vsynth">
+                    <Activity className="h-4 w-4" />
+                    {shouldShowText && <span>Vowel Synthesizer</span>}
+                  </SidebarLink>
+                </SidebarMenuButtonWithClose>
+              </SidebarMenuItem>
+
+              {/* Quiz Audio Admin - Only show for admins */}
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButtonWithClose
+                    asChild
+                    tooltip="Quiz Audio Admin"
+                  >
+                    <SidebarLink
+                      to="/quiz-audio-admin"
+                      className="flex items-center gap-2"
+                    >
+                      <Volume2 className="h-4 w-4" />
+                      {shouldShowText && <span>Audio Admin</span>}
+                    </SidebarLink>
+                  </SidebarMenuButtonWithClose>
+                </SidebarMenuItem>
+              )}
+
+              {/* Resources */}
+              <SidebarMenuItem>
+                <SidebarMenuButtonWithClose
+                  asChild
+                  tooltip="External Resources"
+                >
+                  <SidebarLink
+                    to="/resources"
+                    className="flex items-center gap-2"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    {shouldShowText && <span>External Resources</span>}
+                  </SidebarLink>
+                </SidebarMenuButtonWithClose>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+
+          {/* Fundamentals Section */}
+          {/* <SidebarGroup> */}
+          {/* <SidebarGroupLabel>Fundamentals</SidebarGroupLabel> */}
+          {/* <SidebarMenu> */}
+          {/* Vowels */}
+          {/* <Collapsible
                 asChild
                 className="group/collapsible"
                 open={openSubmenus.has("vowels")}
@@ -417,215 +507,18 @@ export function SidebarLeft() {
                           </SidebarMenuButtonWithClose>
                         </SidebarMenuSubItem>
                       )}
-
-                      <SidebarMenuSubItem>
-                        <SidebarMenuButtonWithClose asChild>
-                          <SidebarLink to="/vsynth">
-                            <Play className="h-4 w-4" />
-                            {shouldShowText && <span>Vowel Synthesizer</span>}
-                          </SidebarLink>
-                        </SidebarMenuButtonWithClose>
-                      </SidebarMenuSubItem>
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
-
-              {/* Consonants */}
-              {/* <Collapsible
-                asChild
-                className="group/collapsible"
-                open={openSubmenus.has("consonants")}
-                onOpenChange={(isOpen) =>
-                  handleSubmenuToggle("consonants", isOpen)
-                }
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton
-                      tooltip="Consonants"
-                      className="cursor-pointer"
-                      onClick={(e) =>
-                        handleCollapsedIconClick(e, true, "consonants")
-                      }
-                    >
-                      <Construction className="h-4 w-4" />
-                      {!isCollapsed && <span>Consonants</span>}
-                      {!isCollapsed && (
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      )}
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible> */}
-
-              {/* Flow */}
-              {/* <Collapsible
-                asChild
-                className="group/collapsible"
-                open={openSubmenus.has("flow")}
-                onOpenChange={(isOpen) => handleSubmenuToggle("flow", isOpen)}
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton
-                      tooltip="Flow"
-                      className="cursor-pointer"
-                      onClick={(e) => handleCollapsedIconClick(e, true, "flow")}
-                    >
-                      <Music className="h-4 w-4" />
-                      {!isCollapsed && <span>Flow</span>}
-                      {!isCollapsed && (
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      )}
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible> */}
-
-              {/* Smart Practice */}
-              {/* <Collapsible
-                asChild
-                className="group/collapsible"
-                open={openSubmenus.has("smart-practice")}
-                onOpenChange={(isOpen) =>
-                  handleSubmenuToggle("smart-practice", isOpen)
-                }
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton
-                      tooltip="Smart Practice"
-                      className="cursor-pointer"
-                      onClick={(e) =>
-                        handleCollapsedIconClick(e, true, "smart-practice")
-                      }
-                    >
-                      <Brain className="h-4 w-4" />
-                      {!isCollapsed && <span>Smart Practice</span>}
-                      {!isCollapsed && (
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                      )}
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible> */}
-            </SidebarMenu>
-          </SidebarGroup>
-
-          {/* Resources Section */}
-          <SidebarGroup>
-            <SidebarGroupLabel>Tools</SidebarGroupLabel>
-            <SidebarMenu>
-              {/* Other Resources - Hidden on Mobile */}
-              {!isMobile && (
-                <Collapsible
-                  asChild
-                  className="group/collapsible"
-                  open={openSubmenus.has("more-resources")}
-                  onOpenChange={(isOpen) =>
-                    handleSubmenuToggle("more-resources", isOpen)
-                  }
-                ></Collapsible>
-              )}
-
-              {/* Transcript Viewer - Hidden on Mobile */}
-              {!isMobile && (
-                <SidebarMenuItem>
-                  <SidebarMenuButtonWithClose asChild tooltip="Accent Analysis">
-                    <SidebarLink
-                      to="/transcript"
-                      className="flex items-center gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      {shouldShowText && <span>Accent Analysis</span>}
-                    </SidebarLink>
-                  </SidebarMenuButtonWithClose>
-                </SidebarMenuItem>
-              )}
-
-              {/* Quiz */}
-              <SidebarMenuItem>
-                <SidebarMenuButtonWithClose asChild tooltip="Quiz">
-                  <SidebarLink to="/quiz" className="flex items-center gap-2">
-                    <HelpCircle className="h-4 w-4" />
-                    {shouldShowText && (
-                      <div className="flex items-center gap-2 flex-1">
-                        <span>Quiz</span>
-                        <QuizStats />
-                      </div>
-                    )}
-                  </SidebarLink>
-                </SidebarMenuButtonWithClose>
-              </SidebarMenuItem>
-
-              {/* Imitation Practice */}
-              <SidebarMenuItem>
-                <SidebarMenuButtonWithClose asChild tooltip="Imitate">
-                  <SidebarLink
-                    to="/imitate"
-                    className="flex items-center gap-2"
-                  >
-                    <Mic className="h-4 w-4" />
-                    {shouldShowText && <span>Imitate</span>}
-                  </SidebarLink>
-                </SidebarMenuButtonWithClose>
-              </SidebarMenuItem>
-
-              {/* Quiz Audio Admin - Only show for admins */}
-              {isAdmin && (
-                <SidebarMenuItem>
-                  <SidebarMenuButtonWithClose
-                    asChild
-                    tooltip="Quiz Audio Admin"
-                  >
-                    <SidebarLink
-                      to="/quiz-audio-admin"
-                      className="flex items-center gap-2"
-                    >
-                      <Volume2 className="h-4 w-4" />
-                      {shouldShowText && <span>Audio Admin</span>}
-                    </SidebarLink>
-                  </SidebarMenuButtonWithClose>
-                </SidebarMenuItem>
-              )}
-
-              {/* Resources */}
-              <SidebarMenuItem>
-                <SidebarMenuButtonWithClose
-                  asChild
-                  tooltip="External Resources"
-                >
-                  <SidebarLink
-                    to="/resources"
-                    className="flex items-center gap-2"
-                  >
-                    <BookOpen className="h-4 w-4" />
-                    {shouldShowText && <span>External Resources</span>}
-                  </SidebarLink>
-                </SidebarMenuButtonWithClose>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
+          {/* </SidebarMenu> */}
+          {/* </SidebarGroup> */}
 
           {/* Program Section */}
           <SidebarGroup>
-            <SidebarGroupLabel>Program</SidebarGroupLabel>
+            <SidebarGroupLabel>Mentorship Program</SidebarGroupLabel>
             <SidebarMenu>
               {/* Program Details - Links to mgr if has replay access, mg if not */}
-
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="Program Details">
                   <a
@@ -640,8 +533,22 @@ export function SidebarLeft() {
                   >
                     <Info className="h-4 w-4" />
                     {shouldShowText && <span>Program Details</span>}
+                    <ExternalLink className="h-4 w-4" />
                   </a>
                 </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Replays */}
+              <SidebarMenuItem>
+                <SidebarMenuButtonWithClose
+                  asChild
+                  tooltip="Zoom Calls/Recordings"
+                >
+                  <SidebarLink to="/calls" className="flex items-center gap-2">
+                    <MonitorPlay className="h-4 w-4" />
+                    {shouldShowText && <span>Zoom Calls/Recordings</span>}
+                  </SidebarLink>
+                </SidebarMenuButtonWithClose>
               </SidebarMenuItem>
 
               {/* Message Will */}
@@ -655,6 +562,7 @@ export function SidebarLeft() {
                   >
                     <MessageSquare className="h-4 w-4" />
                     {shouldShowText && <span>Message Will</span>}
+                    <ExternalLink className="h-4 w-4" />
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>

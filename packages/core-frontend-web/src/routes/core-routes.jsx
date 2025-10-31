@@ -8,7 +8,7 @@ import SpellingPronunciationPage from "core-frontend-web/src/pages/spelling-pron
 import LexicalSets from "core-frontend-web/src/pages/lexical-sets.jsx";
 import ModulePage from "core-frontend-web/src/pages/module-page.jsx";
 import UserDashboard from "core-frontend-web/src/pages/user-dashboard.jsx";
-import ReplaysHub from "core-frontend-web/src/pages/replays-hub.jsx";
+import ReplaysHub from "@/pages/calls.jsx";
 import Resources from "core-frontend-web/src/pages/resources.jsx";
 import Quiz from "core-frontend-web/src/pages/quiz.jsx";
 import QuizAudioAdmin from "core-frontend-web/src/pages/quiz-audio-admin.jsx";
@@ -40,11 +40,7 @@ const coreRoutes = (
       path="/spelling-pronunciation"
       element={<SpellingPronunciationPage />}
     />
-    <Route path="/replays" element={<ReplaysHub />} />
-    <Route path="/replays/vowels" element={<ReplaysHub />} />
-    <Route path="/replays/consonants" element={<ReplaysHub />} />
-    <Route path="/replays/flow" element={<ReplaysHub />} />
-    <Route path="/replays/smart-practice" element={<ReplaysHub />} />
+    <Route path="/calls" element={<ReplaysHub />} />
 
     <Route path="/join" element={<Join />} />
     <Route path="/join-ty" element={<JoinThankYou />} />
