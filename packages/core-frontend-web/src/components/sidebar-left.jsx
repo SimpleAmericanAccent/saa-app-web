@@ -413,7 +413,7 @@ export function SidebarLeft() {
               )}
 
               <SidebarMenuItem>
-                <SidebarMenuButtonWithClose asChild>
+                <SidebarMenuButtonWithClose asChild tooltip="Vowel Synthesizer">
                   <SidebarLink to="/vsynth">
                     <Activity className="h-4 w-4" />
                     {shouldShowText && <span>Vowel Synthesizer</span>}
