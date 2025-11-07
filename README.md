@@ -55,14 +55,11 @@ packages/
 
 ### PowerShell
 
+- Set up [mkcert](https://github.com/FiloSottile/mkcert) to enable local development (localhost) over HTTPS
 - Navigate to repo root
-- **Install dependencies:**
+- **Run setup command (will install dependencies, generate Prisma client, and setup localhost mkcert certificates:**
   ```powershell
-  pnpm install
-  ```
-- **Localhost over HTTPS:** Set up [mkcert](https://github.com/FiloSottile/mkcert) for local SSL certificates
-  ```powershell
-  mkcert localhost
+  pnpm run setup
   ```
 - **Environment Setup:** Copy any `.env.example` and `.env.local.example` files (4 total) to create corresponding `.env` and `.env.local` files, then fill in your credentials
 - **Airtable Setup:** Set up your own Airtable base for accent annotations data (schema available in codebase)
