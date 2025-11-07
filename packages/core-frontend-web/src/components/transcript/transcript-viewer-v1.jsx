@@ -449,6 +449,8 @@ const TranscriptViewerV1 = ({
               </span>
             );
 
+            // temp comment
+
             return (
               <React.Fragment key={wordObj.wordIndex}>
                 {tooltipsEnabled ? (
