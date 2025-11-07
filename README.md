@@ -61,7 +61,7 @@ packages/
   ```powershell
   pnpm run setup
   ```
-- **Environment Setup:** Copy any `.env.example` and `.env.local.example` files (4 total) to create corresponding `.env` and `.env.local` files, then fill in your credentials
+- **Environment Setup:** Copy the `.env.example` files (4 total) to create corresponding `.env` files, then fill in your credentials
 - **Airtable Setup:** Set up your own Airtable base for accent annotations data (schema available in codebase)
 - **Database Setup:**
 
