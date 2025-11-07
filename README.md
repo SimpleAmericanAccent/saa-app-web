@@ -53,7 +53,7 @@ packages/
 
 ## 🧪 Development Setup
 
-### PowerShell
+### Main Setup
 
 - Set up [mkcert](https://github.com/FiloSottile/mkcert) to enable local development (localhost) over HTTPS
 - Navigate to repo root
@@ -62,10 +62,19 @@ packages/
   pnpm run setup
   ```
 - **Environment Setup:** Copy the `.env.example` files (4 total) to create corresponding `.env` files, then fill in your credentials
+- **Run the application:**
+  ```powershell
+  pnpm dev:u    # Start user app
+  # or
+  pnpm dev:a   # Start admin app
+  ```
+
+### Database Setup (if needed)
+
 - **Airtable Setup:** Set up your own Airtable base for accent annotations data (schema available in codebase)
 - **Database Setup:**
 
-  - **Database URL:** You may need to use this pattern for database-related commands:
+  - **Database URL:** You may need to use this pattern for database-related commands, until I figure out a better way (PowerShell syntax shown here):
     - ```powershell
       $env:DATABASE_URL = "your_url"
       ```
@@ -83,13 +92,6 @@ packages/
     ```powershell
     pnpm seed:cmu
     ```
-
-- **Run the application:**
-  ```powershell
-  pnpm dev:user    # Start user app
-  # or
-  pnpm dev:admin   # Start admin app
-  ```
 
 ### Optional Tools
 
