@@ -467,6 +467,15 @@ const TranscriptViewerV1 = ({
                 ) : (
                   wordSpan
                 )}{" "}
+                {wordObj.lineBreakAfter ? <br /> : ""}
+                {wordObj.newParagraphAfter ? (
+                  <>
+                    <br />
+                    <br />
+                  </>
+                ) : (
+                  ""
+                )}
               </React.Fragment>
             );
           })}
