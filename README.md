@@ -57,7 +57,7 @@ packages/
 
 - Set up [mkcert](https://github.com/FiloSottile/mkcert) to enable local development (localhost) over HTTPS
 - Navigate to repo root
-- **Run setup command (will install dependencies, generate Prisma client, and setup localhost mkcert certificates:**
+- **Run setup command (will install dependencies, generate Prisma client, and setup localhost mkcert certificates):**
   ```powershell
   pnpm run setup
   ```
