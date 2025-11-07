@@ -9,8 +9,8 @@
   "scripts": {
     "// ============= Setup ============= ": "",
     "seed:cmu": "node shared/scripts/seedCmuAndSubtlex.js",
+    "setup": "pnpm install --frozen-lockfile && pnpm run generate && mkcert localhost",
     "generate": "pnpm --filter core-backend-node run generate",
-    "setup": "pnpm install --frozen-lockfile && pnpm run generate",
     "// ============= Admin App ============= ": "",
     "dev:admin": "concurrently \"pnpm --filter admin-backend-node run dev\" \"pnpm --filter admin-frontend-web run dev\"",
     "build:admin": "pnpm run setup && pnpm --filter admin-frontend-web run build",
