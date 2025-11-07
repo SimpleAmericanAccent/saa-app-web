@@ -6,7 +6,7 @@ A full-stack web application for American accent training and feedback.
 - Independently developed
 - React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
 
-## 🚀 Watch the Demo Video / Explore the App Demo
+## Demo
 
 - **Demo Video:** [Watch 5-minute demo →](https://youtu.be/1I5FPCRFm7o)
 - **User App:** https://app.simpleamericanaccent.com
@@ -14,7 +14,7 @@ A full-stack web application for American accent training and feedback.
 - **Admin App:** https://admin.simpleamericanaccent.com  
   _(Internal dashboard — demo access not currently planned)_
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 This is a monorepo with thin app wrappers around shared core packages:
 
@@ -30,28 +30,28 @@ packages/
  └── core-backend-node     → Auth0, Prisma, rate limiting, Airtable, API routes
 ```
 
-## 🎯 Core Features & Security
+## Key Elements
 
 - **Quiz System** - Minimal pairs pronunciation quiz
 - **Transcript Viewer** - Admin view for annotating accent feedback, user view for viewing accent feedback
 - **Progress Tracking** - Visual progress indicators and performance statistics
 - **Admin Dashboard** - User management, trial analytics, and client acquisition tracking
 
-### Security Highlights
+## Security Highlights
 
 - **Authentication** - Auth0 integration
 - **Authorization** - Role-based access control (admin vs user) + user-specific permissions
 - **Rate Limiting** - 450 requests per 15 minutes per IP address
 - **Configuration Management** – Environment-based secrets and keys (no credentials in source)
 
-## ⚙️ Tech Stack & Infrastructure
+## Tech Stack & Infrastructure
 
 - **Frontend:** React 19, Vite, Tailwind CSS
 - **Backend:** Node.js, Express, Prisma, PostgreSQL
 - **Infrastructure:** Render, Auth0, AWS S3, Airtable
 - **Analytics:** Instagram Graph API, Plausible, Airtable
 
-## 🧪 Development Setup
+## Development Setup
 
 ### Main Setup
 
@@ -101,12 +101,12 @@ packages/
   ```
 - **Direct database access via psql:** Log into Render dashboard, copy connection command, paste into terminal and hit enter. Then copy and paste the password (it will appear invisible in the terminal) and hit enter.
 
-## 🤝 Contributing
+## Contributing
 
 This is a production application serving paid accent coaching clients, that I developed independently.
 
 Temporarily open-sourced to show my full-stack development abilities. For questions or feedback, please contact me.
 
-## 📄 License
+## License
 
 **Proprietary** – Temporarily open-sourced for portfolio/demonstration purposes only.
