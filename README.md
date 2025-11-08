@@ -57,11 +57,11 @@ packages/
 
 - Set up [mkcert](https://github.com/FiloSottile/mkcert) to enable local development (localhost) over HTTPS
 - Navigate to repo root
-- **Run setup command (will install dependencies, generate Prisma client, and setup localhost mkcert certificates):**
+- **Run setup command (will install dependencies, generate Prisma client, setup localhost mkcert certificates, and create 4 .env files):**
   ```powershell
   pnpm run setup
   ```
-- **Environment Setup:** Copy the `.env.example` files (4 total) to create corresponding `.env` files, then fill in your credentials
+- **Environment Setup:** Fill in your credentials in the 4 .env files (see console log information after running setup)
 - **Run the application:**
   ```powershell
   pnpm dev:u    # Start user app
