@@ -15,9 +15,49 @@ const useFetchAudioV1 = () => {
       setMp3Url(mp3url);
 
       const transcriptResponse = await fetchData(tranurl);
-      const transcriptWithIndices = addWordIndices(
-        transcriptResponse.speech.transcripts
-      );
+
+      // Normalize different transcript formats to common structure
+      let normalizedTranscript;
+
+      // Format 1: Old format with speech.transcripts wrapper
+      if (transcriptResponse.speech?.transcripts !== undefined) {
+        normalizedTranscript = transcriptResponse.speech.transcripts;
+      }
+      // Format 2: New format with start_offset and alignment at root
+      else if (
+        transcriptResponse.start_offset !== undefined &&
+        transcriptResponse.alignment !== undefined
+      ) {
+        normalizedTranscript = [
+          {
+            start_offset: transcriptResponse.start_offset || 0,
+            alignment: transcriptResponse.alignment || [],
+          },
+        ];
+      }
+      // Format 3: Flat array of words (no paragraph structure)
+      else if (
+        Array.isArray(transcriptResponse) &&
+        transcriptResponse.length > 0 &&
+        transcriptResponse[0]?.word !== undefined
+      ) {
+        // For flat array, treat as single paragraph starting at offset 0
+        // Word start times are already absolute, so start_offset should be 0
+        // (start_offset gets divided by 16000 in addWordIndices to convert to seconds)
+        normalizedTranscript = [
+          {
+            start_offset: 0,
+            alignment: transcriptResponse,
+          },
+        ];
+      }
+      // Fallback: try to handle as-is or return empty
+      else {
+        console.warn("Unknown transcript format:", transcriptResponse);
+        normalizedTranscript = [];
+      }
+
+      const transcriptWithIndices = addWordIndices(normalizedTranscript);
 
       const result = createAnnotatedTranscript(
         transcriptWithIndices,
