@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import useFetchAudioV1 from "core-frontend-web/src/hooks/use-fetch-audio-v1";
-import useFetchAudioV2 from "core-frontend-web/src/hooks/use-fetch-audio-v2";
 import useAudioSync from "core-frontend-web/src/hooks/use-audio-sync";
 import { useParams } from "react-router-dom";
 
@@ -22,9 +21,7 @@ import {
 } from "lucide-react";
 
 import TranscriptViewerV1 from "core-frontend-web/src/components/transcript/transcript-viewer-v1";
-import TranscriptViewerV2 from "core-frontend-web/src/components/transcript/transcript-viewer-v2";
 import TranscriptStatsV1 from "core-frontend-web/src/components/transcript/transcript-stats-v1";
-import TranscriptStatsV2 from "core-frontend-web/src/components/transcript/transcript-stats-v2";
 import AudioPlayer from "core-frontend-web/src/components/audio-player";
 import KeyboardShortcutsModal from "core-frontend-web/src/components/keyboard-shortcuts-modal";
 import TranscriptCTA from "core-frontend-web/src/components/transcript/transcript-cta";
@@ -65,8 +62,7 @@ export default function Transcript() {
   };
 
   // Fetch Audio & Transcript Data
-  const { mp3url, annotatedTranscript, fetchAudio } =
-    version === "v1" ? useFetchAudioV1() : useFetchAudioV2();
+  const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudioV1();
 
   // Reference for Audio Player & State for Playback Speed
   const audioRef = useRef(null);
@@ -233,13 +229,8 @@ export default function Transcript() {
   }, []); // Empty dependency array since we only want to set this up once
 
   const handleAnnotationHover = (annotations) => {
-    if (version === "v1") {
-      const friendlyIssueNames = getIssueNames(annotations);
-      setAnnotations(friendlyIssueNames);
-    } else if (version === "v2") {
-      const friendlyTargetNames = getTargetNames(annotations);
-      setAnnotations(friendlyTargetNames);
-    }
+    const friendlyIssueNames = getIssueNames(annotations);
+    setAnnotations(friendlyIssueNames);
   };
 
   const handlePronunciationHover = (pronunciations) => {
@@ -401,40 +392,24 @@ export default function Transcript() {
               </header>
               <section>
                 {/* Only show transcript viewer when audio is loaded */}
-                {hasAudioLoaded &&
-                  (version === "v1" ? (
-                    <TranscriptViewerV1
-                      annotatedTranscript={annotatedTranscript}
-                      activeWordIndex={activeWordIndex}
-                      handleWordClick={(start_time) => {
-                        audioRef.current.currentTime = start_time;
-                        audioRef.current.play();
-                      }}
-                      onAnnotationHover={handleAnnotationHover}
-                      onPronunciationHover={handlePronunciationHover}
-                      onPronunciation2Hover={handlePronunciation2Hover}
-                      issuesData={issuesData}
-                      onAnnotationUpdate={handleAnnotationUpdate}
-                      activeFilters={activeFilters}
-                      hoveredWordIndices={hoveredWordIndices}
-                      tooltipsEnabled={tooltipsEnabled}
-                    />
-                  ) : (
-                    <TranscriptViewerV2
-                      // Same props as v1
-                      annotatedTranscript={annotatedTranscript}
-                      activeWordIndex={activeWordIndex}
-                      handleWordClick={(start_time) => {
-                        audioRef.current.currentTime = start_time;
-                        audioRef.current.play();
-                      }}
-                      onAnnotationHover={handleAnnotationHover}
-                      issuesData={issuesData}
-                      onAnnotationUpdate={handleAnnotationUpdate}
-                      activeFilters={activeFilters}
-                      tooltipsEnabled={tooltipsEnabled}
-                    />
-                  ))}
+                {hasAudioLoaded && (
+                  <TranscriptViewerV1
+                    annotatedTranscript={annotatedTranscript}
+                    activeWordIndex={activeWordIndex}
+                    handleWordClick={(start_time) => {
+                      audioRef.current.currentTime = start_time;
+                      audioRef.current.play();
+                    }}
+                    onAnnotationHover={handleAnnotationHover}
+                    onPronunciationHover={handlePronunciationHover}
+                    onPronunciation2Hover={handlePronunciation2Hover}
+                    issuesData={issuesData}
+                    onAnnotationUpdate={handleAnnotationUpdate}
+                    activeFilters={activeFilters}
+                    hoveredWordIndices={hoveredWordIndices}
+                    tooltipsEnabled={tooltipsEnabled}
+                  />
+                )}
               </section>
               <aside>
                 <KeyboardShortcutsModal
@@ -463,20 +438,12 @@ export default function Transcript() {
           >
             <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
               <div className="px-4 bg-background">
-                {version === "v1" ? (
-                  <TranscriptStatsV1
-                    annotatedTranscript={annotatedTranscript}
-                    issuesData={issuesData}
-                    onFilterChange={handleFilterChange}
-                    setHoveredWordIndices={setHoveredWordIndices}
-                  />
-                ) : (
-                  <TranscriptStatsV2
-                    annotatedTranscript={annotatedTranscript}
-                    issuesData={issuesData}
-                    onFilterChange={handleFilterChange}
-                  />
-                )}
+                <TranscriptStatsV1
+                  annotatedTranscript={annotatedTranscript}
+                  issuesData={issuesData}
+                  onFilterChange={handleFilterChange}
+                  setHoveredWordIndices={setHoveredWordIndices}
+                />
               </div>
             </ScrollArea>
           </ResizablePanel>
