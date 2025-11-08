@@ -7,7 +7,10 @@
   "scripts": {
     "start": "node --watch server.js",
     "seed:ortho": "node scripts/seedOrthoWords.js",
-    "generate": "prisma generate --no-hints"
+    "generate": "prisma generate --no-hints",
+    "studio": "pnpm run studio:user",
+    "studio:user": "node --env-file=.env --env-file=../../apps/user-backend-node/.env node_modules/prisma/build/index.js studio",
+    "studio:admin": "node --env-file=.env --env-file=../../apps/admin-backend-node/.env node_modules/prisma/build/index.js studio"
   },
   "author": "Will Rosenberg",
   "license": "UNLICENSED",
