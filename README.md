@@ -64,7 +64,7 @@ packages/
 - **Environment Setup:** Fill in your credentials in the 4 .env files (see console log information after running setup)
 - **Run the application:**
   ```powershell
-  pnpm dev:u    # Start user app
+  pnpm dev    # Start user app
   # or
   pnpm dev:a   # Start admin app
   ```
@@ -74,19 +74,9 @@ packages/
 - **Airtable Setup:** Set up your own Airtable base for accent annotations data (schema available in codebase)
 - **Database Setup:**
 
-  - **Database URL:** You may need to use this pattern for database-related commands, until I figure out a better way (PowerShell syntax shown here):
-    - ```powershell
-      $env:DATABASE_URL = "your_url"
-      ```
-    - ```powershell
-      [run your command(s) here]
-      ```
-    - ```powershell
-      Remove-Item Env:DATABASE_URL
-      ```
   - **Setup:** Run migrations:
     ```powershell
-    pnpm --filter core-backend-node exec prisma migrate dev
+    pnpm migrate
     ```
   - **Seeding:** Populate with pronunciation dictionary data:
     ```powershell
@@ -97,7 +87,7 @@ packages/
 
 - **Prisma Studio:** Open database GUI (see note above for database URL pattern):
   ```powershell
-  pnpm --filter core-backend-node exec prisma studio
+  pnpm studio
   ```
 - **Direct database access via psql:** Log into Render dashboard, copy connection command, paste into terminal and hit enter. Then copy and paste the password (it will appear invisible in the terminal) and hit enter.
 
