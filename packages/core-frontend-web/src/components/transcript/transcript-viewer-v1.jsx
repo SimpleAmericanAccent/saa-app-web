@@ -31,6 +31,7 @@ import {
   getWiktionaryAllAudio,
   cleanWordForAPI,
 } from "core-frontend-web/src/utils/wiktionary-api";
+import WordEditPopover from "core-frontend-web/src/components/transcript/word-edit-popover";
 
 const TranscriptViewerV1 = ({
   annotatedTranscript,
@@ -44,6 +45,9 @@ const TranscriptViewerV1 = ({
   activeFilters = [],
   hoveredWordIndices = [],
   tooltipsEnabled = true,
+  isEditMode = false,
+  draftTranscript = null,
+  onDraftUpdate = null,
 }) => {
   const [contextMenu, setContextMenu] = useState({
     wordIndex: null,
@@ -406,6 +410,12 @@ const TranscriptViewerV1 = ({
     return pronunciations3;
   };
 
+  // Get draft word if available
+  const getDraftWord = (wordIndex) => {
+    if (!draftTranscript || !isEditMode) return null;
+    return draftTranscript.find((w) => w.wordIndex === wordIndex) || null;
+  };
+
   const content = (
     <div
       className="py-4 space-y-4"
@@ -423,6 +433,10 @@ const TranscriptViewerV1 = ({
             const hasAnnotations = annotations.length > 0;
             const isActive = activeWordIndex === wordObj.wordIndex;
             const highlightState = shouldHighlightWord(wordObj);
+            const draftWord = getDraftWord(wordObj.wordIndex);
+            const displayWord = draftWord?.word ?? wordObj.word;
+            const displayStart =
+              draftWord?.start ?? wordObj.start_time ?? wordObj.start ?? 0;
 
             const wordSpan = (
               <span
@@ -434,28 +448,59 @@ const TranscriptViewerV1 = ({
                     "text-[hsl(var(--hover2-foreground))] bg-[hsl(var(--hover2))]":
                       highlightState === "hover2" && !isActive,
                     "!bg-[#aa00aa80]": isActive,
+                    "border-2 border-orange-500":
+                      isEditMode &&
+                      draftWord &&
+                      (draftWord.word !== wordObj.word ||
+                        draftWord.start !==
+                          (wordObj.start_time ?? wordObj.start ?? 0)),
                   },
-                  "hover:bg-[hsl(var(--hover))] hover:text-[hsl(var(--hover-foreground))]"
+                  !isEditMode &&
+                    "hover:bg-[hsl(var(--hover))] hover:text-[hsl(var(--hover-foreground))]"
                 )}
-                onClick={() => handleWordClick(wordObj.start_time)}
-                onMouseOver={() => {
-                  handleWordHover(wordObj.wordIndex, wordObj.word);
+                onClick={() => {
+                  // Always allow left-click to play audio
+                  handleWordClick(displayStart);
                 }}
-                onContextMenu={(e) =>
-                  handleContextMenu(e, wordObj.wordIndex, wordObj.word)
-                }
+                onMouseOver={() => {
+                  if (!isEditMode) {
+                    handleWordHover(wordObj.wordIndex, wordObj.word);
+                  }
+                }}
+                onContextMenu={(e) => {
+                  if (isEditMode) {
+                    // In edit mode, let the popover handle right-click
+                    // Don't prevent default here - let it bubble to the popover wrapper
+                    return;
+                  }
+                  handleContextMenu(e, wordObj.wordIndex, wordObj.word);
+                }}
               >
-                {wordObj.word}
+                {displayWord}
               </span>
             );
 
-            // temp comment
+            // Wrap in edit popover if in edit mode
+            const wrappedWordSpan =
+              isEditMode && onDraftUpdate ? (
+                <WordEditPopover
+                  wordObj={wordObj}
+                  draftWord={draftWord}
+                  onSave={(updates) =>
+                    onDraftUpdate(wordObj.wordIndex, updates)
+                  }
+                >
+                  {wordSpan}
+                </WordEditPopover>
+              ) : (
+                wordSpan
+              );
 
             return (
               <React.Fragment key={wordObj.wordIndex}>
-                {tooltipsEnabled ? (
+                {!isEditMode && tooltipsEnabled ? (
                   <_WordTooltip
-                    wordSpan={wordSpan}
+                    wordSpan={wrappedWordSpan}
                     isLoadingWordData={isLoadingWordData}
                     currentWordData={currentWordData}
                     pronunciationIndex={pronunciationIndex}
@@ -467,7 +512,7 @@ const TranscriptViewerV1 = ({
                     setCurrentlyPlayingAudio={setCurrentlyPlayingAudio}
                   />
                 ) : (
-                  wordSpan
+                  wrappedWordSpan
                 )}{" "}
                 {wordObj.lineBreakAfter ? <br /> : ""}
                 {wordObj.newParagraphAfter ? (

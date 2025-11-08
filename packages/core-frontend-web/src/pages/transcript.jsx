@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import useFetchAudioV1 from "core-frontend-web/src/hooks/use-fetch-audio-v1";
 import useAudioSync from "core-frontend-web/src/hooks/use-audio-sync";
 import { useParams } from "react-router-dom";
@@ -18,6 +18,9 @@ import {
   EyeOff,
   ChevronLeft,
   ChevronRight,
+  Edit2,
+  Copy,
+  Download,
 } from "lucide-react";
 
 import TranscriptViewerV1 from "core-frontend-web/src/components/transcript/transcript-viewer-v1";
@@ -48,6 +51,7 @@ export default function Transcript() {
     setSelectedPerson,
     selectedAudio,
     setSelectedAudio,
+    isAdmin,
   } = useAuthStore();
 
   const [activeFilters, setActiveFilters] = useState([]);
@@ -83,6 +87,8 @@ export default function Transcript() {
 
   const [hoveredWordIndices, setHoveredWordIndices] = useState([]);
   const [tooltipsEnabled, setTooltipsEnabled] = useState(true);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [draftTranscript, setDraftTranscript] = useState(null);
   // #endregion
 
   // #region do stuff
@@ -136,17 +142,36 @@ export default function Transcript() {
     );
   };
 
-  const flattenTranscript = (transcripts) => {
-    return transcripts.flatMap((paragraph) => paragraph.alignment);
+  const flattenTranscript = (transcripts, useDraft = false) => {
+    const flattened = transcripts.flatMap((paragraph) => paragraph.alignment);
+
+    // If in edit mode and we have draft transcript, merge draft start times
+    if (useDraft && isEditMode && draftTranscript) {
+      return flattened.map((wordObj) => {
+        const draftWord = draftTranscript.find(
+          (w) => w.wordIndex === wordObj.wordIndex
+        );
+        if (draftWord) {
+          return {
+            ...wordObj,
+            start_time: draftWord.start,
+          };
+        }
+        return wordObj;
+      });
+    }
+
+    return flattened;
   };
 
   // Sync Active Word with Current Time
   useEffect(() => {
-    let transcriptFlattened = flattenTranscript(annotatedTranscript);
+    // Use draft start times if in edit mode
+    let transcriptFlattened = flattenTranscript(annotatedTranscript, true);
     if (!transcriptFlattened.length) return;
     const idx = findActiveWordIndex(transcriptFlattened, currentTime);
     setActiveWordIndex(idx);
-  }, [currentTime, annotatedTranscript]);
+  }, [currentTime, annotatedTranscript, isEditMode, draftTranscript]);
 
   // Handle Audio Selection and Fetch
   const handleAudioSelection = async () => {
@@ -272,6 +297,76 @@ export default function Transcript() {
     // Update tooltip
     handleAnnotationHover(annotations, wordIndex);
   };
+
+  // Initialize draft when entering edit mode or transcript changes
+  useEffect(() => {
+    if (isEditMode && annotatedTranscript?.length) {
+      // Create a flat draft structure
+      const draft = annotatedTranscript.flatMap((paragraph) => {
+        if (!paragraph.alignment) return [];
+        return paragraph.alignment.map((wordObj) => ({
+          word: wordObj.word || "",
+          start: wordObj.start_time || wordObj.start || 0,
+          lineBreakAfter: wordObj.lineBreakAfter || false,
+          newParagraphAfter: wordObj.newParagraphAfter || false,
+          wordIndex: wordObj.wordIndex,
+        }));
+      });
+      setDraftTranscript(draft);
+    }
+  }, [isEditMode, annotatedTranscript]);
+
+  // Update word in draft
+  const updateDraftWord = (wordIndex, updates) => {
+    setDraftTranscript((prev) => {
+      if (!prev) return prev;
+      return prev.map((word) =>
+        word.wordIndex === wordIndex ? { ...word, ...updates } : word
+      );
+    });
+  };
+
+  // Copy draft to clipboard
+  const copyDraftToClipboard = async () => {
+    if (!draftTranscript) return;
+    try {
+      const jsonString = JSON.stringify(draftTranscript, null, 2);
+      await navigator.clipboard.writeText(jsonString);
+      alert("Draft transcript copied to clipboard!");
+    } catch (error) {
+      console.error("Failed to copy:", error);
+      alert("Failed to copy to clipboard");
+    }
+  };
+
+  // Download draft as JSON file
+  const downloadDraft = () => {
+    if (!draftTranscript) return;
+    const jsonString = JSON.stringify(draftTranscript, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transcript-draft-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Check if draft has changes
+  const hasDraftChanges = useMemo(() => {
+    if (!draftTranscript || !annotatedTranscript?.length) return false;
+    const original = annotatedTranscript.flatMap((paragraph) => {
+      if (!paragraph.alignment) return [];
+      return paragraph.alignment.map((wordObj) => ({
+        word: wordObj.word || "",
+        start: wordObj.start_time || wordObj.start || 0,
+        wordIndex: wordObj.wordIndex,
+      }));
+    });
+    return JSON.stringify(draftTranscript) !== JSON.stringify(original);
+  }, [draftTranscript, annotatedTranscript]);
   // #endregion
 
   const hasAudioLoaded = Boolean(mp3url && annotatedTranscript?.length);
@@ -303,6 +398,52 @@ export default function Transcript() {
                       />
 
                       <div className="flex items-center gap-2">
+                        {isAdmin && (
+                          <>
+                            <Button
+                              variant={isEditMode ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setIsEditMode(!isEditMode)}
+                              className="flex items-center gap-2 cursor-pointer"
+                              title="Toggle edit mode (Admin only)"
+                            >
+                              <Edit2 className="h-4 w-4" />
+                              {isEditMode ? "Exit Edit" : "Edit Times"}
+                            </Button>
+                            {isEditMode && (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={copyDraftToClipboard}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                  disabled={!draftTranscript}
+                                  title="Copy draft transcript to clipboard"
+                                >
+                                  <Copy className="h-4 w-4" />
+                                  Copy
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={downloadDraft}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                  disabled={!draftTranscript}
+                                  title="Download draft transcript as JSON"
+                                >
+                                  <Download className="h-4 w-4" />
+                                  Download
+                                </Button>
+                                {hasDraftChanges && (
+                                  <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">
+                                    Unsaved changes
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </>
+                        )}
+
                         <Button
                           variant="outline"
                           size="sm"
@@ -397,6 +538,7 @@ export default function Transcript() {
                     annotatedTranscript={annotatedTranscript}
                     activeWordIndex={activeWordIndex}
                     handleWordClick={(start_time) => {
+                      // Always allow audio playback, even in edit mode
                       audioRef.current.currentTime = start_time;
                       audioRef.current.play();
                     }}
@@ -408,6 +550,9 @@ export default function Transcript() {
                     activeFilters={activeFilters}
                     hoveredWordIndices={hoveredWordIndices}
                     tooltipsEnabled={tooltipsEnabled}
+                    isEditMode={isEditMode}
+                    draftTranscript={draftTranscript}
+                    onDraftUpdate={updateDraftWord}
                   />
                 )}
               </section>
