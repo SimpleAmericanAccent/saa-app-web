@@ -8,10 +8,12 @@
   ],
   "scripts": {
     "// ============= Setup ============= ": "",
+    "migrate": "pnpm --filter core-backend-node exec prisma migrate dev",
     "seed:cmu": "node shared/scripts/seedCmuAndSubtlex.js",
     "setup": "pnpm install --frozen-lockfile && pnpm run generate && mkcert localhost && pnpm run setup:env",
     "setup:env": "node scripts/setup-env.js",
     "generate": "pnpm --filter core-backend-node run generate",
+    "studio": "pnpm --filter core-backend-node exec prisma studio",
     "// ============= Admin App ============= ": "",
     "dev:admin": "concurrently \"pnpm --filter admin-backend-node run dev\" \"pnpm --filter admin-frontend-web run dev\"",
     "build:admin": "pnpm run setup && pnpm --filter admin-frontend-web run build",
