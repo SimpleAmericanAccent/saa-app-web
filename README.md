@@ -6,15 +6,30 @@ A full-stack web application for American accent training and feedback.
 - Independently developed
 - React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
 
-## Demo
+<details><summary>Demo</summary>
+  
+- **[Demo Video (5 minutes)](https://youtu.be/1I5FPCRFm7o)**
+- Demo Logins
+  - User app:
+    - [Link](https://app.simpleamericanaccent.com)
+    - User/pass: demo@simpleamericanaccent.com / Demo123!
+  - Admin app:
+    - Not yet available for demo
+</details>
 
-- **Demo Video:** [Watch 5-minute demo →](https://youtu.be/1I5FPCRFm7o)
-- **User App:** https://app.simpleamericanaccent.com
-  - **Demo Username/Password:** demo@simpleamericanaccent.com / Demo123!
-- **Admin App:** https://admin.simpleamericanaccent.com  
-  _(Internal dashboard — demo access not currently planned)_
+<details><summary>App Overview</summary>
 
-## Architecture Overview
+### Tech Stack/Infra
+
+- **Frontend:** React 19, Vite, Tailwind CSS
+- **Backend:** Node.js, Express, Prisma, PostgreSQL
+- **Database:** Postgres on Render, Airtable via API
+- **Hosting:** Render, CloudFlare
+- **Auth:** Auth0
+- **Marketing Analytics:** Instagram Graph API, Plausible, Airtable
+- **App Analytics:** PostHog coming soon
+
+### Architecture
 
 This is a monorepo with thin app wrappers around shared core packages:
 
@@ -30,29 +45,23 @@ packages/
  └── core-backend-node     → Auth0, Prisma, rate limiting, Airtable, API routes
 ```
 
-## Key Elements
+### Features
 
 - **Quiz System** - Minimal pairs pronunciation quiz
 - **Transcript Viewer** - Admin view for annotating accent feedback, user view for viewing accent feedback
 - **Progress Tracking** - Visual progress indicators and performance statistics
 - **Admin Dashboard** - User management, trial analytics, and client acquisition tracking
 
-## Security Highlights
+### Security
 
 - **Authentication** - Auth0 integration
 - **Authorization** - Role-based access control (admin vs user) + user-specific permissions
 - **Rate Limiting** - 450 requests per 15 minutes per IP address
 - **Configuration Management** – Environment-based secrets and keys (no credentials in source)
 
-## Tech Stack & Infrastructure
-
-- **Frontend:** React 19, Vite, Tailwind CSS
-- **Backend:** Node.js, Express, Prisma, PostgreSQL
-- **Infrastructure:** Render, Auth0, AWS S3, Airtable
-- **Analytics:** Instagram Graph API, Plausible, Airtable
-
-## Development Setup
-
+</details>
+<details><summary>Development Setup</summary>
+  
 ### Main Setup
 
 - Set up [mkcert](https://github.com/FiloSottile/mkcert) to enable local development (localhost) over HTTPS
@@ -85,18 +94,22 @@ packages/
 
 ### Optional Tools
 
-- **Prisma Studio:** Open database GUI (see note above for database URL pattern):
+- **Prisma Studio:** Open database GUI
   ```powershell
   pnpm studio
   ```
 - **Direct database access via psql:** Log into Render dashboard, copy connection command, paste into terminal and hit enter. Then copy and paste the password (it will appear invisible in the terminal) and hit enter.
+</details>
+<details><summary>Contributing/License</summary>
 
-## Contributing
+### Contributing
 
 This is a production application serving paid accent coaching clients, that I developed independently.
 
 Temporarily open-sourced to show my full-stack development abilities. For questions or feedback, please contact me.
 
-## License
+### License
 
 **Proprietary** – Temporarily open-sourced for portfolio/demonstration purposes only.
+
+</details>
