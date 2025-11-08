@@ -19,7 +19,7 @@ A full-stack web application for American accent training and feedback.
 
 <details><summary>App Overview</summary>
 
-### Tech Stack/Infra
+### Tech Stack
 
 - **Frontend:** React 19, Vite, Tailwind CSS
 - **Backend:** Node.js, Express, Prisma, PostgreSQL
