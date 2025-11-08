@@ -16,12 +16,14 @@ import Join from "core-frontend-web/src/pages/join.jsx";
 import JoinThankYou from "core-frontend-web/src/pages/join-ty.jsx";
 import Imitate from "core-frontend-web/src/pages/imitate.jsx";
 import AccentExplorer from "core-frontend-web/src/pages/accent-explorer.jsx";
+import SpectrogramTest from "core-frontend-web/src/pages/spectrogram-test.jsx";
 
 const coreRoutes = (
   <>
     {/* Add new route with audioId parameter */}
     <Route path="/transcript/:audioId" element={<Transcript />} />
     <Route path="/transcript" element={<Transcript />} />
+    <Route path="/s" element={<SpectrogramTest />} />
     <Route path="/dashboard" element={<UserDashboard />} />
     <Route path="/wls" element={<WLS />} />
     <Route path="/vsounds" element={<VSounds />} />

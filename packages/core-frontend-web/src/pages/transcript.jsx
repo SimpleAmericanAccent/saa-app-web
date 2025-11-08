@@ -21,10 +21,12 @@ import {
   Edit2,
   Copy,
   Download,
+  Activity,
 } from "lucide-react";
 
 import TranscriptViewerV1 from "core-frontend-web/src/components/transcript/transcript-viewer-v1";
 import TranscriptStatsV1 from "core-frontend-web/src/components/transcript/transcript-stats-v1";
+import WaveformEditor from "core-frontend-web/src/components/transcript/waveform-editor";
 import AudioPlayer from "core-frontend-web/src/components/audio-player";
 import KeyboardShortcutsModal from "core-frontend-web/src/components/keyboard-shortcuts-modal";
 import TranscriptCTA from "core-frontend-web/src/components/transcript/transcript-cta";
@@ -89,6 +91,7 @@ export default function Transcript() {
   const [tooltipsEnabled, setTooltipsEnabled] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [draftTranscript, setDraftTranscript] = useState(null);
+  const [showWaveform, setShowWaveform] = useState(false);
   // #endregion
 
   // #region do stuff
@@ -172,6 +175,17 @@ export default function Transcript() {
     const idx = findActiveWordIndex(transcriptFlattened, currentTime);
     setActiveWordIndex(idx);
   }, [currentTime, annotatedTranscript, isEditMode, draftTranscript]);
+
+  // Automatically open waveform when edit mode is enabled
+  useEffect(() => {
+    const hasAudioLoaded = Boolean(mp3url && annotatedTranscript?.length);
+    if (isEditMode && hasAudioLoaded) {
+      setShowWaveform(true);
+    } else if (!isEditMode) {
+      // Close waveform when exiting edit mode
+      setShowWaveform(false);
+    }
+  }, [isEditMode, mp3url, annotatedTranscript]);
 
   // Handle Audio Selection and Fetch
   const handleAudioSelection = async () => {
@@ -377,7 +391,7 @@ export default function Transcript() {
         <ResizablePanel id="transcript-main" order={0}>
           <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
             <div className="p-2 bg-background">
-              <header className="flex flex-col sticky top-0 z-0 bg-background">
+              <header className="flex flex-col sticky top-0 z-10 bg-background">
                 <div
                   className={cn(
                     "flex items-center gap-4",
@@ -412,6 +426,17 @@ export default function Transcript() {
                             </Button>
                             {isEditMode && (
                               <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setShowWaveform(!showWaveform)}
+                                  className="flex items-center gap-2 cursor-pointer"
+                                  disabled={!draftTranscript}
+                                  title="Show waveform editor"
+                                >
+                                  <Activity className="h-4 w-4" />
+                                  Waveform
+                                </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -463,37 +488,39 @@ export default function Transcript() {
                           )}
                         </Button>
 
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            if (rightPanelRef.current) {
-                              if (rightPanelRef.current.isCollapsed()) {
-                                rightPanelRef.current.expand();
-                              } else {
-                                rightPanelRef.current.collapse();
+                        {!showWaveform && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (rightPanelRef.current) {
+                                if (rightPanelRef.current.isCollapsed()) {
+                                  rightPanelRef.current.expand();
+                                } else {
+                                  rightPanelRef.current.collapse();
+                                }
                               }
+                            }}
+                            className="flex items-center gap-2 cursor-pointer"
+                            title={
+                              isRightPanelCollapsed
+                                ? "Expand stats panel"
+                                : "Collapse stats panel"
                             }
-                          }}
-                          className="flex items-center gap-2 cursor-pointer"
-                          title={
-                            isRightPanelCollapsed
-                              ? "Expand stats panel"
-                              : "Collapse stats panel"
-                          }
-                        >
-                          {isRightPanelCollapsed ? (
-                            <>
-                              <ChevronLeft className="h-4 w-4" />
-                              Stats
-                            </>
-                          ) : (
-                            <>
-                              <ChevronRight className="h-4 w-4" />
-                              Stats
-                            </>
-                          )}
-                        </Button>
+                          >
+                            {isRightPanelCollapsed ? (
+                              <>
+                                <ChevronLeft className="h-4 w-4" />
+                                Stats
+                              </>
+                            ) : (
+                              <>
+                                <ChevronRight className="h-4 w-4" />
+                                Stats
+                              </>
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ) : (
@@ -529,6 +556,19 @@ export default function Transcript() {
                       />
                     </div>
                   </>
+                )}
+                {/* Waveform Editor - Part of sticky header */}
+                {hasAudioLoaded && isEditMode && showWaveform && (
+                  <div className="border-t p-2">
+                    <WaveformEditor
+                      mp3url={mp3url}
+                      annotatedTranscript={annotatedTranscript}
+                      draftTranscript={draftTranscript}
+                      onDraftUpdate={updateDraftWord}
+                      onClose={() => setShowWaveform(false)}
+                      audioRef={audioRef}
+                    />
+                  </div>
                 )}
               </header>
               <section>
@@ -566,8 +606,8 @@ export default function Transcript() {
           </ScrollArea>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        {/* Only show right panel when audio is loaded */}
-        {hasAudioLoaded && (
+        {/* Only show right panel when audio is loaded and waveform is not shown */}
+        {hasAudioLoaded && !isEditMode && (
           <ResizablePanel
             ref={rightPanelRef}
             id="transcript-stats"
