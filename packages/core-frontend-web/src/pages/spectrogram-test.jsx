@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback, useMemo } from "react";
 import { useWavesurfer } from "@wavesurfer/react";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
 
@@ -30,7 +30,11 @@ const SpectrogramTest = () => {
     if (!wavesurfer || !isReady) return;
     // Destroy existing plugin if it exists
     if (spectrogramPluginRef.current) {
-      spectrogramPluginRef.current.destroy();
+      try {
+        spectrogramPluginRef.current.destroy();
+      } catch (error) {
+        console.warn("Error destroying existing spectrogram:", error);
+      }
       spectrogramPluginRef.current = null;
     }
 
@@ -53,25 +57,38 @@ const SpectrogramTest = () => {
     // Cleanup on unmount
     return () => {
       if (spectrogramPluginRef.current) {
-        console.log("Cleaning up spectrogram plugin");
-        spectrogramPluginRef.current.destroy();
+        try {
+          console.log("Cleaning up spectrogram plugin");
+          spectrogramPluginRef.current.destroy();
+        } catch (error) {
+          console.warn("Error cleaning up spectrogram:", error);
+        }
         spectrogramPluginRef.current = null;
       }
     };
   }, [wavesurfer, isReady]);
 
+  // Use useCallback to prevent creating new function on every render
+  const handlePlayPause = useCallback(() => {
+    if (wavesurfer) {
+      wavesurfer.playPause();
+    }
+  }, [wavesurfer]);
+
+  // Memoize style object to prevent recreation on every render
+  const containerStyle = useMemo(
+    () => ({
+      width: "100%",
+      height: "300px",
+      border: "1px solid #ccc",
+      borderRadius: "4px",
+      backgroundColor: "#000",
+    }),
+    []
+  );
+
   return (
-    <div
-      ref={containerRef}
-      style={{
-        width: "100%",
-        height: "300px",
-        border: "1px solid #ccc",
-        borderRadius: "4px",
-        backgroundColor: "#000",
-      }}
-      onClick={() => wavesurfer.playPause()}
-    />
+    <div ref={containerRef} style={containerStyle} onClick={handlePlayPause} />
   );
 };
 

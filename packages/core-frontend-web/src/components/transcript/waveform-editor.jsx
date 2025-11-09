@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback, useMemo } from "react";
 import { useWavesurfer } from "@wavesurfer/react";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
 import { cn } from "core-frontend-web/src/lib/utils";
@@ -21,6 +21,7 @@ const WaveformEditor = ({
   const containerRef = useRef(null);
   const isSyncingRef = useRef(false); // Prevent feedback loops
   const spectrogramPluginRef = useRef(null);
+  const isMountedRef = useRef(true); // Track mount status for requestAnimationFrame
 
   // Use wavesurfer hook - visualization only
   const { wavesurfer, isReady, isPlaying, currentTime } = useWavesurfer({
@@ -41,27 +42,40 @@ const WaveformEditor = ({
 
     // Destroy existing plugin if it exists
     if (spectrogramPluginRef.current) {
-      spectrogramPluginRef.current.destroy();
+      try {
+        spectrogramPluginRef.current.destroy();
+      } catch (error) {
+        console.warn("Error destroying existing spectrogram:", error);
+      }
       spectrogramPluginRef.current = null;
     }
 
-    // Create and register spectrogram plugin
-    const spectrogram = Spectrogram.create({
-      labels: true,
-      splitChannels: false,
-      height: 100,
-      colorScheme: "classic", // Classic color scheme works well in both light/dark
-      //   frequencyMax: 1000,
-      frequencyMin: 0,
-    });
+    try {
+      // Create and register spectrogram plugin
+      const spectrogram = Spectrogram.create({
+        labels: true,
+        splitChannels: false,
+        height: 100,
+        colorScheme: "classic", // Classic color scheme works well in both light/dark
+        //   frequencyMax: 1000,
+        frequencyMin: 0,
+      });
 
-    wavesurfer.registerPlugin(spectrogram);
-    spectrogramPluginRef.current = spectrogram;
+      wavesurfer.registerPlugin(spectrogram);
+      spectrogramPluginRef.current = spectrogram;
+    } catch (error) {
+      console.error("Error creating spectrogram plugin:", error);
+      // Optionally show user-friendly error message
+    }
 
     // Cleanup on unmount
     return () => {
       if (spectrogramPluginRef.current) {
-        spectrogramPluginRef.current.destroy();
+        try {
+          spectrogramPluginRef.current.destroy();
+        } catch (error) {
+          console.warn("Error cleaning up spectrogram:", error);
+        }
         spectrogramPluginRef.current = null;
       }
     };
@@ -78,59 +92,83 @@ const WaveformEditor = ({
       media.volume = 0;
     }
 
-    // Override wavesurfer's play/pause to prevent it from actually playing audio
-    const originalPlay = wavesurfer.play.bind(wavesurfer);
-    const originalPause = wavesurfer.pause.bind(wavesurfer);
-
-    wavesurfer.play = () => {
-      // Don't actually play wavesurfer's audio, just update visualization
+    // Intercept play/pause events instead of overriding methods
+    const handleWavesurferPlay = () => {
+      // If external audio is already playing, don't let wavesurfer play
       if (audioRef?.current && !audioRef.current.paused) {
-        // Audio is already playing, just sync visualization
-        return;
+        wavesurfer.pause(); // Immediately pause if audio is playing
       }
-      return originalPlay();
     };
 
-    wavesurfer.pause = () => {
-      // Don't actually pause wavesurfer's audio, just update visualization
-      return originalPause();
+    const handleWavesurferPause = () => {
+      // Allow pause, just sync visualization
+      if (audioRef?.current && !audioRef.current.paused) {
+        // Don't pause external audio, just update visualization
+      }
+    };
+
+    wavesurfer.on("play", handleWavesurferPlay);
+    wavesurfer.on("pause", handleWavesurferPause);
+
+    return () => {
+      wavesurfer.un("play", handleWavesurferPlay);
+      wavesurfer.un("pause", handleWavesurferPause);
     };
   }, [wavesurfer, audioRef]);
 
-  // Sync: When user clicks/seeks on waveform → update audioRef
-  useEffect(() => {
-    if (!wavesurfer || !audioRef?.current) return;
+  // Memoized event handlers using useCallback
+  const handleSeek = useCallback(() => {
+    if (isSyncingRef.current || !wavesurfer || !audioRef?.current) return;
 
-    const handleSeek = () => {
-      if (isSyncingRef.current) return; // Prevent feedback loop
+    try {
       isSyncingRef.current = true;
-
       const seekTime = wavesurfer.getCurrentTime();
-      if (audioRef.current) {
+
+      if (seekTime !== undefined && !isNaN(seekTime) && audioRef.current) {
         audioRef.current.currentTime = seekTime;
       }
 
-      setTimeout(() => {
-        isSyncingRef.current = false;
-      }, 100);
-    };
+      // Use requestAnimationFrame with mount check
+      requestAnimationFrame(() => {
+        if (isMountedRef.current) {
+          isSyncingRef.current = false;
+        }
+      });
+    } catch (error) {
+      console.warn("Error in handleSeek:", error);
+      isSyncingRef.current = false;
+    }
+  }, [wavesurfer, audioRef]);
 
-    const handleInteraction = () => {
-      if (isSyncingRef.current) return;
+  const handleInteraction = useCallback(() => {
+    if (isSyncingRef.current || !wavesurfer || !audioRef?.current) return;
+
+    try {
       isSyncingRef.current = true;
-
       const seekTime = wavesurfer.getCurrentTime();
-      if (audioRef.current) {
+
+      if (seekTime !== undefined && !isNaN(seekTime) && audioRef.current) {
         audioRef.current.currentTime = seekTime;
         if (audioRef.current.paused) {
           audioRef.current.play().catch(console.error);
         }
       }
 
-      setTimeout(() => {
-        isSyncingRef.current = false;
-      }, 100);
-    };
+      // Use requestAnimationFrame with mount check
+      requestAnimationFrame(() => {
+        if (isMountedRef.current) {
+          isSyncingRef.current = false;
+        }
+      });
+    } catch (error) {
+      console.warn("Error in handleInteraction:", error);
+      isSyncingRef.current = false;
+    }
+  }, [wavesurfer, audioRef]);
+
+  // Register wavesurfer event listeners
+  useEffect(() => {
+    if (!wavesurfer || !audioRef?.current) return;
 
     wavesurfer.on("seek", handleSeek);
     wavesurfer.on("interaction", handleInteraction);
@@ -139,45 +177,85 @@ const WaveformEditor = ({
       wavesurfer.un("seek", handleSeek);
       wavesurfer.un("interaction", handleInteraction);
     };
-  }, [wavesurfer, audioRef]);
+  }, [wavesurfer, audioRef, handleSeek, handleInteraction]);
 
-  // Sync: When audioRef plays/updates → update wavesurfer visualization
-  useEffect(() => {
-    if (!wavesurfer || !audioRef?.current) return;
+  // Memoized audio event handlers
+  const handleAudioTimeUpdate = useCallback(() => {
+    if (isSyncingRef.current || !wavesurfer || !audioRef?.current) return;
 
     const audio = audioRef.current;
 
-    const handleAudioTimeUpdate = () => {
-      if (isSyncingRef.current || !audio.duration) return;
+    // Validate duration before division
+    if (!audio.duration || audio.duration === 0 || isNaN(audio.duration))
+      return;
 
+    try {
       const seekTime = audio.currentTime / audio.duration;
-      const currentSeek =
-        wavesurfer.getCurrentTime() / wavesurfer.getDuration();
+      const currentTime = wavesurfer.getCurrentTime();
+      const duration = wavesurfer.getDuration();
+
+      // Validate wavesurfer duration
+      if (!duration || duration === 0 || isNaN(duration)) return;
+
+      const currentSeek = currentTime / duration;
 
       // Only update if difference is significant to avoid feedback loop
       if (Math.abs(seekTime - currentSeek) > 0.02) {
         isSyncingRef.current = true;
         wavesurfer.seekTo(seekTime);
 
-        setTimeout(() => {
-          isSyncingRef.current = false;
-        }, 50);
+        // Use requestAnimationFrame with mount check
+        requestAnimationFrame(() => {
+          if (isMountedRef.current) {
+            isSyncingRef.current = false;
+          }
+        });
       }
-    };
+    } catch (error) {
+      console.warn("Error in handleAudioTimeUpdate:", error);
+      isSyncingRef.current = false;
+    }
+  }, [wavesurfer, audioRef]);
 
-    // Update visualization when audio plays/pauses (but don't actually play wavesurfer)
-    const handleAudioPlay = () => {
-      if (isSyncingRef.current) return;
+  const handleAudioPlay = useCallback(() => {
+    if (isSyncingRef.current || !wavesurfer || !audioRef?.current) return;
+
+    const audio = audioRef.current;
+
+    // Validate duration before division
+    if (!audio.duration || audio.duration === 0 || isNaN(audio.duration))
+      return;
+
+    try {
       const seekTime = audio.currentTime / audio.duration;
       wavesurfer.seekTo(seekTime);
-    };
+    } catch (error) {
+      console.warn("Error in handleAudioPlay:", error);
+    }
+  }, [wavesurfer, audioRef]);
 
-    const handleAudioPause = () => {
-      // Just update visualization position
-      if (isSyncingRef.current) return;
+  const handleAudioPause = useCallback(() => {
+    if (isSyncingRef.current || !wavesurfer || !audioRef?.current) return;
+
+    const audio = audioRef.current;
+
+    // Validate duration before division
+    if (!audio.duration || audio.duration === 0 || isNaN(audio.duration))
+      return;
+
+    try {
       const seekTime = audio.currentTime / audio.duration;
       wavesurfer.seekTo(seekTime);
-    };
+    } catch (error) {
+      console.warn("Error in handleAudioPause:", error);
+    }
+  }, [wavesurfer, audioRef]);
+
+  // Register audio event listeners
+  useEffect(() => {
+    if (!wavesurfer || !audioRef?.current) return;
+
+    const audio = audioRef.current;
 
     audio.addEventListener("play", handleAudioPlay);
     audio.addEventListener("pause", handleAudioPause);
@@ -188,7 +266,24 @@ const WaveformEditor = ({
       audio.removeEventListener("pause", handleAudioPause);
       audio.removeEventListener("timeupdate", handleAudioTimeUpdate);
     };
-  }, [wavesurfer, audioRef]);
+  }, [
+    wavesurfer,
+    audioRef,
+    handleAudioPlay,
+    handleAudioPause,
+    handleAudioTimeUpdate,
+  ]);
+
+  // Track mount status
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Memoize style object to prevent recreation on every render
+  const containerStyle = useMemo(() => ({ height: "300px" }), []);
 
   // TODO: Add word markers overlay when ready
   // TODO: Add zoom/pan controls when ready
@@ -208,11 +303,7 @@ const WaveformEditor = ({
         </Button>
       </div>
       <div className="p-2">
-        <div
-          ref={containerRef}
-          className="w-full"
-          style={{ height: "300px" }}
-        />
+        <div ref={containerRef} className="w-full" style={containerStyle} />
         <div className="text-xs text-muted-foreground mt-2 px-2">
           {!isReady
             ? "Loading spectrogram..."
