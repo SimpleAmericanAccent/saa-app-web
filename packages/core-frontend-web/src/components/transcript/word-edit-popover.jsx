@@ -7,13 +7,21 @@ import {
 } from "core-frontend-web/src/components/ui/popover";
 import { Input } from "core-frontend-web/src/components/ui/input";
 import { Button } from "core-frontend-web/src/components/ui/button";
-import { Save, X } from "lucide-react";
+import { Save, X, Clock } from "lucide-react";
 
 /**
  * Word Edit Popover Component
  * Shows an editable popover when clicking a word in edit mode
  */
-const WordEditPopover = ({ wordObj, draftWord, children, onSave, onClose }) => {
+const WordEditPopover = ({
+  wordObj,
+  draftWord,
+  children,
+  onSave,
+  onClose,
+  audioRef,
+  currentTime,
+}) => {
   const [word, setWord] = useState(draftWord?.word || wordObj?.word || "");
   const [start, setStart] = useState(
     draftWord?.start ?? wordObj?.start_time ?? wordObj?.start ?? 0
@@ -54,6 +62,19 @@ const WordEditPopover = ({ wordObj, draftWord, children, onSave, onClose }) => {
     }
     setIsOpen(false);
     if (onClose) onClose();
+  };
+
+  const setToCurrentTime = () => {
+    let time = 0;
+    if (audioRef?.current?.currentTime !== undefined) {
+      time = audioRef.current.currentTime;
+    } else if (currentTime !== undefined) {
+      time = currentTime;
+    }
+
+    if (time > 0) {
+      setStart(time);
+    }
   };
 
   // Handle right-click to open popover
@@ -99,9 +120,23 @@ const WordEditPopover = ({ wordObj, draftWord, children, onSave, onClose }) => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">
-              Start Time (seconds)
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium text-muted-foreground">
+                Start Time (seconds)
+              </label>
+              {(audioRef || currentTime !== undefined) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={setToCurrentTime}
+                  className="h-6 text-xs"
+                  title="Set to current audio time"
+                >
+                  <Clock className="h-3 w-3 mr-1" />
+                  Now
+                </Button>
+              )}
+            </div>
             <Input
               type="number"
               step="0.001"

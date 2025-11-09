@@ -48,6 +48,8 @@ const TranscriptViewerV1 = ({
   isEditMode = false,
   draftTranscript = null,
   onDraftUpdate = null,
+  audioRef = null,
+  currentTime = undefined,
 }) => {
   const [contextMenu, setContextMenu] = useState({
     wordIndex: null,
@@ -489,6 +491,8 @@ const TranscriptViewerV1 = ({
                   onSave={(updates) =>
                     onDraftUpdate(wordObj.wordIndex, updates)
                   }
+                  audioRef={audioRef}
+                  currentTime={currentTime}
                 >
                   {wordSpan}
                 </WordEditPopover>

@@ -635,6 +635,8 @@ export default function Transcript() {
                       isEditMode={isEditMode}
                       draftTranscript={draftTranscript}
                       onDraftUpdate={updateDraftWord}
+                      audioRef={audioRef}
+                      currentTime={currentTime}
                     />
                   )}
                 </section>
