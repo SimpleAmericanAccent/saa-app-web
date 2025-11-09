@@ -14,20 +14,7 @@ const WSTest = () => {
     waveColor: "rgb(200, 0, 200)",
     progressColor: "rgb(100, 0, 100)",
     url: "https://saaclientaudio.s3.us-east-2.amazonaws.com/test.mp3",
-    plugins: useMemo(
-      () => [
-        TimelinePlugin.create(),
-        ZoomPlugin.create(),
-        // SpectrogramPlugin.create({
-        //   labels: true,
-        //   splitChannels: false,
-        //   height: 100,
-        //   colorScheme: "classic",
-        //   frequencyMin: 0,
-        // }),
-      ],
-      []
-    ),
+    plugins: useMemo(() => [TimelinePlugin.create(), ZoomPlugin.create()], []),
   });
 
   const onPlayPause = useCallback(() => {
