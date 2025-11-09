@@ -49,6 +49,42 @@ const WaveformEditor = ({
     }
   }, [wavesurfer, isReady]);
 
+  // Shift+scroll to pan left/right
+  useEffect(() => {
+    if (!wavesurfer || !isReady) return;
+
+    const scrollContainer = wavesurfer.getWrapper()?.parentElement;
+    if (!scrollContainer) return;
+
+    const handleWheel = (e) => {
+      if (!e.shiftKey) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Use deltaX (horizontal) or deltaY (vertical) for panning
+      const delta = (e.deltaX || e.deltaY) * 2;
+      scrollContainer.scrollLeft = Math.max(
+        0,
+        Math.min(
+          scrollContainer.scrollWidth - scrollContainer.clientWidth,
+          scrollContainer.scrollLeft + delta
+        )
+      );
+    };
+
+    scrollContainer.addEventListener("wheel", handleWheel, {
+      passive: false,
+      capture: true,
+    });
+
+    return () => {
+      scrollContainer.removeEventListener("wheel", handleWheel, {
+        capture: true,
+      });
+    };
+  }, [wavesurfer, isReady]);
+
   // Single sync function - wavesurfer to audio
   const syncWavesurferToAudio = useCallback(() => {
     if (isSyncingRef.current || !wavesurfer || !audioRef?.current) return;
@@ -108,7 +144,6 @@ const WaveformEditor = ({
   }, [audioRef, syncAudioToWavesurfer]);
 
   // TODO: Add word markers overlay when ready
-  // TODO: Add zoom/pan controls when ready
   // TODO: Add playback position indicator when ready
 
   return (
@@ -121,7 +156,7 @@ const WaveformEditor = ({
         <div className="text-xs text-muted-foreground mt-2 px-2">
           {!isReady
             ? "Loading spectrogram..."
-            : "Spectrogram view. Click to seek, drag word markers to adjust timing."}
+            : "Spectrogram view. Click to seek, scroll to zoom, Shift+scroll to pan."}
         </div>
       </div>
     </div>
