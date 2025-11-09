@@ -27,6 +27,7 @@ import {
 import TranscriptViewerV1 from "core-frontend-web/src/components/transcript/transcript-viewer-v1";
 import TranscriptStatsV1 from "core-frontend-web/src/components/transcript/transcript-stats-v1";
 import WaveformEditor from "core-frontend-web/src/components/transcript/waveform-editor";
+import TextToTranscriptConverter from "core-frontend-web/src/components/transcript/text-to-transcript-converter";
 import AudioPlayer from "core-frontend-web/src/components/audio-player";
 import KeyboardShortcutsModal from "core-frontend-web/src/components/keyboard-shortcuts-modal";
 import TranscriptCTA from "core-frontend-web/src/components/transcript/transcript-cta";
@@ -93,6 +94,7 @@ export default function Transcript() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [draftTranscript, setDraftTranscript] = useState(null);
   const [showWaveform, setShowWaveform] = useState(false);
+  const [showTextConverter, setShowTextConverter] = useState(false);
   const hasInitialized = useRef(false);
   const prevSelectedAudio = useRef(selectedAudio);
   // #endregion
@@ -376,11 +378,26 @@ export default function Transcript() {
     });
   };
 
+  // Clean draft transcript for export: remove wordIndex, and only include lineBreakAfter/newParagraphAfter if true
+  const cleanDraftForExport = (draft) => {
+    if (!draft) return draft;
+    return draft.map((word) => {
+      const cleaned = {
+        word: word.word,
+        start: word.start,
+      };
+      if (word.lineBreakAfter) cleaned.lineBreakAfter = true;
+      if (word.newParagraphAfter) cleaned.newParagraphAfter = true;
+      return cleaned;
+    });
+  };
+
   // Copy draft to clipboard
   const copyDraftToClipboard = async () => {
     if (!draftTranscript) return;
     try {
-      const jsonString = JSON.stringify(draftTranscript, null, 2);
+      const cleaned = cleanDraftForExport(draftTranscript);
+      const jsonString = JSON.stringify(cleaned, null, 2);
       await navigator.clipboard.writeText(jsonString);
       alert("Draft transcript copied to clipboard!");
     } catch (error) {
@@ -392,7 +409,8 @@ export default function Transcript() {
   // Download draft as JSON file
   const downloadDraft = () => {
     if (!draftTranscript) return;
-    const jsonString = JSON.stringify(draftTranscript, null, 2);
+    const cleaned = cleanDraftForExport(draftTranscript);
+    const jsonString = JSON.stringify(cleaned, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -437,6 +455,16 @@ export default function Transcript() {
                     onDraftUpdate={updateDraftWord}
                     onClose={() => setShowWaveform(false)}
                     audioRef={audioRef}
+                  />
+                </div>
+              </div>
+            )}
+            {/* Text to Transcript Converter - OUTSIDE ScrollArea */}
+            {isAdmin && showTextConverter && (
+              <div className="border-b bg-background">
+                <div className="p-2">
+                  <TextToTranscriptConverter
+                    onClose={() => setShowTextConverter(false)}
                   />
                 </div>
               </div>
@@ -521,6 +549,18 @@ export default function Transcript() {
                                   )}
                                 </>
                               )}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  setShowTextConverter(!showTextConverter)
+                                }
+                                className="flex items-center gap-2 cursor-pointer"
+                                title="Convert text to transcript JSON"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                                Text Converter
+                              </Button>
                             </>
                           )}
 
