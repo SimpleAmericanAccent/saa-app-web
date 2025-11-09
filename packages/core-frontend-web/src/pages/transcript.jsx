@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import useFetchAudioV1 from "core-frontend-web/src/hooks/use-fetch-audio-v1";
 import useAudioSync from "core-frontend-web/src/hooks/use-audio-sync";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { findActiveWordIndex } from "core-frontend-web/src/utils/binary-search";
 import { fetchData } from "core-frontend-web/src/utils/api";
@@ -43,6 +43,7 @@ import { SidebarRight } from "core-frontend-web/src/components/sidebar-right";
 export default function Transcript() {
   // #region declarations
   const { audioId } = useParams(); // Get audioId from route params
+  const navigate = useNavigate();
 
   // Get People and Audio Resources from auth store
   const {
@@ -92,6 +93,8 @@ export default function Transcript() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [draftTranscript, setDraftTranscript] = useState(null);
   const [showWaveform, setShowWaveform] = useState(false);
+  const hasInitialized = useRef(false);
+  const prevSelectedAudio = useRef(selectedAudio);
   // #endregion
 
   // #region do stuff
@@ -108,7 +111,40 @@ export default function Transcript() {
         setSelectedAudio(audioId);
       }
     }
+    // Mark as initialized after audio list is loaded
+    if (audio.length > 0) {
+      hasInitialized.current = true;
+    }
   }, [audioId, audio, selectedAudio, setSelectedPerson, setSelectedAudio]);
+
+  // Update URL when audio selection changes (but not during initialization)
+  useEffect(() => {
+    // Only update URL after initialization is complete
+    if (!hasInitialized.current) {
+      prevSelectedAudio.current = selectedAudio;
+      return;
+    }
+
+    // Track if this is a user-initiated change (not from URL initialization)
+    const isUserAction = selectedAudio !== prevSelectedAudio.current;
+
+    // Only update URL if selectedAudio actually changed (user action)
+    // and is different from current URL param
+    if (selectedAudio && selectedAudio !== audioId && isUserAction) {
+      navigate(`/transcript/${selectedAudio}`, { replace: true });
+    } else if (
+      !selectedAudio &&
+      audioId &&
+      isUserAction &&
+      prevSelectedAudio.current
+    ) {
+      // Clear URL param only if audio was previously selected (user deselected it)
+      navigate("/transcript", { replace: true });
+    }
+
+    // Always update the previous value
+    prevSelectedAudio.current = selectedAudio;
+  }, [selectedAudio, audioId, navigate]);
 
   // Helper function to get issue names from IDs
   const getIssueNames = (issueIds) => {
