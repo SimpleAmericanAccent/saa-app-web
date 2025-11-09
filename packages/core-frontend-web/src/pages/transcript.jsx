@@ -475,7 +475,7 @@ export default function Transcript() {
                                 title="Toggle edit mode (Admin only)"
                               >
                                 <Edit2 className="h-4 w-4" />
-                                {isEditMode ? "Exit Edit" : "Edit Times"}
+                                {isEditMode ? "Exit Edit" : "Edit"}
                               </Button>
                               {isEditMode && (
                                 <>
