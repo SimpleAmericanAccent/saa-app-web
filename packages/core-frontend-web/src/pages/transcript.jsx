@@ -425,18 +425,160 @@ export default function Transcript() {
     <div className="flex">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel id="transcript-main" order={0}>
-          <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
-            <div className="p-2 bg-background">
-              <header className="flex flex-col sticky top-0 z-10 bg-background">
-                <div
-                  className={cn(
-                    "flex items-center gap-4",
-                    (!hasAudioLoaded || loadError) &&
-                      "h-[calc(100vh-var(--navbar-height))] sm:h-screen justify-center flex-col"
-                  )}
-                >
-                  {hasAudioLoaded ? (
-                    <div className="flex items-center justify-between w-full">
+          <div className="flex flex-col h-[calc(100vh-var(--navbar-height))] sm:h-screen">
+            {/* Waveform Editor - OUTSIDE ScrollArea to prevent flickering */}
+            {hasAudioLoaded && isEditMode && showWaveform && (
+              <div className="border-b bg-background">
+                <div className="p-2">
+                  <WaveformEditor
+                    mp3url={mp3url}
+                    annotatedTranscript={annotatedTranscript}
+                    draftTranscript={draftTranscript}
+                    onDraftUpdate={updateDraftWord}
+                    onClose={() => setShowWaveform(false)}
+                    audioRef={audioRef}
+                  />
+                </div>
+              </div>
+            )}
+            {/* ScrollArea with header and transcript content */}
+            <ScrollArea className="flex-1">
+              <div className="p-2 bg-background">
+                <header className="flex flex-col sticky top-0 z-10 bg-background">
+                  <div
+                    className={cn(
+                      "flex items-center gap-4",
+                      (!hasAudioLoaded || loadError) &&
+                        "h-[calc(100vh-var(--navbar-height))] sm:h-screen justify-center flex-col"
+                    )}
+                  >
+                    {hasAudioLoaded ? (
+                      <div className="flex items-center justify-between w-full">
+                        <PersonAudioSelector
+                          people={people}
+                          filteredAudio={filteredAudio}
+                          selectedPerson={selectedPerson}
+                          selectedAudio={selectedAudio}
+                          onPersonSelect={setSelectedPerson}
+                          onAudioSelect={setSelectedAudio}
+                          size="default"
+                        />
+
+                        <div className="flex items-center gap-2">
+                          {isAdmin && (
+                            <>
+                              <Button
+                                variant={isEditMode ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setIsEditMode(!isEditMode)}
+                                className="flex items-center gap-2 cursor-pointer"
+                                title="Toggle edit mode (Admin only)"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                                {isEditMode ? "Exit Edit" : "Edit Times"}
+                              </Button>
+                              {isEditMode && (
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      setShowWaveform(!showWaveform)
+                                    }
+                                    className="flex items-center gap-2 cursor-pointer"
+                                    disabled={!draftTranscript}
+                                    title="Show waveform editor"
+                                  >
+                                    <Activity className="h-4 w-4" />
+                                    Waveform
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={copyDraftToClipboard}
+                                    className="flex items-center gap-2 cursor-pointer"
+                                    disabled={!draftTranscript}
+                                    title="Copy draft transcript to clipboard"
+                                  >
+                                    <Copy className="h-4 w-4" />
+                                    Copy
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={downloadDraft}
+                                    className="flex items-center gap-2 cursor-pointer"
+                                    disabled={!draftTranscript}
+                                    title="Download draft transcript as JSON"
+                                  >
+                                    <Download className="h-4 w-4" />
+                                    Download
+                                  </Button>
+                                  {hasDraftChanges && (
+                                    <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">
+                                      Unsaved changes
+                                    </span>
+                                  )}
+                                </>
+                              )}
+                            </>
+                          )}
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setTooltipsEnabled(!tooltipsEnabled)}
+                            className="flex items-center gap-2 cursor-pointer"
+                          >
+                            {tooltipsEnabled ? (
+                              <>
+                                <Eye className="h-4 w-4" />
+                                Tooltips
+                              </>
+                            ) : (
+                              <>
+                                <EyeOff className="h-4 w-4" />
+                                Tooltips
+                              </>
+                            )}
+                          </Button>
+
+                          {!showWaveform && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                if (rightPanelRef.current) {
+                                  if (rightPanelRef.current.isCollapsed()) {
+                                    rightPanelRef.current.expand();
+                                  } else {
+                                    rightPanelRef.current.collapse();
+                                  }
+                                }
+                              }}
+                              className="flex items-center gap-2 cursor-pointer"
+                              title={
+                                isRightPanelCollapsed
+                                  ? "Expand stats panel"
+                                  : "Collapse stats panel"
+                              }
+                            >
+                              {isRightPanelCollapsed ? (
+                                <>
+                                  <ChevronLeft className="h-4 w-4" />
+                                  Stats
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronRight className="h-4 w-4" />
+                                  Stats
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
                       <PersonAudioSelector
                         people={people}
                         filteredAudio={filteredAudio}
@@ -444,202 +586,67 @@ export default function Transcript() {
                         selectedAudio={selectedAudio}
                         onPersonSelect={setSelectedPerson}
                         onAudioSelect={setSelectedAudio}
-                        size="default"
+                        size="large"
                       />
+                    )}
 
-                      <div className="flex items-center gap-2">
-                        {isAdmin && (
-                          <>
-                            <Button
-                              variant={isEditMode ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => setIsEditMode(!isEditMode)}
-                              className="flex items-center gap-2 cursor-pointer"
-                              title="Toggle edit mode (Admin only)"
-                            >
-                              <Edit2 className="h-4 w-4" />
-                              {isEditMode ? "Exit Edit" : "Edit Times"}
-                            </Button>
-                            {isEditMode && (
-                              <>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setShowWaveform(!showWaveform)}
-                                  className="flex items-center gap-2 cursor-pointer"
-                                  disabled={!draftTranscript}
-                                  title="Show waveform editor"
-                                >
-                                  <Activity className="h-4 w-4" />
-                                  Waveform
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={copyDraftToClipboard}
-                                  className="flex items-center gap-2 cursor-pointer"
-                                  disabled={!draftTranscript}
-                                  title="Copy draft transcript to clipboard"
-                                >
-                                  <Copy className="h-4 w-4" />
-                                  Copy
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={downloadDraft}
-                                  className="flex items-center gap-2 cursor-pointer"
-                                  disabled={!draftTranscript}
-                                  title="Download draft transcript as JSON"
-                                >
-                                  <Download className="h-4 w-4" />
-                                  Download
-                                </Button>
-                                {hasDraftChanges && (
-                                  <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">
-                                    Unsaved changes
-                                  </span>
-                                )}
-                              </>
-                            )}
-                          </>
-                        )}
-
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setTooltipsEnabled(!tooltipsEnabled)}
-                          className="flex items-center gap-2 cursor-pointer"
-                        >
-                          {tooltipsEnabled ? (
-                            <>
-                              <Eye className="h-4 w-4" />
-                              Tooltips
-                            </>
-                          ) : (
-                            <>
-                              <EyeOff className="h-4 w-4" />
-                              Tooltips
-                            </>
-                          )}
-                        </Button>
-
-                        {!showWaveform && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              if (rightPanelRef.current) {
-                                if (rightPanelRef.current.isCollapsed()) {
-                                  rightPanelRef.current.expand();
-                                } else {
-                                  rightPanelRef.current.collapse();
-                                }
-                              }
-                            }}
-                            className="flex items-center gap-2 cursor-pointer"
-                            title={
-                              isRightPanelCollapsed
-                                ? "Expand stats panel"
-                                : "Collapse stats panel"
-                            }
-                          >
-                            {isRightPanelCollapsed ? (
-                              <>
-                                <ChevronLeft className="h-4 w-4" />
-                                Stats
-                              </>
-                            ) : (
-                              <>
-                                <ChevronRight className="h-4 w-4" />
-                                Stats
-                              </>
-                            )}
-                          </Button>
-                        )}
+                    {(isAudioLoading || (selectedAudio && !hasAudioLoaded)) && (
+                      <div className={cn("text-muted-foreground text-center")}>
+                        {isAudioLoading
+                          ? "Loading..."
+                          : "Selected audio file appears to be empty"}
                       </div>
-                    </div>
-                  ) : (
-                    <PersonAudioSelector
-                      people={people}
-                      filteredAudio={filteredAudio}
-                      selectedPerson={selectedPerson}
-                      selectedAudio={selectedAudio}
-                      onPersonSelect={setSelectedPerson}
-                      onAudioSelect={setSelectedAudio}
-                      size="large"
-                    />
-                  )}
+                    )}
+                  </div>
 
-                  {(isAudioLoading || (selectedAudio && !hasAudioLoaded)) && (
-                    <div className={cn("text-muted-foreground text-center")}>
-                      {isAudioLoading
-                        ? "Loading..."
-                        : "Selected audio file appears to be empty"}
-                    </div>
+                  {/* Only show these once audio is loaded */}
+                  {hasAudioLoaded && (
+                    <>
+                      <div>
+                        <AudioPlayer
+                          mp3url={mp3url}
+                          ref={audioRef}
+                          playbackSpeed={playbackSpeed}
+                          onPlaybackSpeedChange={setPlaybackSpeed}
+                        />
+                      </div>
+                    </>
                   )}
-                </div>
-
-                {/* Only show these once audio is loaded */}
-                {hasAudioLoaded && (
-                  <>
-                    <div>
-                      <AudioPlayer
-                        mp3url={mp3url}
-                        ref={audioRef}
-                        playbackSpeed={playbackSpeed}
-                        onPlaybackSpeedChange={setPlaybackSpeed}
-                      />
-                    </div>
-                  </>
-                )}
-                {/* Waveform Editor - Part of sticky header */}
-                {hasAudioLoaded && isEditMode && showWaveform && (
-                  <div className="border-t p-2">
-                    <WaveformEditor
-                      mp3url={mp3url}
+                </header>
+                <section>
+                  {/* Only show transcript viewer when audio is loaded */}
+                  {hasAudioLoaded && (
+                    <TranscriptViewerV1
                       annotatedTranscript={annotatedTranscript}
+                      activeWordIndex={activeWordIndex}
+                      handleWordClick={(start_time) => {
+                        // Always allow audio playback, even in edit mode
+                        audioRef.current.currentTime = start_time;
+                        audioRef.current.play();
+                      }}
+                      onAnnotationHover={handleAnnotationHover}
+                      onPronunciationHover={handlePronunciationHover}
+                      onPronunciation2Hover={handlePronunciation2Hover}
+                      issuesData={issuesData}
+                      onAnnotationUpdate={handleAnnotationUpdate}
+                      activeFilters={activeFilters}
+                      hoveredWordIndices={hoveredWordIndices}
+                      tooltipsEnabled={tooltipsEnabled}
+                      isEditMode={isEditMode}
                       draftTranscript={draftTranscript}
                       onDraftUpdate={updateDraftWord}
-                      onClose={() => setShowWaveform(false)}
-                      audioRef={audioRef}
                     />
-                  </div>
-                )}
-              </header>
-              <section>
-                {/* Only show transcript viewer when audio is loaded */}
-                {hasAudioLoaded && (
-                  <TranscriptViewerV1
-                    annotatedTranscript={annotatedTranscript}
-                    activeWordIndex={activeWordIndex}
-                    handleWordClick={(start_time) => {
-                      // Always allow audio playback, even in edit mode
-                      audioRef.current.currentTime = start_time;
-                      audioRef.current.play();
-                    }}
-                    onAnnotationHover={handleAnnotationHover}
-                    onPronunciationHover={handlePronunciationHover}
-                    onPronunciation2Hover={handlePronunciation2Hover}
-                    issuesData={issuesData}
-                    onAnnotationUpdate={handleAnnotationUpdate}
-                    activeFilters={activeFilters}
-                    hoveredWordIndices={hoveredWordIndices}
-                    tooltipsEnabled={tooltipsEnabled}
-                    isEditMode={isEditMode}
-                    draftTranscript={draftTranscript}
-                    onDraftUpdate={updateDraftWord}
+                  )}
+                </section>
+                <aside>
+                  <KeyboardShortcutsModal
+                    isOpen={isShortcutsModalOpen}
+                    onClose={() => setIsShortcutsModalOpen(false)}
                   />
-                )}
-              </section>
-              <aside>
-                <KeyboardShortcutsModal
-                  isOpen={isShortcutsModalOpen}
-                  onClose={() => setIsShortcutsModalOpen(false)}
-                />
-              </aside>
-            </div>
-          </ScrollArea>
+                </aside>
+              </div>
+            </ScrollArea>
+          </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
         {/* Only show right panel when audio is loaded and waveform is not shown */}
