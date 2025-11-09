@@ -471,7 +471,7 @@ export default function Transcript() {
               </div>
             )}
             {/* ScrollArea with header and transcript content */}
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 min-h-0">
               <div className="p-2 bg-background">
                 <header className="flex flex-col sticky top-0 z-10 bg-background">
                   <div
