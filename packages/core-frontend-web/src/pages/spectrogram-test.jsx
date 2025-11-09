@@ -1,19 +1,30 @@
 import { useWavesurfer } from "@wavesurfer/react";
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { Button } from "core-frontend-web/src/components/ui/button";
 import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram.esm.js";
 import TimelinePlugin from "wavesurfer.js/dist/plugins/timeline.esm.js";
 import ZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.esm.js";
 
+// Sample transcript JSON for testing
+const SAMPLE_TRANSCRIPT = [
+  { word: "Hello", start: 0.5 },
+  { word: "world", start: 1.0, end: 1.4 },
+  { word: "[Section 1]", start: 2.0 },
+  { word: "This", start: 2.5, end: 2.7 },
+  { word: "is", start: 2.8, end: 3.0 },
+  { word: "a", start: 3.1, end: 3.2 },
+  { word: "test", start: 3.3, end: 3.7 },
+  { word: "[Marker]", start: 4.0 },
+  { word: "Another", start: 4.5, end: 4.9 },
+  { word: "word", start: 5.0, end: 5.3 },
+];
+
 const WSTest = () => {
   const containerRef = useRef(null);
-  const regionsRef = useRef(null);
-
-  // Initialize the Regions plugin separately (following reference pattern)
   const regions = useMemo(() => RegionsPlugin.create(), []);
 
-  const { wavesurfer, isPlaying, isReady, currentTime } = useWavesurfer({
+  const { wavesurfer, isPlaying, isReady } = useWavesurfer({
     container: containerRef,
     height: 100,
     waveColor: "rgb(200, 0, 200)",
@@ -25,31 +36,8 @@ const WSTest = () => {
     ),
   });
 
-  // Store regions reference for use in effects
   useEffect(() => {
-    if (regions) {
-      regionsRef.current = regions;
-    }
-  }, [regions]);
-
-  const onPlayPause = useCallback(() => {
-    wavesurfer?.playPause();
-  }, [wavesurfer]);
-
-  // Helper function for random colors
-  const random = (min, max) => Math.random() * (max - min) + min;
-  const randomColor = () =>
-    `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 0.5)`;
-
-  useEffect(() => {
-    console.log("useEffect triggered:", { wavesurfer: !!wavesurfer, isReady });
-
-    if (!wavesurfer || !isReady) {
-      console.log("Wavesurfer not ready, skipping setup");
-      return;
-    }
-
-    console.log("Setting up plugins and regions...");
+    if (!wavesurfer || !isReady || !regions) return;
 
     wavesurfer.registerPlugin(
       SpectrogramPlugin.create({
@@ -61,144 +49,58 @@ const WSTest = () => {
       })
     );
 
-    // Get regions plugin instance (try both ref and from wavesurfer.plugins)
-    const getRegions = () => {
-      if (regionsRef.current) {
-        console.log("Found regions via ref");
-        return regionsRef.current;
-      }
-      // Fallback: find in wavesurfer plugins
-      const found = wavesurfer.plugins.find(
-        (p) => p.constructor.name === "Regions"
-      );
-      if (found) {
-        console.log("Found regions via wavesurfer.plugins");
-      } else {
-        console.log(
-          "Regions plugin not found. Available plugins:",
-          wavesurfer.plugins.map((p) => p.constructor.name)
-        );
-      }
-      return found;
+    regions.enableDragSelection({ color: "rgba(255, 0, 0, 0.2)" });
+
+    // Create regions from sample transcript
+    const createRegionsFromTranscript = () => {
+      if (!regions) return;
+
+      // Clear existing regions
+      regions.clearRegions();
+
+      // Create regions/markers for each word with a start time
+      SAMPLE_TRANSCRIPT.forEach((wordObj) => {
+        const start = wordObj.start;
+        if (start === undefined || start === null) return;
+
+        const word = wordObj.word || "";
+        const end = wordObj.end;
+
+        // If end time is present, create a region; otherwise create a marker
+        if (end !== undefined && end !== null) {
+          regions.addRegion({
+            start: start,
+            end: end,
+            content: word,
+            color: "rgba(0, 123, 255, 0.2)", // Blue for regions
+            drag: false,
+            resize: false,
+          });
+        } else {
+          regions.addRegion({
+            start: start,
+            content: word,
+            color: "rgba(255, 165, 0, 0.5)", // Orange for markers
+          });
+        }
+      });
     };
 
-    // Enable drag selection (following reference pattern)
-    const regionsInstance = getRegions();
-    if (regionsInstance) {
-      console.log("Enabling drag selection");
-      regionsInstance.enableDragSelection({
-        color: "rgba(255, 0, 0, 0.1)",
-      });
+    regions.on("region-clicked", (region, e) => {
+      e.stopPropagation();
+      region.play(true);
+    });
+
+    const duration = wavesurfer.getDuration();
+    if (duration) {
+      createRegionsFromTranscript();
     } else {
-      console.warn("Regions instance not available for enableDragSelection");
+      const timeoutId = setTimeout(() => {
+        createRegionsFromTranscript();
+      }, 500);
+      return () => clearTimeout(timeoutId);
     }
-
-    // Add regions when audio is decoded (following reference pattern)
-    const handleDecode = () => {
-      console.log("handleDecode called");
-      const regions = getRegions();
-      if (!regions) {
-        console.log("Regions plugin not available in handleDecode");
-        return;
-      }
-
-      const duration = wavesurfer.getDuration();
-      console.log("Decode/Ready event - duration:", duration);
-
-      if (!duration || duration === 0) {
-        console.log("No duration available yet");
-        return;
-      }
-
-      // Create some example regions
-      try {
-        console.log("Adding example regions...");
-        regions.addRegion({
-          start: duration * 0.1,
-          end: duration * 0.2,
-          content: "Resize me",
-          color: randomColor(),
-          drag: false,
-          resize: true,
-        });
-
-        regions.addRegion({
-          start: duration * 0.25,
-          end: duration * 0.3,
-          content: "Drag me",
-          color: randomColor(),
-          resize: false,
-        });
-
-        // Add a marker (zero-length region)
-        regions.addRegion({
-          start: duration * 0.5,
-          content: "Marker",
-          color: randomColor(),
-        });
-
-        console.log("Example regions added successfully");
-      } catch (error) {
-        console.error("Error adding regions:", error);
-      }
-    };
-
-    // Try multiple events - decode, ready, and loaded
-    console.log("Attaching event listeners...");
-    wavesurfer.on("decode", () => {
-      console.log("decode event fired");
-      handleDecode();
-    });
-    wavesurfer.on("ready", () => {
-      console.log("ready event fired");
-      handleDecode();
-    });
-    wavesurfer.on("loaded", () => {
-      console.log("loaded event fired");
-      handleDecode();
-    });
-
-    // Also try calling directly after a delay
-    const timeoutId = setTimeout(() => {
-      console.log("Timeout - trying to add regions directly");
-      const duration = wavesurfer.getDuration();
-      console.log("Duration in timeout:", duration);
-      if (duration && duration > 0) {
-        handleDecode();
-      } else {
-        console.log("Duration still not available after timeout");
-      }
-    }, 2000);
-
-    // Region event listeners (following reference pattern)
-    const regionsForEvents = getRegions();
-    if (regionsForEvents) {
-      regionsForEvents.on("region-updated", (region) => {
-        console.log("Updated region", region);
-      });
-
-      regionsForEvents.on("region-clicked", (region, e) => {
-        e.stopPropagation(); // prevent triggering a click on the waveform
-        region.play(true);
-        region.setOptions({ color: randomColor() });
-      });
-
-      regionsForEvents.on("region-in", (region) => {
-        console.log("region-in", region);
-      });
-
-      regionsForEvents.on("region-out", (region) => {
-        console.log("region-out", region);
-      });
-    }
-
-    return () => {
-      clearTimeout(timeoutId);
-      wavesurfer.un("decode", handleDecode);
-      wavesurfer.un("ready", handleDecode);
-      wavesurfer.un("loaded", handleDecode);
-    };
-  }, [wavesurfer, isReady]);
+  }, [wavesurfer, isReady, regions]);
 
   // Shift+scroll to pan left/right
   useEffect(() => {
@@ -239,7 +141,10 @@ const WSTest = () => {
   return (
     <>
       <div ref={containerRef} />
-      <Button onClick={onPlayPause} className="cursor-pointer">
+      <Button
+        onClick={() => wavesurfer?.playPause()}
+        className="cursor-pointer"
+      >
         {isPlaying ? "Pause" : "Play"}
       </Button>
       <div className="text-xs text-muted-foreground mt-2 space-y-1">
