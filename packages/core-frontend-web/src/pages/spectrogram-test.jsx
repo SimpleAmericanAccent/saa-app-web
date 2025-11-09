@@ -35,12 +35,51 @@ const WSTest = () => {
     }
   }, [wavesurfer, isReady]);
 
+  // Shift+scroll to pan left/right
+  useEffect(() => {
+    if (!wavesurfer || !isReady) return;
+
+    const scrollContainer = wavesurfer.getWrapper()?.parentElement;
+    if (!scrollContainer) return;
+
+    const handleWheel = (e) => {
+      if (!e.shiftKey) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Use deltaX (horizontal) or deltaY (vertical) for panning
+      const delta = (e.deltaX || e.deltaY) * 5;
+      scrollContainer.scrollLeft = Math.max(
+        0,
+        Math.min(
+          scrollContainer.scrollWidth - scrollContainer.clientWidth,
+          scrollContainer.scrollLeft + delta
+        )
+      );
+    };
+
+    scrollContainer.addEventListener("wheel", handleWheel, {
+      passive: false,
+      capture: true,
+    });
+
+    return () => {
+      scrollContainer.removeEventListener("wheel", handleWheel, {
+        capture: true,
+      });
+    };
+  }, [wavesurfer, isReady]);
+
   return (
     <>
       <div ref={containerRef} />
       <Button onClick={onPlayPause} className="cursor-pointer">
         {isPlaying ? "Pause" : "Play"}
       </Button>
+      <div className="text-xs text-muted-foreground mt-2">
+        Shift + Scroll to pan left/right
+      </div>
     </>
   );
 };
