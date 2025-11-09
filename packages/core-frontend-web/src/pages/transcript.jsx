@@ -465,6 +465,7 @@ export default function Transcript() {
                 <div className="p-2">
                   <TextToTranscriptConverter
                     onClose={() => setShowTextConverter(false)}
+                    mp3url={mp3url}
                   />
                 </div>
               </div>

@@ -47,6 +47,7 @@
     "depcruise:html": "dependency-cruiser --config .dependency-cruiser.cjs --output-type html packages apps > dependency-report.html"
   },
   "dependencies": {
+    "@huggingface/transformers": "^3.7.6",
     "@mdx-js/react": "^3.1.0",
     "@radix-ui/react-checkbox": "^1.1.4",
     "@radix-ui/react-collapsible": "^1.1.3",
