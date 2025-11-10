@@ -121,6 +121,25 @@ const TranscriptViewerV1 = ({
     });
   };
 
+  // Helper function to check if annotations include misc issues
+  const hasMiscAnnotation = (issueIds) => {
+    if (!issueIds || !issuesData.length) return false;
+
+    return issueIds.some((id) => {
+      // Find the category/target that contains this issue
+      const category = issuesData.find((cat) =>
+        cat.issues.some((issue) => issue.id === id)
+      );
+
+      // Check if the category/target name contains "misc"
+      return (
+        category &&
+        typeof category.name === "string" &&
+        category.name.toLowerCase().includes("misc")
+      );
+    });
+  };
+
   const shouldHighlightWord = (wordObj) => {
     if (hoveredWordIndices.includes(wordObj.wordIndex)) {
       return "hover2"; // Return a string to indicate hover state
@@ -435,6 +454,7 @@ const TranscriptViewerV1 = ({
             const hasAnnotations = annotations.length > 0;
             const isActive = activeWordIndex === wordObj.wordIndex;
             const highlightState = shouldHighlightWord(wordObj);
+            const hasMisc = hasMiscAnnotation(annotations);
             const draftWord = getDraftWord(wordObj.wordIndex);
             const displayWord = draftWord?.word ?? wordObj.word;
             const displayStart =
@@ -445,11 +465,16 @@ const TranscriptViewerV1 = ({
                 className={cn(
                   "cursor-pointer rounded-[5px]",
                   {
+                    // Purple highlight for misc issues
+                    "text-foreground bg-[#aa00aa80]":
+                      highlightState === true && hasAnnotations && hasMisc,
+                    // Yellow highlight for non-misc issues
                     "text-[hsl(var(--annotation-foreground))] bg-[hsl(var(--annotation))]":
-                      highlightState === true && hasAnnotations && !isActive,
+                      highlightState === true && hasAnnotations && !hasMisc,
                     "text-[hsl(var(--hover2-foreground))] bg-[hsl(var(--hover2))]":
-                      highlightState === "hover2" && !isActive,
-                    "!bg-[#aa00aa80]": isActive,
+                      highlightState === "hover2",
+                    "text-blue-700 dark:text-sky-500 outline outline-2 outline-blue-700 dark:outline-sky-500":
+                      isActive,
                     "border-2 border-orange-500":
                       isEditMode &&
                       draftWord &&
