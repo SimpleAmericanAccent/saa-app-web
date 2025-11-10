@@ -18,19 +18,24 @@ export function createServer({
 }) {
   const app = express();
 
-  // Rate limiting middleware - applies to all routes
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 900, // limit each IP to 100 requests per windowMs
-    message: "Too many requests from this IP, please try again later.",
-    standardHeaders: true,
-    legacyHeaders: false,
-  });
-
-  app.use(limiter);
   app.use(express.json());
   app.use(auth(auth0Config));
   app.use(setAdminFlag);
+
+  // Rate limiting middleware - applies to all routes except admin users
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 900, // limit each IP to 900 requests per windowMs
+    message: "Too many requests from this IP, please try again later.",
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => {
+      // Skip rate limiting for admin users
+      return req.isAdmin === true;
+    },
+  });
+
+  app.use(limiter);
 
   // Apply JIT user provisioning middleware globally
   app.use(authMiddleware());
