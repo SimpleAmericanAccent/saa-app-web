@@ -6,6 +6,12 @@ A full-stack web application for American accent training and feedback.
 - Independently developed
 - React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
 
+Important context:
+- I made this repo public to help me get a job as a full-stack engineer.
+- This app was originally private & developed simply to solve a problem for my users (my accent coaching clients). My focus was on shipping and iterating an MVP with real users, not on maximizing code quality or even expecting anyone else to ever see my code. Although I still cared to a meaningful extent about code quality and skill development, for my own sake... my priority was merely getting the app to work well enough to be useful for my clients.
+- More recently, I saw the opportunity for a full-stack engineering career. I made the repo public and am in the process of professionalizing the code. Refactoring, adding testing, documenting, and so on.
+- Some parts of the code were meticulously hand-coded. Other parts were AI-assisted or vibe coded. I need to do a better job of documenting what is what.
+
 <details><summary>Demo</summary>
   
 - **[Demo Video (5 minutes)](https://youtu.be/1I5FPCRFm7o)**
@@ -104,12 +110,16 @@ packages/
 
 ### Contributing
 
+This repo is not accepting public contributions or issues at this time.
+
 This is a production application serving paid accent coaching clients, that I developed independently.
 
-Temporarily open-sourced to show my full-stack development abilities. For questions or feedback, please contact me.
+Temporarily made this repo public for portfolio/demonstration purposes only, as I'm seeking a full-stack engineering job.
+
+For questions or feedback, please contact me privately.
 
 ### License
 
-**Proprietary** – Temporarily open-sourced for portfolio/demonstration purposes only.
+**Proprietary** – Temporarily made this repo public for portfolio/demonstration purposes only, while seeking a full-stack engineering job.
 
 </details>
