@@ -384,8 +384,8 @@ export default function Transcript() {
     return draft.map((word) => {
       const cleaned = {
         word: word.word,
-        start: word.start,
       };
+      if (word.start && word.start !== 0) cleaned.start = word.start;
       if (word.lineBreakAfter) cleaned.lineBreakAfter = true;
       if (word.newParagraphAfter) cleaned.newParagraphAfter = true;
       return cleaned;

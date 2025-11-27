@@ -681,7 +681,7 @@ Before each response, please double-check each included issue, target word list,
                             <a
                               href={`/${target.name.toLowerCase()}`}
                               target="_blank"
-                              rel="noopener noreferrer"
+                              rel="noopener"
                               className="text-muted-foreground bg-foreground text-xs px-1 py-1 rounded"
                               title={`View ${target.name} target page`}
                               onClick={(e) => e.stopPropagation()}
@@ -746,7 +746,7 @@ Before each response, please double-check each included issue, target word list,
                                   <a
                                     href={`/quiz/${target.name.toLowerCase()}/${issue.shortName.toLowerCase()}`}
                                     target="_blank"
-                                    rel="noopener noreferrer"
+                                    rel="noopener"
                                     className="text-muted-foreground bg-foreground text-xs px-1 py-1 rounded"
                                     title={`Take quiz for ${issue.name}`}
                                   >
@@ -760,7 +760,7 @@ Before each response, please double-check each included issue, target word list,
                                       key={idx}
                                       href={resource}
                                       target="_blank"
-                                      rel="noopener noreferrer"
+                                      rel="noopener"
                                       className="text-muted-foreground hover:text-foreground"
                                       title={resource}
                                     >
@@ -852,7 +852,7 @@ Before each response, please double-check each included issue, target word list,
                                             word
                                           )}/english/us`}
                                           target="_blank"
-                                          rel="noopener noreferrer"
+                                          rel="noopener"
                                           className="text-muted-foreground hover:text-foreground text-xs font-medium px-1 py-1 rounded hover:bg-accent/50"
                                           title={`Listen to "${word}" pronunciation examples on YouGlish`}
                                         >
@@ -863,7 +863,7 @@ Before each response, please double-check each included issue, target word list,
                                             word
                                           )}`}
                                           target="_blank"
-                                          rel="noopener noreferrer"
+                                          rel="noopener"
                                           className="hover:text-foreground text-xs px-1 py-1 rounded hover:bg-accent/50"
                                           title={`Practice pronunciation of "${word}" in Imitate`}
                                           aria-label={`Practice pronunciation of "${word}" in Imitate`}

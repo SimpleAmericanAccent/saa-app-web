@@ -2886,7 +2886,7 @@ const ClientAcquisitionDashboard = () => {
                         <a
                           href="https://plausible.io/settings#api-keys"
                           target="_blank"
-                          rel="noopener noreferrer"
+                          rel="noopener"
                           className="underline"
                         >
                           Plausible Settings
@@ -2923,7 +2923,7 @@ const ClientAcquisitionDashboard = () => {
                       <a
                         href="https://developers.facebook.com/tools/explorer/2213645562127704/?method=GET&path=17841409362793429%2Finsights%3Fpretty%3D1%26since%3Dtoday%26metric%3Dviews%26metric_type%3Dtotal_value%26period%3Dday&version=v23.0"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
                         className="text-blue-600 hover:text-blue-800 underline font-medium"
                       >
                         🔗 Get New Token from Facebook Graph API Explorer
@@ -2933,7 +2933,7 @@ const ClientAcquisitionDashboard = () => {
                       <a
                         href="https://dashboard.render.com/web/srv-d0a2qdh5pdvs73bkhcpg/env"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
                         className="text-blue-600 hover:text-blue-800 underline font-medium"
                       >
                         🔗 If prod, update the Instagram access token in the

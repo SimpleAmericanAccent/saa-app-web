@@ -528,7 +528,7 @@ export function SidebarLeft() {
                         : "https://simpleamericanaccent.com/mgr?utm_source=saa_web_app&utm_medium=web_app&utm_campaign=sidebar"
                     }
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="flex items-center gap-2"
                   >
                     <Info className="h-4 w-4" />
@@ -557,7 +557,7 @@ export function SidebarLeft() {
                   <a
                     href="https://wa.me/13194576479"
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="flex items-center gap-2"
                   >
                     <MessageSquare className="h-4 w-4" />

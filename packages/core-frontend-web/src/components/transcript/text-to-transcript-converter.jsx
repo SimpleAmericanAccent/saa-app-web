@@ -501,7 +501,7 @@ const TextToTranscriptConverter = ({ onClose, mp3url: initialMp3Url }) => {
                       <a
                         href="https://huggingface.co/Xenova/whisper-tiny.en"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
                         className="text-blue-600 hover:underline flex items-center gap-1"
                       >
                         <ExternalLink className="h-3 w-3" />

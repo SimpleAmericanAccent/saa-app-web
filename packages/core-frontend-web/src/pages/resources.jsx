@@ -264,7 +264,7 @@ export default function Resources() {
                   key={resource.id}
                   href={resource.url}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   title={resource.description}
                   className="group block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] cursor-pointer relative"
                 >

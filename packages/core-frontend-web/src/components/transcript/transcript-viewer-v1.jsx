@@ -989,7 +989,7 @@ function _RenderExternalPronunciationLinks({ cleanWord }) {
           <a
             href={link.href}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener"
             onClick={(e) => e.stopPropagation()}
             className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
             title={link.title}

@@ -168,7 +168,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
                   <a
                     href="https://en.wikipedia.org/wiki/CMU_Pronouncing_Dictionary"
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="text-blue-600 hover:underline"
                   >
                     CMU Dictionary
@@ -179,7 +179,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
                   <a
                     href="https://en.wikipedia.org/wiki/Lexical_set"
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="text-blue-600 hover:underline"
                   >
                     Lexical Sets
@@ -190,7 +190,7 @@ const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
                   <a
                     href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet"
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="text-blue-600 hover:underline"
                   >
                     IPA

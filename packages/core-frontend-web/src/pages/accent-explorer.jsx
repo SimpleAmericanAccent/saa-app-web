@@ -440,7 +440,7 @@ export default function AccentExplorer() {
       const chatgptUrl = `https://chat.openai.com/?q=${encodedPrompt}`;
 
       // Open in new tab
-      window.open(chatgptUrl, "_blank", "noopener,noreferrer");
+      window.open(chatgptUrl, "_blank", "noopener");
     } catch (error) {
       console.error("Error generating practice phrases:", error);
     } finally {
@@ -967,7 +967,7 @@ export default function AccentExplorer() {
                                                           cleanWord
                                                         )}/english/us`}
                                                         target="_blank"
-                                                        rel="noopener noreferrer"
+                                                        rel="noopener"
                                                         onClick={(e) =>
                                                           e.stopPropagation()
                                                         }
@@ -982,7 +982,7 @@ export default function AccentExplorer() {
                                                           cleanWord
                                                         )}`}
                                                         target="_blank"
-                                                        rel="noopener noreferrer"
+                                                        rel="noopener"
                                                         onClick={(e) =>
                                                           e.stopPropagation()
                                                         }
@@ -997,7 +997,7 @@ export default function AccentExplorer() {
                                                           cleanWord
                                                         )}`}
                                                         target="_blank"
-                                                        rel="noopener noreferrer"
+                                                        rel="noopener"
                                                         onClick={(e) =>
                                                           e.stopPropagation()
                                                         }
@@ -1319,7 +1319,7 @@ export default function AccentExplorer() {
                                                               cleanWord
                                                             )}/english/us`}
                                                             target="_blank"
-                                                            rel="noopener noreferrer"
+                                                            rel="noopener"
                                                             onClick={(e) =>
                                                               e.stopPropagation()
                                                             }
@@ -1334,7 +1334,7 @@ export default function AccentExplorer() {
                                                               cleanWord
                                                             )}`}
                                                             target="_blank"
-                                                            rel="noopener noreferrer"
+                                                            rel="noopener"
                                                             onClick={(e) =>
                                                               e.stopPropagation()
                                                             }
@@ -1349,7 +1349,7 @@ export default function AccentExplorer() {
                                                               cleanWord
                                                             )}`}
                                                             target="_blank"
-                                                            rel="noopener noreferrer"
+                                                            rel="noopener"
                                                             onClick={(e) =>
                                                               e.stopPropagation()
                                                             }
@@ -1440,7 +1440,7 @@ export default function AccentExplorer() {
                                     key={index}
                                     href={quiz.url}
                                     target="_blank"
-                                    rel="noopener noreferrer"
+                                    rel="noopener"
                                     className="block p-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
                                   >
                                     <div className="flex items-center gap-1.5">
@@ -1481,7 +1481,7 @@ export default function AccentExplorer() {
                                           key={index}
                                           href={resource.url}
                                           target="_blank"
-                                          rel="noopener noreferrer"
+                                          rel="noopener"
                                           className="block p-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
                                         >
                                           <div className="flex items-center gap-1.5">
@@ -1519,7 +1519,7 @@ export default function AccentExplorer() {
                                   key={index}
                                   href={resource}
                                   target="_blank"
-                                  rel="noopener noreferrer"
+                                  rel="noopener"
                                   className="block p-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
                                 >
                                   <div className="flex flex-col items-center gap-1">

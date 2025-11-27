@@ -88,7 +88,79 @@ const WSTest = () => {
 
     regions.on("region-clicked", (region, e) => {
       e.stopPropagation();
-      region.play(true);
+
+      const startTime = region.start;
+      let endTime = region.end;
+
+      // If it's a marker (end equals start), find the next start time
+      if (!endTime || endTime === startTime) {
+        const allRegions = regions.getRegions();
+        let nextStartTime = null;
+
+        for (const r of allRegions) {
+          const rStart = r.start;
+          if (rStart > startTime) {
+            if (!nextStartTime || rStart < nextStartTime) {
+              nextStartTime = rStart;
+            }
+          }
+        }
+
+        if (nextStartTime) {
+          endTime = nextStartTime;
+        }
+      }
+
+      const duration = wavesurfer.getDuration();
+      if (!duration) return;
+
+      console.log(
+        `Playing from ${startTime.toFixed(3)} to ${endTime.toFixed(3)}`
+      );
+
+      wavesurfer.seekTo(startTime / duration);
+      wavesurfer.play();
+
+      // Stop at end time if we have one - setTimeout with final time check
+      if (endTime && endTime > startTime) {
+        const playDuration = (endTime - startTime) * 1000; // Convert to milliseconds
+        setTimeout(() => {
+          const currentTime = wavesurfer.getCurrentTime();
+          console.log(
+            `Timeout fired: current=${currentTime.toFixed(
+              3
+            )}, target=${endTime.toFixed(3)}, diff=${(
+              currentTime - endTime
+            ).toFixed(3)}`
+          );
+
+          // If we haven't reached the end time yet, use requestAnimationFrame for precise final check
+          if (currentTime < endTime) {
+            const finalCheck = () => {
+              const now = wavesurfer.getCurrentTime();
+              if (now >= endTime) {
+                console.log(
+                  `Stopping at ${now.toFixed(3)} (target was ${endTime.toFixed(
+                    3
+                  )})`
+                );
+                wavesurfer.pause();
+              } else {
+                requestAnimationFrame(finalCheck);
+              }
+            };
+            requestAnimationFrame(finalCheck);
+          } else {
+            // Already past end time, stop immediately
+            console.log(
+              `Stopping at ${currentTime.toFixed(
+                3
+              )} (target was ${endTime.toFixed(3)})`
+            );
+            wavesurfer.pause();
+          }
+        }, playDuration);
+      }
     });
 
     const duration = wavesurfer.getDuration();

@@ -34,7 +34,7 @@ export default function ReplaysHub() {
         <a
           href="https://simpleamericanaccent.com/mgcalendar"
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener"
           className="inline-flex items-center gap-2 text-base sm:text-lg font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
         >
           📅 Upcoming Call Calendar

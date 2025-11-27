@@ -18,7 +18,7 @@ export default function JoinThankYou() {
         </p>
 
         <Button asChild className="bg-green-600 hover:bg-green-700 !text-white">
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+          <a href={whatsappUrl} target="_blank" rel="noopener">
             Message Me on WhatsApp
           </a>
         </Button>
@@ -44,7 +44,7 @@ export default function JoinThankYou() {
           <a
             href="https://saa-assets.s3.us-east-2.amazonaws.com/lead_magnets/top10.pdf"
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener"
             className="inline-block mt-2 text-blue-600 hover:text-blue-800 underline"
           >
             Direct link to the Top 10 Guide →

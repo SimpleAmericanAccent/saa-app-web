@@ -200,7 +200,7 @@ export default function TranscriptCTA({
                   "Hi Will! I have questions about my transcript/accent analysis and would love clarification. [Insert your question(s) here]"
                 )}`}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener"
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 Questions About My Analysis
@@ -245,7 +245,7 @@ export default function TranscriptCTA({
                       <a
                         href={offer.externalLink}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
                       >
                         Learn More
                       </a>
@@ -283,7 +283,7 @@ export default function TranscriptCTA({
                       <a
                         href={offer.externalLink}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
                       >
                         Learn More
                       </a>
@@ -358,11 +358,7 @@ export default function TranscriptCTA({
                     size="sm"
                     className="w-full bg-green-600 hover:bg-green-700 !text-white text-xs"
                   >
-                    <a
-                      href={getSelectedLink()}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <a href={getSelectedLink()} target="_blank" rel="noopener">
                       {getSelectedButtonText()}
                     </a>
                   </Button>
@@ -393,7 +389,7 @@ export default function TranscriptCTA({
                     "Hi Will! I'm in the Transcript Viewer and am considering buying more analysis/support, but have some questions about the offers. [Insert your question(s) here]"
                   )}`}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener"
                 >
                   <MessageCircle className="w-3 h-3 mr-1" />
                   Ask Questions

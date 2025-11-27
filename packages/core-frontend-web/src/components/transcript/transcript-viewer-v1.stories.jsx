@@ -379,7 +379,7 @@ export const TooltipContentOnly2 = {
                               mockCurrentWord
                             )}/english/us`}
                             target="_blank"
-                            rel="noopener noreferrer"
+                            rel="noopener"
                             onClick={(e) => e.stopPropagation()}
                             className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
                             title="Hear real-world pronunciations on YouGlish"
@@ -392,7 +392,7 @@ export const TooltipContentOnly2 = {
                               mockCurrentWord
                             )}`}
                             target="_blank"
-                            rel="noopener noreferrer"
+                            rel="noopener"
                             onClick={(e) => e.stopPropagation()}
                             className="text-green-600 hover:text-green-800 underline cursor-pointer"
                             title="Hear movie/TV pronunciations on PlayPhrase"
@@ -405,7 +405,7 @@ export const TooltipContentOnly2 = {
                               mockCurrentWord
                             )}`}
                             target="_blank"
-                            rel="noopener noreferrer"
+                            rel="noopener"
                             onClick={(e) => e.stopPropagation()}
                             className="text-purple-600 hover:text-purple-800 underline cursor-pointer"
                             title="Hear movie/TV pronunciations on Yarn"

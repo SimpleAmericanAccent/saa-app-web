@@ -78,11 +78,7 @@ export default function Join() {
             asChild
             className="bg-green-600 hover:bg-green-700 !text-white"
           >
-            <a
-              href={stripePaymentLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={stripePaymentLink} target="_blank" rel="noopener">
               Checkout Securely
             </a>
           </Button>
@@ -98,7 +94,7 @@ export default function Join() {
             Have questions before joining?
           </p>
           <Button asChild variant="ghost" size="sm" className="text-xs">
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+            <a href={whatsappUrl} target="_blank" rel="noopener">
               <MessageCircle className="w-3 h-3" />
               Ask on WhatsApp
             </a>
