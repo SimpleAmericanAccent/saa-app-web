@@ -9,6 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "core-frontend-web": "workspace:*"
+    "frontend": "workspace:*"
   }
 }

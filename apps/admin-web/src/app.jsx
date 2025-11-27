@@ -1,4 +1,4 @@
-import AppBase from "core-frontend-web/src/app.base";
+import AppBase from "frontend/src/app.base";
 import AdminLayout from "./components/admin-layout";
 import { Route } from "react-router-dom";
 

@@ -1,10 +1,10 @@
 import path from "path";
 import url from "url";
-import { bootApp } from "core-backend-node/entry.js";
-import router from "core-backend-node/routes/routes.js";
+import { bootApp } from "backend/entry.js";
+import router from "backend/routes/routes.js";
 import express from "express";
 import internalStatsRouter from "./routes/internal-stats-router.js";
-import { createAirtableClient } from "core-backend-node/services/airtable.js";
+import { createAirtableClient } from "backend/services/airtable.js";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 

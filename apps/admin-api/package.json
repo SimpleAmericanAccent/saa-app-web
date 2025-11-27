@@ -5,12 +5,12 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "node --env-file=../../packages/core-backend-node/.env --env-file=.env --watch server.js",
+    "dev": "node --env-file=../../packages/backend/.env --env-file=.env --watch server.js",
     "start": "node server.js"
   },
   "author": "Will Rosenberg",
   "license": "UNLICENSED",
   "dependencies": {
-    "core-backend-node": "workspace:*"
+    "backend": "workspace:*"
   }
 }

@@ -1,7 +1,7 @@
 import { Routes } from "react-router-dom";
-import coreRoutes from "core-frontend-web/src/routes/core-routes.jsx";
-import { SidebarLeft } from "core-frontend-web/src/components/sidebar-left";
-import { MobileNav } from "core-frontend-web/src/components/mobile-nav";
+import coreRoutes from "frontend/src/routes/core-routes.jsx";
+import { SidebarLeft } from "frontend/src/components/sidebar-left";
+import { MobileNav } from "frontend/src/components/mobile-nav";
 
 export default function UserAppView() {
   return (

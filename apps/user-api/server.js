@@ -1,7 +1,7 @@
 import path from "path";
 import url from "url";
-import { bootApp } from "core-backend-node/entry.js";
-import router from "core-backend-node/routes/routes.js";
+import { bootApp } from "backend/entry.js";
+import router from "backend/routes/routes.js";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 

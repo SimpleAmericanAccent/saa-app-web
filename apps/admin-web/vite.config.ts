@@ -1,8 +1,5 @@
 import { defineConfig } from "vite";
-import {
-  getBaseConfig,
-  makeLogOnce,
-} from "core-frontend-web/config/vite/vite.base";
+import { getBaseConfig, makeLogOnce } from "frontend/config/vite/vite.base";
 
 export default defineConfig({
   ...getBaseConfig(),

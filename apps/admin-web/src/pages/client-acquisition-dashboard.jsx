@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import { sankey, sankeyLinkHorizontal, sankeyCenter } from "d3-sankey";
-import { ScrollArea } from "core-frontend-web/src/components/ui/scroll-area";
-import { Button } from "core-frontend-web/src/components/ui/button";
-import { Input } from "core-frontend-web/src/components/ui/input";
-import { DateRangePicker } from "core-frontend-web/src/components/date-range-picker";
-import { Skeleton } from "core-frontend-web/src/components/ui/skeleton";
+import { ScrollArea } from "frontend/src/components/ui/scroll-area";
+import { Button } from "frontend/src/components/ui/button";
+import { Input } from "frontend/src/components/ui/input";
+import { DateRangePicker } from "frontend/src/components/date-range-picker";
+import { Skeleton } from "frontend/src/components/ui/skeleton";
 import { RefreshCw } from "lucide-react";
 
 // Default funnel data structure (used as initial state) - null until real data loads

@@ -9,13 +9,13 @@ const rootDir = path.resolve(__dirname, "..");
 // Define all .env.example locations
 const envFiles = [
   {
-    example: path.join(rootDir, "packages/core-frontend-web/.env.example"),
-    target: path.join(rootDir, "packages/core-frontend-web/.env"),
+    example: path.join(rootDir, "packages/frontend/.env.example"),
+    target: path.join(rootDir, "packages/frontend/.env"),
     label: "Shared frontend",
   },
   {
-    example: path.join(rootDir, "packages/core-backend-node/.env.example"),
-    target: path.join(rootDir, "packages/core-backend-node/.env"),
+    example: path.join(rootDir, "packages/backend/.env.example"),
+    target: path.join(rootDir, "packages/backend/.env"),
     label: "Shared backend",
   },
   {

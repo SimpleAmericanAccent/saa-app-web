@@ -6,65 +6,44 @@ module.exports = {
   resolve: {
     alias: {
       // Standard @ aliases
-      "@": path.resolve(__dirname, "packages/core-frontend-web/src"),
+      "@": path.resolve(__dirname, "packages/frontend/src"),
       "@/components": path.resolve(
         __dirname,
-        "packages/core-frontend-web/src/components"
+        "packages/frontend/src/components"
       ),
-      "@/lib": path.resolve(__dirname, "packages/core-frontend-web/src/lib"),
-      "@/hooks": path.resolve(
+      "@/lib": path.resolve(__dirname, "packages/frontend/src/lib"),
+      "@/hooks": path.resolve(__dirname, "packages/frontend/src/hooks"),
+      "@/utils": path.resolve(__dirname, "packages/frontend/src/utils"),
+      "@/stores": path.resolve(__dirname, "packages/frontend/src/stores"),
+      "@/data": path.resolve(__dirname, "packages/frontend/src/data"),
+      "@/pages": path.resolve(__dirname, "packages/frontend/src/pages"),
+      // Handle the frontend prefix pattern
+      frontend: path.resolve(__dirname, "packages/frontend"),
+      "frontend/src": path.resolve(__dirname, "packages/frontend/src"),
+      "frontend/src/components": path.resolve(
         __dirname,
-        "packages/core-frontend-web/src/hooks"
+        "packages/frontend/src/components"
       ),
-      "@/utils": path.resolve(
+      "frontend/src/lib": path.resolve(__dirname, "packages/frontend/src/lib"),
+      "frontend/src/hooks": path.resolve(
         __dirname,
-        "packages/core-frontend-web/src/utils"
+        "packages/frontend/src/hooks"
       ),
-      "@/stores": path.resolve(
+      "frontend/src/utils": path.resolve(
         __dirname,
-        "packages/core-frontend-web/src/stores"
+        "packages/frontend/src/utils"
       ),
-      "@/data": path.resolve(__dirname, "packages/core-frontend-web/src/data"),
-      "@/pages": path.resolve(
+      "frontend/src/stores": path.resolve(
         __dirname,
-        "packages/core-frontend-web/src/pages"
+        "packages/frontend/src/stores"
       ),
-      // Handle the core-frontend-web prefix pattern
-      "core-frontend-web": path.resolve(
+      "frontend/src/data": path.resolve(
         __dirname,
-        "packages/core-frontend-web"
+        "packages/frontend/src/data"
       ),
-      "core-frontend-web/src": path.resolve(
+      "frontend/src/pages": path.resolve(
         __dirname,
-        "packages/core-frontend-web/src"
-      ),
-      "core-frontend-web/src/components": path.resolve(
-        __dirname,
-        "packages/core-frontend-web/src/components"
-      ),
-      "core-frontend-web/src/lib": path.resolve(
-        __dirname,
-        "packages/core-frontend-web/src/lib"
-      ),
-      "core-frontend-web/src/hooks": path.resolve(
-        __dirname,
-        "packages/core-frontend-web/src/hooks"
-      ),
-      "core-frontend-web/src/utils": path.resolve(
-        __dirname,
-        "packages/core-frontend-web/src/utils"
-      ),
-      "core-frontend-web/src/stores": path.resolve(
-        __dirname,
-        "packages/core-frontend-web/src/stores"
-      ),
-      "core-frontend-web/src/data": path.resolve(
-        __dirname,
-        "packages/core-frontend-web/src/data"
-      ),
-      "core-frontend-web/src/pages": path.resolve(
-        __dirname,
-        "packages/core-frontend-web/src/pages"
+        "packages/frontend/src/pages"
       ),
     },
     extensions: [".js", ".jsx", ".ts", ".tsx", ".d.ts", ".json"],

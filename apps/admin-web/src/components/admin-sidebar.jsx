@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "core-frontend-web/src/lib/utils"; // or your preferred class merging util
+import { cn } from "frontend/src/lib/utils"; // or your preferred class merging util
 
 export default function AdminSidebar() {
   const location = useLocation();

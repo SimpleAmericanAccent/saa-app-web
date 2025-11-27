@@ -1,4 +1,4 @@
-@import "../../../packages/core-frontend-web/src/index.base.css";
+@import "../../../packages/frontend/src/index.base.css";
 
 @layer components {
   /* insert app-specific styles here */

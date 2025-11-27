@@ -47,8 +47,8 @@ apps/
  ├── admin-api              → Admin API + analytics routes
  └── python-experiments     → Standalone transcription scripts
 packages/
- ├── core-frontend-web     → Quiz system, transcript viewer, phoneme tools, admin pages
- └── core-backend-node     → Auth0, Prisma, rate limiting, Airtable, API routes
+ ├── frontend               → Quiz system, transcript viewer, phoneme tools, admin pages
+ └── backend                → Auth0, Prisma, rate limiting, Airtable, API routes
 ```
 
 ### Features

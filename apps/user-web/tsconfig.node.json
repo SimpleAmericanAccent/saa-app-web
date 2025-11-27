@@ -1,4 +1,4 @@
 {
-  "extends": "../../packages/core-frontend-web/config/ts/tsconfig.node.base.json",
+  "extends": "../../packages/frontend/config/ts/tsconfig.node.base.json",
   "include": ["vite.config.ts"]
 }

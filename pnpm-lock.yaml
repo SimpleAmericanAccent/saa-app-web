@@ -223,31 +223,31 @@ importers:
         specifier: ^6.2.0
         version: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.0)
 
-  apps/admin-backend-node:
+  apps/admin-api:
     dependencies:
-      core-backend-node:
+      backend:
         specifier: workspace:*
-        version: link:../../packages/core-backend-node
+        version: link:../../packages/backend
 
-  apps/admin-frontend-web:
+  apps/admin-web:
     dependencies:
-      core-frontend-web:
+      frontend:
         specifier: workspace:*
-        version: link:../../packages/core-frontend-web
+        version: link:../../packages/frontend
 
-  apps/user-backend-node:
+  apps/user-api:
     dependencies:
-      core-backend-node:
+      backend:
         specifier: workspace:*
-        version: link:../../packages/core-backend-node
+        version: link:../../packages/backend
 
-  apps/user-frontend-web:
+  apps/user-web:
     dependencies:
-      core-frontend-web:
+      frontend:
         specifier: workspace:*
-        version: link:../../packages/core-frontend-web
+        version: link:../../packages/frontend
 
-  packages/core-backend-node:
+  packages/backend:
     dependencies:
       '@prisma/client':
         specifier: ^6.7.0
@@ -257,7 +257,7 @@ importers:
         specifier: ^6.7.0
         version: 6.10.0(typescript@5.8.3)
 
-  packages/core-frontend-web:
+  packages/frontend:
     devDependencies:
       '@chromatic-com/storybook':
         specifier: 4.1.1
@@ -5433,11 +5433,6 @@ packages:
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
-    hasBin: true
-
-  semver@7.7.2:
-    resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
-    engines: {node: '>=10'}
     hasBin: true
 
   semver@7.7.3:
@@ -12214,8 +12209,6 @@ snapshots:
 
   semver@6.3.1: {}
 
-  semver@7.7.2: {}
-
   semver@7.7.3: {}
 
   send@0.19.0:
@@ -12383,7 +12376,7 @@ snapshots:
       esbuild: 0.25.5
       esbuild-register: 3.6.0(esbuild@0.25.5)
       recast: 0.23.11
-      semver: 7.7.2
+      semver: 7.7.3
       ws: 8.18.3
     transitivePeerDependencies:
       - '@testing-library/dom'
@@ -12789,7 +12782,7 @@ snapshots:
       expect-type: 1.2.2
       magic-string: 0.30.17
       pathe: 2.0.3
-      picomatch: 4.0.2
+      picomatch: 4.0.3
       std-env: 3.10.0
       tinybench: 2.9.0
       tinyexec: 0.3.2

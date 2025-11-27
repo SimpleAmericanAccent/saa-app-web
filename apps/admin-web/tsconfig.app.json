@@ -1,4 +1,4 @@
 {
-  "extends": "../../packages/core-frontend-web/config/ts/tsconfig.app.base.json",
+  "extends": "../../packages/frontend/config/ts/tsconfig.app.base.json",
   "include": ["src"]
 }
