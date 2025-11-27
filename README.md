@@ -6,6 +6,11 @@ A full-stack web application for American accent training and feedback.
 - Independently developed
 - React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
 
+Important context:
+- This app was initially developed to solve a problem for my users (my accent coaching clients). My focus was on shipping and iterating an MVP with real users, not on maximizing code quality in itself. 
+- More recently, I saw the opportunity for a full-stack engineering career and so I am now professionalizing the code.
+- Some parts of the code were already meticulously hand-coded. Other parts were AI-assisted or fully vibe coded. I need to do a better job of documenting what is what, and improving code quality, testing, etc. It's a work in progress.
+
 <details><summary>Demo</summary>
   
 - **[Demo Video (5 minutes)](https://youtu.be/1I5FPCRFm7o)**
