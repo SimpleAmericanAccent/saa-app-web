@@ -1,7 +1,5 @@
 # Contributing
 
-Hi! 👋
-
 This repository is public so that hiring teams can review my work.  
 It is **not an open-source project** and therefore does not accept external contributions.
 
