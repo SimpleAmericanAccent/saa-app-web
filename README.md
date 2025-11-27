@@ -104,12 +104,16 @@ packages/
 
 ### Contributing
 
+This repo is not accepting public contributions or issues at this time.
+
 This is a production application serving paid accent coaching clients, that I developed independently.
 
-Temporarily open-sourced to show my full-stack development abilities. For questions or feedback, please contact me.
+Temporarily made this repo public for portfolio/demonstration purposes only, as I'm seeking a full-stack engineering job.
+
+For questions or feedback, please contact me privately.
 
 ### License
 
-**Proprietary** – Temporarily open-sourced for portfolio/demonstration purposes only.
+**Proprietary** – Temporarily made this repo public for portfolio/demonstration purposes only, while seeking a full-stack engineering job.
 
 </details>
