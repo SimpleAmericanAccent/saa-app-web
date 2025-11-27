@@ -1,5 +1,7 @@
 # Simple American Accent Web App
 
+> 📝 **Portfolio Repository — Proprietary Code (No External Contributions)**
+
 A full-stack web application for American accent training and feedback.
 
 - In production with paying clients
@@ -7,6 +9,7 @@ A full-stack web application for American accent training and feedback.
 - React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
 
 Important context:
+
 - I made this repo public to help me get a job as a full-stack engineer.
 - This app was originally private & developed simply to solve a problem for my users (my accent coaching clients). My focus was on shipping and iterating an MVP with real users, not on maximizing code quality or even expecting anyone else to ever see my code. Although I still cared to a meaningful extent about code quality and skill development, for my own sake... my priority was merely getting the app to work well enough to be useful for my clients.
 - More recently, I saw the opportunity for a full-stack engineering career. I made the repo public and am in the process of professionalizing the code. Refactoring, adding testing, documenting, and so on.
@@ -106,20 +109,13 @@ packages/
   ```
 - **Direct database access via psql:** Log into Render dashboard, copy connection command, paste into terminal and hit enter. Then copy and paste the password (it will appear invisible in the terminal) and hit enter.
 </details>
-<details><summary>Contributing/License</summary>
+<details><summary>License & Contributing</summary>
 
-### Contributing
+This repository is **proprietary** and made public **solely for portfolio and demonstration purposes** as part of my full-stack engineering job search.
 
-This repo is not accepting public contributions or issues at this time.
+- **License:** See [LICENSE.md](./LICENSE.md)
+- **Contributing:** See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-This is a production application serving paid accent coaching clients, that I developed independently.
-
-Temporarily made this repo public for portfolio/demonstration purposes only, as I'm seeking a full-stack engineering job.
-
-For questions or feedback, please contact me privately.
-
-### License
-
-**Proprietary** – Temporarily made this repo public for portfolio/demonstration purposes only, while seeking a full-stack engineering job.
+External contributions (issues, PRs, forks) are not accepted.
 
 </details>
