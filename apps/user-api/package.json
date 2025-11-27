@@ -1,5 +1,5 @@
 {
-  "name": "user-backend-node",
+  "name": "user-api",
   "version": "1.0.0",
   "description": "Simple American Accent accent software",
   "main": "server.js",

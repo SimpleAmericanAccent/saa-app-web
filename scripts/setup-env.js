@@ -24,8 +24,8 @@ const envFiles = [
     label: "Admin backend",
   },
   {
-    example: path.join(rootDir, "apps/user-backend-node/.env.example"),
-    target: path.join(rootDir, "apps/user-backend-node/.env"),
+    example: path.join(rootDir, "apps/user-api/.env.example"),
+    target: path.join(rootDir, "apps/user-api/.env"),
     label: "User backend",
   },
 ];

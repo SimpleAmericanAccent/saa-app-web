@@ -42,7 +42,7 @@ This is a monorepo with thin app wrappers around shared core packages:
 ```
 apps/
  ├── user-web     → Client accent training app
- ├── user-backend-node     → User API server
+ ├── user-api     → User API server
  ├── admin-frontend-web    → Business analytics dashboard
  ├── admin-backend-node    → Admin API + analytics routes
  └── backend-python        → Standalone transcription scripts
