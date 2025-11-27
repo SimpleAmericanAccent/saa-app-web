@@ -17,7 +17,7 @@ bootApp({
     issuerBaseURL: process.env.AUTH0_ISSUER_BASE_ID,
   },
   router,
-  frontendDir: "user-frontend-web",
+  frontendDir: "user-web",
   appLabel: "🙋 USER app",
   envConfig: {
     AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID,
