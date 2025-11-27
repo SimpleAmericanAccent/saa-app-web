@@ -17,13 +17,10 @@ Important context:
 
 <details><summary>Demo</summary>
   
-- **[Demo Video (5 minutes)](https://youtu.be/1I5FPCRFm7o)**
-- Demo Logins
-  - User app:
-    - [Link](https://app.simpleamericanaccent.com)
-    - User/pass: demo@simpleamericanaccent.com / Demo123!
-  - Admin app:
-    - Not yet available for demo
+- 5 min video [here](https://youtu.be/1I5FPCRFm7o)
+- Live app demo:
+  - [Link](https://app.simpleamericanaccent.com)
+  - User/pass: demo@simpleamericanaccent.com / Demo123!
 </details>
 
 <details><summary>App Overview</summary>
