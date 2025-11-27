@@ -25,7 +25,7 @@ bootApp({
     issuerBaseURL: process.env.AUTH0_ISSUER_BASE_ID,
   },
   router: adminRouter,
-  frontendDir: "admin-frontend-web",
+  frontendDir: "admin-web",
   appLabel: "🔒 ADMIN app",
   envConfig: {
     AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID,

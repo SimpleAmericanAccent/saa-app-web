@@ -11,10 +11,10 @@
     "generate": "prisma generate --no-hints",
     "studio": "pnpm run studio:user",
     "studio:user": "node --env-file=.env --env-file=../../apps/user-api/.env node_modules/prisma/build/index.js studio",
-    "studio:admin": "node --env-file=.env --env-file=../../apps/admin-backend-node/.env node_modules/prisma/build/index.js studio",
+    "studio:admin": "node --env-file=.env --env-file=../../apps/admin-api/.env node_modules/prisma/build/index.js studio",
     "migrate": "pnpm run migrate:dev:user",
     "migrate:dev:user": "node --env-file=.env --env-file=../../apps/user-api/.env node_modules/prisma/build/index.js migrate dev",
-    "migrate:dev:admin": "node --env-file=.env --env-file=../../apps/admin-backend-node/.env node_modules/prisma/build/index.js migrate dev"
+    "migrate:dev:admin": "node --env-file=.env --env-file=../../apps/admin-api/.env node_modules/prisma/build/index.js migrate dev"
   },
   "author": "Will Rosenberg",
   "license": "UNLICENSED",

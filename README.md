@@ -43,8 +43,8 @@ This is a monorepo with thin app wrappers around shared core packages:
 apps/
  ├── user-web     → Client accent training app
  ├── user-api     → User API server
- ├── admin-frontend-web    → Business analytics dashboard
- ├── admin-backend-node    → Admin API + analytics routes
+ ├── admin-web    → Business analytics dashboard
+ ├── admin-api    → Admin API + analytics routes
  └── backend-python        → Standalone transcription scripts
 packages/
  ├── core-frontend-web     → Quiz system, transcript viewer, phoneme tools, admin pages
