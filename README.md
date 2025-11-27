@@ -41,11 +41,11 @@ This is a monorepo with thin app wrappers around shared core packages:
 
 ```
 apps/
- ├── user-web     → Client accent training app
- ├── user-api     → User API server
- ├── admin-web    → Business analytics dashboard
- ├── admin-api    → Admin API + analytics routes
- └── backend-python        → Standalone transcription scripts
+ ├── user-web               → Client accent training app
+ ├── user-api               → User API server
+ ├── admin-web              → Business analytics dashboard
+ ├── admin-api              → Admin API + analytics routes
+ └── python-experiments     → Standalone transcription scripts
 packages/
  ├── core-frontend-web     → Quiz system, transcript viewer, phoneme tools, admin pages
  └── core-backend-node     → Auth0, Prisma, rate limiting, Airtable, API routes
