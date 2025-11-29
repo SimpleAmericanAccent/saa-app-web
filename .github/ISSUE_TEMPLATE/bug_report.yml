@@ -5,15 +5,13 @@ body:
 - type: textarea
   attributes:
     label: What did you expect to happen?
-    description: Also tell us, what did you expect to happen?
-    placeholder: Tell us what you see!
-    value: "A bug happened!"
     render: shell
   validations:
     required: true
 - type: textarea
   attributes:
     label: What happened instead?
+    render: shell
   validations:
     required: true
 - type: textarea
