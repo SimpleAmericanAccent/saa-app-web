@@ -109,8 +109,8 @@ packages/ (shared core)
 
 This repository is **proprietary** and made public **solely for portfolio and demonstration purposes** as part of my full-stack engineering job search.
 
-- **License:** See [LICENSE.md](https://github.com/SimpleAmericanAccent/saa-app-web/tree/main?tab=contributing-ov-file#License-1-ov-file)
-- **Contributing:** See [CONTRIBUTING.md](https://github.com/SimpleAmericanAccent/saa-app-web#contributing-ov-file)
+- **License:** See [LICENSE.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=License-1-ov-file#readme)
+- **Contributing:** See [CONTRIBUTING.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=contributing-ov-file#readme)
 
 External contributions (issues, PRs, forks) are not accepted.
 
