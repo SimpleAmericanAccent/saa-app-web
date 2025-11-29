@@ -1,11 +1,11 @@
 ---
 name: Please do not open issues
-about:
-  Not accepting external contributions. Please do not open issues (they may be
+about: Not accepting external contributions. Please do not open issues (they may be
   closed without response).
-title: ""
-labels: ""
-assignees: ""
+title: Please do not open issues
+labels: ''
+assignees: ''
+
 ---
 
 This repository is public so that hiring teams can review my work.  
