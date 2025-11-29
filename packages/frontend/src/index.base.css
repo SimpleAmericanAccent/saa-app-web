@@ -18,30 +18,6 @@ a:hover {
 }
 /* #endregion */
 
-/* #region wls page only (word lists & spelling) */
-.wls-content h1 {
-  @apply text-4xl font-semibold m-0 text-foreground border-b-2 border-gray-200 pb-2;
-}
-.wls-content h2 {
-  @apply text-3xl font-semibold my-2 text-foreground;
-}
-.wls-content ul {
-  @apply my-2 pl-8 list-none;
-}
-.wls-content ul li {
-  @apply mb-2 leading-none relative;
-}
-.wls-content ul li::before {
-  @apply text-foreground;
-  content: "•";
-  position: absolute;
-  left: -1rem;
-}
-.wls-content br {
-  @apply my-2;
-}
-/* #endregion */
-
 /* #endregion */
 :root {
   --navbar-height: 3rem;

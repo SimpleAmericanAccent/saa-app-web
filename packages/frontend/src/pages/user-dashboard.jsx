@@ -53,7 +53,7 @@ export default function UserDashboard() {
             </h1>
             <TranscriptList
               people={people}
-              audio={audio}
+              audio={audios}
               currentPersonId={currentPersonId}
               onTranscriptSelect={handleTranscriptSelect}
             />
