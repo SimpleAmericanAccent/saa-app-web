@@ -1,5 +1,5 @@
 {
-  "name": "saa-monorepo",
+  "name": "saa",
   "private": true,
   "type": "module",
   "workspaces": [

@@ -15,10 +15,8 @@ export const cleanWordForAPI = (word, type = "wiktionary") => {
   let cleaned = word.trim();
 
   if (type === "cmu") {
-    // Remove punctuation for CMU dictionary: period, comma, exclamation, question mark, semicolon, colon, quotes, parentheses, brackets, braces
     cleaned = cleaned.replace(/[.,!?;:“”"—()\[\]{}]/g, "").replace(/’/g, "'");
   } else if (type === "wiktionary") {
-    // Remove punctuation for Wiktionary: period, comma, exclamation, question mark, semicolon, colon, hyphen, dash
     cleaned = cleaned.replace(/[.,!?;:“”"—]/g, "").replace(/’/g, "'");
   }
 
