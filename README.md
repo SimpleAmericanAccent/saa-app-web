@@ -27,12 +27,11 @@ Important context:
 
 ### Tech Stack
 
-- **Frontend:** React 19, Vite, Tailwind CSS
-- **Backend:** Node.js, Express, Prisma, PostgreSQL
-- **Database:** Postgres on Render, Airtable via API
-- **Hosting:** Render, CloudFlare
-- **Auth:** Auth0
-- **Marketing Analytics:** Instagram Graph API, Plausible, Airtable
+- **Frontend:** React 19, Vite, Tailwind, shadcn
+- **Backend:** Node.js, Express, Prisma, PostgreSQL on Render, Airtable via API, Auth0
+- **Cloud & DevOps:** Render, CloudFlare, AWS S3
+- **Testing & Tooling:** Git, GitHub, pnpm, Jest, Storybook
+- **AI-Assisted Engineering:** Cursor, ChatGPT
 - **App Analytics:** PostHog coming soon
 
 ### Architecture
@@ -54,7 +53,7 @@ packages/
 ### Features
 
 - **Quiz System** - Minimal pairs pronunciation quiz
-- **Transcript Viewer** - Admin view for annotating accent feedback, user view for viewing accent feedback
+- **Transcript Viewer** - Audio playback time-aligned with transcript, admin view for annotating accent feedback, user view for viewing accent feedback
 - **Progress Tracking** - Visual progress indicators and performance statistics
 - **Admin Dashboard** - User management, trial analytics, and client acquisition tracking
 
