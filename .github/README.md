@@ -39,13 +39,13 @@ Important context:
 This is a monorepo with thin app wrappers around shared core packages:
 
 ```
-apps/
- ├── user-web               → Client accent training app
- ├── user-api               → User API server
- ├── admin-web              → Business analytics dashboard
- ├── admin-api              → Admin API + analytics routes
- └── python-experiments     → Standalone transcription scripts
-packages/
+apps/ (thin wrappers around shared core packages)
+ ├── user-web
+ ├── user-api
+ ├── admin-web
+ ├── admin-api
+ └── python-experiments
+packages/ (shared core)
  ├── frontend               → Quiz system, transcript viewer, phoneme tools, admin pages
  └── backend                → Auth0, Prisma, rate limiting, Airtable, API routes
 ```
