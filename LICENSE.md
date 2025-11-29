@@ -1,4 +1,4 @@
-Copyright © 2025 William Rosenberg. All rights reserved.
+Copyright © 2025 William Rosenberg and Simple American Accent. All rights reserved.
 
 This code is proprietary and is made public solely for demonstration to potential employers.
 
