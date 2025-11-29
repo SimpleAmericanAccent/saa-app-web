@@ -1,13 +1,11 @@
 import { useEffect, useState, useRef, useMemo } from "react";
-import useFetchAudioV1 from "frontend/src/hooks/use-fetch-audio-v1";
+import useFetchAudio from "frontend/src/hooks/use-fetch-audio";
 import useAudioSync from "frontend/src/hooks/use-audio-sync";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { findActiveWordIndex } from "frontend/src/utils/binary-search";
 import { fetchData } from "frontend/src/utils/api";
 import { cn } from "frontend/src/lib/utils";
-
-import useVersionStore from "frontend/src/stores/version-store";
 import { useIssuesStore } from "frontend/src/stores/issues-store";
 import useAuthStore from "frontend/src/stores/auth-store";
 import {
@@ -63,14 +61,13 @@ export default function Transcript() {
   const [loadError, setLoadError] = useState(null);
   const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
   const rightPanelRef = useRef(null);
-  const { version } = useVersionStore();
 
   const handleFilterChange = (activeIssues) => {
     setActiveFilters(activeIssues);
   };
 
   // Fetch Audio & Transcript Data
-  const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudioV1();
+  const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudio();
 
   // Reference for Audio Player & State for Playback Speed
   const audioRef = useRef(null);

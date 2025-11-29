@@ -1,7 +1,7 @@
 import { ScrollArea } from "frontend/src/components/ui/scroll-area";
 import { Checkbox } from "frontend/src/components/ui/checkbox";
 import { useState, useEffect, useRef } from "react";
-import useFetchAudioV1 from "frontend/src/hooks/use-fetch-audio-v1";
+import useFetchAudio from "frontend/src/hooks/use-fetch-audio";
 
 export default function TranscriptList({
   people,
@@ -10,7 +10,7 @@ export default function TranscriptList({
   onTranscriptSelect,
 }) {
   const [selectedTranscripts, setSelectedTranscripts] = useState(new Set());
-  const { fetchAudio, annotatedTranscript } = useFetchAudioV1();
+  const { fetchAudio, annotatedTranscript } = useFetchAudio();
   const [transcriptCache, setTranscriptCache] = useState({});
 
   // When selection changes, fetch the transcript data
