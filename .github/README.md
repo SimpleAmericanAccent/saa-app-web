@@ -4,8 +4,7 @@
 
 A full-stack web application for American accent training and feedback.
 
-- In production with paying clients
-- Independently developed
+- Used by my accent coaching clients (Brazilians who want an American accent)
 - React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
 
 Important context:
