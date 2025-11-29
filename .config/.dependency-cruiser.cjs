@@ -282,7 +282,7 @@ module.exports = {
         webpack documentation for details)
      */
     webpackConfig: {
-      fileName: "webpack.config.cjs",
+      fileName: ".config/webpack.config.cjs",
       env: {},
       arguments: {},
     },

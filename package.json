@@ -40,11 +40,11 @@
     "storybook": "pnpm --filter frontend run storybook",
     "sb": "pnpm run storybook",
     "// ============= Dependency Analysis ============= ": "",
-    "depcruise": "dependency-cruiser --config .dependency-cruiser.cjs packages apps",
-    "depcruise:graph": "dependency-cruiser --config .dependency-cruiser.cjs --output-type dot packages apps | dot -T svg > dependency-graph.svg",
-    "depcruise:archi": "dependency-cruiser --config .dependency-cruiser.cjs --output-type archi packages apps | dot -T svg > architecture-graph.svg",
-    "depcruise:json": "dependency-cruiser --config .dependency-cruiser.cjs --output-type json packages apps > dependency-report.json",
-    "depcruise:html": "dependency-cruiser --config .dependency-cruiser.cjs --output-type html packages apps > dependency-report.html"
+    "depcruise": "dependency-cruiser --config .config/.dependency-cruiser.cjs packages apps",
+    "depcruise:graph": "dependency-cruiser --config .config/dependency-cruiser.cjs --output-type dot packages apps | dot -T svg > dependency-graph.svg",
+    "depcruise:archi": "dependency-cruiser --config .config/dependency-cruiser.cjs --output-type archi packages apps | dot -T svg > architecture-graph.svg",
+    "depcruise:json": "dependency-cruiser --config .config/dependency-cruiser.cjs --output-type json packages apps > dependency-report.json",
+    "depcruise:html": "dependency-cruiser --config .config/dependency-cruiser.cjs --output-type html packages apps > dependency-report.html"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.7.6",
