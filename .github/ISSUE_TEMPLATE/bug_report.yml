@@ -1,4 +1,4 @@
-name: "Bug report"
+name: "🐛 Bug report"
 description: "Report a problem with the SAA App. Please provide enough information that we can reproduce the problem."
 type: "bug"
 assignees: will-rosenberg
