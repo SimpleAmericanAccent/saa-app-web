@@ -11,11 +11,10 @@ A full-stack web application for American accent training and feedback.
 
 Important context:
 
-- I made this repo public to help me get a job as a full-stack engineer.
-- This app was originally private & developed simply to solve a problem for my users (my accent coaching clients). My focus was on shipping and iterating an MVP with real users, not on maximizing code quality or even expecting anyone else to ever see my code. Although I still cared to a meaningful extent about code quality and skill development, for my own sake... my priority was merely getting the app to work well enough to be useful for my clients. I continue to iterate and improve the app with a focus on real world value for my clients.
-- More recently, I saw the opportunity for a full-stack engineering career while continuing to operate my business. I made the repo public and am in the process of professionalizing the code. Refactoring, adding testing, documenting, and so on.
-- Some parts of the code were meticulously hand-coded. Other parts were AI-assisted or vibe coded. I plan to better document which is which.
-- My business generates revenue and value primary from service rather than software, but I'm interested in shifting that.
+- I made this repo public solely so potential employers can see my code as I pursue full-stack engineering roles.
+- This repo began as a private codebase powering a tool for my accent coaching clients. I built fast, iterated constantly, and focused on solving real problems... not on preparing the codebase for outside review or large-scale deployment. The app supports my service business, so many features were built quickly in response to real client needs. I continue to iterate and improve the app today.
+- When I realized full-stack engineering could be a parallel career path (while continuing to run my business), I made the repo public and began professionalizing it: refactoring, improving structure, adding tests, and documenting decisions. I've been learning and growing a lot as an engineer through this process.
+- Because of its history, the codebase is a mix. Some parts of the code were meticulously hand-coded. Other parts were AI-assisted or even "vibe coded" to get client feedback faster. I'm working on documenting that evolution more clearly.
 
 <details><summary>Demo</summary>
   
