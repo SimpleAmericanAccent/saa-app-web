@@ -1,0 +1,22 @@
+name: "⚙️ Task suggestion"
+description: "General work we need to do (not a bug, not a new feature)"
+type: "task"
+assignees: will-rosenberg
+projects: "SimpleAmericanAccent/9"
+body:
+- type: input
+  attributes:
+    label: What is the task?
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Why is it worth doing?
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Implementation plan
+- type: textarea
+  attributes:
+    label: Anything else you want to share?
