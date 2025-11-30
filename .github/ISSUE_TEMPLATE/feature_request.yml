@@ -14,7 +14,7 @@ body:
     label: Describe the solution you'd like
   validations:
     required: true
-- type: textarea
+- type: input
   attributes:
     label: Describe alternatives you've considered
   validations:
