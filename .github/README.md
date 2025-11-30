@@ -8,7 +8,7 @@ A full-stack web application for American accent training and feedback.
 - React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
 
 <img src="../docs/screenshot.png">
-<br /><br />
+
 Important context:
 
 - I made this repo public to help me get a job as a full-stack engineer.
