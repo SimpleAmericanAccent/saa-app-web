@@ -7,7 +7,7 @@ A full-stack web application for American accent training and feedback.
 - Used by my accent coaching clients (Brazilians who want an American accent)
 - React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
 
-<img src="../docs/screenshot.png">
+<a href="https://github.com/SimpleAmericanAccent/saa/blob/main/.github/README.md#:~:text=Demo"><img src="../docs/screenshot.png"></a>
 
 Important context:
 
