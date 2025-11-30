@@ -16,15 +16,28 @@ Important context:
 - When I realized full-stack engineering could be a parallel career path (while continuing to run my business), I made the repo public and began professionalizing it: refactoring, improving structure, adding tests, and documenting decisions. I've been learning and growing a lot as an engineer through this process.
 - Because of its history, the codebase is a mix. Some parts of the code were meticulously hand-coded. Other parts were AI-assisted or even "vibe coded" to get client feedback faster. I'm working on documenting that evolution more clearly.
 
-<details><summary>Demo</summary>
+## Table of contents
+
+* [Demo](#demo)
+* [App Overview](#app-overview)
+  * [Tech Stack](#tech-stack)
+  * [Architecture](#architecture)
+  * [Features](#features)
+  * [Security](#security)
+* [Development](#development)
+  * [Main](#main)
+  * [Database](#database)
+  * [Optional Tools](#optional-tools)
+* [License and Contributing](#license-and-contributing)
+
+## Demo
   
 - 5 min video [here](https://youtu.be/1I5FPCRFm7o)
 - Live app demo:
   - [Link](https://app.simpleamericanaccent.com)
   - User/pass: demo@simpleamericanaccent.com / Demo123!
-</details>
 
-<details><summary>App Overview</summary>
+## App Overview
 
 ### Tech Stack
 
@@ -65,10 +78,9 @@ packages/ (shared core)
 - **Rate Limiting** - 450 requests per 15 minutes per IP address
 - **Configuration Management** – Environment-based secrets and keys (no credentials in source)
 
-</details>
-<details><summary>Development Setup</summary>
+## Development
   
-### Main Setup
+### Main
 
 - Set up [mkcert](https://github.com/FiloSottile/mkcert) to enable local development (localhost) over HTTPS
 - Navigate to repo root
@@ -84,7 +96,7 @@ packages/ (shared core)
   pnpm dev:a   # Start admin app
   ```
 
-### Database Setup (if needed)
+### Database
 
 - **Airtable Setup:** Set up your own Airtable base for accent annotations data (schema available in codebase)
 - **Database Setup:**
@@ -105,8 +117,9 @@ packages/ (shared core)
   pnpm studio
   ```
 - **Direct database access via psql:** Log into Render dashboard, copy connection command, paste into terminal and hit enter. Then copy and paste the password (it will appear invisible in the terminal) and hit enter.
-</details>
-<details><summary>License & Contributing</summary>
+
+
+## License and Contributing
 
 This repository is **proprietary** and made public **solely for portfolio and demonstration purposes** as part of my full-stack engineering job search.
 
@@ -114,5 +127,3 @@ This repository is **proprietary** and made public **solely for portfolio and de
 - **Contributing:** See [CONTRIBUTING.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=contributing-ov-file#readme)
 
 External contributions (issues, PRs, forks) are not accepted.
-
-</details>
