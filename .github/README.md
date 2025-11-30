@@ -15,7 +15,7 @@ Important context:
 - This app was originally private & developed simply to solve a problem for my users (my accent coaching clients). My focus was on shipping and iterating an MVP with real users, not on maximizing code quality or even expecting anyone else to ever see my code. Although I still cared to a meaningful extent about code quality and skill development, for my own sake... my priority was merely getting the app to work well enough to be useful for my clients. I continue to iterate and improve the app with a focus on real world value for my clients.
 - More recently, I saw the opportunity for a full-stack engineering career while continuing to operate my business. I made the repo public and am in the process of professionalizing the code. Refactoring, adding testing, documenting, and so on.
 - Some parts of the code were meticulously hand-coded. Other parts were AI-assisted or vibe coded. I plan to better document which is which.
-- My business generates revenue and value primary from service, but I'm using software more and more for both acquisition and delivery over time. So perhaps it is becoming a tech-enabled service or someday even a SaaS.
+- My business generates revenue and value primary from service rather than software, but I'm interested in shifting that.
 
 <details><summary>Demo</summary>
   
