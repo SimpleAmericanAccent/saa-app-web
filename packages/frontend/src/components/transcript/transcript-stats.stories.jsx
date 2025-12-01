@@ -1,7 +1,7 @@
-import TranscriptStatsV from "./transcript-stats-v1";
+import TranscriptStats from "./transcript-stats";
 
 const meta = {
-  component: TranscriptStatsV,
+  component: TranscriptStats,
 };
 
 export default meta;

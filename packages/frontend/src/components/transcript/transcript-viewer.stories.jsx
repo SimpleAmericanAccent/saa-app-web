@@ -4,7 +4,7 @@ import TranscriptViewerV1, {
   _WordPronunciations,
   _WordAudio,
   _RenderExternalPronunciationLinks,
-} from "./transcript-viewer-v1";
+} from "./transcript-viewer";
 import { userEvent, within } from "@storybook/test";
 import { useState } from "react";
 import {

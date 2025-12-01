@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { fetchData } from "frontend/src/utils/api";
 import { ScrollArea } from "frontend/src/components/ui/scroll-area";
 import TranscriptList from "frontend/src/components/transcript-list";
-import TranscriptStatsV1 from "frontend/src/components/transcript/transcript-stats-v1";
+import TranscriptStats from "frontend/src/components/transcript/transcript-stats";
 import {
   ResizableHandle,
   ResizablePanel,

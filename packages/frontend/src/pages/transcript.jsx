@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 import TranscriptViewerV1 from "frontend/src/components/transcript/transcript-viewer-v1";
-import TranscriptStatsV1 from "frontend/src/components/transcript/transcript-stats-v1";
+import TranscriptStats from "frontend/src/components/transcript/transcript-stats";
 import WaveformEditor from "frontend/src/components/transcript/waveform-editor";
 import TextToTranscriptConverter from "frontend/src/components/transcript/text-to-transcript-converter";
 import AudioPlayer from "frontend/src/components/audio-player";
