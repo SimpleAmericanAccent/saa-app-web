@@ -1,9 +1,15 @@
-This repository is public so that hiring teams can review my work.  
-It is **not an open-source project** and therefore does not accept external contributions.
+## What changed?
 
-- Please do not submit pull requests.
-- Please do not open issues (they may be closed without response).
-- Reuse or modification of the code is not permitted. See [LICENSE.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=License-1-ov-file#readme).
+Summary of changes...
 
-If you are a recruiter or hiring manager and would like to discuss any part of this project,
-feel free to reach out.
+## Why?
+
+Reason for changes...
+
+## Issues
+
+Closes #xxx
+
+## How do we know it works and didn't break anything?
+
+Describe manual testing, automated testing, no testing needed...
