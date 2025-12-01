@@ -50,7 +50,7 @@ Important context:
 
 ### Architecture
 
-This is a monorepo with thin app wrappers around shared core packages:
+This is a pnpm monorepo with thin app wrappers around shared core packages:
 
 ```
 apps/ (thin wrappers around shared core packages)
