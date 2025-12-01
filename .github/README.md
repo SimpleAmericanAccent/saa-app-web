@@ -126,4 +126,4 @@ This repository is **proprietary** and made public **solely for portfolio and de
 - **License:** See [LICENSE.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=License-1-ov-file#readme)
 - **Contributing:** See [CONTRIBUTING.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=contributing-ov-file#readme)
 
-External contributions (issues, PRs, forks) are not accepted.
+External contributions (issues, PRs) are not accepted.
