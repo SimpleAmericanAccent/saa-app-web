@@ -12,4 +12,7 @@ Closes #xxx
 
 ## How do we know it works and didn't break anything?
 
-Describe manual testing, automated testing, no testing needed...
+Describe automated and/or manual testing, or justify if no or minimal testing...
+
+- Automated:
+- Manual:
