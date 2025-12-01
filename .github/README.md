@@ -18,20 +18,20 @@ Important context:
 
 ## Table of contents
 
-* [Demo](#demo)
-* [App Overview](#app-overview)
-  * [Tech Stack](#tech-stack)
-  * [Architecture](#architecture)
-  * [Features](#features)
-  * [Security](#security)
-* [Development](#development)
-  * [Main](#main)
-  * [Database](#database)
-  * [Optional Tools](#optional-tools)
-* [License and Contributing](#license-and-contributing)
+- [Demo](#demo)
+- [App Overview](#app-overview)
+  - [Tech Stack](#tech-stack)
+  - [Architecture](#architecture)
+  - [Features](#features)
+  - [Security](#security)
+- [Development](#development)
+  - [Main](#main)
+  - [Database](#database)
+  - [Optional Tools](#optional-tools)
+- [License and Contributing](#license-and-contributing)
 
 ## Demo
-  
+
 - 5 min video [here](https://youtu.be/1I5FPCRFm7o)
 - Live app demo:
   - [Link](https://app.simpleamericanaccent.com)
@@ -61,7 +61,8 @@ apps/ (thin wrappers around shared core packages)
  └── python-experiments
 packages/ (shared core)
  ├── frontend               → Quiz system, transcript viewer, phoneme tools, admin pages
- └── backend                → Auth0, Prisma, rate limiting, Airtable, API routes
+ ├── backend                → Auth0, Prisma, rate limiting, Airtable, API routes
+ └── shared                 → anything used in both frontend & backend
 ```
 
 ### Features
@@ -79,7 +80,7 @@ packages/ (shared core)
 - **Configuration Management** – Environment-based secrets and keys (no credentials in source)
 
 ## Development
-  
+
 ### Main
 
 - Set up [mkcert](https://github.com/FiloSottile/mkcert) to enable local development (localhost) over HTTPS
@@ -117,7 +118,6 @@ packages/ (shared core)
   pnpm studio
   ```
 - **Direct database access via psql:** Log into Render dashboard, copy connection command, paste into terminal and hit enter. Then copy and paste the password (it will appear invisible in the terminal) and hit enter.
-
 
 ## License and Contributing
 
