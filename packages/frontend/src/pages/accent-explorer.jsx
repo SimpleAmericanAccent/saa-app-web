@@ -22,10 +22,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "../components/ui/tooltip";
-import {
-  getWiktionaryAllAudio,
-  cleanWordForAPI,
-} from "../utils/wiktionary-api";
+import { getWiktionaryAllAudio } from "../utils/wiktionary-api";
+import { cleanWordForAPI } from "shared/clean-word";
+
 import {
   getFrequencyWordStrings,
   hasFrequencyData,
@@ -144,7 +143,7 @@ export default function AccentExplorer() {
 
   // Word tooltip helper functions (adapted from transcript viewer)
   const getPronunciations = async (word) => {
-    const cleanWord = cleanWordForAPI(word, "cmu");
+    const cleanWord = cleanWordForAPI(word);
     if (!cleanWord) return [];
 
     try {
@@ -957,8 +956,7 @@ export default function AccentExplorer() {
                                                 {(() => {
                                                   const cleanWord =
                                                     cleanWordForAPI(
-                                                      currentWord,
-                                                      "wiktionary"
+                                                      currentWord
                                                     );
                                                   return (
                                                     <>
@@ -1309,8 +1307,7 @@ export default function AccentExplorer() {
                                                     {(() => {
                                                       const cleanWord =
                                                         cleanWordForAPI(
-                                                          currentWord,
-                                                          "wiktionary"
+                                                          currentWord
                                                         );
                                                       return (
                                                         <>

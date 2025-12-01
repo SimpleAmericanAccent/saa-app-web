@@ -58,5 +58,8 @@
     "playwright": "^1.56.1",
     "storybook": "9.1.12",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "shared": "workspace:*"
   }
 }
