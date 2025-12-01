@@ -22,6 +22,7 @@ import { ScrollArea } from "frontend/src/components/ui/scroll-area";
 import { useWordAudio } from "frontend/src/hooks/use-word-audio";
 import { hasQuizForTargetIssue } from "frontend/src/pages/quiz";
 import { accentExplorerData } from "frontend/src/data/accent-explorer-data";
+import { cleanWordForAPI } from "shared/clean-word";
 
 // Define WordFrequencyList component first
 const WordFrequencyList = ({ words }) => {
@@ -231,10 +232,7 @@ const TranscriptStats = ({
 
     // Modify word frequency calculation to include annotation info
     const wordFrequency = flattenedWords.reduce((acc, word) => {
-      const cleanWord = word.word
-        .replace(/[.,!?;:"()\[\]{}]/g, "")
-        .toLowerCase()
-        .trim();
+      const cleanWord = cleanWordForAPI(word.word);
       if (cleanWord) {
         if (!acc[cleanWord]) {
           acc[cleanWord] = {
@@ -413,25 +411,13 @@ const TranscriptStats = ({
         const words = stats.issueWordMap[issueId] || [];
         // Clean up punctuation, convert to lowercase, and remove duplicates
         const uniqueWords = [
-          ...new Set(
-            words.map(
-              (w) =>
-                w.word
-                  .replace(/[.,!?;:"()\[\]{}]/g, "") // Remove punctuation
-                  .trim() // Remove whitespace
-                  .toLowerCase() // Convert to lowercase
-            )
-          ),
+          ...new Set(words.map((w) => cleanWordForAPI(w.word))),
         ].filter((word) => word.length > 0); // Remove empty strings after cleaning
 
         // Count instances for each unique word
         const wordCounts = uniqueWords.map((word) => {
           const count = words.filter(
-            (w) =>
-              w.word
-                .replace(/[.,!?;:"()\[\]{}]/g, "")
-                .trim()
-                .toLowerCase() === word
+            (w) => cleanWordForAPI(w.word) === word
           ).length;
           return { word, count };
         });
@@ -775,11 +761,7 @@ Before each response, please double-check each included issue, target word list,
                               // Group words by their cleaned text
                               stats.issueWordMap[issue.id]?.reduce(
                                 (groups, word) => {
-                                  const cleanWord = word.word
-                                    .replace(/[.,!?;:"“”()\[\]{}]/g, "")
-                                    .replace(/’/g, "'")
-                                    .toLowerCase()
-                                    .trim();
+                                  const cleanWord = cleanWordForAPI(word.word);
                                   if (!groups[cleanWord]) {
                                     groups[cleanWord] = [];
                                   }

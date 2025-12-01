@@ -27,10 +27,9 @@ import {
   Volume2,
 } from "lucide-react";
 import KeyboardShortcutsModal from "frontend/src/components/keyboard-shortcuts-modal";
-import {
-  getWiktionaryAllAudio,
-  cleanWordForAPI,
-} from "frontend/src/utils/wiktionary-api";
+import { getWiktionaryAllAudio } from "frontend/src/utils/wiktionary-api";
+import { cleanWordForAPI } from "shared/clean-word";
+
 import WordEditPopover from "frontend/src/components/transcript/word-edit-popover";
 
 const TranscriptViewerV1 = ({
@@ -266,7 +265,7 @@ const TranscriptViewerV1 = ({
   };
 
   const getPronunciations = async (word) => {
-    const cleanWord = cleanWordForAPI(word, "cmu");
+    const cleanWord = cleanWordForAPI(word);
     if (!cleanWord) return;
 
     try {
@@ -947,7 +946,7 @@ function _WordAudio({
         <div className="text-center mt-1 space-y-1">
           <div className="flex justify-center items-center gap-1 text-xs text-muted-foreground">
             {(() => {
-              const cleanWord = cleanWordForAPI(currentWord, "wiktionary");
+              const cleanWord = cleanWordForAPI(currentWord);
               return (
                 <_RenderExternalPronunciationLinks cleanWord={cleanWord} />
               );

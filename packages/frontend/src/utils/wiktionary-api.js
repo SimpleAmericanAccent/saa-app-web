@@ -3,39 +3,7 @@
  * Replaces api.dictionaryapi.dev with direct Wiktionary API access
  */
 
-/**
- * Clean word for API lookups by removing punctuation and converting to lowercase
- * @param {string} word - The word to clean
- * @param {string} type - Type of cleaning: 'cmu' for CMU dictionary, 'wiktionary' for Wiktionary
- * @returns {string} Cleaned word
- */
-export const cleanWordForAPI = (word, type = "wiktionary") => {
-  if (!word) return "";
-
-  let cleaned = word.trim();
-
-  if (type === "cmu") {
-    cleaned = cleaned.replace(/[.,!?;:“”"—()\[\]{}]/g, "").replace(/’/g, "'");
-  } else if (type === "wiktionary") {
-    cleaned = cleaned.replace(/[.,!?;:“”"—]/g, "").replace(/’/g, "'");
-  }
-
-  if (cleaned === "I" || cleaned.startsWith("I'")) {
-  } else {
-    cleaned = cleaned.toLowerCase();
-  }
-
-  return cleaned;
-};
-
-/**
- * Clean word for Wiktionary lookup by removing punctuation and converting to lowercase
- * @param {string} word - The word to clean
- * @returns {string} Cleaned word
- */
-const cleanWordForWiktionary = (word) => {
-  return cleanWordForAPI(word, "wiktionary");
-};
+import { cleanWordForAPI } from "shared/clean-word";
 
 /**
  * Get pronunciation audio files from Wiktionary for a given word
@@ -45,7 +13,7 @@ const cleanWordForWiktionary = (word) => {
 export const getWiktionaryAudio = async (word) => {
   if (!word) return [];
 
-  const cleanedWord = cleanWordForWiktionary(word);
+  const cleanedWord = cleanWordForAPI(word);
   if (!cleanedWord) return [];
 
   try {
@@ -96,7 +64,7 @@ export const getFlagForAccent = (accent) => {
 export const getWiktionaryUSAudio = async (word) => {
   if (!word) return null;
 
-  const cleanedWord = cleanWordForWiktionary(word);
+  const cleanedWord = cleanWordForAPI(word);
   if (!cleanedWord) return null;
 
   try {

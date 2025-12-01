@@ -1,27 +1,6 @@
 import express from "express";
 const wiktionaryRouter = express.Router();
-
-/**
- * Clean word for API lookups by removing punctuation and handling "I" capitalization
- * @param {string} word - The word to clean
- * @returns {string} Cleaned word
- */
-const cleanWordForAPI = (word) => {
-  if (!word) return "";
-
-  // Special handling for "I" and contractions with "I"
-  let cleaned;
-  if (word === "I" || word.startsWith("I'")) {
-    cleaned = word.trim();
-  } else {
-    cleaned = word.toLowerCase().trim();
-  }
-
-  // Remove punctuation for Wiktionary: period, comma, exclamation, question mark, semicolon, colon, hyphen, dash, apostrophes
-  cleaned = cleaned.replace(/[.,!?;:""—]/g, "");
-
-  return cleaned;
-};
+import { cleanWordForAPI } from "shared/clean-word.js";
 
 /**
  * Extract audio files from Wiktionary page content
