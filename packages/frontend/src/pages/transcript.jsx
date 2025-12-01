@@ -22,7 +22,7 @@ import {
   Activity,
 } from "lucide-react";
 
-import TranscriptViewerV1 from "frontend/src/components/transcript/transcript-viewer-v1";
+import TranscriptViewer from "frontend/src/components/transcript/transcript-viewer";
 import TranscriptStats from "frontend/src/components/transcript/transcript-stats";
 import WaveformEditor from "frontend/src/components/transcript/waveform-editor";
 import TextToTranscriptConverter from "frontend/src/components/transcript/text-to-transcript-converter";
@@ -654,7 +654,7 @@ export default function Transcript() {
                 <section>
                   {/* Only show transcript viewer when audio is loaded */}
                   {hasAudioLoaded && (
-                    <TranscriptViewerV1
+                    <TranscriptViewer
                       annotatedTranscript={annotatedTranscript}
                       activeWordIndex={activeWordIndex}
                       handleWordClick={(start_time) => {

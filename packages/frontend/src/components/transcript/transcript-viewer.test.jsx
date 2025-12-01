@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import TranscriptViewerV1 from "./transcript-viewer-v1";
+import TranscriptViewer from "./transcript-viewer";
 
 // Mock the useWordAudio hook
 jest.mock("frontend/src/hooks/use-word-audio", () => ({
@@ -12,7 +12,7 @@ jest.mock("frontend/src/hooks/use-word-audio", () => ({
 describe("TranscriptViewerV1", () => {
   it("should render without crashing", () => {
     const { container } = render(
-      <TranscriptViewerV1
+      <TranscriptViewer
         annotatedTranscript={[]}
         activeWordIndex={null}
         handleWordClick={() => {}}
