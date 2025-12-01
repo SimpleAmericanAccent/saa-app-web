@@ -69,7 +69,7 @@ export default function UserDashboard() {
                 Selected Transcripts ({selectedTranscripts.length})
               </h2>
             </div>
-            <TranscriptStatsV1
+            <TranscriptStats
               annotatedTranscript={combinedTranscript}
               issuesData={issuesData}
               onFilterChange={() => {}}

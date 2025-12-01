@@ -706,7 +706,7 @@ export default function Transcript() {
           >
             <ScrollArea className="h-[calc(100vh-var(--navbar-height))] sm:h-screen">
               <div className="px-4 bg-background">
-                <TranscriptStatsV1
+                <TranscriptStats
                   annotatedTranscript={annotatedTranscript}
                   issuesData={issuesData}
                   onFilterChange={handleFilterChange}

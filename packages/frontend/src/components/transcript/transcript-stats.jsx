@@ -146,7 +146,7 @@ const WordFrequencyList = ({ words }) => {
   );
 };
 
-const TranscriptStatsV1 = ({
+const TranscriptStats = ({
   annotatedTranscript,
   issuesData,
   onFilterChange,
@@ -926,4 +926,4 @@ Before each response, please double-check each included issue, target word list,
   );
 };
 
-export default TranscriptStatsV1;
+export default TranscriptStats;
