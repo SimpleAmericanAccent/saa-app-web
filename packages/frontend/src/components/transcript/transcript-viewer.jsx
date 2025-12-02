@@ -29,6 +29,11 @@ import {
 import KeyboardShortcutsModal from "frontend/src/components/keyboard-shortcuts-modal";
 import { getWiktionaryAllAudio } from "frontend/src/utils/wiktionary-api";
 import { cleanWordForAPI } from "shared/clean-word";
+import {
+  LEXICAL_SET_MAP,
+  LEXICAL_SET_TO_IPA,
+  CMU_TO_IPA,
+} from "shared/phonemes.js";
 
 import WordEditPopover from "frontend/src/components/transcript/word-edit-popover";
 
@@ -288,25 +293,6 @@ const TranscriptViewerV1 = ({
   };
 
   const getPronunciations2 = async (pronunciations) => {
-    const LexicalSetMap2 = {
-      FLEECE: { arpabets: ["IY"], type: "vowel" },
-      KIT: { arpabets: ["IH"], type: "vowel" },
-      DRESS: { arpabets: ["EH"], type: "vowel" },
-      TRAP: { arpabets: ["AE"], type: "vowel" },
-      GOOSE: { arpabets: ["UW"], type: "vowel" },
-      FOOT: { arpabets: ["UH"], type: "vowel" },
-      STRUT: { arpabets: ["AH"], type: "vowel" },
-      LOT: { arpabets: ["AA", "AO"], type: "vowel" },
-      FACE: { arpabets: ["EY"], type: "vowel" },
-      PRICE: { arpabets: ["AY"], type: "vowel" },
-      CHOICE: { arpabets: ["OY"], type: "vowel" },
-      GOAT: { arpabets: ["OW"], type: "vowel" },
-      MOUTH: { arpabets: ["AW"], type: "vowel" },
-      NURSE: { arpabets: ["ER"], type: "vowel" },
-      H: { arpabets: ["HH"], type: "consonant" },
-      J: { arpabets: ["JH"], type: "consonant" },
-    };
-
     const pronunciations2 = pronunciations.map((pronunciation) => {
       const phonemes = pronunciation.split(" ");
 
@@ -315,7 +301,7 @@ const TranscriptViewerV1 = ({
         const basePhoneme = phoneme.replace(/[0-2]$/, "");
         const stressMarker = phoneme.match(/[0-2]$/)?.[0] || "";
 
-        const lexicalSet = Object.entries(LexicalSetMap2).find(([_, data]) =>
+        const lexicalSet = Object.entries(LEXICAL_SET_MAP).find(([_, data]) =>
           data.arpabets.includes(basePhoneme)
         );
 
@@ -338,51 +324,10 @@ const TranscriptViewerV1 = ({
   };
 
   const getPronunciations3 = async (cmuPronunciations, lexicalSets) => {
-    // Lexical Set to IPA mapping (for vowels)
+    // Add commA to the IPA map (it's a special case for unstressed AH)
     const lexicalSetToIpaMap = {
-      FLEECE: "i",
-      KIT: "ɪ",
-      DRESS: "ɛ",
-      TRAP: "æ",
-      GOOSE: "u",
-      FOOT: "ʊ",
-      STRUT: "ʌ", // STRUT vowel (stressed AH)
+      ...LEXICAL_SET_TO_IPA,
       commA: "ə", // commA vowel (unstressed AH)
-      LOT: "ɑ",
-      FACE: "eɪ",
-      PRICE: "aɪ",
-      CHOICE: "ɔɪ",
-      GOAT: "oʊ",
-      MOUTH: "aʊ",
-      NURSE: "ər",
-    };
-
-    // CMU to IPA mapping (for consonants)
-    const cmuToIpaMap = {
-      B: "b",
-      CH: "tʃ",
-      D: "d",
-      DH: "ð",
-      F: "f",
-      G: "ɡ",
-      HH: "h",
-      JH: "dʒ",
-      K: "k",
-      L: "l",
-      M: "m",
-      N: "n",
-      NG: "ŋ",
-      P: "p",
-      R: "r",
-      S: "s",
-      SH: "ʃ",
-      T: "t",
-      TH: "θ",
-      V: "v",
-      W: "w",
-      Y: "j",
-      Z: "z",
-      ZH: "ʒ",
     };
 
     const pronunciations3 = [];
@@ -406,9 +351,9 @@ const TranscriptViewerV1 = ({
         if (lexicalSetToIpaMap[baseLexical]) {
           // It's a vowel - use lexical set mapping
           ipaSymbol = lexicalSetToIpaMap[baseLexical];
-        } else if (cmuToIpaMap[baseCmu]) {
+        } else if (CMU_TO_IPA[baseCmu]) {
           // It's a consonant - use CMU mapping
-          ipaSymbol = cmuToIpaMap[baseCmu];
+          ipaSymbol = CMU_TO_IPA[baseCmu];
         } else {
           // Fallback to original phoneme
           ipaSymbol = baseCmu;

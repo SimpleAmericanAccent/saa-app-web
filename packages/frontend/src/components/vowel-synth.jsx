@@ -1,21 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "frontend/src/components/ui/button";
 import { Slider } from "frontend/src/components/ui/slider";
-
-const VOWEL_SYMBOLS = [
-  { symbol: "FLEECE", F1: 350, F2: 2030 },
-  // { symbol: "o", F1: 500, F2: 800 },
-  { symbol: "GOOSE", F1: 350, F2: 800 },
-  { symbol: "TRAP", F1: 700, F2: 1700 },
-  { symbol: "schwa", F1: 525, F2: 1200 },
-  { symbol: "KIT", F1: 410, F2: 1800 },
-  { symbol: "DRESS", F1: 630, F2: 1760 },
-  { symbol: "STRUT", F1: 600, F2: 1200 },
-  { symbol: "FOOT", F1: 430, F2: 1080 },
-  { symbol: "LOT", F1: 700, F2: 1100 },
-];
-
-// ...existing VOWEL_SYMBOLS array...
+import { VOWEL_SYMBOLS } from "shared/phonemes.js";
 
 // Add these display range calculations
 const F1Values = VOWEL_SYMBOLS.map((v) => v.F1);
