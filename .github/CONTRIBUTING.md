@@ -1,7 +1,7 @@
 # Contributing
 
 This repository is public so that hiring teams can review my work.  
-It is **not an open-source project** and therefore does not accept external contributions.
+It is proprietary and does not accept external contributions.
 
 - Please do not submit pull requests.
 - Please do not open issues (they may be closed without response).
