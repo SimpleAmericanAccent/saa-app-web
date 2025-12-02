@@ -120,8 +120,9 @@ export const PHONEMES = {
     description: "Words with the vowel sound in 'happy', 'city', 'pretty'",
     order: 22,
   },
-  COMMA: {
-    arpabets: ["AH"],
+  commA: {
+    arpabets: ["AH"], // unstressed AH
+    altNames: ["schwa"],
     type: "vowel",
     ipa: "ə",
     description:
@@ -129,16 +130,6 @@ export const PHONEMES = {
     order: 24,
     formants: { F1: 525, F2: 1200 },
     note: "Unstressed AH (commA)",
-  },
-  // Special case: commA (used in transcript conversion for unstressed AH)
-  commA: {
-    arpabets: ["AH"],
-    type: "vowel",
-    ipa: "ə",
-    description: "Unstressed schwa sound",
-    order: 24,
-    formants: { F1: 525, F2: 1200 },
-    note: "Alias for COMMA in transcript conversion",
   },
 
   // Consonants
@@ -384,14 +375,10 @@ export const CONSONANT_GROUPS = [
 export const VOWEL_SYMBOLS = Object.entries(PHONEMES)
   .filter(([_, data]) => data.type === "vowel" && data.formants)
   .map(([name, data]) => ({
-    symbol: name,
+    symbol: data.altNames ? data.altNames[0] : name,
     F1: data.formants.F1,
     F2: data.formants.F2,
-  }))
-  .concat([
-    // Add schwa separately if needed (it's in vowel-synth but not in main PHONEMES as "schwa")
-    { symbol: "schwa", F1: 525, F2: 1200 },
-  ]);
+  }));
 
 // Database seed data helpers
 export const getLexicalSetsForDB = () =>

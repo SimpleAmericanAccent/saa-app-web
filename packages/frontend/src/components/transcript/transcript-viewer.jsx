@@ -324,12 +324,6 @@ const TranscriptViewerV1 = ({
   };
 
   const getPronunciations3 = async (cmuPronunciations, lexicalSets) => {
-    // Add commA to the IPA map (it's a special case for unstressed AH)
-    const lexicalSetToIpaMap = {
-      ...LEXICAL_SET_TO_IPA,
-      commA: "ə", // commA vowel (unstressed AH)
-    };
-
     const pronunciations3 = [];
 
     for (let i = 0; i < cmuPronunciations.length; i++) {
@@ -348,9 +342,9 @@ const TranscriptViewerV1 = ({
 
         // Use lexical set for vowels, CMU for consonants
         let ipaSymbol;
-        if (lexicalSetToIpaMap[baseLexical]) {
+        if (LEXICAL_SET_TO_IPA[baseLexical]) {
           // It's a vowel - use lexical set mapping
-          ipaSymbol = lexicalSetToIpaMap[baseLexical];
+          ipaSymbol = LEXICAL_SET_TO_IPA[baseLexical];
         } else if (CMU_TO_IPA[baseCmu]) {
           // It's a consonant - use CMU mapping
           ipaSymbol = CMU_TO_IPA[baseCmu];
