@@ -10,23 +10,7 @@ import {
   DropdownMenuSeparator,
 } from "frontend/src/components/ui/dropdown-menu";
 
-// Define the grid structure and groupings
-const VOWEL_GROUPS = [
-  ["FLEECE", "GOOSE", "FACE"],
-  ["KIT", "FOOT", "PRICE"],
-  ["DRESS", "STRUT", "CHOICE"],
-  ["TRAP", "LOT", "GOAT"],
-  [null, null, "MOUTH"],
-];
-
-const CONSONANT_GROUPS = [
-  ["P", "T", "CH", "K"],
-  ["B", "D", "J", "G"],
-  ["F", "TH", "S", "SH", "H"],
-  ["V", "DH", "Z", "ZH"],
-  ["Y", "R", "W", "L"],
-  ["M", "N", "NG", null, "misc"],
-];
+import { VOWEL_GROUPS, CONSONANT_GROUPS } from "shared/phonemes.js";
 
 const getConsonantGroups = (hideMisc) => {
   if (hideMisc) {

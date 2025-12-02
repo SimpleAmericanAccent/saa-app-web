@@ -1,50 +1,8 @@
 import express from "express";
 import { prisma } from "../prisma/services/prisma-client.js";
+import { LEXICAL_SET_MAP } from "shared/phonemes.js";
 
 const router = express.Router();
-
-const LEXICAL_SET_MAP = {
-  FLEECE: { arpabets: ["IY"], type: "vowel" },
-  KIT: { arpabets: ["IH"], type: "vowel" },
-  DRESS: { arpabets: ["EH"], type: "vowel" },
-  TRAP: { arpabets: ["AE"], type: "vowel" },
-  GOOSE: { arpabets: ["UW"], type: "vowel" },
-  FOOT: { arpabets: ["UH"], type: "vowel" },
-  STRUT: { arpabets: ["AH"], type: "vowel" },
-  commA: { arpabets: ["AH"], type: "vowel" },
-  LOT: { arpabets: ["AA", "AO"], type: "vowel" },
-  FACE: { arpabets: ["EY"], type: "vowel" },
-  PRICE: { arpabets: ["AY"], type: "vowel" },
-  CHOICE: { arpabets: ["OY"], type: "vowel" },
-  GOAT: { arpabets: ["OW"], type: "vowel" },
-  MOUTH: { arpabets: ["AW"], type: "vowel" },
-  NURSE: { arpabets: ["ER"], type: "vowel" },
-
-  P: { arpabets: ["P"], type: "consonant" },
-  B: { arpabets: ["B"], type: "consonant" },
-  T: { arpabets: ["T"], type: "consonant" },
-  D: { arpabets: ["D"], type: "consonant" },
-  K: { arpabets: ["K"], type: "consonant" },
-  G: { arpabets: ["G"], type: "consonant" },
-  CH: { arpabets: ["CH"], type: "consonant" },
-  J: { arpabets: ["JH"], type: "consonant" },
-  F: { arpabets: ["F"], type: "consonant" },
-  V: { arpabets: ["V"], type: "consonant" },
-  TH: { arpabets: ["TH"], type: "consonant" },
-  DH: { arpabets: ["DH"], type: "consonant" },
-  S: { arpabets: ["S"], type: "consonant" },
-  SH: { arpabets: ["SH"], type: "consonant" },
-  Z: { arpabets: ["Z"], type: "consonant" },
-  ZH: { arpabets: ["ZH"], type: "consonant" },
-  H: { arpabets: ["HH"], type: "consonant" },
-  M: { arpabets: ["M"], type: "consonant" },
-  N: { arpabets: ["N"], type: "consonant" },
-  NG: { arpabets: ["NG"], type: "consonant" },
-  L: { arpabets: ["L"], type: "consonant" },
-  R: { arpabets: ["R"], type: "consonant" },
-  W: { arpabets: ["W"], type: "consonant" },
-  Y: { arpabets: ["Y"], type: "consonant" },
-};
 
 router.get("/word/:word", async (req, res) => {
   const word = req.params.word.toLowerCase();

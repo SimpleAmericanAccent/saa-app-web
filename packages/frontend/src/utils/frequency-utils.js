@@ -7,62 +7,16 @@
 import wordFrequencyLists from "../data/word-frequency-lists.json";
 
 /**
- * Maps phoneme names from accent-explorer to frequency data keys
- */
-const PHONEME_MAPPING = {
-  FLEECE: "FLEECE",
-  KIT: "KIT",
-  DRESS: "DRESS",
-  TRAP: "TRAP",
-  GOOSE: "GOOSE",
-  FOOT: "FOOT",
-  STRUT: "STRUT",
-  commA: "commA",
-  LOT: "LOT",
-  FACE: "FACE",
-  PRICE: "PRICE",
-  CHOICE: "CHOICE",
-  GOAT: "GOAT",
-  MOUTH: "MOUTH",
-  NURSE: "NURSE",
-  P: "P",
-  B: "B",
-  T: "T",
-  D: "D",
-  K: "K",
-  G: "G",
-  CH: "CH",
-  J: "J",
-  F: "F",
-  V: "V",
-  TH: "TH",
-  DH: "DH",
-  S: "S",
-  SH: "SH",
-  Z: "Z",
-  ZH: "ZH",
-  H: "H",
-  M: "M",
-  N: "N",
-  NG: "NG",
-  L: "L",
-  R: "R",
-  W: "W",
-  Y: "Y",
-};
-
-/**
  * Get frequency data for a specific phoneme
  * @param {string} phonemeName - The phoneme name (e.g., 'FLEECE', 'KIT')
  * @returns {Array} Array of word objects with frequency data
  */
 export function getFrequencyData(phonemeName) {
-  const mappedName = PHONEME_MAPPING[phonemeName];
-  if (!mappedName || !wordFrequencyLists[mappedName]) {
+  if (!phonemeName || !wordFrequencyLists[phonemeName]) {
     return [];
   }
 
-  const data = wordFrequencyLists[mappedName];
+  const data = wordFrequencyLists[phonemeName];
 
   // Handle different data structures
   if (Array.isArray(data)) {
@@ -86,12 +40,11 @@ export function getFrequencyData(phonemeName) {
  * @returns {Array} Array of word objects
  */
 export function getFrequencyWords(phonemeName, count = 100) {
-  const mappedName = PHONEME_MAPPING[phonemeName];
-  if (!mappedName || !wordFrequencyLists[mappedName]) {
+  if (!phonemeName || !wordFrequencyLists[phonemeName]) {
     return [];
   }
 
-  const data = wordFrequencyLists[mappedName];
+  const data = wordFrequencyLists[phonemeName];
 
   // Handle different data structures
   if (Array.isArray(data)) {
@@ -146,12 +99,11 @@ export function getWordFrequency(word, phonemeName) {
  * @returns {Array} Array of available frequency ranges
  */
 export function getAvailableFrequencyRanges(phonemeName) {
-  const mappedName = PHONEME_MAPPING[phonemeName];
-  if (!mappedName || !wordFrequencyLists[mappedName]) {
+  if (!phonemeName || !wordFrequencyLists[phonemeName]) {
     return [];
   }
 
-  const data = wordFrequencyLists[mappedName];
+  const data = wordFrequencyLists[phonemeName];
   const ranges = [];
 
   if (Array.isArray(data)) {
