@@ -4,12 +4,13 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import mdx from "@mdx-js/rollup";
 import { fileURLToPath } from "url";
+import { loadEnv } from "vite";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const isDev = process.env.NODE_ENV === "development";
-const backendTarget = "https://localhost:5000";
+const env = loadEnv(process.env.NODE_ENV, path.resolve(__dirname, "../../"));
+const backendTarget = env.VITE_BACKEND_URL || "https://localhost:5000";
 
 const proxyPaths = ["/logout", "/callback", "/api"];
 
@@ -44,6 +45,9 @@ export const makeLogOnce = (label) => (server) => {
         ) +
         "\n"
     );
+    console.log("isDev", isDev);
+    console.log("backendTarget", backendTarget);
+    console.log("env", env);
   }, 100);
 };
 
@@ -62,6 +66,7 @@ export const getBaseConfig = () => ({
   clearScreen: false,
   logLevel: "warn",
   plugins: basePlugins,
+  envDir: path.resolve(__dirname, "../../"),
   server: {
     https: isDev
       ? {

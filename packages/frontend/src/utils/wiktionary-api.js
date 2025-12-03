@@ -4,6 +4,7 @@
  */
 
 import { cleanWordForAPI } from "shared/clean-word";
+import { fetchData } from "./api";
 
 /**
  * Get pronunciation audio files from Wiktionary for a given word
@@ -18,15 +19,10 @@ export const getWiktionaryAudio = async (word) => {
 
   try {
     // Use backend proxy to avoid CORS issues
-    const response = await fetch(
+    const data = await fetchData(
       `/api/wiktionary/audio/${encodeURIComponent(cleanedWord)}`
     );
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
     return data || [];
   } catch (error) {
     console.error(
@@ -69,15 +65,9 @@ export const getWiktionaryUSAudio = async (word) => {
 
   try {
     // Use backend proxy to avoid CORS issues
-    const response = await fetch(
+    const data = await fetchData(
       `/api/wiktionary/audio/${encodeURIComponent(cleanedWord)}/us`
     );
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
 
     // Return the first US audio URL (for backward compatibility with Quiz)
     if (Array.isArray(data) && data.length > 0) {

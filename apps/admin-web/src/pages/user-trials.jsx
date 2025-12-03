@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { fetchData } from "frontend/src/utils/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -182,25 +183,20 @@ const UserTrialsAdmin = () => {
   // Fetch all available contrasts
   const fetchAllContrasts = async () => {
     try {
-      const response = await fetch("/api/quiz/contrasts");
-      if (response.ok) {
-        const data = await response.json();
-        const contrastsByCategory = {};
-        data.contrasts.forEach((contrast) => {
-          if (!contrastsByCategory[contrast.category]) {
-            contrastsByCategory[contrast.category] = {};
-          }
-          contrastsByCategory[contrast.category][contrast.name] = {
-            key: contrast.key,
-            name: contrast.name,
-            category: contrast.category,
-            description: contrast.description,
-          };
-        });
-        setAllContrasts(contrastsByCategory);
-      } else {
-        console.error("Failed to fetch contrasts");
-      }
+      const data = await fetchData("/api/quiz/contrasts");
+      const contrastsByCategory = {};
+      data.contrasts.forEach((contrast) => {
+        if (!contrastsByCategory[contrast.category]) {
+          contrastsByCategory[contrast.category] = {};
+        }
+        contrastsByCategory[contrast.category][contrast.name] = {
+          key: contrast.key,
+          name: contrast.name,
+          category: contrast.category,
+          description: contrast.description,
+        };
+      });
+      setAllContrasts(contrastsByCategory);
     } catch (error) {
       console.error("Error fetching contrasts:", error);
     }
@@ -210,13 +206,8 @@ const UserTrialsAdmin = () => {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/admin/users/quiz-activity");
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data.users);
-      } else {
-        console.error("Failed to fetch users");
-      }
+      const data = await fetchData("/api/admin/users/quiz-activity");
+      setUsers(data.users);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -232,46 +223,40 @@ const UserTrialsAdmin = () => {
     }
 
     try {
-      let response;
+      let data;
       if (reset) {
         // On initial load, try to get all trials at once
-        response = await fetch(`/api/admin/users/${userId}/trials?limit=10000`);
+        data = await fetchData(`/api/admin/users/${userId}/trials?limit=10000`);
       } else {
         // For pagination, use the normal limit
         const currentOffset = pagination.offset;
-        response = await fetch(
+        data = await fetchData(
           `/api/admin/users/${userId}/trials?limit=${pagination.limit}&offset=${currentOffset}`
         );
       }
 
-      if (response.ok) {
-        const data = await response.json();
-
-        if (reset) {
-          setUserTrials(data.trials);
-          // Use pagination info from backend
-          setPagination((prev) => ({
-            ...prev,
-            hasMore: data.pagination?.hasMore || false,
-            totalLoaded: data.trials.length,
-            total: data.pagination?.total || data.trials.length,
-          }));
-        } else {
-          setUserTrials((prev) => [...prev, ...data.trials]);
-
-          // Use pagination info from backend
-          const newTotalLoaded = pagination.totalLoaded + data.trials.length;
-
-          setPagination((prev) => ({
-            ...prev,
-            offset: prev.offset + prev.limit,
-            hasMore: data.pagination?.hasMore || false,
-            totalLoaded: newTotalLoaded,
-            total: data.pagination?.total || prev.total,
-          }));
-        }
+      if (reset) {
+        setUserTrials(data.trials);
+        // Use pagination info from backend
+        setPagination((prev) => ({
+          ...prev,
+          hasMore: data.pagination?.hasMore || false,
+          totalLoaded: data.trials.length,
+          total: data.pagination?.total || data.trials.length,
+        }));
       } else {
-        console.error("Failed to fetch user trials");
+        setUserTrials((prev) => [...prev, ...data.trials]);
+
+        // Use pagination info from backend
+        const newTotalLoaded = pagination.totalLoaded + data.trials.length;
+
+        setPagination((prev) => ({
+          ...prev,
+          offset: prev.offset + prev.limit,
+          hasMore: data.pagination?.hasMore || false,
+          totalLoaded: newTotalLoaded,
+          total: data.pagination?.total || prev.total,
+        }));
       }
     } catch (error) {
       console.error("Error fetching user trials:", error);
@@ -292,19 +277,16 @@ const UserTrialsAdmin = () => {
     if (selectedUser && !isLoading) {
       setIsLoading(true);
       try {
-        const response = await fetch(
+        const data = await fetchData(
           `/api/admin/users/${selectedUser.id}/trials?limit=10000`
         );
-        if (response.ok) {
-          const data = await response.json();
-          setUserTrials(data.trials);
-          setPagination((prev) => ({
-            ...prev,
-            hasMore: false,
-            totalLoaded: data.trials.length,
-            total: data.pagination?.total || data.trials.length,
-          }));
-        }
+        setUserTrials(data.trials);
+        setPagination((prev) => ({
+          ...prev,
+          hasMore: false,
+          totalLoaded: data.trials.length,
+          total: data.pagination?.total || data.trials.length,
+        }));
       } catch (error) {
         console.error("Error loading all trials:", error);
       } finally {
@@ -316,13 +298,8 @@ const UserTrialsAdmin = () => {
   // Fetch stats for a specific user
   const fetchUserStats = async (userId) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}/stats`);
-      if (response.ok) {
-        const data = await response.json();
-        setUserStats(data.stats);
-      } else {
-        console.error("Failed to fetch user stats");
-      }
+      const data = await fetchData(`/api/admin/users/${userId}/stats`);
+      setUserStats(data.stats);
     } catch (error) {
       console.error("Error fetching user stats:", error);
     }

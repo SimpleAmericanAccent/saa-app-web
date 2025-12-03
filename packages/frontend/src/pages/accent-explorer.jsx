@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useIssuesStore } from "../stores/issues-store";
+import { fetchData } from "../utils/api";
 import {
   ExternalLink,
   Brain,
@@ -152,16 +153,11 @@ export default function AccentExplorer() {
     if (!cleanWord) return [];
 
     try {
-      const response = await fetch(`/api/ortho/word/${cleanWord}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.error) {
-          return ["None found"];
-        }
-        return data.pronsCmuDict.map((p) => p.pronCmuDict);
-      } else {
-        return [];
+      const data = await fetchData(`/api/ortho/word/${cleanWord}`);
+      if (data?.error) {
+        return ["None found"];
       }
+      return data.pronsCmuDict.map((p) => p.pronCmuDict);
     } catch (error) {
       console.error("Error fetching pronunciation:", error);
       return [];

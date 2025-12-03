@@ -1,15 +1,11 @@
+import { fetchData } from "./api";
 // Quiz API service for fetching data from backend
 const API_BASE_URL = "/api/quiz"; // Use relative URL to work with Vite proxy
 
 // Fetch all available contrasts from the API
 export async function fetchContrasts() {
   try {
-    const response = await fetch(`${API_BASE_URL}/contrasts`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-
+    const data = await fetchData(`${API_BASE_URL}/contrasts`);
     // Convert contrasts to quiz data format
     const quizData = {};
     for (const contrast of data.contrasts) {
@@ -38,14 +34,9 @@ export async function fetchContrasts() {
 // Fetch pairs for a specific quiz type
 export async function fetchPairs(quizTypeId) {
   try {
-    const response = await fetch(
+    const data = await fetchData(
       `${API_BASE_URL}/pairs?contrastKey=${encodeURIComponent(quizTypeId)}`
     );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
 
     // Convert database pairs to quiz format
     const pairs = data.pairs
@@ -87,7 +78,7 @@ export async function fetchPairs(quizTypeId) {
 // Save a trial to the API
 export async function saveTrial(trialData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/trials`, {
+    const data = await fetchData(`${API_BASE_URL}/trials`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -95,11 +86,7 @@ export async function saveTrial(trialData) {
       body: JSON.stringify(trialData),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
+    return data;
   } catch (error) {
     console.error("Error saving trial:", error);
     throw error;
@@ -130,13 +117,9 @@ export async function getAllQuizMetadata() {
 // Fetch quiz results from API
 export async function fetchQuizResults(recentTrials = 30) {
   try {
-    const response = await fetch(
+    const data = await fetchData(
       `${API_BASE_URL}/results?recentTrials=${recentTrials}`
     );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
     return data.results;
   } catch (error) {
     console.error("Error fetching quiz results:", error);
@@ -147,7 +130,7 @@ export async function fetchQuizResults(recentTrials = 30) {
 // Save quiz settings to API
 export async function saveQuizSettings(settings) {
   try {
-    const response = await fetch(`${API_BASE_URL}/settings`, {
+    const data = await fetchData(`${API_BASE_URL}/settings`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -155,11 +138,6 @@ export async function saveQuizSettings(settings) {
       body: JSON.stringify({ settings }),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
     return data.settings;
   } catch (error) {
     console.error("Error saving quiz settings:", error);
@@ -170,11 +148,7 @@ export async function saveQuizSettings(settings) {
 // Fetch quiz settings from API
 export async function fetchQuizSettings() {
   try {
-    const response = await fetch(`${API_BASE_URL}/settings`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
+    const data = await fetchData(`${API_BASE_URL}/settings`);
     return data.settings;
   } catch (error) {
     console.error("Error fetching quiz settings:", error);
@@ -185,15 +159,11 @@ export async function fetchQuizSettings() {
 // Fetch progress data for a specific contrast
 export async function fetchProgressData(contrastKey, windowSize = 30) {
   try {
-    const response = await fetch(
+    const data = await fetchData(
       `${API_BASE_URL}/progress/${encodeURIComponent(
         contrastKey
       )}?windowSize=${windowSize}`
     );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
     return data;
   } catch (error) {
     console.error("Error fetching progress data:", error);

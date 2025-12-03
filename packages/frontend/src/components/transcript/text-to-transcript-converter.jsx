@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
+import { fetchData } from "frontend/src/utils/api";
 import { Button } from "frontend/src/components/ui/button";
 import { Textarea } from "frontend/src/components/ui/textarea";
 import { Input } from "frontend/src/components/ui/input";
@@ -109,12 +110,7 @@ const TextToTranscriptConverter = ({ onClose, mp3url: initialMp3Url }) => {
       // If it's a URL string, try to fetch it
       if (typeof audioInput === "string") {
         try {
-          const audioResponse = await fetch(audioInput);
-          if (!audioResponse.ok) {
-            throw new Error(
-              `Audio URL returned ${audioResponse.status}: ${audioResponse.statusText}. Make sure the URL is accessible.`
-            );
-          }
+          const audioResponse = await fetchData(audioInput);
           audioData = await audioResponse.blob();
         } catch (fetchErr) {
           if (fetchErr.message.includes("Audio URL returned")) {

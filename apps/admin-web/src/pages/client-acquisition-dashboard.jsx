@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import { fetchData } from "frontend/src/utils/api";
 import * as d3 from "d3";
 import { sankey, sankeyLinkHorizontal, sankeyCenter } from "d3-sankey";
 import { ScrollArea } from "frontend/src/components/ui/scroll-area";
@@ -1540,13 +1541,13 @@ const ClientAcquisitionDashboard = () => {
       // Fetch data from all three endpoints in parallel
       const [plausibleResponse, airtableResponse, instagramResponse] =
         await Promise.all([
-          fetch(
+          fetchData(
             `/api/internalstats/plausible?start=${startDate}&end=${endDate}`
           ),
-          fetch(
+          fetchData(
             `/api/internalstats/airtable?start=${startDate}&end=${endDate}`
           ),
-          fetch(
+          fetchData(
             `/api/internalstats/instagram?start=${startDate}&end=${endDate}`,
             tempToken
               ? {
@@ -1648,13 +1649,13 @@ const ClientAcquisitionDashboard = () => {
       // Fetch data from all three endpoints in parallel
       const [plausibleResponse, airtableResponse, instagramResponse] =
         await Promise.all([
-          fetch(
+          fetchData(
             `/api/internalstats/plausible?start=${startDate}&end=${endDate}`
           ),
-          fetch(
+          fetchData(
             `/api/internalstats/airtable?start=${startDate}&end=${endDate}`
           ),
-          fetch(
+          fetchData(
             `/api/internalstats/instagram?start=${startDate}&end=${endDate}`,
             tempToken
               ? {

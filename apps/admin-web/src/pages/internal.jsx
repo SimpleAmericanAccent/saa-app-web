@@ -174,10 +174,9 @@ const Dashboard = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(
+      const data = await fetchData(
         `/api/internalstats/loadrange?start=${start}&end=${end}`
       );
-      const data = await response.json();
 
       const filteredData = data.filter((record) => {
         const recordDate = new Date(record.fields.Date);
