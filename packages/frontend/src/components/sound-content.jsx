@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import PlayableWord from "./playable-word";
 import { useState, useEffect } from "react";
+import { fetchData } from "../utils/api";
 
 export function SoundContent({
   data,
@@ -18,13 +19,10 @@ export function SoundContent({
     const fetchFrequentWords = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
+        const data = await fetchData(
           `/api/ortho/lex/${soundKey}?limit=20&stress=1`
         );
-        if (response.ok) {
-          const data = await response.json();
-          setFrequentWords(data);
-        }
+        setFrequentWords(data);
       } catch (error) {
         console.error("Error fetching frequent words:", error);
       } finally {

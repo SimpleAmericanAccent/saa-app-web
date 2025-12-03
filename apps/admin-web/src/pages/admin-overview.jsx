@@ -17,13 +17,8 @@ const AdminOverview = () => {
   const fetchOverview = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/admin/overview");
-      if (response.ok) {
-        const data = await response.json();
-        setOverview(data.overview);
-      } else {
-        console.error("Failed to fetch overview");
-      }
+      const data = await fetchData("/api/admin/overview");
+      setOverview(data.overview);
     } catch (error) {
       console.error("Error fetching overview:", error);
     } finally {

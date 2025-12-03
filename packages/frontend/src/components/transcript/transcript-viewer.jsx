@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import React from "react";
 import { cn } from "frontend/src/lib/utils";
+import { fetchData } from "frontend/src/utils/api";
 import useAuthStore from "frontend/src/stores/auth-store";
 import { useWordAudio } from "frontend/src/hooks/use-word-audio";
 import {
@@ -274,18 +275,11 @@ const TranscriptViewerV1 = ({
     if (!cleanWord) return;
 
     try {
-      const response = await fetch(`/api/ortho/word/${cleanWord}`);
-      if (response.ok) {
-        const data = await response.json();
-
-        if (data.error) {
-          return ["None found"];
-        }
-
-        return data.pronsCmuDict.map((p) => p.pronCmuDict);
-      } else {
-        return [];
+      const data = await fetchData(`/api/ortho/word/${cleanWord}`);
+      if (data?.error) {
+        return ["None found"];
       }
+      return data.pronsCmuDict.map((p) => p.pronCmuDict);
     } catch (error) {
       console.error("Error fetching pronunciation:", error);
       return [];

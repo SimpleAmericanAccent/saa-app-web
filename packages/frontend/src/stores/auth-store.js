@@ -31,13 +31,10 @@ const useAuthStore = create((set, get) => ({
       set({ isLoading: true, isFetching: true, error: null });
 
       // Fetch both user profile and auth data in parallel
-      const [userRes, authzData] = await Promise.all([
-        fetch("/api/me"),
+      const [user, authzData] = await Promise.all([
+        fetchData("/api/me"),
         fetchData("/api/authz"),
       ]);
-
-      if (!userRes.ok) throw new Error("Failed to fetch user profile");
-      const user = await userRes.json();
 
       set({
         user,
