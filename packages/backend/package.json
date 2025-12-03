@@ -20,6 +20,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@prisma/client": "^6.7.0",
+    "cors": "^2.8.5",
     "shared": "workspace:*"
   },
   "devDependencies": {

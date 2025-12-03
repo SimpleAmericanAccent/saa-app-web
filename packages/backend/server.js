@@ -5,6 +5,32 @@ import { requiresAdmin } from "./middleware/requires-admin.js";
 import { createAirtableClient } from "./services/airtable.js";
 import { setAdminFlag } from "./middleware/set-admin-flag.js";
 import { authMiddleware } from "./middleware/auth-middleware.js";
+import cors from "cors";
+
+function buildCorsOptions({ isDev, devRedirectUrl, envConfig }) {
+  const devOrigins = [devRedirectUrl, "https://localhost:5173"];
+
+  const prodOrigins = [envConfig.FRONTEND_URL].filter(Boolean);
+
+  const allowedOrigins = isDev ? devOrigins : prodOrigins;
+
+  return {
+    origin(origin, callback) {
+      // Allow non-browser clients with no Origin (curl, Postman, health checks)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.warn("Blocked CORS origin:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true, // needed for Auth0 cookies
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  };
+}
 
 export function createServer({
   auth0Config,
@@ -17,6 +43,10 @@ export function createServer({
   requireAdminGlobally = false,
 }) {
   const app = express();
+
+  const corsOptions = buildCorsOptions({ isDev, devRedirectUrl, envConfig });
+  app.use(cors(corsOptions));
+  app.options("*", cors(corsOptions)); // handle preflight everywhere
 
   app.use(express.json());
   app.use(auth(auth0Config));

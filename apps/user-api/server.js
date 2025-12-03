@@ -20,6 +20,7 @@ bootApp({
   frontendDir: "user-web",
   appLabel: "🙋 USER app",
   envConfig: {
+    FRONTEND_URL: process.env.FRONTEND_URL,
     AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID,
     AIRTABLE_KEY_READ_WRITE_VALUE: process.env.AIRTABLE_KEY_READ_WRITE_VALUE,
     AIRTABLE_KEY_READ_ONLY_VALUE: process.env.AIRTABLE_KEY_READ_ONLY_VALUE,
