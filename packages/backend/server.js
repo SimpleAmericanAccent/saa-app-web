@@ -24,10 +24,6 @@ function buildCorsOptions({ envConfig }) {
     }
   };
 
-  if (isCloudflarePreviewUrl(origin)) {
-    return callback(null, true);
-  }
-
   return {
     origin(origin, callback) {
       // Allow non-browser clients with no Origin (curl, Postman, health checks)
@@ -104,7 +100,14 @@ export function createServer({
     router
   );
 
-  app.get("/login", (req, res) => {
+  const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: "Too many requests from this IP, please try again later.",
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+  app.get("/login", loginLimiter, (req, res) => {
     const frontendUrl = getFrontendUrl(req);
     res.oidc.login({ returnTo: frontendUrl });
   });
