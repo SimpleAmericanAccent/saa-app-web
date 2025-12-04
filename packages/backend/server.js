@@ -118,9 +118,86 @@ export function createServer({
   });
 
   // catch-all for SPA
-  app.all("*", (req, res) =>
-    res.json(`Frontend is running separately at ${envConfig.FRONTEND_URL}`)
-  );
+  app.all("*", (req, res) => {
+    const frontendUrl = getFrontendUrl(req);
+    res.type("html").send(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Simple American Accent App</title>
+          <style>
+          :root {
+            --background: #ffffff;
+            --foreground: #333;
+            --primary: #0070f3;
+            --secondary: #333;
+            --accent: #0070f3;
+            --accent-foreground: #0070f3;
+          }
+            @media (prefers-color-scheme: dark) {
+              :root {
+                --background: #1a1a1a;
+                --foreground: #f5f5f5;
+                --primary: #0070f3;
+                --secondary: #f5f5f5;
+                --accent: #0070f3;
+                --accent-foreground: #0070f3;
+              }
+            }
+            @media (prefers-color-scheme: light) {
+              :root {
+                --background: #ffffff;
+                --foreground: #333;
+                --primary: #0070f3;
+                --secondary: #333;
+                --accent: #0070f3;
+                --accent-foreground: #0070f3;
+              }
+            }
+            @media (prefers-color-scheme: no-preference) {
+              :root {
+                --background: #ffffff;
+                --foreground: #333;
+                --primary: #0070f3;
+                --secondary: #333;
+                --accent: #0070f3;
+                --accent-foreground: #0070f3;
+              }
+            }
+
+            body {
+              font-family: sans-serif;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              height: 100vh;
+              text-align: center;
+              background: var(--background);
+              color: var(--foreground);
+            }
+            a {
+              margin-top: 12px;
+              display: inline-block;
+              color: var(--accent-foreground);
+              text-decoration: none;
+              font-weight: bold;
+            }
+            a:hover {
+              text-decoration: underline;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Simple American Accent App</h1>
+          <p>This is a <em>server</em> for the Simple American Accent App.</p>
+          <p><a href="${frontendUrl}">Click here</a> to access the app.</p>
+        </body>
+      </html>
+    `);
+  });
 
   app.use((err, req, res, next) => {
     console.error("Global Server Error:", err);
