@@ -14,12 +14,30 @@ function buildCorsOptions({ envConfig }) {
     "https://login.app.simpleamericanaccent.com",
   ];
 
+  const isCloudflarePreviewUrl = (origin) => {
+    if (!origin) return false;
+    try {
+      const url = new URL(origin);
+      return url.hostname.endsWith(".saa-app.pages.dev");
+    } catch (error) {
+      return false;
+    }
+  };
+
+  if (isCloudflarePreviewUrl(origin)) {
+    return callback(null, true);
+  }
+
   return {
     origin(origin, callback) {
       // Allow non-browser clients with no Origin (curl, Postman, health checks)
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      if (isCloudflarePreviewUrl(origin)) {
         return callback(null, true);
       }
 
@@ -56,6 +74,20 @@ export function createServer({
     readKey: envConfig.AIRTABLE_KEY_READ_ONLY_VALUE,
     writeKey: envConfig.AIRTABLE_KEY_READ_WRITE_VALUE,
   });
+  const getFrontendUrl = (req) => {
+    const origin = req.headers.origin || req.headers.referer;
+    if (origin) {
+      try {
+        const url = new URL(origin);
+        if (url.hostname.endsWith(".saa-app.pages.dev")) {
+          return origin.endsWith("/") ? origin.slice(0, -1) : origin;
+        }
+      } catch (error) {
+        return envConfig.FRONTEND_URL;
+      }
+    }
+    return envConfig.FRONTEND_URL;
+  };
 
   app.use(cors(corsOptions));
   app.options("*", cors(corsOptions)); // handle preflight everywhere
@@ -73,11 +105,13 @@ export function createServer({
   );
 
   app.get("/login", (req, res) => {
-    res.oidc.login({ returnTo: envConfig.FRONTEND_URL });
+    const frontendUrl = getFrontendUrl(req);
+    res.oidc.login({ returnTo: frontendUrl });
   });
 
   app.get("/logout", (req, res) => {
-    res.oidc.logout({ returnTo: envConfig.FRONTEND_URL });
+    const frontendUrl = getFrontendUrl(req);
+    res.oidc.logout({ returnTo: frontendUrl });
   });
 
   // catch-all for SPA
