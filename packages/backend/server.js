@@ -71,7 +71,7 @@ export function createServer({
     writeKey: envConfig.AIRTABLE_KEY_READ_WRITE_VALUE,
   });
   const getFrontendUrl = (req) => {
-    const origin = req.headers.origin || req.headers.referer;
+    const origin = req.headers.origin;
     if (origin) {
       try {
         const url = new URL(origin);
