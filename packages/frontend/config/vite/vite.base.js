@@ -8,21 +8,7 @@ import { loadEnv } from "vite";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const isDev = process.env.NODE_ENV === "development";
 const env = loadEnv(process.env.NODE_ENV, path.resolve(__dirname, "../../"));
-const backendTarget = env.VITE_BACKEND_URL || "https://localhost:5000";
-
-const proxyPaths = ["/logout", "/callback", "/api"];
-
-const makeProxyEntry = (path) => ({
-  [path]: {
-    target: backendTarget,
-    changeOrigin: true,
-    secure: false,
-  },
-});
-
-const proxy = Object.assign({}, ...proxyPaths.map(makeProxyEntry));
 
 const unindent = (str) =>
   str
@@ -36,17 +22,7 @@ export const makeLogOnce = (label) => (server) => {
   globalThis.__VITE_LOGGED_ONCE__ = true;
 
   setTimeout(() => {
-    console.log(
-      "\n" +
-        unindent(
-          `Started VITE server at ${
-            isDev ? "https://localhost" : "http://localhost"
-          }:${server.config.server.port}`
-        ) +
-        "\n"
-    );
-    console.log("isDev", isDev);
-    console.log("backendTarget", backendTarget);
+    console.log("\n" + unindent(`Started Vite server`) + "\n");
     console.log("env", env);
   }, 100);
 };
@@ -67,21 +43,20 @@ export const getBaseConfig = () => ({
   logLevel: "warn",
   plugins: basePlugins,
   envDir: path.resolve(__dirname, "../../"),
-  server: {
-    https: isDev
+  server:
+    process.env.NODE_ENV === "development"
       ? {
-          key: fs.readFileSync(
-            path.resolve(__dirname, "../../../../localhost-key.pem")
-          ),
-          cert: fs.readFileSync(
-            path.resolve(__dirname, "../../../../localhost.pem")
-          ),
+          https: {
+            key: fs.readFileSync(
+              path.resolve(__dirname, "../../../../localhost-key.pem")
+            ),
+            cert: fs.readFileSync(
+              path.resolve(__dirname, "../../../../localhost.pem")
+            ),
+          },
+          open: true, // Open backend URL when dev server starts
         }
-      : undefined,
-    port: 5173,
-    open: "https://localhost:5000", // Open backend URL when dev server starts
-    proxy,
-  },
+      : {},
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "../../src"),

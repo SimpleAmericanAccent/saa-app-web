@@ -1,5 +1,3 @@
-import path from "path";
-import url from "url";
 import fs from "fs";
 import https from "https";
 import { createServer } from "./server.js";
@@ -9,51 +7,31 @@ import { createServer } from "./server.js";
  * Call this in each app with app-specific config.
  */
 export function bootApp({
-  dirname,
   router,
   environment_flag,
   auth0Config,
   envConfig,
-  frontendDir,
-  appLabel,
   requireAdminGlobally = false,
   preSetup = null,
 }) {
-  const __dirname = dirname;
   const isDev = environment_flag === "dev";
-  const port = process.env.PORT || 5000;
-
-  const staticPath = path.join(
-    __dirname,
-    isDev ? `../${frontendDir}/` : `../${frontendDir}/dist`
-  );
-  const indexPath = path.join(staticPath, "index.html");
+  const port = 5000;
 
   const app = createServer({
     auth0Config,
     router,
-    isDev,
-    staticPath,
-    indexPath,
-    devRedirectUrl: "https://localhost:5173", // Redirect to frontend in dev
     envConfig,
     requireAdminGlobally,
   });
 
-  if (preSetup) {
-    preSetup(app);
-  }
+  if (preSetup) preSetup(app);
 
   if (isDev) {
-    const cert = fs.readFileSync("../../localhost.pem");
     const key = fs.readFileSync("../../localhost-key.pem");
-
-    https.createServer({ key, cert }, app).listen(port, () => {
-      console.log(`\nStarted HTTPS Express server on port ${port}`);
-    });
+    const cert = fs.readFileSync("../../localhost.pem");
+    https.createServer({ key, cert }, app).listen(port, () => {});
   } else {
-    app.listen(port, () => {
-      console.log(`\nStarted Express server on port ${port}`);
-    });
+    app.listen(port, () => {});
   }
+  console.log(`\nStarted Express server`);
 }

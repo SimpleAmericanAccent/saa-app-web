@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { fetchData } from "frontend/src/utils/api";
+import { fetchData, buildUrl } from "frontend/src/utils/api";
 import { useReplaysStore } from "./replays-store";
 
 const useAuthStore = create((set, get) => ({
@@ -48,6 +48,23 @@ const useAuthStore = create((set, get) => ({
         isLoggedOut: false,
       });
     } catch (error) {
+      if (error.status === 401) {
+        const path = window.location.pathname;
+        console.log("path", path);
+
+        const publicPaths = ["/login", "/logout", "/callback"];
+        if (!publicPaths.includes(path)) {
+          console.log("redirecting to login", buildUrl("/login"));
+          window.location.replace(buildUrl("/login"));
+        }
+
+        set({
+          isLoggedOut: true,
+          isLoading: false,
+          isFetching: false,
+        });
+        return;
+      }
       console.error("AuthStore: Error fetching user data:", error);
       set({
         error: error.message,
@@ -95,7 +112,7 @@ const useAuthStore = create((set, get) => ({
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Use the built-in Auth0 logout route
-      window.location.replace("/logout");
+      window.location.replace(buildUrl("/logout"));
     } catch (error) {
       console.error("Logout failed:", error);
       set({ error: error.message, isLoading: false });

@@ -10,10 +10,10 @@ import { wrapMethodsWithSafeRoute } from "../middleware/safe-route.js";
 const router = express.Router();
 
 wrapMethodsWithSafeRoute(router);
-router.use("/api", baseRouter);
-router.use("/api/wiktionary", wiktionaryRouter);
-router.use("/api/ortho", orthoRouter);
-router.use("/api/quiz", quizRouter);
-router.use("/api/admin", adminRouter);
+router.use("/", baseRouter);
+router.use("/wiktionary", wiktionaryRouter);
+router.use("/ortho", orthoRouter);
+router.use("/quiz", quizRouter);
+router.use("/admin", adminRouter);
 
 export default router;

@@ -13,7 +13,7 @@ export function requiresAdmin(req, res, next) {
 
   const isDev = process.env.ENVIRONMENT_FLAG === "dev";
   const userAppUrl = isDev
-    ? "https://localhost:5173"
+    ? process.env.FRONTEND_URL
     : "https://app.simpleamericanaccent.com";
 
   res.status(403).type("html").send(`
