@@ -158,10 +158,10 @@ export function createServer({
             }
             @media (prefers-color-scheme: no-preference) {
               :root {
-                --background: #ffffff;
-                --foreground: #333;
+                --background: #1a1a1a;
+                --foreground: #f5f5f5;
                 --primary: #0070f3;
-                --secondary: #333;
+                --secondary: #f5f5f5;
                 --accent: #0070f3;
                 --accent-foreground: #0070f3;
               }
