@@ -2,15 +2,16 @@ import useAuthStore from "frontend/src/stores/auth-store";
 import { useEffect } from "react";
 import { SidebarLeft } from "frontend/src/components/sidebar-left";
 import { MobileNav } from "frontend/src/components/mobile-nav";
+import { buildUrl } from "frontend/src/utils/api";
 
 export default function UserLayout({ children }) {
   const { isLoggedOut, fetchAdminStatus } = useAuthStore();
 
-  useEffect(() => {
-    if (isLoggedOut === true) {
-      window.location.replace("/logout");
-    }
-  }, [isLoggedOut]);
+  // useEffect(() => {
+  //   if (isLoggedOut === true) {
+  //     window.location.replace(buildUrl("/logout"));
+  //   }
+  // }, [isLoggedOut]);
 
   useEffect(() => {
     fetchAdminStatus();

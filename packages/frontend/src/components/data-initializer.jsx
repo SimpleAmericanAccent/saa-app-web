@@ -11,7 +11,13 @@ export default function DataInitializer() {
 
   useEffect(() => {
     // Only fetch once when the app starts
-    if (!hasInitialized.current) {
+    if (hasInitialized.current) {
+      return;
+    }
+
+    const path = window.location.pathname;
+    const publicPaths = ["/login", "/logout", "/callback"];
+    if (!publicPaths.includes(path)) {
       hasInitialized.current = true;
       // Fetch issues, user data, and replays in parallel
       Promise.all([fetchIssues(), fetchUserData(), fetchReplays()]);

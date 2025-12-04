@@ -1,24 +1,25 @@
-import path from "path";
-import url from "url";
 import { bootApp } from "backend/entry.js";
 import router from "backend/routes/routes.js";
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-
 bootApp({
-  dirname: __dirname,
   environment_flag: process.env.ENVIRONMENT_FLAG,
   auth0Config: {
-    authRequired: true,
+    authRequired: false,
+    errorOnRequiredAuth: true,
     auth0Logout: true,
     secret: process.env.AUTH0_SECRET,
     baseURL: process.env.AUTH0_BASE_URL,
     clientID: process.env.AUTH0_CLIENT_ID,
     issuerBaseURL: process.env.AUTH0_ISSUER_BASE_ID,
+    authorizationParams: {
+      scope: "openid profile email",
+    },
+    routes: {
+      login: false,
+      logout: false,
+    },
   },
   router,
-  frontendDir: "user-web",
-  appLabel: "🙋 USER app",
   envConfig: {
     FRONTEND_URL: process.env.FRONTEND_URL,
     AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID,

@@ -5,11 +5,11 @@ import { useEffect } from "react";
 export default function AdminLayout({ children }) {
   const { isLoggedOut } = useAuthStore();
 
-  useEffect(() => {
-    if (isLoggedOut === true) {
-      window.location.replace("/logout");
-    }
-  }, [isLoggedOut]);
+  // useEffect(() => {
+  //   if (isLoggedOut === true) {
+  //     window.location.replace("/logout");
+  //   }
+  // }, [isLoggedOut]);
   return (
     <div className="flex h-screen w-full">
       <AdminSidebar /> {/* Optional left panel */}

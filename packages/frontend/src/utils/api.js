@@ -1,6 +1,6 @@
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+export const buildUrl = (url) => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const buildUrl = (url) => {
   if (url.startsWith("https://")) {
     return url;
   }
@@ -24,11 +24,13 @@ export async function fetchData(url, options = {}) {
       credentials: "include",
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      const error = new Error(`HTTP error! Status: ${response.status}`);
+      error.status = response.status;
+      throw error;
     }
     return await response.json();
   } catch (error) {
     console.error("Fetch Error:", error);
-    return null; // Handle errors gracefully
+    throw error; // Handle errors gracefully
   }
 }

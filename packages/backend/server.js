@@ -1,5 +1,6 @@
 import express from "express";
-import { auth } from "express-openid-connect";
+import pkg from "express-openid-connect";
+const { auth, requiresAuth } = pkg;
 import rateLimit from "express-rate-limit";
 import { requiresAdmin } from "./middleware/requires-admin.js";
 import { createAirtableClient } from "./services/airtable.js";
@@ -7,12 +8,11 @@ import { setAdminFlag } from "./middleware/set-admin-flag.js";
 import { authMiddleware } from "./middleware/auth-middleware.js";
 import cors from "cors";
 
-function buildCorsOptions({ isDev, devRedirectUrl, envConfig }) {
-  const devOrigins = [devRedirectUrl, "https://localhost:5173"];
-
-  const prodOrigins = [envConfig.FRONTEND_URL].filter(Boolean);
-
-  const allowedOrigins = isDev ? devOrigins : prodOrigins;
+function buildCorsOptions({ envConfig }) {
+  const allowedOrigins = [
+    envConfig.FRONTEND_URL,
+    "https://login.app.simpleamericanaccent.com",
+  ];
 
   return {
     origin(origin, callback) {
@@ -35,24 +35,11 @@ function buildCorsOptions({ isDev, devRedirectUrl, envConfig }) {
 export function createServer({
   auth0Config,
   router,
-  isDev,
-  staticPath,
-  indexPath,
-  devRedirectUrl = "https://localhost:5173",
   envConfig,
   requireAdminGlobally = false,
 }) {
   const app = express();
-
-  const corsOptions = buildCorsOptions({ isDev, devRedirectUrl, envConfig });
-  app.use(cors(corsOptions));
-  app.options("*", cors(corsOptions)); // handle preflight everywhere
-
-  app.use(express.json());
-  app.use(auth(auth0Config));
-  app.use(setAdminFlag);
-
-  // Rate limiting middleware - applies to all routes except admin users
+  const corsOptions = buildCorsOptions({ envConfig });
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 900, // limit each IP to 900 requests per windowMs
@@ -64,44 +51,46 @@ export function createServer({
       return req.isAdmin === true;
     },
   });
-
-  app.use(limiter);
-
-  // Apply JIT user provisioning middleware globally
-  app.use(authMiddleware());
-
-  if (requireAdminGlobally) app.use(requiresAdmin);
-
-  app.locals.env = envConfig;
   app.locals.airtable = createAirtableClient({
     baseId: envConfig.AIRTABLE_BASE_ID,
     readKey: envConfig.AIRTABLE_KEY_READ_ONLY_VALUE,
     writeKey: envConfig.AIRTABLE_KEY_READ_WRITE_VALUE,
   });
 
-  app.get("/", (req, res) =>
-    isDev ? res.redirect(devRedirectUrl) : res.sendFile(indexPath)
+  app.use(cors(corsOptions));
+  app.options("*", cors(corsOptions)); // handle preflight everywhere
+  app.use(express.json());
+  app.use(auth(auth0Config));
+
+  app.use(
+    "/api",
+    requiresAuth(),
+    setAdminFlag,
+    limiter,
+    authMiddleware(),
+    requireAdminGlobally ? requiresAdmin : (req, res, next) => next(),
+    router
   );
 
-  app.get("/callback", (req, res) =>
-    isDev ? res.redirect(devRedirectUrl) : res.sendFile(indexPath)
-  );
+  app.get("/login", (req, res) => {
+    res.oidc.login({ returnTo: envConfig.FRONTEND_URL });
+  });
 
-  app.use(router);
-
-  app.use(express.static(staticPath));
+  app.get("/logout", (req, res) => {
+    res.oidc.logout({ returnTo: envConfig.FRONTEND_URL });
+  });
 
   // catch-all for SPA
-  app.get("*", (req, res) =>
-    isDev
-      ? res
-          .status(404)
-          .send(`SPA frontend is running separately at ${devRedirectUrl}`)
-      : res.sendFile(indexPath)
+  app.all("*", (req, res) =>
+    res.json(`Frontend is running separately at ${envConfig.FRONTEND_URL}`)
   );
 
   app.use((err, req, res, next) => {
     console.error("Global Server Error:", err);
+
+    if (err.status === 401)
+      return res.status(401).json({ error: "Unauthorized" });
+
     res.status(500).json({ error: "Something went wrong on the server" });
   });
 

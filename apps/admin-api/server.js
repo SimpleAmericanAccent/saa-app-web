@@ -1,12 +1,8 @@
-import path from "path";
-import url from "url";
 import { bootApp } from "backend/entry.js";
 import router from "backend/routes/routes.js";
 import express from "express";
 import internalStatsRouter from "./routes/internal-stats-router.js";
 import { createAirtableClient } from "backend/services/airtable.js";
-
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const adminRouter = express
   .Router()
@@ -14,19 +10,20 @@ const adminRouter = express
   .use("/api/internalstats", internalStatsRouter);
 
 bootApp({
-  dirname: __dirname,
   environment_flag: process.env.ENVIRONMENT_FLAG,
   auth0Config: {
-    authRequired: true,
+    authRequired: false,
+    errorOnRequiredAuth: true,
     auth0Logout: true,
     secret: process.env.AUTH0_SECRET,
     baseURL: process.env.AUTH0_BASE_URL,
     clientID: process.env.AUTH0_CLIENT_ID,
     issuerBaseURL: process.env.AUTH0_ISSUER_BASE_ID,
+    authorizationParams: {
+      scope: "openid profile email",
+    },
   },
   router: adminRouter,
-  frontendDir: "admin-web",
-  appLabel: "🔒 ADMIN app",
   envConfig: {
     FRONTEND_URL: process.env.FRONTEND_URL,
     AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID,
