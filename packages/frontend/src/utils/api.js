@@ -16,12 +16,12 @@ export const buildUrl = (url) => {
   return `${cleanBase}${cleanUrl}`;
 };
 
-export async function fetchData(url, options = {}) {
+export async function fetchData(url, options = {}, credentials = "include") {
   try {
     const fullUrl = buildUrl(url);
     const response = await fetch(fullUrl, {
       ...options,
-      credentials: "include",
+      credentials,
     });
     if (!response.ok) {
       const error = new Error(`HTTP error! Status: ${response.status}`);
