@@ -14,7 +14,7 @@ const useFetchAudio = () => {
       const { mp3url, tranurl } = audio || {};
       setMp3Url(mp3url);
 
-      const transcriptResponse = await fetchData(tranurl);
+      const transcriptResponse = await fetchData(tranurl, {}, "omit");
 
       // Normalize different transcript formats to common structure
       let normalizedTranscript;
