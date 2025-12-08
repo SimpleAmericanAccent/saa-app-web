@@ -1,4 +1,5 @@
 import express from "express";
+import { getSignedUrlForDownload } from "../services/s3.js";
 
 const baseRouter = express.Router();
 
@@ -216,6 +217,12 @@ baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
     return res.status(404).json({ error: "Audio not found" });
   }
 
+  const awsKeyMp3 = audioData.fields["aws-key-mp3"];
+  const awsKeyJson = awsKeyMp3.split(".")[0] + ".json";
+
+  const mp3Url = await getSignedUrlForDownload(awsKeyMp3);
+  const tranUrl = await getSignedUrlForDownload(awsKeyJson);
+
   const wordsData = await airtable.fetchAirtableRecords("Words%20(instance)", {
     filterByFormula: `{Audio Source} = "${audioData.fields.Name}"`,
   });
@@ -224,8 +231,8 @@ baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
 
   res.json({
     audio: {
-      mp3url: audioData.fields["mp3 url"],
-      tranurl: audioData.fields["tran/alignment JSON url"],
+      mp3url: mp3Url,
+      tranurl: tranUrl,
       name: audioData.fields.Name,
     },
     airtableWords: { records: wordsData }, // Now includes ALL records
