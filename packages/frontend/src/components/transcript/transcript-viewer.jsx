@@ -53,6 +53,11 @@ const TranscriptViewerV1 = ({
   isEditMode = false,
   draftTranscript = null,
   onDraftUpdate = null,
+  onInsertWord = null,
+  onDeleteWord = null,
+  onOpenWordPopover = null,
+  openWordPopover = null,
+  onPopoverOpenChange = null,
   audioRef = null,
   currentTime = undefined,
 }) => {
@@ -369,6 +374,26 @@ const TranscriptViewerV1 = ({
     return draftTranscript.find((w) => w.wordIndex === wordIndex) || null;
   };
 
+  // In edit mode, use draft transcript; otherwise use annotated transcript
+  const wordsToRender = isEditMode && draftTranscript
+    ? draftTranscript.map((draftWord) => {
+        // Find corresponding wordObj for annotations
+        const wordObj = annotatedTranscript
+          .flatMap((p) => p.alignment)
+          .find((w) => w.wordIndex === draftWord.wordIndex);
+        // For newly inserted words, wordObj might not exist
+        return {
+          ...(wordObj || {}),
+          word: draftWord.word,
+          start_time: draftWord.start,
+          start: draftWord.start,
+          lineBreakAfter: draftWord.lineBreakAfter,
+          newParagraphAfter: draftWord.newParagraphAfter,
+          wordIndex: draftWord.wordIndex,
+        };
+      })
+    : annotatedTranscript.flatMap((paragraph) => paragraph.alignment);
+
   const content = (
     <div
       className="py-4 space-y-4"
@@ -379,18 +404,19 @@ const TranscriptViewerV1 = ({
         }
       }}
     >
-      {annotatedTranscript.map((paragraph, index) => (
-        <p key={index} className="leading-relaxed">
-          {paragraph.alignment.map((wordObj) => {
-            const annotations = getAnnotations(wordObj.wordIndex);
-            const hasAnnotations = annotations.length > 0;
-            const isActive = activeWordIndex === wordObj.wordIndex;
-            const highlightState = shouldHighlightWord(wordObj);
-            const hasMisc = hasMiscAnnotation(annotations);
-            const draftWord = getDraftWord(wordObj.wordIndex);
-            const displayWord = draftWord?.word ?? wordObj.word;
-            const displayStart =
-              draftWord?.start ?? wordObj.start_time ?? wordObj.start ?? 0;
+      <p className="leading-relaxed">
+        {wordsToRender.map((wordObj, wordIndex) => {
+          const annotations = getAnnotations(wordObj.wordIndex);
+          const hasAnnotations = annotations.length > 0;
+          const isActive = activeWordIndex === wordObj.wordIndex;
+          const highlightState = shouldHighlightWord(wordObj);
+          const hasMisc = hasMiscAnnotation(annotations);
+          const draftWord = getDraftWord(wordObj.wordIndex);
+          const displayWord = draftWord?.word ?? wordObj.word;
+          const displayStart =
+            draftWord?.start ?? wordObj.start_time ?? wordObj.start ?? 0;
+          const shouldShowLineBreak = draftWord?.lineBreakAfter ?? wordObj.lineBreakAfter ?? false;
+          const shouldShowParagraphBreak = draftWord?.newParagraphAfter ?? wordObj.newParagraphAfter ?? false;
 
             const wordSpan = (
               <span
@@ -448,6 +474,21 @@ const TranscriptViewerV1 = ({
                   onSave={(updates) =>
                     onDraftUpdate(wordObj.wordIndex, updates)
                   }
+                  onInsertWord={(afterWordIndex, newWord) => {
+                    if (onInsertWord) {
+                      onInsertWord(afterWordIndex, newWord, onOpenWordPopover);
+                    }
+                  }}
+                  onDeleteWord={onDeleteWord ? () => onDeleteWord(wordObj.wordIndex) : null}
+                  shouldOpen={openWordPopover === wordObj.wordIndex}
+                  onOpenChange={(open) => {
+                    if (onPopoverOpenChange) {
+                      onPopoverOpenChange(open);
+                    }
+                    if (!open && onOpenWordPopover) {
+                      onOpenWordPopover(null);
+                    }
+                  }}
                   audioRef={audioRef}
                   currentTime={currentTime}
                 >
@@ -475,20 +516,17 @@ const TranscriptViewerV1 = ({
                 ) : (
                   wrappedWordSpan
                 )}{" "}
-                {wordObj.lineBreakAfter ? <br /> : ""}
-                {wordObj.newParagraphAfter ? (
+                {shouldShowLineBreak && <br />}
+                {shouldShowParagraphBreak && (
                   <>
                     <br />
                     <br />
                   </>
-                ) : (
-                  ""
                 )}
               </React.Fragment>
             );
           })}
         </p>
-      ))}
     </div>
   );
 
