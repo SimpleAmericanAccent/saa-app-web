@@ -4,6 +4,7 @@ import { fetchData } from "frontend/src/utils/api";
 const useFetchAudio = () => {
   const [mp3url, setMp3Url] = useState("");
   const [annotatedTranscript, setAnnotatedTranscript] = useState([]);
+  const [s3KeyJson, setS3KeyJson] = useState(null);
 
   const fetchAudio = async (selectedAudio) => {
     if (!selectedAudio) return;
@@ -11,8 +12,9 @@ const useFetchAudio = () => {
     try {
       const response = await fetchData(`/api/data/loadAudio/${selectedAudio}`);
       const { audio, airtableWords } = response || {};
-      const { mp3url, tranurl } = audio || {};
+      const { mp3url, tranurl, s3KeyJson: keyJson } = audio || {};
       setMp3Url(mp3url);
+      setS3KeyJson(keyJson || null);
 
       const transcriptResponse = await fetchData(tranurl, {}, "omit");
 
@@ -135,6 +137,7 @@ const useFetchAudio = () => {
     mp3url,
     annotatedTranscript,
     fetchAudio,
+    s3KeyJson,
   };
 };
 

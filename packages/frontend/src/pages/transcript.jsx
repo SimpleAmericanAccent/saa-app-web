@@ -20,6 +20,7 @@ import {
   Copy,
   Download,
   Activity,
+  Upload,
 } from "lucide-react";
 
 import TranscriptViewer from "frontend/src/components/transcript/transcript-viewer";
@@ -67,7 +68,8 @@ export default function Transcript() {
   };
 
   // Fetch Audio & Transcript Data
-  const { mp3url, annotatedTranscript, fetchAudio } = useFetchAudio();
+  const { mp3url, annotatedTranscript, fetchAudio, s3KeyJson } =
+    useFetchAudio();
 
   // Reference for Audio Player & State for Playback Speed
   const audioRef = useRef(null);
@@ -92,6 +94,9 @@ export default function Transcript() {
   const [draftTranscript, setDraftTranscript] = useState(null);
   const [showWaveform, setShowWaveform] = useState(false);
   const [showTextConverter, setShowTextConverter] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [openWordPopover, setOpenWordPopover] = useState(null);
+  const [isWordPopoverOpen, setIsWordPopoverOpen] = useState(false);
   const hasInitialized = useRef(false);
   const prevSelectedAudio = useRef(selectedAudio);
   // #endregion
@@ -211,16 +216,12 @@ export default function Transcript() {
     setActiveWordIndex(idx);
   }, [currentTime, annotatedTranscript, isEditMode, draftTranscript]);
 
-  // Automatically open waveform when edit mode is enabled
+  // Close waveform when exiting edit mode
   useEffect(() => {
-    const hasAudioLoaded = Boolean(mp3url && annotatedTranscript?.length);
-    if (isEditMode && hasAudioLoaded) {
-      setShowWaveform(true);
-    } else if (!isEditMode) {
-      // Close waveform when exiting edit mode
+    if (!isEditMode) {
       setShowWaveform(false);
     }
-  }, [isEditMode, mp3url, annotatedTranscript]);
+  }, [isEditMode]);
 
   // Handle Audio Selection and Fetch
   const handleAudioSelection = async () => {
@@ -248,6 +249,9 @@ export default function Transcript() {
   // Add keyboard controls
   useEffect(() => {
     const handleKeydown = (e) => {
+      // Don't handle shortcuts if a word popover is open (user is editing)
+      if (isWordPopoverOpen) return;
+
       // Only handle shortcuts if we have audio or it's the help shortcut
       if (!audioRef.current && e.code !== "Slash") return;
 
@@ -300,7 +304,7 @@ export default function Transcript() {
     return () => {
       document.removeEventListener("keydown", handleKeydown);
     };
-  }, []); // Empty dependency array since we only want to set this up once
+  }, [isWordPopoverOpen]); // Include isWordPopoverOpen in dependencies
 
   const handleAnnotationHover = (annotations) => {
     const friendlyIssueNames = getIssueNames(annotations);
@@ -375,6 +379,53 @@ export default function Transcript() {
     });
   };
 
+  // Insert new word after the specified word index
+  const insertWordAfter = (afterWordIndex, newWord, onWordInserted) => {
+    setDraftTranscript((prev) => {
+      if (!prev) return prev;
+
+      // Find the index of the word to insert after
+      const insertIndex = prev.findIndex(
+        (word) => word.wordIndex === afterWordIndex
+      );
+
+      if (insertIndex === -1) return prev;
+
+      // Find the maximum wordIndex to assign a new one
+      const maxWordIndex = Math.max(
+        ...prev.map((word) => word.wordIndex || 0),
+        afterWordIndex
+      );
+
+      // Create new word with next wordIndex
+      const newWordWithIndex = {
+        ...newWord,
+        wordIndex: maxWordIndex + 1,
+      };
+
+      // Insert after the current word
+      const newDraft = [...prev];
+      newDraft.splice(insertIndex + 1, 0, newWordWithIndex);
+
+      // Callback to open popover for new word
+      if (onWordInserted) {
+        setTimeout(() => {
+          onWordInserted(newWordWithIndex.wordIndex);
+        }, 100);
+      }
+
+      return newDraft;
+    });
+  };
+
+  // Delete word from draft
+  const deleteWord = (wordIndex) => {
+    setDraftTranscript((prev) => {
+      if (!prev) return prev;
+      return prev.filter((word) => word.wordIndex !== wordIndex);
+    });
+  };
+
   // Clean draft transcript for export: remove wordIndex, and only include lineBreakAfter/newParagraphAfter if true
   const cleanDraftForExport = (draft) => {
     if (!draft) return draft;
@@ -417,6 +468,91 @@ export default function Transcript() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  // Upload draft transcript to S3
+  const uploadDraftToS3 = async () => {
+    if (!draftTranscript || !s3KeyJson || !isAdmin) {
+      alert("Missing required data for upload");
+      return;
+    }
+
+    if (
+      !confirm(
+        "Are you sure you want to upload the edited transcript to S3? This will overwrite the existing transcript."
+      )
+    ) {
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      // Use the same format as copy button - clean draft for export
+      const transcriptData = cleanDraftForExport(draftTranscript);
+      if (!transcriptData) {
+        alert("Failed to convert transcript format");
+        return;
+      }
+
+      // Get presigned URL
+      const uploadUrlResponse = await fetchData("/api/s3/upload-url", {
+        method: "POST",
+        body: JSON.stringify({
+          key: s3KeyJson,
+          contentType: "application/json",
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!uploadUrlResponse.url) {
+        throw new Error("Failed to get upload URL");
+      }
+
+      // Upload to S3
+      const uploadResponse = await fetch(uploadUrlResponse.url, {
+        method: "PUT",
+        body: JSON.stringify(transcriptData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!uploadResponse.ok) {
+        // Try to get error details from S3 response
+        const errorText = await uploadResponse.text();
+        let errorMessage = `Upload failed: ${uploadResponse.statusText}`;
+        try {
+          // S3 returns XML errors, try to parse if possible
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(errorText, "text/xml");
+          const code = xmlDoc.getElementsByTagName("Code")[0]?.textContent;
+          const message =
+            xmlDoc.getElementsByTagName("Message")[0]?.textContent;
+          if (code || message) {
+            errorMessage = `Upload failed: ${
+              code || uploadResponse.statusText
+            } - ${message || ""}`;
+          }
+        } catch (e) {
+          // If parsing fails, just use the status text
+        }
+        throw new Error(errorMessage);
+      }
+
+      alert("Transcript uploaded successfully to S3!");
+
+      // Optionally refresh the transcript
+      if (selectedAudio) {
+        await fetchAudio(selectedAudio);
+      }
+    } catch (error) {
+      console.error("Error uploading transcript:", error);
+      alert(`Failed to upload transcript: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   // Check if draft has changes
@@ -539,6 +675,24 @@ export default function Transcript() {
                                   >
                                     <Download className="h-4 w-4" />
                                     Download
+                                  </Button>
+                                  <Button
+                                    variant="default"
+                                    size="sm"
+                                    onClick={uploadDraftToS3}
+                                    className="flex items-center gap-2 cursor-pointer"
+                                    disabled={
+                                      !draftTranscript ||
+                                      !s3KeyJson ||
+                                      !hasDraftChanges ||
+                                      isUploading
+                                    }
+                                    title="Upload edited transcript to S3 (Admin only)"
+                                  >
+                                    <Upload className="h-4 w-4" />
+                                    {isUploading
+                                      ? "Uploading..."
+                                      : "Upload to S3"}
                                   </Button>
                                   {hasDraftChanges && (
                                     <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">
@@ -673,6 +827,11 @@ export default function Transcript() {
                       isEditMode={isEditMode}
                       draftTranscript={draftTranscript}
                       onDraftUpdate={updateDraftWord}
+                      onInsertWord={insertWordAfter}
+                      onDeleteWord={deleteWord}
+                      onOpenWordPopover={setOpenWordPopover}
+                      openWordPopover={openWordPopover}
+                      onPopoverOpenChange={setIsWordPopoverOpen}
                       audioRef={audioRef}
                       currentTime={currentTime}
                     />

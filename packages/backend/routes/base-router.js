@@ -1,5 +1,8 @@
 import express from "express";
-import { getSignedUrlForDownload } from "../services/s3.js";
+import {
+  getSignedUrlForDownload,
+  getSignedUrlForUpload,
+} from "../services/s3.js";
 
 const baseRouter = express.Router();
 
@@ -234,6 +237,7 @@ baseRouter.get("/data/loadAudio/:AudioRecId", async (req, res) => {
       mp3url: mp3Url,
       tranurl: tranUrl,
       name: audioData.fields.Name,
+      s3KeyJson: awsKeyJson, // Include S3 key for admin uploads
     },
     airtableWords: { records: wordsData }, // Now includes ALL records
   });
@@ -726,5 +730,30 @@ async function executeV2Operations(operations) {
 
   return results;
 }
+
+// Get presigned URL for S3 upload (admin only)
+baseRouter.post("/s3/upload-url", async (req, res) => {
+  if (!req.isAdmin) {
+    return res.status(403).json({ error: "Not authorized" });
+  }
+
+  try {
+    const { key, contentType } = req.body;
+
+    if (!key) {
+      return res.status(400).json({ error: "Missing required field: key" });
+    }
+
+    const signedUrl = await getSignedUrlForUpload(key, contentType);
+
+    res.json({
+      url: signedUrl,
+      key,
+    });
+  } catch (error) {
+    console.error("Error generating presigned upload URL:", error);
+    res.status(500).json({ error: "Failed to generate upload URL" });
+  }
+});
 
 export default baseRouter;
