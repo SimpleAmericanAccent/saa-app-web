@@ -34,8 +34,9 @@ Important context:
 
 - 5 min video [here](https://youtu.be/1I5FPCRFm7o)
 - Live app demo:
-  - [Link](https://app.simpleamericanaccent.com)
+  - [Link](https://demo.simpleamericanaccent.com)
   - User/pass: demo@simpleamericanaccent.com / Demo123!
+  - Note: As of Dec 13, 2025... I am updating the live app demo. It's currently down but will be up again soon.
 
 ## App Overview
 
