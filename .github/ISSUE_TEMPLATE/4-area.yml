@@ -4,3 +4,7 @@ type: "area"
 assignees: will-rosenberg
 projects: "SimpleAmericanAccent/9"
 title: "[Area]"
+body:
+- type: markdown
+  attributes:
+    value: ""
