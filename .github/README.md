@@ -42,7 +42,7 @@ Live app demo:
 | password | <pre><code>Demo123!</code></pre>                                   |
 
 Note: As of Dec 13, 2025... I am updating the live app demo. It currently has only partial functionality compared to prod.
-Try going to "Accent Analysis" or "Target Sounds" to see stuff that's mostly working.
+Try going to "Accent Analysis" or "Target Sounds" to see stuff that's mostly working. Should have it fixed soon.
 
 
 ## App Overview
