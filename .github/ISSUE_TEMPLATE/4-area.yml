@@ -4,9 +4,6 @@ type: "area-umbrella-issue"
 assignees: will-rosenberg
 projects: "SimpleAmericanAccent/9"
 body:
-  - type: markdown
-    attributes:
-      value: "Optional description, save, then add sub-issues."
   - type: textarea
     attributes:
       label: Description (optional)
