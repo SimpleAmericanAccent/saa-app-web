@@ -7,4 +7,4 @@ title: "[Area]"
 body:
 - type: input
   attributes:
-    description: "You can write a description here (optional)."
+    label: "You can write a description here (optional)."
