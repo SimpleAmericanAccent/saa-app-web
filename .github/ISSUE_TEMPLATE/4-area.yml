@@ -3,7 +3,4 @@ description: "Collect similar tasks/features/bugs into an umbrella issue"
 type: "area"
 assignees: will-rosenberg
 projects: "SimpleAmericanAccent/9"
-body:
-  - type: textarea
-    attributes:
-      label: Description (optional)
+title: "[Area]"
