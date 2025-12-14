@@ -5,6 +5,6 @@ assignees: will-rosenberg
 projects: "SimpleAmericanAccent/9"
 title: "[Area]"
 body:
-- type: markdown
+- type: input
   attributes:
-    value: "You can write a description here (optional)."
+    description: "You can write a description here (optional)."
