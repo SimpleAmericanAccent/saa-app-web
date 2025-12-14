@@ -1,6 +1,6 @@
 name: "🧭 Area"
-description: "Collect similar tasks/features/bugs into an area/umbrella issue"
-type: "area-umbrella-issue"
+description: "Collect similar tasks/features/bugs into an umbrella issue"
+type: "area"
 assignees: will-rosenberg
 projects: "SimpleAmericanAccent/9"
 body:
