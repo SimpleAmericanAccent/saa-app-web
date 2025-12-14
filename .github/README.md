@@ -36,7 +36,7 @@ Important context:
 - Live app demo:
   - [Link](https://demo.simpleamericanaccent.com)
   - User/pass: demo@simpleamericanaccent.com / Demo123!
-  - Note: As of Dec 13, 2025... I am updating the live app demo. It's currently down but will be up again soon.
+  - Note: As of Dec 13, 2025... I am updating the live app demo. It currently has only partial functionality compared to prod.
 
 ## App Overview
 
