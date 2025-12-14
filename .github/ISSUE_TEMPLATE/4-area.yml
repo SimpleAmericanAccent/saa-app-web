@@ -7,4 +7,4 @@ title: "[Area]"
 body:
 - type: markdown
   attributes:
-    value: " "
+    value: "You can write a description here (optional)."
