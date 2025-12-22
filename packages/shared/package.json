@@ -1,8 +1,6 @@
 {
   "name": "shared",
-  "version": "1.0.0",
-  "description": "SAA shared",
-  "type": "module",
-  "author": "Will Rosenberg",
-  "license": "UNLICENSED"
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module"
 }
