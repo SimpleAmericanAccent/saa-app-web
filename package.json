@@ -40,13 +40,7 @@
     "test:frontend": "pnpm --filter frontend run test",
     "test:f": "pnpm run test:frontend",
     "storybook": "pnpm --filter frontend run storybook",
-    "sb": "pnpm run storybook",
-    "// ============= Dependency Analysis ============= ": "",
-    "depcruise": "dependency-cruiser --config .config/.dependency-cruiser.cjs packages apps",
-    "depcruise:graph": "dependency-cruiser --config .config/dependency-cruiser.cjs --output-type dot packages apps | dot -T svg > dependency-graph.svg",
-    "depcruise:archi": "dependency-cruiser --config .config/dependency-cruiser.cjs --output-type archi packages apps | dot -T svg > architecture-graph.svg",
-    "depcruise:json": "dependency-cruiser --config .config/dependency-cruiser.cjs --output-type json packages apps > dependency-report.json",
-    "depcruise:html": "dependency-cruiser --config .config/dependency-cruiser.cjs --output-type html packages apps > dependency-report.html"
+    "sb": "pnpm run storybook"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.7.6",
@@ -112,7 +106,6 @@
     "@types/react-dom": "19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^9.1.2",
-    "dependency-cruiser": "^17.2.0",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
