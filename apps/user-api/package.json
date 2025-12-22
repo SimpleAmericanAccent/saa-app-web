@@ -1,15 +1,12 @@
 {
   "name": "user-api",
-  "version": "0.0.0",
-  "description": "Simple American Accent accent software",
-  "main": "server.js",
+  "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "scripts": {
     "dev": "node --watch server.js",
     "start": "node server.js"
   },
-  "author": "Will Rosenberg",
-  "license": "UNLICENSED",
   "dependencies": {
     "backend": "workspace:*"
   }
