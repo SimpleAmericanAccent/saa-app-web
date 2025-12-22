@@ -8,8 +8,8 @@
   ],
   "scripts": {
     "// ============= Setup ============= ": "",
-    "migrate": "pnpm --filter backend run migrate",
-    "seed:cmu": "pnpm --filter backend run seed:cmu",
+    "export:quiz:local": "pnpm --filter backend run export:quiz:local",
+    "seed:quiz:local": "pnpm --filter backend run seed:quiz:local",
     "setup": "pnpm install --frozen-lockfile && pnpm run generate && mkcert localhost && pnpm run setup:env",
     "setup:prod": "pnpm install --frozen-lockfile && pnpm run generate",
     "setup:env": "node scripts/setup-env.js",
@@ -31,7 +31,6 @@
     "build:u": "pnpm run build:user",
     "start:u": "pnpm run start:user",
     "studio": "pnpm run studio:u",
-    "studio:u": "pnpm --filter backend run studio:user",
     "// ============= Shared ============= ": "",
     "lint": "eslint .",
     "test": "pnpm -r test",
