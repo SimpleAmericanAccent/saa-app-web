@@ -13,5 +13,7 @@ __pycache__/
 *.pem
 
 .env
+.env.*
+!.env.example
 *storybook.log
 storybook-static
