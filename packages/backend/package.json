@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "SAA backend core",
   "main": "server.js",
   "type": "module",
@@ -11,12 +11,8 @@
     "seed:quiz": "node prisma/scripts/seed-quiz.js",
     "export:quiz": "node prisma/scripts/export-quiz-data.js",
     "generate": "prisma generate --no-hints",
-    "studio": "pnpm run studio:user",
-    "studio:user": "node node_modules/prisma/build/index.js studio",
-    "studio:admin": "node node_modules/prisma/build/index.js studio",
-    "migrate": "pnpm run migrate:dev:user",
-    "migrate:dev:user": "node node_modules/prisma/build/index.js migrate dev",
-    "migrate:dev:admin": "node node_modules/prisma/build/index.js migrate dev"
+    "studio": "node node_modules/prisma/build/index.js studio",
+    "migrate:dev": "node node_modules/prisma/build/index.js migrate dev"
   },
   "author": "Will Rosenberg",
   "license": "UNLICENSED",
