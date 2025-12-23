@@ -14,13 +14,17 @@
     "migrate:dev": "node node_modules/prisma/build/index.js migrate dev"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.946.0",
-    "@aws-sdk/s3-request-presigner": "^3.946.0",
-    "@prisma/client": "^6.7.0",
-    "cors": "^2.8.5",
+    "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/s3-request-presigner": "catalog:",
+    "@prisma/client": "catalog:",
+    "cors": "catalog:",
+    "express": "catalog:",
+    "express-openid-connect": "catalog:",
+    "express-rate-limit": "catalog:",
     "shared": "workspace:*"
   },
   "devDependencies": {
-    "prisma": "^6.7.0"
+    "prisma": "catalog:",
+    "@types/node": "catalog:"
   }
 }

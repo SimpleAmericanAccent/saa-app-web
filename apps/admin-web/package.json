@@ -10,5 +10,9 @@
   },
   "dependencies": {
     "frontend": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vite": "catalog:"
   }
 }

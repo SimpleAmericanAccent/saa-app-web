@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "backend": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
   }
 }
