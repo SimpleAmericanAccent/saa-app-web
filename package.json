@@ -7,10 +7,6 @@
   "engines": {
     "node": ">=22.15.0"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
     "// ============= Setup ============= ": "",
     "migrate:dev": "pnpm --filter backend run migrate:dev",
