@@ -36,9 +36,6 @@
     "sb": "pnpm run storybook"
   },
   "devDependencies": {
-    "concurrently": "catalog:",
-    "class-variance-authority": "catalog:",
-    "clsx": "catalog:",
-    "cmdk": "catalog:"
+    "concurrently": "catalog:"
   }
 }

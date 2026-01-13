@@ -9,10 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "frontend": "workspace:*"
+    "frontend": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "@vitejs/plugin-react": "catalog:"
   }
 }
