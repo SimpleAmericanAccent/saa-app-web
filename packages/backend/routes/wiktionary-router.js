@@ -225,12 +225,28 @@ const getWiktionaryUSAudio = async (req, res) => {
     const { word } = req.params;
     const normalizedWord = cleanWordForAPI(word);
 
+    console.log(
+      "Attempting to fetch Wiktionary US audio for word:",
+      normalizedWord,
+      "at URL:",
+      `https://en.wiktionary.org/w/api.php?action=parse&format=json&page=${encodeURIComponent(
+        normalizedWord
+      )}&prop=text`
+    );
+
     // Fetch page content
     const response = await fetch(
       `https://en.wiktionary.org/w/api.php?action=parse&format=json&page=${encodeURIComponent(
         normalizedWord
       )}&prop=text`
     );
+
+    // console.log("Response:", response);
+    console.log("Response status:", response.status);
+    // console.log("Response text:", await response.text());
+    console.log("Response headers:", response.headers);
+    // console.log("Response body:", await response.json());
+    console.log("Response error:", response.error);
 
     if (!response.ok) {
       return res.status(404).json({ error: "Word not found" });
