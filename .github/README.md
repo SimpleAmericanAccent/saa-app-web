@@ -1,6 +1,6 @@
 # Simple American Accent Web App
 
-> 📝 **Portfolio Repository — Proprietary Code (No External Contributions)**
+> 📝 **Portfolio Repository — Proprietary Code**
 
 A full-stack web application for American accent training, analysis, and feedback.
 
@@ -9,7 +9,7 @@ A full-stack web application for American accent training, analysis, and feedbac
 
 <a href="#demo"><img src="../docs/screenshot.png"></a>
 
-## Context:
+## Context
 
 This application supports accent coaching workflows: analysis, feedback, and guided practice.
 
@@ -46,8 +46,6 @@ Live demo available during interviews.
 - **Backend:** Node.js, Express, Prisma, PostgreSQL on Render, Airtable via API, Auth0
 - **Cloud & DevOps:** Render, CloudFlare, AWS S3
 - **Testing & Tooling:** Git, GitHub, pnpm, Jest, Storybook
-- **AI-Assisted Engineering:** Cursor, ChatGPT
-- **App Analytics:** PostHog coming soon
 
 ### Architecture
 
@@ -122,7 +120,7 @@ packages/ (shared core)
 
 ## License and Contributing
 
-This repository is **proprietary** and made public **solely for portfolio and demonstration purposes** as part of my full-stack engineering job search.
+This repository is proprietary and shared publicly only for portfolio purposes.
 
 - **License:** See [LICENSE.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=License-1-ov-file#readme)
 - **Contributing:** See [CONTRIBUTING.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=contributing-ov-file#readme)
