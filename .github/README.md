@@ -2,7 +2,7 @@
 
 > 📝 **Portfolio Repository — Proprietary Code (No External Contributions)**
 
-A full-stack web application for American accent training and feedback.
+A full-stack web application for American accent training, analysis, and feedback.
 
 - Used by my accent coaching clients (Brazilians who want an American accent)
 - React, Node & Express, PostgreSQL & Prisma, Tailwind, Vite
