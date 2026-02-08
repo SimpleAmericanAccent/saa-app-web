@@ -11,8 +11,6 @@ A full-stack web application for American accent training, analysis, and feedbac
 
 ## Context
 
-This application supports accent coaching workflows: analysis, feedback, and guided practice.
-
 I repeatedly ran into the same challenges when helping clients with accent training, and existing tools didn’t address them in the way I wanted.
 
 So I built my own. I use it actively in my coaching business, and it continues to evolve.
