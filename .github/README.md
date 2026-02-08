@@ -32,17 +32,9 @@ Important context:
 
 ## Demo
 
-5 min video [here](https://youtu.be/1I5FPCRFm7o)
+5-minute walkthrough video: https://youtu.be/1I5FPCRFm7o
 
-Live app demo:
-
-| link     | <pre><code>https://demo.simpleamericanaccent.com     </code></pre> |
-|--------  |--------                                                            |
-| username | <pre><code>demo<area></area>@simpleamericanaccent.com</code></pre>              |
-| password | <pre><code>Demo123!</code></pre>                                   |
-
-Note: As of Dec 13, 2025... I am updating the live app demo. It currently has only partial functionality compared to prod.
-Try going to "Accent Analysis" or "Target Sounds" to see stuff that's mostly working. Should have it fixed soon.
+Live demo available during interviews.
 
 
 ## App Overview
