@@ -13,9 +13,9 @@ A full-stack web application for American accent training, analysis, and feedbac
 
 This application supports accent coaching workflows: analysis, feedback, and guided practice.
 
-I repeatedly ran into the same challenges when helping clients with accent training, and existing tools didn’t address them in the way I wanted. So I built my own.
+I repeatedly ran into the same challenges when helping clients with accent training, and existing tools didn’t address them in the way I wanted.
 
-It was built iteratively around client needs and is actively used in my coaching business, with ongoing maintenance and development.
+So I built my own. I use it actively in my coaching business, and it continues to evolve.
 
 The software is proprietary. The repository is public only for portfolio purposes.
 
