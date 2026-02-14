@@ -1,11 +1,10 @@
 import { bootApp } from "backend/entry.js";
 import router from "backend/routes/routes.js";
-import express from "express";
+import { createRouter } from "backend/routes/router-factory.js";
 import internalStatsRouter from "./routes/internal-stats-router.js";
 import { createAirtableClient } from "backend/services/airtable.js";
 
-const adminRouter = express
-  .Router()
+const adminRouter = createRouter()
   .use(router)
   .use("/api/internalstats", internalStatsRouter);
 
