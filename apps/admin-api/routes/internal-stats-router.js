@@ -1,6 +1,6 @@
 // tbd
-import express from "express";
 import https from "https";
+import { createRouter } from "backend/routes/router-factory.js";
 
 const cache = {
   data: [],
@@ -19,7 +19,7 @@ function isDataInCache(startDate, endDate) {
   );
 }
 
-const internalStatsRouter = express.Router();
+const internalStatsRouter = createRouter();
 
 internalStatsRouter.get("/loadrange", async (req, res) => {
   const airtableOps = req.app.locals.airtableOps;
