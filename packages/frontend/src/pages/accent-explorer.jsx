@@ -43,6 +43,10 @@ import {
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs";
+import {
+  SUBTLEX_ATTRIBUTION,
+  WIKIMEDIA_AUDIO_ATTRIBUTION,
+} from "../data/attributions";
 
 export default function AccentExplorer() {
   const { targetSlug } = useParams();
@@ -882,6 +886,11 @@ export default function AccentExplorer() {
                                               None found
                                             </div>
                                           )}
+                                          {audioData.length > 0 && (
+                                            <div className="text-[10px] text-center text-muted-foreground px-1 mt-0.5">
+                                              {WIKIMEDIA_AUDIO_ATTRIBUTION}
+                                            </div>
+                                          )}
 
                                           {/* External pronunciation links */}
                                           {currentWord && (
@@ -1047,6 +1056,9 @@ export default function AccentExplorer() {
                                                     {frequencyData.freqSubtlexUs?.toLocaleString() ||
                                                       "N/A"}{" "}
                                                     occurrences
+                                                  </div>
+                                                  <div className="text-[10px] text-muted-foreground mt-0.5">
+                                                    {SUBTLEX_ATTRIBUTION}
                                                   </div>
                                                 </div>
                                               </div>

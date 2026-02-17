@@ -26,6 +26,7 @@ import {
   Ear,
   FileVolume,
   Activity,
+  BookMarked,
 } from "lucide-react";
 import {
   Sidebar,
@@ -72,6 +73,7 @@ import {
   getTextColorClass,
   getGradientColorStyle,
 } from "../utils/performance-colors";
+import { CreditsDialog } from "./credits-dialog";
 
 // Quiz statistics component for sidebar
 function QuizStats() {
@@ -240,6 +242,7 @@ export function SidebarLeft() {
   const isCollapsed = state === "collapsed";
   const [openSubmenus, setOpenSubmenus] = React.useState(new Set());
   const [isInitialized, setIsInitialized] = React.useState(false);
+  const [creditsOpen, setCreditsOpen] = React.useState(false);
   const isMobile = useIsMobile();
 
   // On mobile, show text when sidebar is open; on desktop, show text when not collapsed
@@ -615,6 +618,13 @@ export function SidebarLeft() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator className="my-2" />
                   <DropdownMenuItem
+                    onClick={() => setCreditsOpen(true)}
+                    className="px-4 py-3 justify-center items-center gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
+                  >
+                    <BookMarked className="h-4 w-4" />
+                    <span className="font-medium">Credits</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
                     onClick={logout}
                     className="px-4 py-3 justify-center items-center gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
                   >
@@ -625,6 +635,14 @@ export function SidebarLeft() {
               </DropdownMenu>
             )}
           </div>
+          {creditsOpen && (
+            <CreditsDialog
+              open
+              onOpenChange={(open) => {
+                if (!open) setCreditsOpen(false);
+              }}
+            />
+          )}
         </SidebarFooter>
       </Sidebar>
     </aside>

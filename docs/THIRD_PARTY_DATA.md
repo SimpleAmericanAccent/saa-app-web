@@ -86,3 +86,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 | Wiktionary audio | CC BY-SA etc. | URLs only; audio streamed from Wikimedia; attribution above |
 
 These licenses apply to the third-party data and content. They do not change the license of the project’s own code (see [LICENSE.md](../LICENSE.md)).
+
+---
+
+## In-app attribution
+
+Attribution is shown in the UI where the data is used:
+
+- **Word frequency (SUBTLEX-US):** In the Accent Explorer, when hovering a word in the "Frequency" tab, the tooltip shows the occurrence count and the line: *"Word frequency: SUBTLEX-US (Brysbaert & New); CC-BY-SA."*
+- **Pronunciation audio (Wiktionary/Wikimedia):** When word pronunciation audio is available (Accent Explorer word tooltip, Transcript viewer word tooltip), the AUDIO section includes: *"Pronunciation from Wiktionary / Wikimedia Commons."*
+- **Credits:** The sidebar footer has a **Credits** link that opens a dialog listing CMU Dict, SUBTLEX-US, and Wiktionary with short descriptions and source links.

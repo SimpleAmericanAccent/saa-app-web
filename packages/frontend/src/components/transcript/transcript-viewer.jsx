@@ -37,6 +37,7 @@ import {
 } from "shared/phonemes.js";
 
 import WordEditPopover from "frontend/src/components/transcript/word-edit-popover";
+import { WIKIMEDIA_AUDIO_ATTRIBUTION } from "frontend/src/data/attributions";
 
 const TranscriptViewerV1 = ({
   annotatedTranscript,
@@ -909,6 +910,11 @@ function _WordAudio({
       ) : (
         <div className="text-xs text-center text-muted-foreground px-1">
           None found
+        </div>
+      )}
+      {audioData.length > 0 && (
+        <div className="text-[10px] text-center text-muted-foreground px-1 mt-0.5">
+          {WIKIMEDIA_AUDIO_ATTRIBUTION}
         </div>
       )}
 
