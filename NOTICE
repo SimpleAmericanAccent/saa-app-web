@@ -1,0 +1,14 @@
+This project includes or uses data from the following third-party sources.
+Full details and license texts: see docs/THIRD_PARTY_DATA.md.
+
+---
+
+CMU Pronouncing Dictionary
+Copyright (C) 1993-2015 Carnegie Mellon University. All rights reserved.
+Licensed under BSD 3-Clause. See docs/THIRD_PARTY_DATA.md for full license text.
+
+SUBTLEX-US word frequency data: Boris New & Marc Brysbaert (Ghent University).
+Licensed under CC-BY-SA. See docs/THIRD_PARTY_DATA.md for attribution details.
+
+Pronunciation audio: Wiktionary / Wikimedia Commons (various free licenses).
+Attribution and terms: see docs/THIRD_PARTY_DATA.md.

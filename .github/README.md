@@ -123,6 +123,7 @@ packages/ (shared core)
 This repository is proprietary and shared publicly only for portfolio purposes.
 
 - **License:** See [LICENSE.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=License-1-ov-file#readme)
+- **Third-party data (CMU Dict, SUBTLEX-US, Wiktionary/Wikimedia):** See [NOTICE](../NOTICE) and [docs/THIRD_PARTY_DATA.md](../docs/THIRD_PARTY_DATA.md)
 - **Contributing:** See [CONTRIBUTING.md](https://github.com/SimpleAmericanAccent/saa-app-web?tab=contributing-ov-file#readme)
 
 External contributions (issues, PRs) are not accepted.
