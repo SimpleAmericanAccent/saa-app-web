@@ -23,7 +23,7 @@ const coreRoutes = (
     {/* Add new route with audioId parameter */}
     <Route path="/transcript/:audioId" element={<Transcript />} />
     <Route path="/transcript" element={<Transcript />} />
-    <Route path="/s" element={<SpectrogramTest />} />
+    <Route path="/sp" element={<SpectrogramTest />} />
     <Route path="/dashboard" element={<UserDashboard />} />
     <Route path="/wls" element={<WLS />} />
     <Route path="/vsounds" element={<VSounds />} />
