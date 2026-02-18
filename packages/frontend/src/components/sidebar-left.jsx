@@ -629,7 +629,7 @@ export function SidebarLeft() {
                   <DropdownMenuItem
                     onClick={() =>
                       window.open(
-                        "https://billing.stripe.com/p/login/4gM4gyak30X26k39BQ6Zy00",
+                        "https://simpleamericanaccent.com/billing",
                         "_blank",
                       )
                     }
