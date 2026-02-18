@@ -95,7 +95,7 @@ function QuizStats() {
             return { completed: 0, total: 0 };
 
           const categoryQuizzes = Object.values(quizDataFromApi).filter(
-            (quizData) => quizData.category === category
+            (quizData) => quizData.category === category,
           );
 
           const quizzesWithMinTrials = categoryQuizzes.filter((quizData) => {
@@ -287,7 +287,7 @@ export function SidebarLeft() {
     if (isInitialized) {
       localStorage.setItem(
         "sidebar-submenus",
-        JSON.stringify([...openSubmenus])
+        JSON.stringify([...openSubmenus]),
       );
     }
   }, [openSubmenus, isInitialized]);
@@ -309,7 +309,7 @@ export function SidebarLeft() {
   const handleCollapsedIconClick = (
     e,
     hasSubmenu = false,
-    submenuId = null
+    submenuId = null,
   ) => {
     if (isCollapsed && hasSubmenu) {
       // Prevent the default collapsible behavior
@@ -519,10 +519,10 @@ export function SidebarLeft() {
 
           {/* Program Section */}
           <SidebarGroup>
-            <SidebarGroupLabel>Mentorship Program</SidebarGroupLabel>
+            <SidebarGroupLabel>Need Help?</SidebarGroupLabel>
             <SidebarMenu>
               {/* Program Details - Links to mgr if has replay access, mg if not */}
-              <SidebarMenuItem>
+              <SidebarMenuItem style={{ display: "none" }}>
                 <SidebarMenuButton asChild tooltip="Program Details">
                   <a
                     href={
@@ -542,7 +542,7 @@ export function SidebarLeft() {
               </SidebarMenuItem>
 
               {/* Replays */}
-              <SidebarMenuItem>
+              <SidebarMenuItem style={{ display: "none" }}>
                 <SidebarMenuButtonWithClose
                   asChild
                   tooltip="Zoom Calls/Recordings"
@@ -558,7 +558,7 @@ export function SidebarLeft() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="Message Will">
                   <a
-                    href="https://wa.me/13194576479"
+                    href="https://simpleamericanaccent.com/whatsapp"
                     target="_blank"
                     rel="noopener"
                     className="flex items-center gap-2"

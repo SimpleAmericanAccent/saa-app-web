@@ -157,7 +157,7 @@ export default function Transcript() {
     return issueIds.map((id) => {
       // Find the category that contains this issue
       const category = issuesData.find((cat) =>
-        cat.issues.some((issue) => issue.id === id)
+        cat.issues.some((issue) => issue.id === id),
       );
 
       if (category) {
@@ -181,7 +181,7 @@ export default function Transcript() {
           return category.name;
         }
         return id;
-      })
+      }),
     );
   };
 
@@ -192,7 +192,7 @@ export default function Transcript() {
     if (useDraft && isEditMode && draftTranscript) {
       return flattened.map((wordObj) => {
         const draftWord = draftTranscript.find(
-          (w) => w.wordIndex === wordObj.wordIndex
+          (w) => w.wordIndex === wordObj.wordIndex,
         );
         if (draftWord) {
           return {
@@ -323,7 +323,7 @@ export default function Transcript() {
     // Flatten the annotatedTranscript structure and find the word ID
 
     const flattenedWords = annotatedTranscript.flatMap(
-      (segment) => segment.alignment
+      (segment) => segment.alignment,
     );
 
     const wordId = flattenedWords[wordIndex]?.id;
@@ -374,7 +374,7 @@ export default function Transcript() {
     setDraftTranscript((prev) => {
       if (!prev) return prev;
       return prev.map((word) =>
-        word.wordIndex === wordIndex ? { ...word, ...updates } : word
+        word.wordIndex === wordIndex ? { ...word, ...updates } : word,
       );
     });
   };
@@ -386,7 +386,7 @@ export default function Transcript() {
 
       // Find the index of the word to insert after
       const insertIndex = prev.findIndex(
-        (word) => word.wordIndex === afterWordIndex
+        (word) => word.wordIndex === afterWordIndex,
       );
 
       if (insertIndex === -1) return prev;
@@ -394,7 +394,7 @@ export default function Transcript() {
       // Find the maximum wordIndex to assign a new one
       const maxWordIndex = Math.max(
         ...prev.map((word) => word.wordIndex || 0),
-        afterWordIndex
+        afterWordIndex,
       );
 
       // Create new word with next wordIndex
@@ -479,7 +479,7 @@ export default function Transcript() {
 
     if (
       !confirm(
-        "Are you sure you want to upload the edited transcript to S3? This will overwrite the existing transcript."
+        "Are you sure you want to upload the edited transcript to S3? This will overwrite the existing transcript.",
       )
     ) {
       return;
@@ -611,7 +611,7 @@ export default function Transcript() {
                     className={cn(
                       "flex items-center gap-4",
                       (!hasAudioLoaded || loadError) &&
-                        "h-[calc(100vh-var(--navbar-height))] sm:h-screen justify-center flex-col"
+                        "h-[calc(100vh-var(--navbar-height))] sm:h-screen justify-center flex-col",
                     )}
                   >
                     {hasAudioLoaded ? (
@@ -880,7 +880,7 @@ export default function Transcript() {
 
       {/* Floating help buttons */}
       {hasAudioLoaded && (
-        <div className="fixed bottom-19 right-8 z-50 flex flex-col gap-3">
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
           {/* Keyboard shortcuts help */}
           <Button
             onClick={() => setIsShortcutsModalOpen(true)}
@@ -892,10 +892,10 @@ export default function Transcript() {
           </Button>
 
           {/* Personal coaching CTA */}
-          <TranscriptCTA
+          {/* <TranscriptCTA
             variant="floating"
             className="fixed bottom-6 right-8"
-          />
+          /> */}
         </div>
       )}
     </div>

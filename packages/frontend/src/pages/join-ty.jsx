@@ -4,9 +4,9 @@ import { Button } from "frontend/src/components/ui/button";
 export default function JoinThankYou() {
   const whatsappNumber = "13194576479";
   const message = encodeURIComponent(
-    "Hi Will! I just joined your program via the checkout inside the SAA app. Can you unlock my access and tell me next steps?"
+    "Hi Will! I just joined your program via the checkout inside the SAA app. Can you unlock my access and tell me next steps?",
   );
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+  const whatsappUrl = `https://simpleamericanaccent.com/whatsapp?text=${message}`;
 
   return (
     <div className="p-4">

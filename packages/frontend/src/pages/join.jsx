@@ -6,9 +6,9 @@ export default function Join() {
   const stripePaymentLink = "https://buy.stripe.com/3cIbJ0fEn5di6k315k6Zy2e";
   const whatsappNumber = "13194576479";
   const message = encodeURIComponent(
-    "Hi Will! I'm already in your app and am considering upgrading to the $2k program, but I have some questions before joining. [Insert your question(s) here]"
+    "Hi Will! I'm already in your app and am considering upgrading to the $2k program, but I have some questions before joining. [Insert your question(s) here]",
   );
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+  const whatsappUrl = `https://simpleamericanaccent.com/whatsapp?text=${message}`;
 
   return (
     <div className="p-4">

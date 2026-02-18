@@ -57,7 +57,7 @@ export function PersonAudioSelector({
             "justify-start text-left cursor-pointer",
             !selectedAudio &&
               "animate-pulse shadow-md shadow-primary/25 border-primary/50", // Add pulse effect when no audio selected
-            size === "large" && "text-2xl"
+            size === "large" && "text-2xl",
           )}
         >
           {selectedPerson ? (
@@ -155,10 +155,10 @@ export function PersonAudioSelector({
                 </CommandGroup>
               </>
             )}
-            <CommandSeparator />
-            <div className="p-2 text-center">
+            {/* <CommandSeparator /> */}
+            {/* <div className="p-2 text-center">
               <TranscriptCTA variant="selector" className="w-full" />
-            </div>
+            </div> */}
           </CommandList>
         </Command>
       </DialogContent>

@@ -196,8 +196,8 @@ export default function TranscriptCTA({
               className="w-full bg-green-600 hover:bg-green-700 !text-white"
             >
               <a
-                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                  "Hi Will! I have questions about my transcript/accent analysis and would love clarification. [Insert your question(s) here]"
+                href={`https://simpleamericanaccent.com/whatsapp?text=${encodeURIComponent(
+                  "Hi Will! I have questions about my transcript/accent analysis and would love clarification. [Insert your question(s) here]",
                 )}`}
                 target="_blank"
                 rel="noopener"
@@ -385,8 +385,8 @@ export default function TranscriptCTA({
               </p>
               <Button asChild variant="outline" size="sm" className="w-full">
                 <a
-                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                    "Hi Will! I'm in the Transcript Viewer and am considering buying more analysis/support, but have some questions about the offers. [Insert your question(s) here]"
+                  href={`https://simpleamericanaccent.com/whatsapp?text=${encodeURIComponent(
+                    "Hi Will! I'm in the Transcript Viewer and am considering buying more analysis/support, but have some questions about the offers. [Insert your question(s) here]",
                   )}`}
                   target="_blank"
                   rel="noopener"
@@ -472,6 +472,6 @@ export default function TranscriptCTA({
       <DialogContent className="w-[90vw] !max-w-4xl max-h-[95vh] overflow-y-auto z-[9999] [&>button]:cursor-pointer">
         {renderContent()}
       </DialogContent>
-    </Dialog>
+    </Dialog>,
   );
 }
