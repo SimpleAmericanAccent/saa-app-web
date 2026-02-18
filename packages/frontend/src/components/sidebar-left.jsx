@@ -27,6 +27,8 @@ import {
   FileVolume,
   Activity,
   BookMarked,
+  CreditCard,
+  ShoppingCart,
 } from "lucide-react";
 import {
   Sidebar,
@@ -619,14 +621,51 @@ export function SidebarLeft() {
                   <DropdownMenuSeparator className="my-2" />
                   <DropdownMenuItem
                     onClick={() => setCreditsOpen(true)}
-                    className="px-4 py-3 justify-center items-center gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
+                    className="px-4 py-3 gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
                   >
                     <BookMarked className="h-4 w-4" />
                     <span className="font-medium">Credits</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
+                    onClick={() =>
+                      window.open(
+                        "https://billing.stripe.com/p/login/4gM4gyak30X26k39BQ6Zy00",
+                        "_blank",
+                      )
+                    }
+                    className="px-4 py-3 gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    <span className="font-medium">Billing</span>
+                    <ExternalLink className="h-4 w-4" />
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() =>
+                      window.open("https://simpleamericanaccent.com/", "_blank")
+                    }
+                    className="px-4 py-3 gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
+                  >
+                    <ShoppingCart className="h-4 w-4" />
+                    <span className="font-medium">Products</span>
+                    <ExternalLink className="h-4 w-4" />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      window.open(
+                        "https://simpleamericanaccent.com/whatsapp",
+                        "_blank",
+                      )
+                    }
+                    className="px-4 py-3 gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
+                  >
+                    <User className="h-4 w-4" />
+                    <span className="font-medium">Message Will</span>
+                    <ExternalLink className="h-4 w-4" />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
                     onClick={logout}
-                    className="px-4 py-3 justify-center items-center gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
+                    className="px-4 py-3 gap-3 hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer"
                   >
                     <LogOut className="h-4 w-4" />
                     <span className="font-medium">Log out</span>
